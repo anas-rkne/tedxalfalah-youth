@@ -1,0 +1,4 @@
+{
+  "extends": "sanity/tsconfig",
+  "include": ["./schemaTypes", "./sanity.config.ts"]
+}
