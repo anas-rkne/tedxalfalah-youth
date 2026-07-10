@@ -1,19 +1,38 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 const ticketSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   phone: z.string().min(1),
   numberOfTickets: z.coerce.number().min(1).max(10),
+  turnstileToken: z.string().optional(),
 });
 
 export async function POST(request: Request) {
+  const { allowed } = await checkRateLimit(request, "tickets");
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+
   const body = await request.json();
   const parsed = ticketSchema.safeParse(body);
 
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+  }
+
+  const isHuman = await verifyTurnstile(parsed.data.turnstileToken);
+  if (!isHuman) {
+    return NextResponse.json(
+      { error: "Verification failed. Please try again." },
+      { status: 403 }
+    );
   }
 
   // نفس نمط فورم Apply: يحفظ بـ Google Sheet منفصل إن توفرت المتغيرات،
@@ -42,7 +61,10 @@ export async function POST(request: Request) {
       const sheet = doc.sheetsByIndex[0];
       await sheet.addRow({
         timestamp: new Date().toISOString(),
-        ...parsed.data,
+        name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        numberOfTickets: parsed.data.numberOfTickets,
       });
     } catch (error) {
       console.error("Ticket registration save failed:", error);
@@ -50,8 +72,7 @@ export async function POST(request: Request) {
     }
   } else {
     console.log(
-      "[DEV] Ticket registration (Google Sheets not configured):",
-      parsed.data
+      "[DEV] Ticket registration received (Google Sheets not configured)"
     );
   }
 

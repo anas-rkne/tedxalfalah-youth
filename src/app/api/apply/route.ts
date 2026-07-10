@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { escapeHtml } from "@/lib/sanitize";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 // نفس مخطط التحقق المستخدم بالفورم من جهة العميل (src/components/apply/ApplicationForm.tsx)
 const applicationSchema = z.object({
@@ -22,6 +25,7 @@ const applicationSchema = z.object({
   parentalConsent: z.boolean().optional(),
   organizationAndRole: z.string().optional(),
   areaOfWorkWithYouth: z.string().optional(),
+  turnstileToken: z.string().optional(),
 });
 
 type ApplicationData = z.infer<typeof applicationSchema>;
@@ -29,8 +33,12 @@ type ApplicationData = z.infer<typeof applicationSchema>;
 async function saveToGoogleSheet(data: ApplicationData) {
   // -------------------------------------------------------------------
   // يتطلب متغيرات البيئة: GOOGLE_SHEET_ID, GOOGLE_SERVICE_ACCOUNT_EMAIL,
-  // GOOGLE_PRIVATE_KEY. راجع .env.local.example وخطوة 11.10 بخطة التنفيذ
-  // لشرح كيفية إنشاء Service Account ومشاركة الـ Sheet معه.
+  // GOOGLE_PRIVATE_KEY. راجع .env.local.example وملف DOCUMENTATION.md
+  // (القسم 7.2) لشرح كيفية إنشاء Service Account ومشاركة الـ Sheet معه.
+  //
+  // ملاحظة حماية بيانات القُصَّر: تأكد أن هذا الـ Google Sheet مقيّد
+  // الوصول لأعضاء فريق المراجعة فقط ("Restricted" وليس "Anyone with
+  // the link")، لأنه يحتوي بيانات أطفال 10-14 سنة وبيانات أولياء أمورهم.
   // -------------------------------------------------------------------
   const { GoogleSpreadsheet } = await import("google-spreadsheet");
   const { JWT } = await import("google-auth-library");
@@ -72,7 +80,7 @@ async function saveToGoogleSheet(data: ApplicationData) {
 
 async function sendConfirmationEmail(data: ApplicationData) {
   // يتطلب متغير البيئة RESEND_API_KEY، ويتطلب التحقق من ملكية الدومين
-  // tedxalfalahyouth.com بلوحة Resend (خطوة 11.12 و18.3 بخطة التنفيذ).
+  // tedxalfalahyouth.com بلوحة Resend.
   const { Resend } = await import("resend");
   const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -81,9 +89,9 @@ async function sendConfirmationEmail(data: ApplicationData) {
     to: data.email,
     subject: "We received your TEDxAlFalah Youth application",
     html: `
-      <p>Hi ${data.fullName},</p>
+      <p>Hi ${escapeHtml(data.fullName)},</p>
       <p>Thank you for applying to TEDxAlFalah Youth! We've received your
-      application for the talk idea "<strong>${data.talkIdeaTitle}</strong>".</p>
+      application for the talk idea "<strong>${escapeHtml(data.talkIdeaTitle)}</strong>".</p>
       <p>Our review community will be in touch according to the timeline
       published on our website. In the meantime, feel free to explore the
       rest of the site.</p>
@@ -93,6 +101,15 @@ async function sendConfirmationEmail(data: ApplicationData) {
 }
 
 export async function POST(request: Request) {
+  // 1) Rate limiting — يمنع إغراق النموذج الأهم بالموقع
+  const { allowed } = await checkRateLimit(request, "apply");
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+
   const body = await request.json();
   const parsed = applicationSchema.safeParse(body);
 
@@ -104,6 +121,16 @@ export async function POST(request: Request) {
   }
 
   const data = parsed.data;
+
+  // 2) التحقق من عدم كون المُرسل بوتاً — مهم جداً هنا تحديداً لأن هذا
+  // الفورم يجمع بيانات حساسة (بيانات قُصَّر وأولياء أمور)
+  const isHuman = await verifyTurnstile(data.turnstileToken);
+  if (!isHuman) {
+    return NextResponse.json(
+      { error: "Verification failed. Please try again." },
+      { status: 403 }
+    );
+  }
 
   const hasGoogleSheetConfig =
     process.env.GOOGLE_SHEET_ID &&
@@ -121,9 +148,10 @@ export async function POST(request: Request) {
       );
     }
   } else {
+    // بيئة تطوير: لا نسجّل بيانات الطلب الكاملة بالسجل (حتى محلياً) لأنها
+    // تحتوي بيانات شخصية حساسة لقُصَّر — فقط نؤكد استلام الطلب.
     console.log(
-      "[DEV] Application submission (Google Sheets not configured):",
-      data
+      `[DEV] Application received for track "${data.track}" (Google Sheets not configured)`
     );
   }
 
@@ -136,9 +164,7 @@ export async function POST(request: Request) {
       console.error("Confirmation email failed:", error);
     }
   } else {
-    console.log(
-      `[DEV] Confirmation email would be sent to ${data.email} (RESEND_API_KEY not set)`
-    );
+    console.log("[DEV] Confirmation email would be sent (RESEND_API_KEY not set)");
   }
 
   return NextResponse.json({ success: true });

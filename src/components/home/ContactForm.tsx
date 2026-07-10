@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import SectionContainer from "@/components/ui/SectionContainer";
 import Button from "@/components/ui/Button";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 const contactSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -27,6 +28,7 @@ const inputClasses =
 
 export default function ContactForm() {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const {
     register,
@@ -44,7 +46,7 @@ export default function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, turnstileToken }),
       });
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
@@ -136,6 +138,8 @@ export default function ContactForm() {
               Something went wrong. Please try again.
             </p>
           )}
+
+          <TurnstileWidget onVerify={setTurnstileToken} />
 
           <Button
             variant="primary"

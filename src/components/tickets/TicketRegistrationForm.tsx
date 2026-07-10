@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Button from "@/components/ui/Button";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 const ticketSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -20,6 +21,7 @@ const inputClasses =
 
 export default function TicketRegistrationForm() {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [turnstileToken, setTurnstileToken] = useState("");
   const {
     register,
     handleSubmit,
@@ -36,7 +38,7 @@ export default function TicketRegistrationForm() {
       const res = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, turnstileToken }),
       });
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
@@ -109,6 +111,8 @@ export default function TicketRegistrationForm() {
           Something went wrong. Please try again.
         </p>
       )}
+
+      <TurnstileWidget onVerify={setTurnstileToken} />
 
       <Button variant="primary" size="md" disabled={isSubmitting}>
         {isSubmitting ? "Registering..." : "Register"}

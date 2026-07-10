@@ -39,6 +39,7 @@
 | الإيميلات التلقائية | Resend |
 | حالة البناء الإنتاجي | ✅ تم اختباره فعلياً بـ `next build` ونجح 100% |
 | حالة الفحص البرمجي | ✅ `tsc --noEmit` و`eslint` نظيفان تماماً (صفر أخطاء) |
+| **طبقات الأمان** | ✅ حماية سبام (Turnstile) + Rate Limiting + Security Headers + تعقيم مدخلات المستخدم — مدمجة بكل الفورمات الأربعة، بتراجع آمن بغياب المفاتيح |
 
 **كيف يعمل المشروع الآن، هذه اللحظة، بدون أي مفتاح؟**
 كل صفحة تعرض بيانات تجريبية واقعية (متحدثين، فريق، رعاة، فعاليات)، وكل
@@ -134,7 +135,10 @@ tedxalfalahyouth-website/
 │       ├── types.ts           ← تعريف Speaker, TeamMember, Activation, Sponsor
 │       ├── mock-data.ts       ← بيانات تجريبية (تُستخدم بغياب مفاتيح Sanity)
 │       ├── sanity.ts          ← عميل Sanity (يُفعَّل تلقائياً بمجرد وجود المفتاح)
-│       └── data.ts            ← ★ نقطة الدخول الوحيدة: كل صفحة تستورد من هنا فقط
+│       ├── data.ts            ← ★ نقطة الدخول الوحيدة: كل صفحة تستورد من هنا فقط
+│       ├── turnstile.ts       ← التحقق من عدم كون المُرسل بوتاً (Cloudflare)
+│       ├── rate-limit.ts      ← تحديد عدد الطلبات المسموحة لكل IP (Upstash)
+│       └── sanitize.ts        ← تعقيم نصوص المستخدم قبل إدراجها بالإيميلات
 │
 ├── public/
 │   ├── brand/                 ← ضع شعار TEDx الحقيقي هنا لاحقاً
@@ -349,6 +353,50 @@ RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ---
 
+### 7.4 — Cloudflare Turnstile (حماية الفورمات من السبام)
+
+**الهدف**: منع البوتات الآلية من إغراق الفورمات الأربعة بطلبات مزيفة —
+ضروري بشكل خاص لأن فورم Apply يجمع بيانات أطفال حقيقيين.
+
+1. افتح [dash.cloudflare.com](https://dash.cloudflare.com) → سجّل مجاناً
+   إن لم يكن لديك حساب
+2. من القائمة الجانبية: Turnstile → Add Site
+3. أدخل الدومين `tedxalfalahyouth.com` (أو `localhost` للاختبار المحلي)
+4. اختر Widget Mode: **Managed** (الخيار الافتراضي، الأنسب لمعظم الحالات)
+5. ستحصل على مفتاحين: **Site Key** (عام) و**Secret Key** (سري)
+
+أضفهما بملف `.env.local`:
+```
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAA...
+TURNSTILE_SECRET_KEY=0x4AAAAAAA...
+```
+
+> بدون هذين المفتاحين، الفورمات تعمل عادةً بدون أي تحقق (وضع تطوير آمن)
+> — لكن **لا تطلق الموقع للجمهور بدونهما إطلاقاً**.
+
+### 7.5 — Upstash Redis (تحديد عدد الطلبات المسموحة)
+
+**الهدف**: منع أي طرف من استدعاء API routes آلاف المرات بالثانية
+(Rate Limiting)، حتى لو تجاوز الـ Captcha بطريقة ما.
+
+1. افتح [console.upstash.com](https://console.upstash.com) → سجّل مجاناً
+2. Create Database → اختر منطقة قريبة من مستخدميك (مثلاً `me-central-1`
+   إن كانت متاحة، وإلا أقرب منطقة أوروبية)
+3. من صفحة قاعدة البيانات، انسخ **UPSTASH_REDIS_REST_URL** و
+   **UPSTASH_REDIS_REST_TOKEN** (موجودان بقسم "REST API" مباشرة)
+
+أضفهما بملف `.env.local`:
+```
+UPSTASH_REDIS_REST_URL=https://xxxxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=AXXXxxxx...
+```
+
+الإعداد الافتراضي بالكود: **5 طلبات لكل IP كل 10 دقائق** لكل فورم على
+حدة (Contact وApply وPartner Inquiry وTickets كل منها له حد مستقل). يمكن
+تعديل هذا الرقم بملف `src/lib/rate-limit.ts` إن احتجت.
+
+---
+
 ## 8. ملف .env.local الكامل
 
 ```bash
@@ -410,6 +458,10 @@ git push -u origin main
 - [ ] الموقع يعمل بصرياً بشكل صحيح على موبايل حقيقي (ليس فقط DevTools)
 - [ ] كل نصوص `[PLACEHOLDER]` استُبدلت بمحتوى العميل الحقيقي (راجع القسم 12)
 - [ ] رابط `/terms` يحتوي النص القانوني النهائي وليس القالب المؤقت
+- [ ] مفتاحا Turnstile مضافان — التحقق من ظهور الـ widget فعلياً بكل الفورمات الأربعة
+- [ ] مفتاحا Upstash مضافان — تجربة إرسال نفس الفورم 6 مرات متتالية يُظهر رسالة "Too many requests" بالمحاولة السادسة
+- [ ] صلاحية الوصول لـ Google Sheet مقيّدة لأعضاء الفريق فقط (وليست "Anyone with the link")
+- [ ] النص القانوني بصفحة Terms روجع من محامٍ (خصوصية بيانات القُصَّر تحديداً)
 
 ---
 

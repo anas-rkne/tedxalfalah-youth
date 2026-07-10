@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Button from "@/components/ui/Button";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
 const HOW_HEARD_OPTIONS = [
   "Social Media",
@@ -108,6 +109,7 @@ const errorClasses = "text-red-600 text-sm mt-1";
 
 export default function ApplicationForm() {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const {
     register,
@@ -129,7 +131,7 @@ export default function ApplicationForm() {
       const res = await fetch("/api/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, turnstileToken }),
       });
       if (!res.ok) throw new Error("Request failed");
       setStatus("success");
@@ -389,6 +391,8 @@ export default function ApplicationForm() {
           Something went wrong submitting your application. Please try again.
         </p>
       )}
+
+      <TurnstileWidget onVerify={setTurnstileToken} />
 
       <Button
         variant="primary"
