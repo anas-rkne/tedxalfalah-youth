@@ -42,6 +42,20 @@ export interface Activation {
   order: number;
 }
 
+export type SessionType = "talk" | "break" | "activation" | "registration";
+
+export interface Session {
+  id: string;
+  title: string;
+  type: SessionType;
+  startTime: string; // "09:00"
+  endTime: string; // "09:20"
+  speakerName?: string; // اسم المتحدث إن كانت الجلسة talk
+  speakerId?: string; // لربطها اختيارياً بصفحة المتحدث
+  location?: string;
+  description?: string;
+}
+
 export type SponsorTier = "Platinum" | "Gold" | "Silver" | "Community";
 
 export interface Sponsor {

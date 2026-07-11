@@ -1,9 +1,6 @@
-"use client";
+import FaqAccordion, { FaqItem } from "@/components/shared/FaqAccordion";
 
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
-
-const FAQ_ITEMS = [
+const FAQ_ITEMS: FaqItem[] = [
   {
     question: "Who is eligible for the Young Speaker track?",
     answer:
@@ -31,33 +28,5 @@ const FAQ_ITEMS = [
 ];
 
 export default function ApplyFAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  return (
-    <div className="max-w-2xl mx-auto flex flex-col divide-y divide-gray-200 border-t border-b border-gray-200">
-      {FAQ_ITEMS.map((item, index) => {
-        const isOpen = openIndex === index;
-        return (
-          <div key={item.question}>
-            <button
-              className="w-full flex items-center justify-between py-4 text-left font-medium"
-              onClick={() => setOpenIndex(isOpen ? null : index)}
-              aria-expanded={isOpen}
-            >
-              {item.question}
-              <ChevronDown
-                size={18}
-                className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-            {isOpen && (
-              <p className="pb-4 text-sm text-tedx-gray leading-relaxed">
-                {item.answer}
-              </p>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
+  return <FaqAccordion items={FAQ_ITEMS} />;
 }

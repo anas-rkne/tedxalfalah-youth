@@ -119,32 +119,41 @@ tedxalfalahyouth-website/
 │   │   ├── apply/page.tsx                 ← الأعقد: فورم + Timeline + FAQ
 │   │   ├── sponsors/page.tsx
 │   │   ├── sponsors/loading.tsx           ← Skeleton مطابق لشرائح الرعاية
-│   │   ├── tickets/page.tsx
-│   │   ├── terms/page.tsx
+│   │   ├── tickets/page.tsx               ← يتحول تلقائياً: Stripe أو فورم مجاني
+│   │   ├── tickets/success/page.tsx       ← صفحة نجاح الدفع (Stripe)
+│   │   ├── tickets/cancel/page.tsx        ← صفحة إلغاء الدفع (Stripe)
+│   │   ├── schedule/page.tsx              ← الجدول الزمني الكامل ليوم الحدث
+│   │   ├── schedule/loading.tsx
+│   │   ├── faq/page.tsx                   ← أسئلة شائعة عامة (منفصلة عن أسئلة Apply)
+│   │   ├── terms/page.tsx                 ← شروط وسياسة خصوصية كاملتان (مسودة جاهزة)
 │   │   └── api/
 │   │       ├── contact/route.ts           ← فورم Contact بالصفحة الرئيسية
 │   │       ├── apply/route.ts             ← الأهم: يحفظ بـ Google Sheet + إيميل تأكيد
 │   │       ├── partner-inquiry/route.ts   ← فورم Become a Partner
-│   │       └── tickets/route.ts           ← فورم تسجيل التذاكر
+│   │       ├── tickets/route.ts           ← فورم تسجيل التذاكر (وضع مجاني)
+│   │       └── create-checkout-session/route.ts  ← إنشاء جلسة دفع Stripe
 │   │
 │   ├── components/
 │   │   ├── layout/          Header.tsx, Footer.tsx
 │   │   ├── ui/               Button.tsx, Card.tsx, SectionContainer.tsx, SocialIcons.tsx, TurnstileWidget.tsx, TedxSpinner.tsx
-│   │   ├── shared/           Countdown.tsx
+│   │   ├── shared/           Countdown.tsx, FaqAccordion.tsx
+│   │   ├── schedule/         ScheduleItem.tsx
 │   │   ├── home/             كل الأقسام الثمانية بالصفحة الرئيسية (ملف لكل قسم)
 │   │   ├── speakers/         SpeakersGrid.tsx, SpeakerModal.tsx
 │   │   ├── apply/            ApplicationForm.tsx, ApplicationTimeline.tsx, ApplyFAQ.tsx
 │   │   ├── sponsors/         PartnerInquiryForm.tsx
-│   │   └── tickets/          TicketRegistrationForm.tsx
+│   │   └── tickets/          TicketRegistrationForm.tsx (مجاني), TicketPurchaseForm.tsx (Stripe)
 │   │
 │   └── lib/
-│       ├── types.ts           ← تعريف Speaker, TeamMember, Activation, Sponsor
+│       ├── types.ts           ← تعريف Speaker, TeamMember, Activation, Sponsor, Session
 │       ├── mock-data.ts       ← بيانات تجريبية (تُستخدم بغياب مفاتيح Sanity)
 │       ├── sanity.ts          ← عميل Sanity (يُفعَّل تلقائياً بمجرد وجود المفتاح)
 │       ├── data.ts            ← ★ نقطة الدخول الوحيدة: كل صفحة تستورد من هنا فقط
 │       ├── turnstile.ts       ← التحقق من عدم كون المُرسل بوتاً (Cloudflare)
 │       ├── rate-limit.ts      ← تحديد عدد الطلبات المسموحة لكل IP (Upstash)
-│       └── sanitize.ts        ← تعقيم نصوص المستخدم قبل إدراجها بالإيميلات
+│       ├── sanitize.ts        ← تعقيم نصوص المستخدم قبل إدراجها بالإيميلات
+│       ├── stripe.ts          ← عميل Stripe (يُفعَّل تلقائياً بمجرد وجود المفتاح)
+│       └── tickets.ts         ← ★ مصدر الأسعار الوحيد والموثوق (لا يُقرأ من المتصفح)
 │
 ├── public/
 │   ├── brand/                 ← ضع شعار TEDx الحقيقي هنا لاحقاً
@@ -158,7 +167,8 @@ tedxalfalahyouth-website/
         ├── speaker.ts
         ├── teamMember.ts
         ├── activation.ts
-        └── sponsor.ts
+        ├── sponsor.ts
+        └── session.ts          ← جلسات الجدول الزمني، مرتبطة بالمتحدثين
 ```
 
 ---
@@ -215,15 +225,39 @@ Coaching, Marketing, Partnerships, Volunteers) — الأقسام الفارغة
 بـ `public/sponsorship-deck.pdf`).
 
 ### 5.8 Tickets (`/tickets`)
-أنواع التذاكر والأسعار، فورم تسجيل (الخيار الافتراضي حالياً بافتراض
-حدث مجاني — راجع ملاحظة بالكود إن قرر العميل تذاكر مدفوعة عبر منصة
-خارجية مثل Platinumlist)، معلومات يوم الحدث، سياسة الاسترجاع.
+أنواع التذاكر والأسعار، ثم فورم يتحول تلقائياً حسب توفر `STRIPE_SECRET_KEY`:
+- **مفعّل**: دفع فعلي عبر Stripe Checkout — الأسعار تُقرأ حصراً من
+  `src/lib/tickets.ts` بالخادم (وليس من المتصفح) لمنع أي تلاعب بالسعر،
+  ثم إعادة توجيه لصفحتي `/tickets/success` أو `/tickets/cancel`.
+- **غير مفعّل**: فورم تسجيل مجاني (الوضع الحالي الافتراضي).
 
-### 5.9 Terms (`/terms`)
-قالب جاهز بـ 6 أقسام قانونية (Application Terms, Ticketing Terms,
-Photography Consent, Data Privacy, TEDx Licensing, Liability) — ينتظر
-النص القانوني النهائي من العميل. **لم يُكتب أي محتوى قانوني بالذكاء
-الاصطناعي عمداً** — هذه مسؤولية العميل/محاميه.
+معلومات يوم الحدث، سياسة الاسترجاع.
+
+### 5.9 Schedule (`/schedule`) — صفحة جديدة
+جدول زمني كامل ليوم الحدث، يُجلب من نوع محتوى `session` بـ Sanity
+(مرتبط بالمتحدثين عبر reference). كل جلسة تُصنَّف بصرياً حسب نوعها
+(Talk بلون أحمر TEDx، Break، Activation، Registration) وتعرض التوقيت
+والموقع واسم المتحدث (مع رابط لصفحته إن وُجد).
+
+### 5.10 FAQ (`/faq`) — صفحة جديدة
+أسئلة شائعة عامة للزوار (الوصول، سماح الأهل بالحضور، الطعام، التأخر عن
+الموعد، إلخ) — منفصلة تماماً عن أسئلة صفحة Apply المتعلقة بالتقديم فقط.
+تستخدم مكوّن `FaqAccordion` المشترك (نفس المكوّن الذي أُعيد استخدامه
+بصفحة Apply لتفادي التكرار).
+
+### 5.11 Terms (`/terms`)
+**مسودة قانونية شاملة وحقيقية** (وليست placeholder فارغة كما كانت
+سابقاً) بـ 6 أقسام: Application Terms, Ticketing Terms, Photography
+Consent, **Privacy Policy مفصّلة** (تشرح بوضوح ما يُجمَع من بيانات، لماذا،
+أين يُخزَّن، ولأي مدة، مع تركيز خاص على بيانات القُصَّر بمسار Young
+Speaker)، TEDx Licensing، Liability.
+
+⚠️ **تنبيه مهم موثّق أيضاً بأعلى ملف الكود نفسه**: هذا النص مسودة معقولة
+الصياغة لكنه **ليس استشارة قانونية** ولم يُراجَع من محامٍ. يجب مراجعته
+من محامٍ مرخّص بدولة الإمارات (خصوصاً فيما يخص قانون حماية البيانات
+الشخصية PDPL وأحكامه الخاصة بالقُصَّر) وملء كل الحقول `[PLACEHOLDER]`
+المتبقية (اسم الجهة القانونية، الإمارة المختصة قضائياً، تاريخ آخر
+تحديث) قبل النشر الفعلي.
 
 ---
 
@@ -403,6 +437,37 @@ UPSTASH_REDIS_REST_TOKEN=AXXXxxxx...
 
 ---
 
+### 7.6 — Stripe (الدفع الفعلي بصفحة Tickets — اختياري)
+
+**الهدف**: تحويل صفحة `/tickets` من فورم تسجيل مجاني إلى نظام دفع فعلي
+عبر Stripe Checkout، إن قرر العميل أن الحدث مدفوع.
+
+1. سجّل مجاناً على [dashboard.stripe.com/register](https://dashboard.stripe.com/register)
+2. من لوحة Stripe (وضع Test أولاً للتجربة) → Developers → API keys
+3. انسخ **Secret key** (يبدأ بـ `sk_test_...` بوضع الاختبار، أو
+   `sk_live_...` بوضع الإنتاج الفعلي)
+
+أضفه بملف `.env.local`:
+```
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxx
+```
+
+**السلوك التلقائي**: بمجرد إضافة هذا المفتاح، تتحول صفحة `/tickets`
+تلقائياً من فورم التسجيل المجاني إلى فورم شراء فعلي يُعيد توجيه المستخدم
+لصفحة دفع Stripe الآمنة. **الأسعار تُقرأ حصراً من `src/lib/tickets.ts`**
+(وليس من أي قيمة تُرسَل من المتصفح) لمنع أي تلاعب بالسعر — عدّل هذا
+الملف لتحديث الأسعار الحقيقية بمجرد تأكيدها من العميل.
+
+بعد تأكيد نجاح المدفوعات بوضع Test، بدّل المفتاح لنسخة `sk_live_...`
+الحقيقية من نفس لوحة Stripe قبل الإطلاق النهائي.
+
+> بديل أبسط: إن فضّل العميل استخدام منصة تذاكر خارجية جاهزة (Platinumlist
+> مثلاً) بدل بناء نظام دفع خاص، يمكن استبدال زر "Proceed to Payment"
+> برابط خارجي مباشر بدل هذا التكامل بالكامل — الخيار الحالي (Stripe)
+> يُفعَّل تلقائياً فقط عند الحاجة الفعلية له.
+
+---
+
 ## 8. ملف .env.local الكامل
 
 ```bash
@@ -507,7 +572,19 @@ Brief) وحالته بالمشروع الفعلي:
 | Apply: إغلاق تلقائي بموعد نهائي + رسالة بديلة | ✅ منفّذ |
 | Sponsors: افتتاحية، شرائح، رعاة حاليون، CTA، PDF اختياري | ✅ منفّذ بالكامل |
 | Tickets: أنواع/أسعار، آلية شراء أو تسجيل، معلومات اليوم، سياسة الاسترجاع | ✅ منفّذ (فورم تسجيل — يحتاج قرار العميل إن كانت التذاكر مدفوعة عبر منصة خارجية) |
-| Terms: قالب بـ 6 أقسام قانونية | ✅ منفّذ (بانتظار النص القانوني من العميل عمداً) |
+| Terms: قالب بـ 6 أقسام قانونية | ✅ منفّذ — مسودة قانونية شاملة (وليست placeholder فارغة)، بانتظار مراجعة محامٍ فقط |
+
+### ميزات إضافية أُضيفت بعد التسليم الأول (بطلب صريح، تتجاوز نطاق البريف الأصلي)
+
+| الميزة | الحالة |
+|---|---|
+| حماية النماذج من السبام (Turnstile + Rate Limiting) | ✅ منفّذ على كل النماذج الأربعة |
+| نظام دفع تذاكر حقيقي (Stripe Checkout) | ✅ منفّذ، يتفعّل تلقائياً بمجرد إضافة `STRIPE_SECRET_KEY` |
+| صفحة Schedule (جدول زمني ليوم الحدث) | ✅ منفّذ، مرتبط بالمتحدثين عبر Sanity |
+| صفحة FAQ عامة (منفصلة عن أسئلة Apply) | ✅ منفّذ |
+| صفحة 404 وLoading مخصصتان بهوية TEDx | ✅ منفّذ |
+| Security Headers (CSP, HSTS, إلخ) | ✅ منفّذ |
+| تعقيم مدخلات المستخدم قبل الإيميلات | ✅ منفّذ |
 
 **البندان الوحيدان غير المنفّذين حالياً بندان اختياريان/معلَّقان صراحةً
 بالمستند الأصلي نفسه** (مبدّل اللغة يحتاج تأكيد العميل، ومخطط الموقع
@@ -531,8 +608,11 @@ Brief) وحالته بالمشروع الفعلي:
 | `src/components/apply/ApplyFAQ.tsx` | إجابات الأسئلة الشائعة الفعلية |
 | `src/app/venue/page.tsx` | اسم المكان، النص السردي، رابط خريطة حقيقي، إرشادات المواقف |
 | `src/app/sponsors/page.tsx` | الفقرة الافتتاحية، مزايا كل شريحة رعاية |
-| `src/app/tickets/page.tsx` | الأسعار الفعلية، تاريخ/وقت الحدث، سياسة الاسترجاع |
-| `src/app/terms/page.tsx` | **النص القانوني الكامل من محامي العميل** |
+| `src/app/tickets/page.tsx` | تأكيد الأسعار الفعلية بملف `src/lib/tickets.ts`، تاريخ/وقت الحدث، سياسة الاسترجاع |
+| `src/lib/tickets.ts` | **الأسعار الحقيقية** (priceAED) لكل نوع تذكرة — حالياً أسعار توضيحية مؤقتة |
+| `src/app/schedule/page.tsx` | تاريخ الحدث، وجلسات Sanity الحقيقية بدل البيانات التجريبية |
+| `src/app/faq/page.tsx` | إجابات الأسئلة الشائعة العامة الفعلية |
+| `src/app/terms/page.tsx` | **النص القانوني الكامل بعد مراجعة محامٍ** — راجع التنبيه بأعلى الملف نفسه |
 | `public/brand/` | شعار TEDx الرسمي (استبدال الشعار النصي المؤقت بالهيدر) |
 | `public/sponsorship-deck.pdf` | ملف PDF حقيقي لباقة الرعاية |
 

@@ -1,29 +1,14 @@
 import { Metadata } from "next";
 import SectionContainer from "@/components/ui/SectionContainer";
 import TicketRegistrationForm from "@/components/tickets/TicketRegistrationForm";
+import TicketPurchaseForm from "@/components/tickets/TicketPurchaseForm";
+import { TICKET_TYPES } from "@/lib/tickets";
+import { isStripeConfigured } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Tickets",
   description: "Get your tickets for TEDxAlFalah Youth.",
 };
-
-const TICKET_TYPES = [
-  {
-    name: "General",
-    price: "[Price TBD]",
-    includes: ["Full-day access", "All talks", "Access to activations"],
-  },
-  {
-    name: "Student",
-    price: "[Price TBD]",
-    includes: ["Full-day access", "All talks", "Valid student ID required"],
-  },
-  {
-    name: "Group (5+)",
-    price: "[Price TBD]",
-    includes: ["Full-day access", "All talks", "Discounted group rate"],
-  },
-];
 
 export default function TicketsPage() {
   return (
@@ -36,12 +21,12 @@ export default function TicketsPage() {
           <div className="grid sm:grid-cols-3 gap-6">
             {TICKET_TYPES.map((ticket) => (
               <div
-                key={ticket.name}
+                key={ticket.id}
                 className="p-6 border border-gray-200 rounded-lg text-center flex flex-col"
               >
                 <h3 className="font-bold text-lg mb-1">{ticket.name}</h3>
                 <p className="text-2xl font-bold text-tedx-red mb-4">
-                  {ticket.price}
+                  {isStripeConfigured ? `${ticket.priceAED} AED` : "[Price TBD]"}
                 </p>
                 <ul className="text-sm text-tedx-gray space-y-1 flex-1">
                   {ticket.includes.map((item) => (
@@ -55,16 +40,21 @@ export default function TicketsPage() {
       </section>
 
       {/*
-        قرار مطلوب من العميل: تذاكر مدفوعة عبر منصة خارجية (استبدل هذا
-        القسم بزر يفتح رابط Platinumlist/Eventbrite) أو حدث مجاني (استخدم
-        فورم التسجيل أدناه كما هو). راجع خطوة 13.2 بخطة التنفيذ.
+        هذا القسم يتحول تلقائياً حسب توفر STRIPE_SECRET_KEY:
+        - مفعّل → دفع فعلي عبر Stripe Checkout (تذاكر مدفوعة)
+        - غير مفعّل → فورم تسجيل مجاني (يُستخدم إن كان الحدث مجانياً، أو
+          مؤقتاً قبل تفعيل الدفع). راجع القسم 7.6 بملف DOCUMENTATION.md.
       */}
       <section className="py-16 bg-tedx-gray-light">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-8">
-            Register Now
+            {isStripeConfigured ? "Buy Your Ticket" : "Register Now"}
           </h2>
-          <TicketRegistrationForm />
+          {isStripeConfigured ? (
+            <TicketPurchaseForm ticketTypes={TICKET_TYPES} />
+          ) : (
+            <TicketRegistrationForm />
+          )}
         </SectionContainer>
       </section>
 

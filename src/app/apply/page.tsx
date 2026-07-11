@@ -129,7 +129,7 @@ export default function ApplyPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 bg-tedx-gray-light">
+      <section id="faq" className="py-16 bg-tedx-gray-light">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-10">
             Frequently Asked Questions

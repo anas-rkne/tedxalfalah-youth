@@ -9,9 +9,11 @@ const ROUTES = [
   "/team",
   "/venue",
   "/activations",
+  "/schedule",
   "/apply",
   "/sponsors",
   "/tickets",
+  "/faq",
   "/terms",
 ];
 

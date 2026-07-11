@@ -22,8 +22,9 @@ import {
   getTeamMembers as getMockTeamMembers,
   getActivations as getMockActivations,
   getSponsors as getMockSponsors,
+  getSessions as getMockSessions,
 } from "./mock-data";
-import { Speaker, TeamMember, Activation, Sponsor } from "./types";
+import { Speaker, TeamMember, Activation, Sponsor, Session } from "./types";
 
 export async function getSpeakers(): Promise<Speaker[]> {
   if (isSanityConfigured && sanityClient) {
@@ -91,4 +92,23 @@ export async function getSponsors(): Promise<Sponsor[]> {
     );
   }
   return getMockSponsors();
+}
+
+export async function getSessions(): Promise<Session[]> {
+  if (isSanityConfigured && sanityClient) {
+    return sanityClient.fetch(
+      `*[_type == "session"] | order(startTime asc) {
+        "id": _id,
+        title,
+        type,
+        startTime,
+        endTime,
+        "speakerName": speaker->name,
+        "speakerId": speaker->_id,
+        location,
+        description
+      }`
+    );
+  }
+  return getMockSessions();
 }

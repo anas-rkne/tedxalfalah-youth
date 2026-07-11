@@ -19,6 +19,7 @@ import {
   TeamMember,
   Activation,
   Sponsor,
+  Session,
 } from "./types";
 
 const MOCK_SPEAKERS: Speaker[] = [
@@ -151,6 +152,91 @@ const MOCK_SPONSORS: Sponsor[] = [
   },
 ];
 
+const MOCK_SESSIONS: Session[] = [
+  {
+    id: "sess-1",
+    title: "Doors Open & Registration",
+    type: "registration",
+    startTime: "08:30",
+    endTime: "09:00",
+    location: "Main Foyer",
+  },
+  {
+    id: "sess-2",
+    title: "Opening Remarks",
+    type: "talk",
+    startTime: "09:00",
+    endTime: "09:15",
+    location: "Main Stage",
+  },
+  {
+    id: "sess-3",
+    title: "Building Robots That Understand Empathy",
+    type: "talk",
+    startTime: "09:15",
+    endTime: "09:35",
+    speakerName: "Amna Al Suwaidi",
+    speakerId: "sp-1",
+    location: "Main Stage",
+  },
+  {
+    id: "sess-4",
+    title: "Words We Didn't Know We Needed",
+    type: "talk",
+    startTime: "09:35",
+    endTime: "09:55",
+    speakerName: "Yusuf Al Marzooqi",
+    speakerId: "sp-2",
+    location: "Main Stage",
+  },
+  {
+    id: "sess-5",
+    title: "Coffee Break & Idea Wall",
+    type: "break",
+    startTime: "09:55",
+    endTime: "10:20",
+    location: "Main Foyer",
+    description: "Grab a coffee and post your own bold idea on the wall.",
+  },
+  {
+    id: "sess-6",
+    title: "What Kids Are Trying to Tell Us",
+    type: "talk",
+    startTime: "10:20",
+    endTime: "10:40",
+    speakerName: "Dr. Layla Haddad",
+    speakerId: "sp-3",
+    location: "Main Stage",
+  },
+  {
+    id: "sess-7",
+    title: "Youth Workshop Corner",
+    type: "activation",
+    startTime: "10:40",
+    endTime: "11:30",
+    location: "East Hall",
+    description: "Hands-on mini workshops led by young facilitators.",
+  },
+  {
+    id: "sess-8",
+    title: "I Started a Business With My Allowance",
+    type: "talk",
+    startTime: "11:30",
+    endTime: "11:50",
+    speakerName: "Faisal Al Nuaimi",
+    speakerId: "sp-4",
+    location: "Main Stage",
+  },
+  {
+    id: "sess-9",
+    title: "Closing Remarks & Group Photo",
+    type: "talk",
+    startTime: "11:50",
+    endTime: "12:15",
+    location: "Main Stage",
+  },
+];
+
 // ---- Public data-access functions (mirror future Sanity queries) ----
 
 export async function getSpeakers(): Promise<Speaker[]> {
@@ -169,4 +255,10 @@ export async function getActivations(): Promise<Activation[]> {
 
 export async function getSponsors(): Promise<Sponsor[]> {
   return MOCK_SPONSORS;
+}
+
+export async function getSessions(): Promise<Session[]> {
+  return [...MOCK_SESSIONS].sort((a, b) =>
+    a.startTime.localeCompare(b.startTime)
+  );
 }

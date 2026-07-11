@@ -1,0 +1,129 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import Button from "@/components/ui/Button";
+import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import { TicketType } from "@/lib/tickets";
+
+const purchaseSchema = z.object({
+  ticketTypeId: z.string().min(1),
+  quantity: z.coerce.number().min(1).max(10),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Enter a valid email address"),
+});
+
+type PurchaseFormValues = z.infer<typeof purchaseSchema>;
+
+const inputClasses =
+  "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
+
+interface TicketPurchaseFormProps {
+  ticketTypes: TicketType[];
+}
+
+export default function TicketPurchaseForm({
+  ticketTypes,
+}: TicketPurchaseFormProps) {
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [turnstileToken, setTurnstileToken] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PurchaseFormValues>({
+    resolver: zodResolver(purchaseSchema),
+    defaultValues: { ticketTypeId: ticketTypes[0]?.id, quantity: 1 },
+  });
+
+  async function onSubmit(data: PurchaseFormValues) {
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, turnstileToken }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.url) throw new Error("Checkout failed");
+      // إعادة توجيه المتصفح لصفحة Stripe Checkout الخارجية — استخدام
+      // قياسي وآمن، وليس تعديلاً لحالة React.
+      // eslint-disable-next-line react-hooks/immutability
+      window.location.href = json.url;
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="max-w-md mx-auto flex flex-col gap-4"
+      noValidate
+    >
+      <div>
+        <label className="block text-sm font-medium mb-1">Ticket Type</label>
+        <select {...register("ticketTypeId")} className={inputClasses}>
+          {ticketTypes.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name} — {t.priceAED} AED
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Quantity</label>
+        <input
+          type="number"
+          min={1}
+          max={10}
+          {...register("quantity")}
+          className={inputClasses}
+        />
+      </div>
+
+      <div>
+        <input
+          {...register("name")}
+          placeholder="Full name"
+          className={inputClasses}
+        />
+        {errors.name && (
+          <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
+        )}
+      </div>
+
+      <div>
+        <input
+          {...register("email")}
+          type="email"
+          placeholder="Email"
+          className={inputClasses}
+        />
+        {errors.email && (
+          <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
+        )}
+      </div>
+
+      {status === "error" && (
+        <p className="text-red-600 text-sm">
+          Something went wrong starting checkout. Please try again.
+        </p>
+      )}
+
+      <TurnstileWidget onVerify={setTurnstileToken} />
+
+      <Button variant="primary" size="md" disabled={status === "loading"}>
+        {status === "loading" ? "Redirecting..." : "Proceed to Payment"}
+      </Button>
+
+      <p className="text-xs text-tedx-gray text-center">
+        You&apos;ll be redirected to Stripe&apos;s secure checkout page.
+      </p>
+    </form>
+  );
+}

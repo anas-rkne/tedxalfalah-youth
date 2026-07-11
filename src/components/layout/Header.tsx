@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { label: "Team", href: "/team" },
   { label: "Venue", href: "/venue" },
   { label: "Activations", href: "/activations" },
+  { label: "Schedule", href: "/schedule" },
   { label: "Apply", href: "/apply" },
   { label: "Sponsors", href: "/sponsors" },
   { label: "Tickets", href: "/tickets" },
@@ -28,7 +29,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-6">
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
