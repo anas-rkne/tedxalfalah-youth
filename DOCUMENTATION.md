@@ -105,14 +105,20 @@ tedxalfalahyouth-website/
 │   ├── app/                              ← كل الصفحات (Next.js App Router)
 │   │   ├── layout.tsx                     ← القالب العام (Header+Footer+Metadata)
 │   │   ├── page.tsx                       ← الصفحة الرئيسية (Home)
+│   │   ├── not-found.tsx                  ← صفحة 404 مخصصة بهوية TEDx
+│   │   ├── loading.tsx                    ← حالة تحميل عامة (Spinner) لكل الموقع
 │   │   ├── sitemap.ts                     ← يولّد sitemap.xml تلقائياً
 │   │   ├── robots.ts                      ← يولّد robots.txt تلقائياً
 │   │   ├── speakers/page.tsx
+│   │   ├── speakers/loading.tsx           ← Skeleton مطابق لشبكة المتحدثين
 │   │   ├── team/page.tsx
+│   │   ├── team/loading.tsx               ← Skeleton مطابق لأقسام الفريق
 │   │   ├── venue/page.tsx
 │   │   ├── activations/page.tsx
+│   │   ├── activations/loading.tsx        ← Skeleton مطابق للبلوكات المتناوبة
 │   │   ├── apply/page.tsx                 ← الأعقد: فورم + Timeline + FAQ
 │   │   ├── sponsors/page.tsx
+│   │   ├── sponsors/loading.tsx           ← Skeleton مطابق لشرائح الرعاية
 │   │   ├── tickets/page.tsx
 │   │   ├── terms/page.tsx
 │   │   └── api/
@@ -123,7 +129,7 @@ tedxalfalahyouth-website/
 │   │
 │   ├── components/
 │   │   ├── layout/          Header.tsx, Footer.tsx
-│   │   ├── ui/               Button.tsx, Card.tsx, SectionContainer.tsx, SocialIcons.tsx
+│   │   ├── ui/               Button.tsx, Card.tsx, SectionContainer.tsx, SocialIcons.tsx, TurnstileWidget.tsx, TedxSpinner.tsx
 │   │   ├── shared/           Countdown.tsx
 │   │   ├── home/             كل الأقسام الثمانية بالصفحة الرئيسية (ملف لكل قسم)
 │   │   ├── speakers/         SpeakersGrid.tsx, SpeakerModal.tsx
