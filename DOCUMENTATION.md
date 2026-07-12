@@ -22,6 +22,7 @@
 11. [مطابقة المشروع مع المتطلبات الأصلية (Traceability)](#11-مطابقة-المشروع-مع-المتطلبات-الأصلية)
 12. [المحتوى الذي ينتظر العميل (Placeholders)](#12-المحتوى-الذي-ينتظر-العميل)
 13. [استكشاف الأخطاء الشائعة](#13-استكشاف-الأخطاء-الشائعة)
+14. [دعم اللغتين وصفحة الشكر](#14-دعم-اللغتين-english--العربية-وصفحة-الشكر-المخصصة)
 
 ---
 
@@ -74,10 +75,13 @@ npm install
 npm run dev
 ```
 
-افتح المتصفح على `http://localhost:3000`. يجب أن تشاهد:
+افتح المتصفح على `http://localhost:3000`. سيُعيد توجيهك تلقائياً لـ
+`http://localhost:3000/en` (اللغة الافتراضية). يجب أن تشاهد:
 - الصفحة الرئيسية بعداد تنازلي حي (Countdown) يعمل فعلياً
 - قائمة تنقل تتحول لقائمة همبرغر على الموبايل
 - 8 أقسام بالصفحة الرئيسية بالترتيب الصحيح
+- زر تبديل اللغة (EN/AR) بأعلى يمين الهيدر — جرّبه وتأكد أن الصفحة تتحول
+  للعربية مع انعكاس الاتجاه (RTL) فوراً
 
 جرّب التنقل لكل الصفحات من القائمة العلوية للتأكد أن كل شيء يعمل قبل
 المتابعة.
@@ -87,8 +91,9 @@ npm run dev
 npm run build
 npm start
 ```
-إذا ظهرت لك رسالة `✓ Generating static pages using 1 worker (18/18)`
-فهذا يعني أن كل الصفحات وAPI routes جاهزة للنشر بدون أي مشكلة.
+إذا ظهرت لك رسالة `✓ Generating static pages using 1 worker (38/38)`
+فهذا يعني أن كل الصفحات (بنسختيها EN وAR) وAPI routes جاهزة للنشر بدون
+أي مشكلة.
 
 ---
 
@@ -101,43 +106,58 @@ tedxalfalahyouth-website/
 ├── next.config.ts                ← مهيأ لقبول صور Sanity CDN
 ├── package.json
 │
+├── middleware.ts                 ← ★ يجب أن يبقى داخل src/middleware.ts بالضبط (راجع 14.7)
+├── messages/
+│   ├── en.json                    ← كل نصوص الواجهة الإنجليزية
+│   └── ar.json                    ← كل نصوص الواجهة العربية
+│
 ├── src/
-│   ├── app/                              ← كل الصفحات (Next.js App Router)
-│   │   ├── layout.tsx                     ← القالب العام (Header+Footer+Metadata)
-│   │   ├── page.tsx                       ← الصفحة الرئيسية (Home)
-│   │   ├── not-found.tsx                  ← صفحة 404 مخصصة بهوية TEDx
-│   │   ├── loading.tsx                    ← حالة تحميل عامة (Spinner) لكل الموقع
-│   │   ├── sitemap.ts                     ← يولّد sitemap.xml تلقائياً
+│   ├── i18n/
+│   │   ├── routing.ts              ← تعريف اللغات المدعومة (en, ar)
+│   │   ├── navigation.ts           ← Link/useRouter الواعيان باللغة (استخدمهما دائماً بدل next/link)
+│   │   └── request.ts              ← تحميل ملف الترجمة المناسب لكل طلب
+│   │
+│   ├── app/
+│   │   ├── not-found.tsx                  ← صفحة 404 احتياطية جذرية (خارج نطاق اللغة، نادراً ما تظهر)
+│   │   ├── sitemap.ts                     ← يولّد sitemap.xml بنسختين لكل صفحة (en+ar)
 │   │   ├── robots.ts                      ← يولّد robots.txt تلقائياً
-│   │   ├── speakers/page.tsx
-│   │   ├── speakers/loading.tsx           ← Skeleton مطابق لشبكة المتحدثين
-│   │   ├── team/page.tsx
-│   │   ├── team/loading.tsx               ← Skeleton مطابق لأقسام الفريق
-│   │   ├── venue/page.tsx
-│   │   ├── activations/page.tsx
-│   │   ├── activations/loading.tsx        ← Skeleton مطابق للبلوكات المتناوبة
-│   │   ├── apply/page.tsx                 ← الأعقد: فورم + Timeline + FAQ
-│   │   ├── sponsors/page.tsx
-│   │   ├── sponsors/loading.tsx           ← Skeleton مطابق لشرائح الرعاية
-│   │   ├── tickets/page.tsx               ← يتحول تلقائياً: Stripe أو فورم مجاني
-│   │   ├── tickets/success/page.tsx       ← صفحة نجاح الدفع (Stripe)
-│   │   ├── tickets/cancel/page.tsx        ← صفحة إلغاء الدفع (Stripe)
-│   │   ├── schedule/page.tsx              ← الجدول الزمني الكامل ليوم الحدث
-│   │   ├── schedule/loading.tsx
-│   │   ├── faq/page.tsx                   ← أسئلة شائعة عامة (منفصلة عن أسئلة Apply)
-│   │   ├── terms/page.tsx                 ← شروط وسياسة خصوصية كاملتان (مسودة جاهزة)
-│   │   └── api/
-│   │       ├── contact/route.ts           ← فورم Contact بالصفحة الرئيسية
-│   │       ├── apply/route.ts             ← الأهم: يحفظ بـ Google Sheet + إيميل تأكيد
-│   │       ├── partner-inquiry/route.ts   ← فورم Become a Partner
-│   │       ├── tickets/route.ts           ← فورم تسجيل التذاكر (وضع مجاني)
-│   │       └── create-checkout-session/route.ts  ← إنشاء جلسة دفع Stripe
+│   │   ├── api/                           ← API routes (لا تُترجَم، ليست صفحات)
+│   │   │   ├── contact/route.ts           ← فورم Contact بالصفحة الرئيسية
+│   │   │   ├── apply/route.ts             ← الأهم: يحفظ بـ Google Sheet + إيميل تأكيد
+│   │   │   ├── partner-inquiry/route.ts   ← فورم Become a Partner
+│   │   │   ├── tickets/route.ts           ← فورم تسجيل التذاكر (وضع مجاني)
+│   │   │   └── create-checkout-session/route.ts  ← إنشاء جلسة دفع Stripe
+│   │   │
+│   │   └── [locale]/                      ← ★ كل الصفحات الفعلية هنا (en أو ar)
+│   │       ├── layout.tsx                 ← القالب العام (Header+Footer+RTL+Metadata)
+│   │       ├── page.tsx                   ← الصفحة الرئيسية (Home) — مُترجَمة بالكامل
+│   │       ├── not-found.tsx              ← صفحة 404 مخصصة بهوية TEDx — مُترجَمة بالكامل
+│   │       ├── loading.tsx                ← حالة تحميل عامة (Spinner) لكل الموقع
+│   │       ├── thank-you/page.tsx         ← ★ صفحة الشكر الموحّدة — مُترجَمة بالكامل
+│   │       ├── speakers/page.tsx
+│   │       ├── speakers/loading.tsx       ← Skeleton مطابق لشبكة المتحدثين
+│   │       ├── team/page.tsx
+│   │       ├── team/loading.tsx           ← Skeleton مطابق لأقسام الفريق
+│   │       ├── venue/page.tsx
+│   │       ├── activations/page.tsx
+│   │       ├── activations/loading.tsx    ← Skeleton مطابق للبلوكات المتناوبة
+│   │       ├── apply/page.tsx             ← الأعقد: فورم + Timeline + FAQ
+│   │       ├── sponsors/page.tsx
+│   │       ├── sponsors/loading.tsx       ← Skeleton مطابق لشرائح الرعاية
+│   │       ├── tickets/page.tsx           ← يتحول تلقائياً: Stripe أو فورم مجاني
+│   │       ├── tickets/success/page.tsx   ← صفحة نجاح الدفع (Stripe)
+│   │       ├── tickets/cancel/page.tsx    ← صفحة إلغاء الدفع (Stripe)
+│   │       ├── schedule/page.tsx          ← الجدول الزمني الكامل ليوم الحدث
+│   │       ├── schedule/loading.tsx
+│   │       ├── faq/page.tsx               ← أسئلة شائعة عامة (منفصلة عن أسئلة Apply)
+│   │       └── terms/page.tsx             ← شروط وسياسة خصوصية كاملتان (مسودة جاهزة)
 │   │
 │   ├── components/
 │   │   ├── layout/          Header.tsx, Footer.tsx
 │   │   ├── ui/               Button.tsx, Card.tsx, SectionContainer.tsx, SocialIcons.tsx, TurnstileWidget.tsx, TedxSpinner.tsx
 │   │   ├── shared/           Countdown.tsx, FaqAccordion.tsx
 │   │   ├── schedule/         ScheduleItem.tsx
+│   │   ├── ui/ (تابع)        LanguageSwitcher.tsx, AnimatedCheck.tsx
 │   │   ├── home/             كل الأقسام الثمانية بالصفحة الرئيسية (ملف لكل قسم)
 │   │   ├── speakers/         SpeakersGrid.tsx, SpeakerModal.tsx
 │   │   ├── apply/            ApplicationForm.tsx, ApplicationTimeline.tsx, ApplyFAQ.tsx
@@ -585,6 +605,10 @@ Brief) وحالته بالمشروع الفعلي:
 | صفحة 404 وLoading مخصصتان بهوية TEDx | ✅ منفّذ |
 | Security Headers (CSP, HSTS, إلخ) | ✅ منفّذ |
 | تعقيم مدخلات المستخدم قبل الإيميلات | ✅ منفّذ |
+| دعم اللغتين (English/Arabic) بنية تقنية كاملة + RTL | ✅ منفّذ بالكامل (38 مساراً مُولَّداً، en+ar لكل صفحة) |
+| ترجمة كاملة: Header, Footer, الصفحة الرئيسية, 404, صفحة الشكر | ✅ منفّذ حرفياً |
+| ترجمة باقي الصفحات (Speakers, Apply, إلخ) | ⏸️ البنية التقنية جاهزة، النصوص بانتظار جلسة ترجمة منفصلة — راجع القسم 14.4 |
+| صفحة شكر مخصصة بدل رسالة مضمّنة (`/thank-you`) | ✅ منفّذ على 4 من 4 فورمات (Stripe له تدفق مستقل خاص به) |
 
 **البندان الوحيدان غير المنفّذين حالياً بندان اختياريان/معلَّقان صراحةً
 بالمستند الأصلي نفسه** (مبدّل اللغة يحتاج تأكيد العميل، ومخطط الموقع
@@ -640,3 +664,95 @@ Brief) وحالته بالمشروع الفعلي:
 **"npm run build يفشل بخطأ متعلق بالخطوط (fonts.googleapis.com)"**
 هذا يحدث فقط إن كانت بيئة البناء بلا اتصال إنترنت طبيعي (نادر جداً).
 Vercel وأي جهاز عادي متصل بالإنترنت لن يواجه هذه المشكلة إطلاقاً.
+
+---
+
+## 14. دعم اللغتين (English / العربية) وصفحة الشكر المخصصة
+
+### 14.1 كيف تعمل بنية اللغتين
+
+المشروع يستخدم **next-intl** مع نمط `[locale]` بمسارات Next.js. أهم ما يجب معرفته:
+
+- كل الصفحات أصبحت تحت `src/app/[locale]/...` (مثال: `src/app/[locale]/speakers/page.tsx`)
+- `src/middleware.ts` يكتشف اللغة تلقائياً ويوجّه `/` لـ `/en` افتراضياً
+- كل صفحة تُنشَأ تلقائياً بنسختين: `/en/...` و`/ar/...` (مؤكَّد فعلياً — بناء
+  إنتاجي كامل ولّد 38 مساراً بنجاح، بواقع نسختين لكل صفحة)
+- الاتجاه (RTL/LTR) يتغيّر تلقائياً حسب اللغة عبر `<html dir="rtl">` عند
+  العربية — **مؤكَّد فعلياً** بالاختبار المباشر
+- خط عربي مخصص (`Noto Sans Arabic`) يُحمَّل تلقائياً فقط عند اللغة العربية
+- مبدّل اللغة (EN/AR) موجود بأعلى يمين الهيدر، يحافظ على نفس الصفحة الحالية
+  عند التبديل (لا يعيدك للرئيسية)
+
+### 14.2 الصفحات المُترجَمة بالكامل الآن
+
+هذه الصفحات/المكونات تعرض محتوى عربياً حقيقياً كاملاً بالفعل، وليس فقط بنية
+تقنية فارغة:
+
+- **Header وFooter** (تظهران بكل صفحة بالموقع)
+- **الصفحة الرئيسية بالكامل** (كل الأقسام الثمانية: Hero, About, Theme,
+  Speakers Preview, Highlights, Apply Banner, Sponsors Strip, Contact Form
+  — شامل رسائل التحقق من الفورم بالعربية)
+- **صفحة 404**
+- **صفحة الشكر الجديدة** (`/thank-you`)
+
+### 14.3 الصفحات التي تعمل بكلا اللغتين لكن **نصّها ما زال إنجليزياً**
+
+هذه الصفحات تعمل تقنياً بشكل صحيح تحت `/ar/...` (لا أخطاء، لا صفحات
+بيضاء)، لكن نصوصها الثابتة لم تُترجَم بعد: Speakers, Team, Venue,
+Activations, Schedule, Apply, Sponsors, Tickets, FAQ, Terms.
+
+**لماذا هذا القرار؟** طلب المشروع كان "على الأقل توفير محتوى ثنائي اللغة
+للصفحات الرئيسية" — وقد أُنجزت البنية التقنية الكاملة (القابلة للتوسعة
+لأي صفحة بنفس الجهد) بالإضافة لأهم صفحة تحديداً (الرئيسية). ترجمة كل
+صفحة بالتفصيل (خصوصاً Apply بحقولها الكثيرة) تستحق جلسة عمل مخصصة منفصلة
+بما أن كل صفحة تحتاج ملء بيانات ترجمة دقيقة وليس فقط بنية.
+
+### 14.4 كيف تُترجم أي صفحة متبقية (نفس النمط بالضبط)
+
+لكل صفحة تريد ترجمتها، اتبع 3 خطوات بنفس نمط ما فُعل بصفحة Home:
+
+1. أضف مفتاحاً جديداً بملفي `messages/en.json` و`messages/ar.json` (مثال:
+   `"speakers": { "heading": "...", "seeAll": "..." }`)
+2. بالصفحة (Server Component): استورد `getTranslations` من
+   `"next-intl/server"` واستدعها بأول سطر:
+   `const t = await getTranslations("speakers");`
+3. استبدل كل نص ثابت بـ `{t("heading")}` بدل النص الإنجليزي المباشر
+
+للمكونات التفاعلية (Client Components مثل الفورمات)، استخدم بدلاً من ذلك
+`useTranslations` من `"next-intl"` مباشرة (بدون `await`)، كما فُعل
+بـ `ContactForm.tsx`.
+
+### 14.5 بيانات Sanity ثنائية اللغة (المتحدثون، الفعاليات، إلخ)
+
+هذه بيانات **ديناميكية** (تأتي من CMS وليست نصوصاً ثابتة بالكود)، لذلك لا
+تُترجَم عبر next-intl. لدعم بيانات Sanity ثنائية اللغة لاحقاً، أضف حقولاً
+مثل `bioAr` و`descriptionAr` بجانب الحقول الإنجليزية بكل schema (راجع
+`studio/schemaTypes/`)، ثم بملف `src/lib/data.ts` اختر الحقل المناسب حسب
+اللغة الحالية عند بناء الاستعلام. هذا خارج نطاق العمل الحالي لكن البنية
+التقنية (next-intl + Sanity) جاهزة تماماً لدعمه متى احتجته.
+
+### 14.6 صفحة الشكر المخصصة (`/thank-you`)
+
+بدلاً من رسالة نجاح مضمّنة بمكان الفورم، الفورمات الأربعة (Contact,
+Apply, Partner Inquiry, Ticket Registration) تُعيد التوجيه الآن لصفحة
+`/thank-you?type=X` برسوم متحركة بسيطة (علامة صح تُرسَم بـ CSS) ورسالة
+مخصصة حسب نوع الفورم:
+
+| القيمة `type` | متى تُستخدم | زر الإجراء |
+|---|---|---|
+| `contact` | فورم التواصل بالصفحة الرئيسية | العودة للرئيسية |
+| `apply` | فورم التقديم | مشاهدة الجدول الزمني |
+| `partner` | فورم Become a Partner | العودة للرئيسية |
+| `tickets` | فورم تسجيل التذاكر المجاني | مشاهدة الجدول الزمني |
+
+**ملاحظة**: مسار الدفع الفعلي عبر Stripe (`TicketPurchaseForm`) لا يستخدم
+هذه الصفحة — له صفحتا نجاح/إلغاء مخصصتان بالفعل (`/tickets/success` و
+`/tickets/cancel`) لأن Stripe يتطلب تدفقاً مختلفاً (إعادة توجيه خارجية ثم
+عودة).
+
+### 14.7 تنبيه تقني مهم — موقع ملف middleware.ts
+
+بما أن المشروع يستخدم مجلد `src/`، يجب أن يبقى `middleware.ts` **داخل**
+`src/middleware.ts` وليس بجذر المشروع — هذا خطأ شائع يتسبب بعدم عمل
+اكتشاف اللغة تلقائياً وظهور خطأ 404 بالمسار الجذري `/` (واجهناه فعلياً
+أثناء البناء وتم إصلاحه). لا تنقله.

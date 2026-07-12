@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import SectionContainer from "@/components/ui/SectionContainer";
 import FaqAccordion, { FaqItem } from "@/components/shared/FaqAccordion";
+import { Link } from "@/i18n/navigation";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -65,9 +66,9 @@ export default function FaqPage() {
         <p className="text-center text-tedx-gray max-w-xl mx-auto mb-12">
           Answers to the most common questions from attendees. Looking for
           application-specific questions instead?{" "}
-          <a href="/apply#faq" className="underline text-tedx-red">
+          <Link href="/apply#faq" className="underline text-tedx-red">
             See the Apply FAQ
-          </a>
+          </Link>
           .
         </p>
 

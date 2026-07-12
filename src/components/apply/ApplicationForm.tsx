@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import { Link, useRouter } from "@/i18n/navigation";
 
 const HOW_HEARD_OPTIONS = [
   "Social Media",
@@ -108,7 +109,8 @@ const labelClasses = "block text-sm font-medium mb-1";
 const errorClasses = "text-red-600 text-sm mt-1";
 
 export default function ApplicationForm() {
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const router = useRouter();
+  const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
 
   const {
@@ -134,23 +136,10 @@ export default function ApplicationForm() {
         body: JSON.stringify({ ...data, turnstileToken }),
       });
       if (!res.ok) throw new Error("Request failed");
-      setStatus("success");
+      router.push("/thank-you?type=apply");
     } catch {
       setStatus("error");
     }
-  }
-
-  if (status === "success") {
-    return (
-      <div className="max-w-xl mx-auto text-center py-16">
-        <h2 className="text-3xl font-bold mb-4">Application Received</h2>
-        <p className="text-tedx-gray">
-          Thank you for applying to TEDxAlFalah Youth. A confirmation email
-          is on its way to you, and we&apos;ll follow up according to the
-          timeline above.
-        </p>
-      </div>
-    );
   }
 
   return (
@@ -377,9 +366,9 @@ export default function ApplicationForm() {
         <input type="checkbox" {...register("consentToTerms")} />
         <span>
           I agree to the{" "}
-          <a href="/terms" className="underline text-tedx-red">
+          <Link href="/terms" className="underline text-tedx-red">
             Terms and Conditions
-          </a>
+          </Link>
         </span>
       </label>
       {errors.consentToTerms && (

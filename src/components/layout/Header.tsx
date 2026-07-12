@@ -1,24 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import { Menu, X } from "lucide-react";
 import Button from "@/components/ui/Button";
-
-const NAV_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Speakers", href: "/speakers" },
-  { label: "Team", href: "/team" },
-  { label: "Venue", href: "/venue" },
-  { label: "Activations", href: "/activations" },
-  { label: "Schedule", href: "/schedule" },
-  { label: "Apply", href: "/apply" },
-  { label: "Sponsors", href: "/sponsors" },
-  { label: "Tickets", href: "/tickets" },
-];
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = useTranslations("common.nav");
+  const tCommon = useTranslations("common");
+  const pathname = usePathname();
+
+  const NAV_LINKS = [
+    { label: t("home"), href: "/" },
+    { label: t("speakers"), href: "/speakers" },
+    { label: t("team"), href: "/team" },
+    { label: t("venue"), href: "/venue" },
+    { label: t("activations"), href: "/activations" },
+    { label: t("schedule"), href: "/schedule" },
+    { label: t("apply"), href: "/apply" },
+    { label: t("sponsors"), href: "/sponsors" },
+    { label: t("tickets"), href: "/tickets" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 bg-tedx-white border-b border-gray-200">
@@ -34,16 +39,19 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-tedx-black hover:text-tedx-red transition-colors"
+              className={`text-sm font-medium transition-colors hover:text-tedx-red ${
+                pathname === link.href ? "text-tedx-red" : "text-tedx-black"
+              }`}
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden lg:block">
+        <div className="hidden lg:flex items-center gap-4">
+          <LanguageSwitcher />
           <Button href="/apply" variant="primary" size="sm">
-            Apply Now
+            {tCommon("applyNow")}
           </Button>
         </div>
 
@@ -71,6 +79,9 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            <div className="pt-4 flex items-center justify-between gap-4">
+              <LanguageSwitcher />
+            </div>
             <div className="pt-4">
               <Button
                 href="/apply"
@@ -78,7 +89,7 @@ export default function Header() {
                 size="md"
                 className="w-full"
               >
-                Apply Now
+                {tCommon("applyNow")}
               </Button>
             </div>
           </nav>

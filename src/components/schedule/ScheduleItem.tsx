@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Session } from "@/lib/types";
 
 const TYPE_STYLES: Record<

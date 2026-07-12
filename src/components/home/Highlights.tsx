@@ -1,13 +1,17 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import SectionContainer from "@/components/ui/SectionContainer";
 
-const STATS = [
-  { label: "Speakers", value: "12+" }, // TODO: replace with real figure
-  { label: "Attendees", value: "400+" }, // TODO: replace with real figure
-  { label: "Activations", value: "5+" }, // TODO: replace with real figure
-];
+export default async function Highlights() {
+  const t = await getTranslations("home.highlights");
 
-export default function Highlights() {
+  // TODO: replace with real figures once confirmed by client
+  const STATS = [
+    { label: t("statsSpeakers"), value: "12+" },
+    { label: t("statsAttendees"), value: "400+" },
+    { label: t("statsActivations"), value: "5+" },
+  ];
+
   return (
     <section className="py-16 md:py-24 bg-tedx-white">
       <SectionContainer>
@@ -17,12 +21,9 @@ export default function Highlights() {
             className="group block p-8 bg-tedx-gray-light rounded-lg hover:shadow-md transition-shadow"
           >
             <h3 className="text-xl font-bold mb-2 group-hover:text-tedx-red">
-              The Venue
+              {t("venueTitle")}
             </h3>
-            <p className="text-sm text-tedx-gray">
-              [PLACEHOLDER: short teaser about the venue and why it was
-              chosen.]
-            </p>
+            <p className="text-sm text-tedx-gray">{t("venueTeaser")}</p>
           </Link>
 
           <Link
@@ -30,12 +31,9 @@ export default function Highlights() {
             className="group block p-8 bg-tedx-gray-light rounded-lg hover:shadow-md transition-shadow"
           >
             <h3 className="text-xl font-bold mb-2 group-hover:text-tedx-red">
-              Side Activations
+              {t("activationsTitle")}
             </h3>
-            <p className="text-sm text-tedx-gray">
-              [PLACEHOLDER: short teaser about the experience beyond the
-              talks.]
-            </p>
+            <p className="text-sm text-tedx-gray">{t("activationsTeaser")}</p>
           </Link>
 
           <div className="p-8 bg-tedx-black text-tedx-white rounded-lg flex flex-col justify-center gap-4">

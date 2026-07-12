@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import { useRouter } from "@/i18n/navigation";
 
 const ticketSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -20,12 +21,12 @@ const inputClasses =
   "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
 
 export default function TicketRegistrationForm() {
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const router = useRouter();
+  const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<TicketFormValues>({
     resolver: zodResolver(ticketSchema),
@@ -41,19 +42,10 @@ export default function TicketRegistrationForm() {
         body: JSON.stringify({ ...data, turnstileToken }),
       });
       if (!res.ok) throw new Error("Request failed");
-      setStatus("success");
-      reset();
+      router.push("/thank-you?type=tickets");
     } catch {
       setStatus("error");
     }
-  }
-
-  if (status === "success") {
-    return (
-      <p className="text-center text-tedx-gray py-8">
-        You&apos;re registered! We&apos;ll send event details to your email.
-      </p>
-    );
   }
 
   return (

@@ -4,6 +4,7 @@ import TicketRegistrationForm from "@/components/tickets/TicketRegistrationForm"
 import TicketPurchaseForm from "@/components/tickets/TicketPurchaseForm";
 import { TICKET_TYPES } from "@/lib/tickets";
 import { isStripeConfigured } from "@/lib/stripe";
+import { Link } from "@/i18n/navigation";
 
 export const metadata: Metadata = {
   title: "Tickets",
@@ -70,9 +71,9 @@ export default function TicketsPage() {
             </li>
             <li>
               <strong>Venue:</strong>{" "}
-              <a href="/venue" className="underline text-tedx-red">
+              <Link href="/venue" className="underline text-tedx-red">
                 View venue details
-              </a>
+              </Link>
             </li>
             <li>
               <strong>Age Guidance:</strong> [PLACEHOLDER]
@@ -88,9 +89,9 @@ export default function TicketsPage() {
         <SectionContainer className="max-w-3xl text-center">
           <p className="text-sm text-tedx-gray">
             [PLACEHOLDER: refund and transfer policy summary.] See our{" "}
-            <a href="/terms" className="underline text-tedx-red">
+            <Link href="/terms" className="underline text-tedx-red">
               Terms and Conditions
-            </a>{" "}
+            </Link>{" "}
             for details.
           </p>
         </SectionContainer>

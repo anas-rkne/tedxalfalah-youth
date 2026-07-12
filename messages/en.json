@@ -1,0 +1,121 @@
+{
+  "common": {
+    "nav": {
+      "home": "Home",
+      "speakers": "Speakers",
+      "team": "Team",
+      "venue": "Venue",
+      "activations": "Activations",
+      "schedule": "Schedule",
+      "apply": "Apply",
+      "sponsors": "Sponsors",
+      "tickets": "Tickets",
+      "faq": "FAQ",
+      "terms": "Terms and Conditions"
+    },
+    "applyNow": "Apply Now",
+    "languageSwitcher": {
+      "en": "EN",
+      "ar": "AR"
+    }
+  },
+  "footer": {
+    "contactHeading": "Contact",
+    "quickLinksHeading": "Quick Links",
+    "brandHeading": "TEDxAlFalah Youth",
+    "licenseNotice": "This independent TEDx event is operated under license from TED.",
+    "termsLink": "Terms and Conditions",
+    "copyright": "All rights reserved."
+  },
+  "home": {
+    "hero": {
+      "title": "Tomorrow, Now.",
+      "subtitle": "Young voices. Real ideas. The future starts earlier than we think.",
+      "applyNow": "Apply Now",
+      "getTickets": "Get Tickets"
+    },
+    "about": {
+      "heading": "About the Event",
+      "body": "[PLACEHOLDER: short paragraph on TEDxAlFalah Youth, its purpose, and who it serves — to be provided by the client.]",
+      "licenseNote": "TEDxAlFalah Youth is organized independently and operated under license from TED."
+    },
+    "theme": {
+      "title": "Tomorrow, Now: Young voices. Real ideas. The future starts earlier than we think.",
+      "body": "In the UAE, youth are inventing, creating, performing, competing, and asking bold questions. TEDxYouth is a stage for their ideas and stories. Real experiences that inspire young people and remind adults how powerful youth voices can be."
+    },
+    "speakersPreview": {
+      "heading": "Meet the Speakers",
+      "seeAll": "See All Speakers"
+    },
+    "highlights": {
+      "venueTitle": "The Venue",
+      "venueTeaser": "[PLACEHOLDER: short teaser about the venue and why it was chosen.]",
+      "activationsTitle": "Side Activations",
+      "activationsTeaser": "[PLACEHOLDER: short teaser about the experience beyond the talks.]",
+      "statsSpeakers": "Speakers",
+      "statsAttendees": "Attendees",
+      "statsActivations": "Activations"
+    },
+    "applyBanner": {
+      "text": "Applications are open — deadline {date}",
+      "cta": "Apply Now"
+    },
+    "sponsorsStrip": {
+      "heading": "Our Partners"
+    },
+    "contactForm": {
+      "heading": "Contact Us",
+      "namePlaceholder": "Full name",
+      "emailPlaceholder": "Email",
+      "messagePlaceholder": "Your message",
+      "subjectGeneral": "General",
+      "subjectSpeaking": "Speaking",
+      "subjectSponsorship": "Sponsorship",
+      "subjectVolunteering": "Volunteering",
+      "subjectMedia": "Media",
+      "submit": "Send Message",
+      "submitting": "Sending...",
+      "successHeading": "Message Sent",
+      "successBody": "Thanks for reaching out — we'll get back to you soon.",
+      "errorGeneric": "Something went wrong. Please try again.",
+      "nameRequired": "Name is required",
+      "emailInvalid": "Enter a valid email address",
+      "messageMinLength": "Message must be at least 10 characters"
+    }
+  },
+  "notFound": {
+    "eyebrow": "404",
+    "title": "This idea hasn't found its stage yet.",
+    "body": "The page you're looking for doesn't exist or may have moved. Let's get you back to something worth exploring.",
+    "backHome": "Back to Home",
+    "meetSpeakers": "Meet the Speakers",
+    "exploreLabel": "Or explore:"
+  },
+  "thankYou": {
+    "contact": {
+      "title": "Message Sent",
+      "body": "Thanks for reaching out — we'll get back to you soon.",
+      "cta": "Back to Home"
+    },
+    "apply": {
+      "title": "Application Received",
+      "body": "Thank you for applying to TEDxAlFalah Youth. A confirmation email is on its way to you, and we'll follow up according to the timeline on the Apply page.",
+      "cta": "View Schedule"
+    },
+    "partner": {
+      "title": "Thank You for Your Interest",
+      "body": "Our partnerships team will review your message and be in touch soon.",
+      "cta": "Back to Home"
+    },
+    "tickets": {
+      "title": "You're Registered!",
+      "body": "We'll send event details to your email. See you there!",
+      "cta": "View Schedule"
+    },
+    "default": {
+      "title": "Thank You",
+      "body": "We've received your submission.",
+      "cta": "Back to Home"
+    }
+  }
+}

@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import { useRouter } from "@/i18n/navigation";
 
 const partnerSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -21,12 +22,12 @@ const inputClasses =
   "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
 
 export default function PartnerInquiryForm() {
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const router = useRouter();
+  const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<PartnerFormValues>({ resolver: zodResolver(partnerSchema) });
 
@@ -39,19 +40,10 @@ export default function PartnerInquiryForm() {
         body: JSON.stringify({ ...data, turnstileToken }),
       });
       if (!res.ok) throw new Error("Request failed");
-      setStatus("success");
-      reset();
+      router.push("/thank-you?type=partner");
     } catch {
       setStatus("error");
     }
-  }
-
-  if (status === "success") {
-    return (
-      <p className="text-center text-tedx-gray py-8">
-        Thank you — our partnerships team will be in touch soon.
-      </p>
-    );
   }
 
   return (

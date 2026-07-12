@@ -1,39 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import SectionContainer from "@/components/ui/SectionContainer";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
-const contactSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Enter a valid email address"),
-  subject: z.enum([
-    "General",
-    "Speaking",
-    "Sponsorship",
-    "Volunteering",
-    "Media",
-  ]),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
-
-type ContactFormValues = z.infer<typeof contactSchema>;
+const SUBJECT_VALUES = [
+  "General",
+  "Speaking",
+  "Sponsorship",
+  "Volunteering",
+  "Media",
+] as const;
 
 const inputClasses =
   "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
 
 export default function ContactForm() {
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const t = useTranslations("home.contactForm");
+  const router = useRouter();
+  const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
+
+  // مخطط التحقق يُبنى داخل المكوّن حتى تُترجَم رسائل الخطأ حسب اللغة
+  // الحالية، بدل تعريفه ثابتاً خارج المكوّن.
+  const contactSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(1, t("nameRequired")),
+        email: z.string().email(t("emailInvalid")),
+        subject: z.enum(SUBJECT_VALUES),
+        message: z.string().min(10, t("messageMinLength")),
+      }),
+    [t]
+  );
+
+  type ContactFormValues = z.infer<typeof contactSchema>;
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
@@ -49,30 +60,24 @@ export default function ContactForm() {
         body: JSON.stringify({ ...data, turnstileToken }),
       });
       if (!res.ok) throw new Error("Request failed");
-      setStatus("success");
-      reset();
+      router.push("/thank-you?type=contact");
     } catch {
       setStatus("error");
     }
   }
 
-  if (status === "success") {
-    return (
-      <section className="py-16 md:py-24 bg-tedx-white">
-        <SectionContainer className="max-w-xl text-center">
-          <h2 className="text-3xl font-bold mb-4">Message Sent</h2>
-          <p className="text-tedx-gray">
-            Thanks for reaching out — we&apos;ll get back to you soon.
-          </p>
-        </SectionContainer>
-      </section>
-    );
-  }
+  const subjectLabels: Record<(typeof SUBJECT_VALUES)[number], string> = {
+    General: t("subjectGeneral"),
+    Speaking: t("subjectSpeaking"),
+    Sponsorship: t("subjectSponsorship"),
+    Volunteering: t("subjectVolunteering"),
+    Media: t("subjectMedia"),
+  };
 
   return (
     <section className="py-16 md:py-24 bg-tedx-white">
       <SectionContainer className="max-w-xl">
-        <h2 className="text-3xl font-bold text-center mb-2">Contact Us</h2>
+        <h2 className="text-3xl font-bold text-center mb-2">{t("heading")}</h2>
         <p className="text-center text-sm text-tedx-gray mb-8">
           marhaba@tedxalfalahyouth.com
         </p>
@@ -85,7 +90,7 @@ export default function ContactForm() {
           <div>
             <input
               {...register("name")}
-              placeholder="Full name"
+              placeholder={t("namePlaceholder")}
               className={inputClasses}
             />
             {errors.name && (
@@ -99,7 +104,7 @@ export default function ContactForm() {
             <input
               {...register("email")}
               type="email"
-              placeholder="Email"
+              placeholder={t("emailPlaceholder")}
               className={inputClasses}
             />
             {errors.email && (
@@ -111,18 +116,18 @@ export default function ContactForm() {
 
           <div>
             <select {...register("subject")} className={inputClasses}>
-              <option value="General">General</option>
-              <option value="Speaking">Speaking</option>
-              <option value="Sponsorship">Sponsorship</option>
-              <option value="Volunteering">Volunteering</option>
-              <option value="Media">Media</option>
+              {SUBJECT_VALUES.map((value) => (
+                <option key={value} value={value}>
+                  {subjectLabels[value]}
+                </option>
+              ))}
             </select>
           </div>
 
           <div>
             <textarea
               {...register("message")}
-              placeholder="Your message"
+              placeholder={t("messagePlaceholder")}
               rows={5}
               className={inputClasses}
             />
@@ -134,9 +139,7 @@ export default function ContactForm() {
           </div>
 
           {status === "error" && (
-            <p className="text-red-600 text-sm">
-              Something went wrong. Please try again.
-            </p>
+            <p className="text-red-600 text-sm">{t("errorGeneric")}</p>
           )}
 
           <TurnstileWidget onVerify={setTurnstileToken} />
@@ -147,7 +150,7 @@ export default function ContactForm() {
             className="w-full"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Sending..." : "Send Message"}
+            {isSubmitting ? t("submitting") : t("submit")}
           </Button>
         </form>
       </SectionContainer>
