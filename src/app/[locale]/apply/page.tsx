@@ -27,7 +27,7 @@ export default async function ApplyPage() {
   return (
     <>
       {/* Theme */}
-      <section className="py-16 bg-tedx-black text-tedx-white text-center">
+      <section className="section-padding bg-tedx-black text-tedx-white text-center">
         <SectionContainer className="max-w-3xl">
           <FadeInView>
             <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
@@ -41,7 +41,7 @@ export default async function ApplyPage() {
       </section>
 
       {/* Who Can Apply */}
-      <section className="py-16">
+      <section className="section-padding">
         <SectionContainer className="max-w-4xl">
           <FadeInView>
             <h2 className="text-3xl font-bold text-center mb-10">
@@ -96,7 +96,7 @@ export default async function ApplyPage() {
       </section>
 
       {/* Timeline */}
-      <section className="py-16">
+      <section className="section-padding">
         <SectionContainer>
           <FadeInView>
             <h2 className="text-2xl font-bold text-center mb-12">
@@ -108,7 +108,7 @@ export default async function ApplyPage() {
       </section>
 
       {/* Form or closed message */}
-      <section className="py-16 bg-tedx-gray-light">
+      <section className="section-padding bg-tedx-gray-light">
         <SectionContainer>
           <FadeInView>
             {isClosed ? (
@@ -128,7 +128,7 @@ export default async function ApplyPage() {
       </section>
 
       {/* Non-selection message */}
-      <section className="py-16">
+      <section className="section-padding">
         <SectionContainer className="max-w-2xl text-center">
           <FadeInView>
             <h2 className="text-xl font-bold mb-4">{t("nonSelection.title")}</h2>

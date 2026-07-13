@@ -2,7 +2,7 @@ import SectionContainer from "@/components/ui/SectionContainer";
 
 export default function SpeakersLoading() {
   return (
-    <section className="py-16 md:py-24">
+    <section className="section-padding">
       <SectionContainer>
         <div className="h-10 w-64 bg-tedx-gray-light rounded animate-pulse mx-auto mb-4" />
         <div className="h-4 w-96 max-w-full bg-tedx-gray-light rounded animate-pulse mx-auto mb-12" />

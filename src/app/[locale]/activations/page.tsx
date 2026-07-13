@@ -20,7 +20,7 @@ export default async function ActivationsPage() {
   const t = await getTranslations("page.activations");
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="section-padding">
       <SectionContainer>
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
           {t("title")}

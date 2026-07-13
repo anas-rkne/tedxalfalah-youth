@@ -30,7 +30,7 @@ export default async function TeamPage() {
   const t = await getTranslations("page.team");
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="section-padding">
       <SectionContainer>
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">
           {t("title")}

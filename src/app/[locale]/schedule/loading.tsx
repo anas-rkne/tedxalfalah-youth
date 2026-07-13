@@ -2,7 +2,7 @@ import SectionContainer from "@/components/ui/SectionContainer";
 
 export default function ScheduleLoading() {
   return (
-    <section className="py-16 md:py-24">
+    <section className="section-padding">
       <SectionContainer className="max-w-3xl">
         <div className="h-10 w-48 bg-tedx-gray-light rounded animate-pulse mx-auto mb-4" />
         <div className="h-4 w-40 bg-tedx-gray-light rounded animate-pulse mx-auto mb-12" />

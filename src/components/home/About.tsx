@@ -6,7 +6,7 @@ export default async function About() {
   const t = await getTranslations("home.about");
 
   return (
-    <section className="py-16 md:py-24 bg-tedx-white">
+    <section className="section-padding bg-tedx-white">
       <SectionContainer className="max-w-3xl text-center">
         <FadeInView>
           <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("heading")}</h2>

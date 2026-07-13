@@ -19,7 +19,7 @@ export default async function TermsPage() {
   const SECTION_NAMES = ["section1", "section2", "section3", "section4", "section5", "section6"] as const;
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="section-padding">
       <SectionContainer className="max-w-3xl">
         <h1 className="text-4xl md:text-5xl font-bold mb-2">
           {t("title")}

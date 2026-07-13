@@ -2,7 +2,7 @@ import SectionContainer from "@/components/ui/SectionContainer";
 
 export default function SponsorsLoading() {
   return (
-    <section className="py-16">
+    <section className="section-padding">
       <SectionContainer>
         <div className="h-10 w-64 bg-tedx-gray-light rounded animate-pulse mx-auto mb-6" />
         <div className="h-4 w-full max-w-lg bg-tedx-gray-light rounded animate-pulse mx-auto mb-16" />

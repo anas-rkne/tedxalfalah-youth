@@ -6,7 +6,7 @@ export default async function Theme() {
   const t = await getTranslations("home.theme");
 
   return (
-    <section className="py-16 md:py-24 bg-tedx-black text-tedx-white">
+    <section className="section-padding bg-tedx-black text-tedx-white">
       <SectionContainer className="max-w-3xl text-center">
         <FadeInView>
           <h2 className="text-3xl md:text-5xl font-bold mb-8 leading-tight">

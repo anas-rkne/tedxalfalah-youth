@@ -10,7 +10,7 @@ export default async function SpeakersPreview() {
   const speakers = (await getSpeakers()).slice(0, 4);
 
   return (
-    <section className="py-16 md:py-24 bg-tedx-gray-light">
+    <section className="section-padding bg-tedx-gray-light">
       <SectionContainer>
         <FadeInView>
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">

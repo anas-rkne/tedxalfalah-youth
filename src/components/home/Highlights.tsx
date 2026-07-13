@@ -15,7 +15,7 @@ export default async function Highlights() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-tedx-white">
+    <section className="section-padding bg-tedx-white">
       <SectionContainer>
         <div className="grid md:grid-cols-3 gap-8">
           <FadeInView delay={0.05}>

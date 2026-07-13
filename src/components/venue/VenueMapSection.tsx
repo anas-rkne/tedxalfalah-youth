@@ -15,7 +15,7 @@ export default function VenueMapSection({
 }: VenueMapSectionProps) {
   const shouldReduceMotion = useReducedMotion();
   return (
-    <section className="py-16 bg-tedx-gray-light">
+    <section className="section-padding bg-tedx-gray-light">
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-2xl font-bold mb-6">{title}</h2>
         <motion.div

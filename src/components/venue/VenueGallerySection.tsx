@@ -26,7 +26,7 @@ export default function VenueGallerySection({ count }: VenueGallerySectionProps)
   const t = useTranslations("page.venue");
 
   return (
-    <section className="py-16 bg-tedx-gray-light">
+    <section className="section-padding bg-tedx-gray-light">
       <SectionContainer>
         <h2 className="text-2xl font-bold mb-6">{t("photoGallery.title")}</h2>
         <motion.div
