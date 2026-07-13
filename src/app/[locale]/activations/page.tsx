@@ -25,7 +25,7 @@ export default async function ActivationsPage() {
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
           {t("title")}
         </h1>
-        <p className="text-center text-tedx-gray max-w-2xl mx-auto mb-16">
+        <p className="text-center text-tedx-gray max-w-2xl mx-auto mb-12">
           {t("subtitle")}
         </p>
 

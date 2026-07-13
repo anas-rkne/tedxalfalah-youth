@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function TicketCancelPage() {
   return (
-    <section className="min-h-[60vh] flex items-center justify-center py-16">
+    <section className="min-h-[60vh] flex items-center justify-center section-padding">
       <SectionContainer className="max-w-lg text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-6">
           Checkout Cancelled

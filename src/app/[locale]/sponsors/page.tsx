@@ -24,9 +24,9 @@ export default async function SponsorsPage() {
 
   return (
     <>
-      <section className="py-16">
+      <section className="section-padding">
         <SectionContainer className="max-w-3xl text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="heading-h1 mb-12">
             {t("hero.title")}
           </h1>
           <p className="text-tedx-gray leading-relaxed">
@@ -35,7 +35,7 @@ export default async function SponsorsPage() {
         </SectionContainer>
       </section>
 
-      <section className="py-16 bg-tedx-gray-light">
+      <section className="section-padding bg-tedx-gray-light">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-10">
             {t("tiers.title")}
@@ -62,7 +62,7 @@ export default async function SponsorsPage() {
       </section>
 
       {sponsors.length > 0 && (
-        <section className="py-16">
+        <section className="section-padding">
           <SectionContainer>
             <h2 className="text-2xl font-bold text-center mb-10">
               {t("currentPartners.title")}
@@ -80,7 +80,7 @@ export default async function SponsorsPage() {
                     src={sponsor.logoUrl}
                     alt={sponsor.name}
                     fill
-                    className="object-contain"
+                    className="object-contain grayscale hover:grayscale-0 transition-all"
                   />
                 </a>
               ))}
@@ -89,7 +89,7 @@ export default async function SponsorsPage() {
         </section>
       )}
 
-      <section className="py-16 bg-tedx-gray-light">
+      <section className="section-padding bg-tedx-gray-light">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-2">
             {t("formSection.title")}

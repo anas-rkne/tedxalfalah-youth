@@ -44,7 +44,7 @@ export default function Button({
   href,
   ...rest
 }: ButtonProps) {
-  const classes = `inline-flex items-center justify-center font-semibold uppercase tracking-wide transition-colors duration-200 rounded-none ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;
+  const classes = `inline-flex items-center justify-center font-semibold uppercase tracking-wide transition-colors duration-200 rounded-lg ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;
 
   if (href) {
     return (

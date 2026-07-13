@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function TicketSuccessPage() {
   return (
-    <section className="min-h-[60vh] flex items-center justify-center py-16">
+    <section className="min-h-[60vh] flex items-center justify-center section-padding">
       <SectionContainer className="max-w-lg text-center">
         <p className="text-tedx-red font-bold text-sm uppercase tracking-widest mb-4">
           Payment Successful

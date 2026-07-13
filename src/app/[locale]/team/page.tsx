@@ -32,7 +32,7 @@ export default async function TeamPage() {
   return (
     <section className="py-16 md:py-24">
       <SectionContainer>
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-16">
+        <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">
           {t("title")}
         </h1>
 

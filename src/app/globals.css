@@ -26,6 +26,32 @@
   --color-tedx-gray: var(--color-tedx-gray);
 }
 
+@layer base {
+  /* صفحة كاملة: تباعد رأسي موحّد */
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+  .section-padding-sm {
+    @apply py-12 md:py-16;
+  }
+  /* عناوين الصفحات (h1) */
+  .heading-h1 {
+    @apply text-4xl md:text-5xl font-bold;
+  }
+  /* عناوين الأقسام (h2) */
+  .heading-h2 {
+    @apply text-3xl md:text-4xl font-bold;
+  }
+  /* هوامش تحت العنوان */
+  .heading-margin {
+    @apply mb-12;
+  }
+  /* حاوية نصية ضيّقة للصفحات القرائية */
+  .content-narrow {
+    @apply max-w-3xl mx-auto;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

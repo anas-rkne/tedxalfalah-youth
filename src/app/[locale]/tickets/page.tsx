@@ -23,9 +23,9 @@ export default async function TicketsPage() {
 
   return (
     <>
-      <section className="py-16">
+      <section className="section-padding">
         <SectionContainer>
-          <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">
+          <h1 className="heading-h1 text-center mb-12">
             {t("title")}
           </h1>
           <div className="grid sm:grid-cols-3 gap-6">
@@ -50,7 +50,7 @@ export default async function TicketsPage() {
         </SectionContainer>
       </section>
 
-      <section className="py-16 bg-tedx-gray-light">
+      <section className="section-padding bg-tedx-gray-light">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-8">
             {isStripeConfigured ? t("buyTitle") : t("registerTitle")}
@@ -63,7 +63,7 @@ export default async function TicketsPage() {
         </SectionContainer>
       </section>
 
-      <section className="py-16">
+      <section className="section-padding">
         <SectionContainer className="max-w-3xl">
           <h2 className="text-2xl font-bold mb-4">{t("eventDayInfo.title")}</h2>
           <ul className="text-tedx-gray space-y-2">
@@ -89,7 +89,7 @@ export default async function TicketsPage() {
         </SectionContainer>
       </section>
 
-      <section className="py-16 bg-tedx-gray-light">
+      <section className="section-padding bg-tedx-gray-light">
         <SectionContainer className="max-w-3xl text-center">
           <p className="text-sm text-tedx-gray">
             {t("refundPolicy.body")}{" "}

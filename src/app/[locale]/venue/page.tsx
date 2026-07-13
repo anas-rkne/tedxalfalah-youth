@@ -23,8 +23,8 @@ export default async function VenuePage() {
     <>
       <VenueHeroSection heroTitle={t("heroTitle")} heroAlt={t("heroAlt")} />
 
-      <section className="py-16">
-        <SectionContainer className="max-w-3xl">
+      <section className="section-padding">
+        <SectionContainer className="content-narrow">
           <p className="text-tedx-gray leading-relaxed">
             {t("narrative")}
           </p>
@@ -37,8 +37,8 @@ export default async function VenuePage() {
         directions={t("gettingThere.directions")}
       />
 
-      <section className="py-16">
-        <SectionContainer className="max-w-3xl">
+      <section className="section-padding">
+        <SectionContainer className="content-narrow">
           <h2 className="text-2xl font-bold mb-4">{t("accessibility.title")}</h2>
           <p className="text-tedx-gray leading-relaxed">
             {t("accessibility.body")}

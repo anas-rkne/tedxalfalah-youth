@@ -23,7 +23,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-tedx-black text-tedx-white mt-auto">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 section-padding-sm grid grid-cols-1 md:grid-cols-3 gap-8">
         <FadeInView delay={0.05}>
           <div>
             <h3 className="font-bold text-lg mb-3">{tFooter("contactHeading")}</h3>

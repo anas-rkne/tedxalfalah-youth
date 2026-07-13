@@ -30,7 +30,7 @@ export default async function ThankYouPage({
     key === "apply" || key === "tickets" ? "/schedule" : "/";
 
   return (
-    <section className="min-h-[70vh] flex items-center justify-center py-16">
+    <section className="min-h-[70vh] flex items-center justify-center section-padding">
       <SectionContainer className="max-w-lg text-center">
         <AnimatedCheck />
         <h1 className="text-3xl md:text-4xl font-bold mb-4">{t("title")}</h1>

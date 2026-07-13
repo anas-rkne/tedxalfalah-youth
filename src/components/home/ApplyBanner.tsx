@@ -10,7 +10,7 @@ export default async function ApplyBanner() {
   const t = await getTranslations("home.applyBanner");
 
   return (
-    <section className="bg-tedx-red py-12">
+    <section className="bg-tedx-red section-padding-sm">
       <SectionContainer className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-start">
         <FadeInView>
           <p className="text-tedx-white text-xl md:text-2xl font-bold">
