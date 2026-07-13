@@ -1,27 +1,28 @@
+import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import SectionContainer from "@/components/ui/SectionContainer";
 import Button from "@/components/ui/Button";
 
-export const metadata: Metadata = {
-  title: "Payment Successful",
-};
+type Props = { params: Promise<{ locale: string }> };
 
-export default function TicketSuccessPage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "page.tickets.success" });
+  return { title: t("meta.title") };
+}
+
+export default async function TicketSuccessPage() {
+  const t = await getTranslations("page.tickets.success");
   return (
     <section className="min-h-[60vh] flex items-center justify-center section-padding">
       <SectionContainer className="max-w-lg text-center">
         <p className="text-tedx-red font-bold text-sm uppercase tracking-widest mb-4">
-          Payment Successful
+          {t("eyebrow")}
         </p>
-        <h1 className="text-3xl md:text-4xl font-bold mb-6">
-          You&apos;re going to TEDxAlFalah Youth! 🎉
-        </h1>
-        <p className="text-tedx-gray leading-relaxed mb-10">
-          A confirmation email with your ticket details is on its way to
-          your inbox. See you on event day!
-        </p>
+        <h1 className="text-3xl md:text-4xl font-bold mb-6">{t("title")}</h1>
+        <p className="text-tedx-gray leading-relaxed mb-10">{t("body")}</p>
         <Button href="/venue" variant="primary" size="md">
-          View Venue Details
+          {t("cta")}
         </Button>
       </SectionContainer>
     </section>

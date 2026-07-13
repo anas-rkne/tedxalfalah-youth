@@ -1,24 +1,25 @@
+import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import SectionContainer from "@/components/ui/SectionContainer";
 import Button from "@/components/ui/Button";
 
-export const metadata: Metadata = {
-  title: "Payment Cancelled",
-};
+type Props = { params: Promise<{ locale: string }> };
 
-export default function TicketCancelPage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "page.tickets.cancel" });
+  return { title: t("meta.title") };
+}
+
+export default async function TicketCancelPage() {
+  const t = await getTranslations("page.tickets.cancel");
   return (
     <section className="min-h-[60vh] flex items-center justify-center section-padding">
       <SectionContainer className="max-w-lg text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-6">
-          Checkout Cancelled
-        </h1>
-        <p className="text-tedx-gray leading-relaxed mb-10">
-          No worries — your payment was not processed. You can try again
-          whenever you&apos;re ready.
-        </p>
+        <h1 className="text-3xl md:text-4xl font-bold mb-6">{t("title")}</h1>
+        <p className="text-tedx-gray leading-relaxed mb-10">{t("body")}</p>
         <Button href="/tickets" variant="primary" size="md">
-          Back to Tickets
+          {t("cta")}
         </Button>
       </SectionContainer>
     </section>
