@@ -60,57 +60,77 @@ export default function PartnerInquiryForm() {
       noValidate
     >
       <div>
+        <label htmlFor="partner-name" className="block text-sm font-medium mb-1">
+          {t("namePlaceholder")}
+        </label>
         <input
+          id="partner-name"
           {...register("name")}
           placeholder={t("namePlaceholder")}
           className={inputClasses}
         />
         {errors.name && (
-          <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
+          <p className="text-red-600 text-sm mt-1" role="alert">{errors.name.message}</p>
         )}
       </div>
       <div>
+        <label htmlFor="partner-org" className="block text-sm font-medium mb-1">
+          {t("organizationPlaceholder")}
+        </label>
         <input
+          id="partner-org"
           {...register("organization")}
           placeholder={t("organizationPlaceholder")}
           className={inputClasses}
         />
         {errors.organization && (
-          <p className="text-red-600 text-sm mt-1">
+          <p className="text-red-600 text-sm mt-1" role="alert">
             {errors.organization.message}
           </p>
         )}
       </div>
       <div>
+        <label htmlFor="partner-email" className="block text-sm font-medium mb-1">
+          {t("emailPlaceholder")}
+        </label>
         <input
+          id="partner-email"
           {...register("email")}
           type="email"
           placeholder={t("emailPlaceholder")}
           className={inputClasses}
         />
         {errors.email && (
-          <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
+          <p className="text-red-600 text-sm mt-1" role="alert">{errors.email.message}</p>
         )}
       </div>
       <div>
+        <label htmlFor="partner-phone" className="block text-sm font-medium mb-1">
+          {t("phonePlaceholder")}
+        </label>
         <input
+          id="partner-phone"
           {...register("phone")}
           placeholder={t("phonePlaceholder")}
           className={inputClasses}
         />
         {errors.phone && (
-          <p className="text-red-600 text-sm mt-1">{errors.phone.message}</p>
+          <p className="text-red-600 text-sm mt-1" role="alert">{errors.phone.message}</p>
         )}
       </div>
       <div>
+        <label htmlFor="partner-message" className="block text-sm font-medium mb-1">
+          {t("messagePlaceholder")}
+        </label>
         <textarea
+          id="partner-message"
           {...register("message")}
           placeholder={t("messagePlaceholder")}
           rows={4}
           className={inputClasses}
         />
         {errors.message && (
-          <p className="text-red-600 text-sm mt-1">
+          <p className="text-red-600 text-sm mt-1" role="alert">
             {errors.message.message}
           </p>
         )}

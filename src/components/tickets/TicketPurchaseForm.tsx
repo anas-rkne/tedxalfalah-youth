@@ -93,25 +93,33 @@ export default function TicketPurchaseForm({
       </div>
 
       <div>
+        <label htmlFor="purchase-name" className="block text-sm font-medium mb-1">
+          {t("namePlaceholder")}
+        </label>
         <input
+          id="purchase-name"
           {...register("name")}
           placeholder={t("namePlaceholder")}
           className={inputClasses}
         />
         {errors.name && (
-          <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
+          <p className="text-red-600 text-sm mt-1" role="alert">{errors.name.message}</p>
         )}
       </div>
 
       <div>
+        <label htmlFor="purchase-email" className="block text-sm font-medium mb-1">
+          {t("emailPlaceholder")}
+        </label>
         <input
+          id="purchase-email"
           {...register("email")}
           type="email"
           placeholder={t("emailPlaceholder")}
           className={inputClasses}
         />
         {errors.email && (
-          <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
+          <p className="text-red-600 text-sm mt-1" role="alert">{errors.email.message}</p>
         )}
       </div>
 

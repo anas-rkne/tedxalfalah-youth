@@ -30,7 +30,7 @@ export default function LanguageSwitcher() {
               ? "bg-tedx-red text-tedx-white"
               : "text-tedx-black hover:bg-tedx-gray-light"
           }`}
-          aria-current={locale === loc}
+          aria-current={locale === loc ? "true" as const : undefined}
         >
           {loc.toUpperCase()}
         </button>

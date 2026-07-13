@@ -91,34 +91,45 @@ export default function ContactForm() {
           noValidate
         >
           <div>
+            <label htmlFor="contact-name" className="block text-sm font-medium mb-1">
+              {t("namePlaceholder")}
+            </label>
             <input
+              id="contact-name"
               {...register("name")}
               placeholder={t("namePlaceholder")}
               className={inputClasses}
             />
             {errors.name && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-red-600 text-sm mt-1" role="alert">
                 {errors.name.message}
               </p>
             )}
           </div>
 
           <div>
+            <label htmlFor="contact-email" className="block text-sm font-medium mb-1">
+              {t("emailPlaceholder")}
+            </label>
             <input
+              id="contact-email"
               {...register("email")}
               type="email"
               placeholder={t("emailPlaceholder")}
               className={inputClasses}
             />
             {errors.email && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-red-600 text-sm mt-1" role="alert">
                 {errors.email.message}
               </p>
             )}
           </div>
 
           <div>
-            <select {...register("subject")} className={inputClasses}>
+            <label htmlFor="contact-subject" className="block text-sm font-medium mb-1">
+              Subject
+            </label>
+            <select id="contact-subject" {...register("subject")} className={inputClasses}>
               {SUBJECT_VALUES.map((value) => (
                 <option key={value} value={value}>
                   {subjectLabels[value]}
@@ -128,14 +139,18 @@ export default function ContactForm() {
           </div>
 
           <div>
+            <label htmlFor="contact-message" className="block text-sm font-medium mb-1">
+              {t("messagePlaceholder")}
+            </label>
             <textarea
+              id="contact-message"
               {...register("message")}
               placeholder={t("messagePlaceholder")}
               rows={5}
               className={inputClasses}
             />
             {errors.message && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-red-600 text-sm mt-1" role="alert">
                 {errors.message.message}
               </p>
             )}

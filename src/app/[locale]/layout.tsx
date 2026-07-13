@@ -77,9 +77,17 @@ export default async function RootLayout({
         className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : ""}`}
       >
         <NextIntlClientProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-tedx-red focus:text-tedx-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none"
+          >
+            Skip to content
+          </a>
           <CustomCursorWrapper />
           <Header />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
           <Footer />
         </NextIntlClientProvider>
       </body>

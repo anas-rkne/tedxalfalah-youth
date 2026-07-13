@@ -62,34 +62,46 @@ export default function TicketRegistrationForm() {
       noValidate
     >
       <div>
+        <label htmlFor="reg-name" className="block text-sm font-medium mb-1">
+          {t("namePlaceholder")}
+        </label>
         <input
+          id="reg-name"
           {...register("name")}
           placeholder={t("namePlaceholder")}
           className={inputClasses}
         />
         {errors.name && (
-          <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
+          <p className="text-red-600 text-sm mt-1" role="alert">{errors.name.message}</p>
         )}
       </div>
       <div>
+        <label htmlFor="reg-email" className="block text-sm font-medium mb-1">
+          {t("emailPlaceholder")}
+        </label>
         <input
+          id="reg-email"
           {...register("email")}
           type="email"
           placeholder={t("emailPlaceholder")}
           className={inputClasses}
         />
         {errors.email && (
-          <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
+          <p className="text-red-600 text-sm mt-1" role="alert">{errors.email.message}</p>
         )}
       </div>
       <div>
+        <label htmlFor="reg-phone" className="block text-sm font-medium mb-1">
+          {t("phonePlaceholder")}
+        </label>
         <input
+          id="reg-phone"
           {...register("phone")}
           placeholder={t("phonePlaceholder")}
           className={inputClasses}
         />
         {errors.phone && (
-          <p className="text-red-600 text-sm mt-1">{errors.phone.message}</p>
+          <p className="text-red-600 text-sm mt-1" role="alert">{errors.phone.message}</p>
         )}
       </div>
       <div>

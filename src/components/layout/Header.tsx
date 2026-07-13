@@ -19,22 +19,42 @@ export default function Header() {
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
-  const handleEscape = useCallback((e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      setIsMenuOpen(false);
-      toggleRef.current?.focus();
-    }
-  }, []);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMenuOpen(false);
+        toggleRef.current?.focus();
+        return;
+      }
+      // Focus trap within mobile menu
+      if (e.key === "Tab" && isMenuOpen && menuRef.current) {
+        const focusable = menuRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    },
+    [isMenuOpen]
+  );
 
   useEffect(() => {
     if (isMenuOpen) {
-      document.addEventListener("keydown", handleEscape);
+      document.addEventListener("keydown", handleKeyDown);
       requestAnimationFrame(() => menuRef.current?.querySelector("a")?.focus());
     } else {
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("keydown", handleKeyDown);
     }
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isMenuOpen, handleEscape]);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isMenuOpen, handleKeyDown]);
 
   const NAV_LINKS = [
     { label: t("home"), href: "/" },

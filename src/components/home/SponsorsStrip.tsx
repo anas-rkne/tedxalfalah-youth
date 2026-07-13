@@ -10,28 +10,32 @@ export default async function SponsorsStrip() {
   const sponsors = await getSponsors();
 
   return (
-    <Link href="/sponsors" className="block section-padding bg-tedx-gray-light">
+    <section className="section-padding bg-tedx-gray-light">
       <SectionContainer>
         <FadeInView>
-          <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-tedx-gray mb-8">
-            {t("heading")}
-          </h2>
+          <Link href="/sponsors">
+            <h2 className="text-center text-sm font-semibold uppercase tracking-widest text-tedx-gray mb-8 hover:text-tedx-red transition-colors">
+              {t("heading")}
+            </h2>
+          </Link>
         </FadeInView>
-        <div className="flex flex-wrap items-center justify-center gap-8">
-          {sponsors.map((sponsor, index) => (
-            <FadeInView key={sponsor.id} delay={index * 0.08}>
-              <div className="relative w-32 h-16 grayscale hover:grayscale-0 transition-all">
-                <Image
-                  src={sponsor.logoUrl}
-                  alt={sponsor.name}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            </FadeInView>
-          ))}
-        </div>
+        <Link href="/sponsors">
+          <div className="flex flex-wrap items-center justify-center gap-8">
+            {sponsors.map((sponsor, index) => (
+              <FadeInView key={sponsor.id} delay={index * 0.08}>
+                <div className="relative w-32 h-16 grayscale hover:grayscale-0 transition-all">
+                  <Image
+                    src={sponsor.logoUrl}
+                    alt={sponsor.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              </FadeInView>
+            ))}
+          </div>
+        </Link>
       </SectionContainer>
-    </Link>
+    </section>
   );
 }

@@ -66,6 +66,7 @@ export default function Countdown({ targetDate }: CountdownProps) {
     return (
       <motion.p
         className="text-2xl font-bold text-tedx-red"
+        role="status"
         animate={!shouldReduceMotion && justFinished ? { scale: [1, 1.5, 0.8, 1] } : {}}
         transition={{ type: "spring", stiffness: 200 }}
       >
@@ -82,7 +83,7 @@ export default function Countdown({ targetDate }: CountdownProps) {
   ];
 
   return (
-    <div className="flex gap-4 md:gap-6">
+    <div className="flex gap-4 md:gap-6" aria-live="polite" aria-label="Countdown timer">
       {units.map((unit) => (
         <div key={unit.label} className="flex flex-col items-center">
           <FlipDigit value={unit.value} />
