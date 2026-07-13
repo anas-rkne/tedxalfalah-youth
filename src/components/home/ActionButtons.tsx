@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 
 interface ActionButtonsProps {
@@ -19,6 +19,7 @@ function LiquidButton({
   variant: "primary" | "outline";
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const glowX = useSpring(mouseX, { damping: 20, stiffness: 300 });
@@ -38,28 +39,31 @@ function LiquidButton({
   return (
     <motion.div
       className="relative"
-      // نبض دوري كل 3 ثوانٍ لجذب انتباه الطفل، حتى بدون تفاعل
-      animate={{ scale: [1, 1.05, 1] }}
-      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      animate={shouldReduceMotion ? {} : { scale: [1, 1.05, 1] }}
+      transition={shouldReduceMotion ? {} : { duration: 3, repeat: Infinity, ease: "easeInOut" }}
     >
       <motion.div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onMouseMove={handleMouseMove}
-        animate={{
-          borderRadius: isHovered
-            ? ["8px", "20px 8px 20px 8px", "8px 20px 8px 20px", "8px"]
-            : "8px",
-          scale: isHovered ? 1.03 : 1,
-        }}
-        transition={{
-          borderRadius: { duration: 1.2, repeat: isHovered ? Infinity : 0 },
-          scale: { duration: 0.2 },
-        }}
+        animate={
+          shouldReduceMotion ? {} : {
+            borderRadius: isHovered
+              ? ["8px", "20px 8px 20px 8px", "8px 20px 8px 20px", "8px"]
+              : "8px",
+            scale: isHovered ? 1.03 : 1,
+          }
+        }
+        transition={
+          shouldReduceMotion ? {} : {
+            borderRadius: { duration: 1.2, repeat: isHovered ? Infinity : 0 },
+            scale: { duration: 0.2 },
+          }
+        }
         className="relative overflow-hidden"
       >
         {/* دائرة Glow تتبع الماوس فوق الزر */}
-        {isHovered && (
+        {!shouldReduceMotion && isHovered && (
           <motion.div
             className="pointer-events-none absolute w-24 h-24 rounded-full bg-tedx-white/30 blur-xl"
             style={{

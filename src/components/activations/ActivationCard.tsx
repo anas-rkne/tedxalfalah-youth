@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { Activation } from "@/lib/types";
 
@@ -13,6 +13,7 @@ export default function ActivationCard({
   activation,
   index,
 }: ActivationCardProps) {
+  const shouldReduceMotion = useReducedMotion();
   const isReversed = index % 2 === 1;
 
   return (
@@ -20,15 +21,15 @@ export default function ActivationCard({
       className={`flex flex-col md:flex-row gap-8 items-center ${
         isReversed ? "md:flex-row-reverse" : ""
       }`}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
+      whileInView={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.15 }}
     >
       <div className="relative w-full md:w-1/2 aspect-video rounded-lg [perspective:800px]">
         <motion.div
           className="relative w-full h-full [transform-style:preserve-3d]"
-          whileHover={{ rotateY: 180, y: -10 }}
+          whileHover={shouldReduceMotion ? {} : { rotateY: 180, y: -10 }}
           transition={{ duration: 0.6, type: "spring", stiffness: 200 }}
         >
           <div className="absolute inset-0 [backface-visibility:hidden] rounded-lg overflow-hidden">
@@ -52,7 +53,7 @@ export default function ActivationCard({
 
       <motion.div
         className="w-full md:w-1/2"
-        whileTap={{ scale: 0.98 }}
+        whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
       >
         <h2 className="text-2xl font-bold mb-2">{activation.name}</h2>
         <p className="text-sm text-tedx-red font-medium mb-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { TeamMember } from "@/lib/types";
 
@@ -10,11 +10,13 @@ interface TeamMemberCardProps {
 }
 
 export default function TeamMemberCard({ member, index }: TeamMemberCardProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <motion.div
       className="text-center p-4 rounded-lg hover:bg-gray-50/50 transition-colors duration-300"
-      animate={{ y: [0, -10, 0] }}
-      transition={{
+      animate={shouldReduceMotion ? {} : { y: [0, -10, 0] }}
+      transition={shouldReduceMotion ? {} : {
         duration: 3,
         ease: "easeInOut",
         repeat: Infinity,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useInView, motion, AnimatePresence, animate } from "framer-motion";
+import { useInView, animate, useReducedMotion } from "framer-motion";
 
 interface Stat {
   label: string;
@@ -13,11 +13,11 @@ interface AnimatedStatsProps {
   stats: Stat[];
 }
 
-function AnimatedNumber({ targetValue, inView }: { targetValue: number; inView: boolean }) {
-  const [displayValue, setDisplayValue] = useState(0);
+function AnimatedNumber({ targetValue, inView, reduceMotion }: { targetValue: number; inView: boolean; reduceMotion: boolean }) {
+  const [displayValue, setDisplayValue] = useState(reduceMotion ? targetValue : 0);
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || reduceMotion) return;
 
     const controls = animate(0, targetValue, {
       duration: 2,
@@ -26,25 +26,17 @@ function AnimatedNumber({ targetValue, inView }: { targetValue: number; inView: 
     });
 
     return () => controls.stop();
-  }, [inView, targetValue]);
+  }, [inView, targetValue, reduceMotion]);
 
   return (
-    <AnimatePresence mode="popLayout">
-      <motion.span
-        key={displayValue}
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -10, opacity: 0 }}
-        transition={{ duration: 0.15 }}
-        className="inline-block tabular-nums"
-      >
-        {displayValue}
-      </motion.span>
-    </AnimatePresence>
+    <span className="inline-block tabular-nums">
+      {displayValue}
+    </span>
   );
 }
 
 export default function AnimatedStats({ stats }: AnimatedStatsProps) {
+  const shouldReduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
 
@@ -56,7 +48,7 @@ export default function AnimatedStats({ stats }: AnimatedStatsProps) {
       {stats.map((stat) => (
         <div key={stat.label} className="flex items-baseline gap-2">
           <span className="text-3xl font-bold">
-            <AnimatedNumber targetValue={stat.targetValue} inView={isInView} />
+            <AnimatedNumber targetValue={stat.targetValue} inView={isInView} reduceMotion={!!shouldReduceMotion} />
             {stat.suffix}
           </span>
           <span className="text-sm text-tedx-white/70">{stat.label}</span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import FlipDigit from "./FlipDigit";
 
 interface CountdownProps {
@@ -28,6 +28,7 @@ function calculateTimeLeft(targetDate: string): TimeLeft | null {
 }
 
 export default function Countdown({ targetDate }: CountdownProps) {
+  const shouldReduceMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() =>
     calculateTimeLeft(targetDate)
@@ -65,7 +66,7 @@ export default function Countdown({ targetDate }: CountdownProps) {
     return (
       <motion.p
         className="text-2xl font-bold text-tedx-red"
-        animate={justFinished ? { scale: [1, 1.5, 0.8, 1] } : {}}
+        animate={!shouldReduceMotion && justFinished ? { scale: [1, 1.5, 0.8, 1] } : {}}
         transition={{ type: "spring", stiffness: 200 }}
       >
         We&apos;re live!

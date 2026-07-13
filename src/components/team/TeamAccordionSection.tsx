@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { TeamMember } from "@/lib/types";
 import TeamMemberCard from "./TeamMemberCard";
@@ -30,6 +30,7 @@ export default function TeamAccordionSection({
   members,
   defaultOpen = false,
 }: TeamAccordionSectionProps) {
+  const shouldReduceMotion = useReducedMotion();
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
@@ -40,7 +41,7 @@ export default function TeamAccordionSection({
       >
         <span>{departmentName}</span>
         <motion.span
-          animate={{ rotate: isOpen ? 180 : 0 }}
+          animate={shouldReduceMotion ? {} : { rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3 }}
           className="flex-shrink-0"
         >
@@ -53,14 +54,14 @@ export default function TeamAccordionSection({
           <motion.div
             key="card-grid"
             className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 pt-4"
-            variants={containerVariants}
-            initial="hidden"
+            variants={shouldReduceMotion ? {} : containerVariants}
+            initial={shouldReduceMotion ? {} : "hidden"}
             animate="visible"
-            exit={{ opacity: 0, transition: { duration: 0.2 } }}
-            layout
+            exit={shouldReduceMotion ? {} : { opacity: 0, transition: { duration: 0.2 } }}
+            layout={!shouldReduceMotion}
           >
             {members.map((member, index) => (
-              <motion.div key={member.id} variants={childVariants} layout>
+              <motion.div key={member.id} variants={shouldReduceMotion ? {} : childVariants} layout={!shouldReduceMotion}>
                 <TeamMemberCard member={member} index={index} />
               </motion.div>
             ))}

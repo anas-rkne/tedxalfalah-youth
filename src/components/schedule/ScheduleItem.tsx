@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { Session } from "@/lib/types";
 
@@ -37,16 +37,17 @@ interface ScheduleItemProps {
 }
 
 export default function ScheduleItem({ session, typeLabels, index }: ScheduleItemProps) {
+  const shouldReduceMotion = useReducedMotion();
   const style = TYPE_STYLES[session.type];
 
   return (
     <motion.div
       className={`flex flex-col sm:flex-row gap-2 sm:gap-6 border-l-4 ${style.borderClass} bg-tedx-white rounded-r-lg p-4 sm:p-5 shadow-sm`}
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={shouldReduceMotion ? {} : { opacity: 0, x: -20 }}
+      whileInView={shouldReduceMotion ? {} : { opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.4, ease: "easeOut", delay: index * 0.08 }}
-      whileHover={{ y: -3, boxShadow: "0 8px 25px rgba(0,0,0,0.1)", transition: { duration: 0.2 } }}
+      whileHover={shouldReduceMotion ? {} : { y: -3, boxShadow: "0 8px 25px rgba(0,0,0,0.1)", transition: { duration: 0.2 } }}
     >
       <div className="sm:w-32 flex-shrink-0">
         <p className="font-bold text-sm">

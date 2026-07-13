@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ReactNode } from "react";
 
 interface AnimatedSocialIconProps {
@@ -14,13 +14,15 @@ export default function AnimatedSocialIcon({
   ariaLabel,
   children,
 }: AnimatedSocialIconProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <motion.a
       href={href}
       aria-label={ariaLabel}
       className="block hover:text-tedx-red"
-      whileHover={{ scale: 1.2, rotate: 5 }}
-      whileTap={{ scale: 0.9 }}
+      whileHover={shouldReduceMotion ? {} : { scale: 1.2, rotate: 5 }}
+      whileTap={shouldReduceMotion ? {} : { scale: 0.9 }}
       transition={{ type: "spring", stiffness: 400, damping: 10 }}
     >
       {children}

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Menu, X } from "lucide-react";
@@ -10,9 +10,29 @@ import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
   const t = useTranslations("common.nav");
   const tCommon = useTranslations("common");
   const pathname = usePathname();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  const handleEscape = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setIsMenuOpen(false);
+      toggleRef.current?.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.addEventListener("keydown", handleEscape);
+      requestAnimationFrame(() => menuRef.current?.querySelector("a")?.focus());
+    } else {
+      document.removeEventListener("keydown", handleEscape);
+    }
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isMenuOpen, handleEscape]);
 
   const NAV_LINKS = [
     { label: t("home"), href: "/" },
@@ -35,12 +55,12 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
+        <nav className="hidden lg:flex items-center gap-2 xl:gap-6">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`relative text-sm font-medium transition-colors hover:text-tedx-red ${
+              className={`relative font-medium transition-colors hover:text-tedx-red text-xs xl:text-sm ${
                 pathname === link.href ? "text-tedx-red" : "text-tedx-black"
               }`}
             >
@@ -65,12 +85,15 @@ export default function Header() {
 
         {/* Mobile toggle */}
         <button
+          ref={toggleRef}
           className="lg:hidden"
           aria-label="Toggle menu"
+          aria-controls="mobile-menu"
+          aria-expanded={isMenuOpen}
           onClick={() => setIsMenuOpen((prev) => !prev)}
         >
           <motion.div
-            animate={{ rotate: isMenuOpen ? 90 : 0 }}
+            animate={shouldReduceMotion ? {} : { rotate: isMenuOpen ? 90 : 0 }}
             transition={{ duration: 0.2 }}
           >
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -82,19 +105,24 @@ export default function Header() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
+            ref={menuRef}
+            id="mobile-menu"
             className="lg:hidden fixed inset-0 top-20 bg-tedx-white z-40 flex flex-col"
-            initial={{ opacity: 0, y: -10 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={shouldReduceMotion ? {} : { opacity: 0, y: -10 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
           >
             <nav className="flex flex-col gap-2 p-6">
               {NAV_LINKS.map((link, i) => (
                 <motion.div
                   key={link.href}
-                  initial={{ opacity: 0, x: -15 }}
+                  initial={shouldReduceMotion ? {} : { opacity: 0, x: -15 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2, delay: i * 0.04 }}
+                  transition={shouldReduceMotion ? {} : { duration: 0.2, delay: i * 0.04 }}
                 >
                   <Link
                     href={link.href}

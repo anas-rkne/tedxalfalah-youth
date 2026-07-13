@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 export interface FaqItem {
@@ -15,27 +15,32 @@ interface FaqAccordionProps {
 
 export default function FaqAccordion({ items }: FaqAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col divide-y divide-gray-200 border-t border-b border-gray-200">
       {items.map((item, index) => {
         const isOpen = openIndex === index;
+        const panelId = `faq-panel-${index}`;
+        const buttonId = `faq-button-${index}`;
         return (
           <motion.div
             key={item.question}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, y: 10 }}
+            whileInView={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.3, delay: index * 0.08 }}
           >
             <button
+              id={buttonId}
               className="w-full flex items-center justify-between py-4 text-left font-medium gap-4"
               onClick={() => setOpenIndex(isOpen ? null : index)}
               aria-expanded={isOpen}
+              aria-controls={panelId}
             >
               <span>{item.question}</span>
               <motion.div
-                animate={{ rotate: isOpen ? 180 : 0 }}
+                animate={shouldReduceMotion ? {} : { rotate: isOpen ? 180 : 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <ChevronDown size={18} className="flex-shrink-0" />
@@ -45,10 +50,13 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
               {isOpen && (
                 <motion.div
                   key="answer"
-                  initial={{ height: 0, opacity: 0 }}
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={buttonId}
+                  initial={shouldReduceMotion ? {} : { height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  exit={shouldReduceMotion ? {} : { height: 0, opacity: 0 }}
+                  transition={shouldReduceMotion ? {} : { duration: 0.3, ease: "easeInOut" }}
                   className="overflow-hidden"
                 >
                   <p className="pb-4 text-sm text-tedx-gray leading-relaxed">

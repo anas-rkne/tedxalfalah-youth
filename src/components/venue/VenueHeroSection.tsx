@@ -1,7 +1,7 @@
 "use client";
 
 import { useScroll, useTransform } from "framer-motion";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 
 interface VenueHeroSectionProps {
@@ -13,9 +13,10 @@ export default function VenueHeroSection({
   heroTitle,
   heroAlt,
 }: VenueHeroSectionProps) {
+  const shouldReduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
-  const imageY = useTransform(scrollY, [0, 500], [0, 150]);
-  const imageScale = useTransform(scrollY, [0, 500], [1, 1.1]);
+  const imageY = useTransform(scrollY, [0, 500], [0, shouldReduceMotion ? 0 : 150]);
+  const imageScale = useTransform(scrollY, [0, 500], [1, shouldReduceMotion ? 1 : 1.1]);
 
   return (
     <section className="relative h-[50vh] min-h-[350px] overflow-hidden">

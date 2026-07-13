@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { Speaker } from "@/lib/types";
 
@@ -40,6 +40,7 @@ function WavyText({ text }: { text: string }) {
 }
 
 export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
+  const shouldReduceMotion = useReducedMotion();
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
 
@@ -60,10 +61,10 @@ export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
   return (
     <motion.div
       ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseMove={shouldReduceMotion ? undefined : handleMouseMove}
+      onMouseLeave={shouldReduceMotion ? undefined : handleMouseLeave}
       onClick={onClick}
-      style={{
+      style={shouldReduceMotion ? {} : {
         rotateX: rotate.x,
         rotateY: rotate.y,
         transformStyle: "preserve-3d",
@@ -74,11 +75,11 @@ export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
     >
       <motion.div
         className="relative w-full aspect-square rounded-lg overflow-hidden mb-3"
-        whileInView={{ clipPath: "inset(0 0% 0 0%)", scale: 1 }}
-        initial={{ clipPath: "inset(0 50% 0 50%)", scale: 0.8 }}
+        whileInView={shouldReduceMotion ? {} : { clipPath: "inset(0 0% 0 0%)", scale: 1 }}
+        initial={shouldReduceMotion ? {} : { clipPath: "inset(0 50% 0 50%)", scale: 0.8 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        whileHover={{ boxShadow: "0 0 30px rgba(234, 56, 76, 0.4)" }}
+        whileHover={shouldReduceMotion ? {} : { boxShadow: "0 0 30px rgba(234, 56, 76, 0.4)" }}
       >
         <Image
           src={speaker.imageUrl}
@@ -89,10 +90,10 @@ export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
       </motion.div>
 
       <h3 className="font-semibold text-lg">
-        <WavyText text={speaker.name} />
+        {shouldReduceMotion ? speaker.name : <WavyText text={speaker.name} />}
       </h3>
       <p className="text-sm text-tedx-gray">
-        <WavyText text={speaker.shortDescriptor} />
+        {shouldReduceMotion ? speaker.shortDescriptor : <WavyText text={speaker.shortDescriptor} />}
       </p>
       <p className="text-sm text-tedx-red mt-1">{speaker.talkTitle}</p>
     </motion.div>
