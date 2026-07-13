@@ -55,6 +55,7 @@ export default function VenueGallerySection({ count }: VenueGallerySectionProps)
                 alt={t("photoGallery.alt", { number: i + 1 })}
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 50vw, 33vw"
               />
             </motion.div>
           ))}

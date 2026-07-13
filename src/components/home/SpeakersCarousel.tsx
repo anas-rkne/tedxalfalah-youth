@@ -77,6 +77,7 @@ export default function SpeakersCarousel({ speakers }: SpeakersCarouselProps) {
                 loading="lazy"
                 className="object-cover"
                 draggable={false}
+                sizes="(max-width: 768px) 160px, 192px"
               />
             </div>
             <h3 className="font-semibold">{speaker.name}</h3>

@@ -7,25 +7,21 @@ import { Session } from "@/lib/types";
 
 const TYPE_STYLES: Record<
   Session["type"],
-  { label: string; badgeClass: string; borderClass: string }
+  { badgeClass: string; borderClass: string }
 > = {
   talk: {
-    label: "Talk",
     badgeClass: "bg-tedx-red text-tedx-white",
     borderClass: "border-tedx-red",
   },
   break: {
-    label: "Break",
     badgeClass: "bg-tedx-gray-light text-tedx-gray",
     borderClass: "border-gray-200",
   },
   activation: {
-    label: "Activation",
     badgeClass: "bg-tedx-black text-tedx-white",
     borderClass: "border-tedx-black",
   },
   registration: {
-    label: "Registration",
     badgeClass: "bg-tedx-gray-light text-tedx-gray",
     borderClass: "border-gray-200",
   },

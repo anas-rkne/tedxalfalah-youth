@@ -30,6 +30,7 @@ export default function VenueHeroSection({
           fill
           priority
           className="object-cover"
+          sizes="100vw"
         />
       </motion.div>
       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">

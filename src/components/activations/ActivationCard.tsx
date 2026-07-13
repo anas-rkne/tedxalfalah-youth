@@ -38,6 +38,7 @@ export default function ActivationCard({
               alt={activation.name}
               fill
               className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
           <div className="absolute inset-0 [backface-visibility:hidden] rounded-lg overflow-hidden bg-tedx-gray-light p-6 flex flex-col justify-center [transform:rotateY(180deg)]">

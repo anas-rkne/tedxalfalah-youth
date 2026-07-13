@@ -28,8 +28,9 @@ export default async function SponsorsStrip() {
                     src={sponsor.logoUrl}
                     alt={sponsor.name}
                     fill
-                    className="object-contain"
-                  />
+                  className="object-contain"
+                  sizes="128px"
+                />
                 </div>
               </FadeInView>
             ))}

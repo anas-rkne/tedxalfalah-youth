@@ -81,6 +81,7 @@ export default async function SponsorsPage() {
                     alt={sponsor.name}
                     fill
                     className="object-contain grayscale hover:grayscale-0 transition-all"
+                    sizes="(max-width: 640px) 50vw, 25vw"
                   />
                 </a>
               ))}

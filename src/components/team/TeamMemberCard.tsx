@@ -31,6 +31,7 @@ export default function TeamMemberCard({ member, index }: TeamMemberCardProps) {
           alt={member.name}
           fill
           className="object-cover grayscale hover:grayscale-0 hover:scale-110 transition-all duration-500"
+          sizes="96px"
         />
       </div>
       <h3 className="font-semibold">{member.name}</h3>

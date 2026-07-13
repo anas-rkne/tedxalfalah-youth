@@ -101,6 +101,7 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
                 alt={speaker.name}
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 100vw, 672px"
               />
             </div>
 

@@ -19,6 +19,7 @@ export default async function Hero() {
         fill
         priority
         className="object-cover"
+        sizes="100vw"
       />
       <div className="absolute inset-0 bg-black/40" />
 

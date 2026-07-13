@@ -85,8 +85,9 @@ export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
           src={speaker.imageUrl}
           alt={speaker.name}
           fill
-          className="object-cover"
-        />
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
       </motion.div>
 
       <h3 className="font-semibold text-lg">

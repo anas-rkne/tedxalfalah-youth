@@ -68,11 +68,14 @@ export default async function RootLayout({
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html
-      lang={locale}
-      dir={dir}
-      className={`${geistSans.variable} ${geistMono.variable} ${notoSansArabic.variable} h-full antialiased`}
-    >
+      <html
+        lang={locale}
+        dir={dir}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansArabic.variable} h-full antialiased`}
+      >
+        <head>
+          <link rel="preconnect" href="https://cdn.sanity.io" />
+        </head>
       <body
         className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : ""}`}
       >

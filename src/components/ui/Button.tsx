@@ -44,7 +44,10 @@ export default function Button({
   href,
   ...rest
 }: ButtonProps) {
-  const classes = `inline-flex items-center justify-center font-semibold uppercase tracking-wide transition-colors duration-200 rounded-lg ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;
+  const isDisabled = "disabled" in rest && rest.disabled;
+  const classes = `inline-flex items-center justify-center font-semibold uppercase tracking-wide transition-all duration-200 rounded-lg ${sizeClasses[size]} ${variantClasses[variant]} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tedx-red focus-visible:ring-offset-2 ${
+    isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "active:scale-95"
+  } ${className}`;
 
   if (href) {
     return (
