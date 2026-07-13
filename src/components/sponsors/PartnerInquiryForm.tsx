@@ -7,10 +7,8 @@ import { z } from "zod";
 import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import Input from "@/components/ui/Input";
 import { useRouter } from "@/i18n/navigation";
-
-const inputClasses =
-  "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
 
 export default function PartnerInquiryForm() {
   const t = useTranslations("page.sponsors.form");
@@ -59,82 +57,44 @@ export default function PartnerInquiryForm() {
       className="max-w-lg mx-auto flex flex-col gap-4"
       noValidate
     >
-      <div>
-        <label htmlFor="partner-name" className="block text-sm font-medium mb-1">
-          {t("namePlaceholder")}
-        </label>
-        <input
-          id="partner-name"
-          {...register("name")}
-          placeholder={t("namePlaceholder")}
-          className={inputClasses}
-        />
-        {errors.name && (
-          <p className="text-red-600 text-sm mt-1" role="alert">{errors.name.message}</p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="partner-org" className="block text-sm font-medium mb-1">
-          {t("organizationPlaceholder")}
-        </label>
-        <input
-          id="partner-org"
-          {...register("organization")}
-          placeholder={t("organizationPlaceholder")}
-          className={inputClasses}
-        />
-        {errors.organization && (
-          <p className="text-red-600 text-sm mt-1" role="alert">
-            {errors.organization.message}
-          </p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="partner-email" className="block text-sm font-medium mb-1">
-          {t("emailPlaceholder")}
-        </label>
-        <input
-          id="partner-email"
-          {...register("email")}
-          type="email"
-          placeholder={t("emailPlaceholder")}
-          className={inputClasses}
-        />
-        {errors.email && (
-          <p className="text-red-600 text-sm mt-1" role="alert">{errors.email.message}</p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="partner-phone" className="block text-sm font-medium mb-1">
-          {t("phonePlaceholder")}
-        </label>
-        <input
-          id="partner-phone"
-          {...register("phone")}
-          placeholder={t("phonePlaceholder")}
-          className={inputClasses}
-        />
-        {errors.phone && (
-          <p className="text-red-600 text-sm mt-1" role="alert">{errors.phone.message}</p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="partner-message" className="block text-sm font-medium mb-1">
-          {t("messagePlaceholder")}
-        </label>
-        <textarea
-          id="partner-message"
-          {...register("message")}
-          placeholder={t("messagePlaceholder")}
-          rows={4}
-          className={inputClasses}
-        />
-        {errors.message && (
-          <p className="text-red-600 text-sm mt-1" role="alert">
-            {errors.message.message}
-          </p>
-        )}
-      </div>
+      <Input
+        label={t("namePlaceholder")}
+        id="partner-name"
+        registration={register("name")}
+        placeholder={t("namePlaceholder")}
+        error={errors.name?.message}
+      />
+      <Input
+        label={t("organizationPlaceholder")}
+        id="partner-org"
+        registration={register("organization")}
+        placeholder={t("organizationPlaceholder")}
+        error={errors.organization?.message}
+      />
+      <Input
+        label={t("emailPlaceholder")}
+        id="partner-email"
+        registration={register("email")}
+        type="email"
+        placeholder={t("emailPlaceholder")}
+        error={errors.email?.message}
+      />
+      <Input
+        label={t("phonePlaceholder")}
+        id="partner-phone"
+        registration={register("phone")}
+        placeholder={t("phonePlaceholder")}
+        error={errors.phone?.message}
+      />
+      <Input
+        label={t("messagePlaceholder")}
+        id="partner-message"
+        registration={register("message")}
+        placeholder={t("messagePlaceholder")}
+        textarea
+        rows={4}
+        error={errors.message?.message}
+      />
 
       {status === "error" && (
         <p className="text-red-600 text-sm">{t("errorGeneric")}</p>

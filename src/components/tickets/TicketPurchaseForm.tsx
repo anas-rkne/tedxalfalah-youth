@@ -7,10 +7,8 @@ import { z } from "zod";
 import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import Input from "@/components/ui/Input";
 import { TicketType } from "@/lib/tickets";
-
-const inputClasses =
-  "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
 
 interface TicketPurchaseFormProps {
   ticketTypes: TicketType[];
@@ -70,58 +68,39 @@ export default function TicketPurchaseForm({
       className="max-w-md mx-auto flex flex-col gap-4"
       noValidate
     >
-      <div>
-        <label className="block text-sm font-medium mb-1">{t("ticketType")}</label>
-        <select {...register("ticketTypeId")} className={inputClasses}>
-          {ticketTypes.map((ticket) => (
-            <option key={ticket.id} value={ticket.id}>
-              {ticket.name} — {ticket.priceAED} AED
-            </option>
-          ))}
-        </select>
-      </div>
+      <Input label={t("ticketType")} id="purchase-type" registration={register("ticketTypeId")} select>
+        {ticketTypes.map((ticket) => (
+          <option key={ticket.id} value={ticket.id}>
+            {ticket.name} — {ticket.priceAED} AED
+          </option>
+        ))}
+      </Input>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">{t("quantity")}</label>
-        <input
-          type="number"
-          min={1}
-          max={10}
-          {...register("quantity")}
-          className={inputClasses}
-        />
-      </div>
+      <Input
+        label={t("quantity")}
+        id="purchase-qty"
+        registration={register("quantity")}
+        type="number"
+        min={1}
+        max={10}
+      />
 
-      <div>
-        <label htmlFor="purchase-name" className="block text-sm font-medium mb-1">
-          {t("namePlaceholder")}
-        </label>
-        <input
-          id="purchase-name"
-          {...register("name")}
-          placeholder={t("namePlaceholder")}
-          className={inputClasses}
-        />
-        {errors.name && (
-          <p className="text-red-600 text-sm mt-1" role="alert">{errors.name.message}</p>
-        )}
-      </div>
+      <Input
+        label={t("namePlaceholder")}
+        id="purchase-name"
+        registration={register("name")}
+        placeholder={t("namePlaceholder")}
+        error={errors.name?.message}
+      />
 
-      <div>
-        <label htmlFor="purchase-email" className="block text-sm font-medium mb-1">
-          {t("emailPlaceholder")}
-        </label>
-        <input
-          id="purchase-email"
-          {...register("email")}
-          type="email"
-          placeholder={t("emailPlaceholder")}
-          className={inputClasses}
-        />
-        {errors.email && (
-          <p className="text-red-600 text-sm mt-1" role="alert">{errors.email.message}</p>
-        )}
-      </div>
+      <Input
+        label={t("emailPlaceholder")}
+        id="purchase-email"
+        registration={register("email")}
+        type="email"
+        placeholder={t("emailPlaceholder")}
+        error={errors.email?.message}
+      />
 
       {status === "error" && (
         <p className="text-red-600 text-sm">{t("errorGeneric")}</p>

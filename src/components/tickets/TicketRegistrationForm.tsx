@@ -7,10 +7,8 @@ import { z } from "zod";
 import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import Input from "@/components/ui/Input";
 import { useRouter } from "@/i18n/navigation";
-
-const inputClasses =
-  "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
 
 export default function TicketRegistrationForm() {
   const t = useTranslations("page.tickets.registerForm");
@@ -61,61 +59,36 @@ export default function TicketRegistrationForm() {
       className="max-w-md mx-auto flex flex-col gap-4"
       noValidate
     >
-      <div>
-        <label htmlFor="reg-name" className="block text-sm font-medium mb-1">
-          {t("namePlaceholder")}
-        </label>
-        <input
-          id="reg-name"
-          {...register("name")}
-          placeholder={t("namePlaceholder")}
-          className={inputClasses}
-        />
-        {errors.name && (
-          <p className="text-red-600 text-sm mt-1" role="alert">{errors.name.message}</p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="reg-email" className="block text-sm font-medium mb-1">
-          {t("emailPlaceholder")}
-        </label>
-        <input
-          id="reg-email"
-          {...register("email")}
-          type="email"
-          placeholder={t("emailPlaceholder")}
-          className={inputClasses}
-        />
-        {errors.email && (
-          <p className="text-red-600 text-sm mt-1" role="alert">{errors.email.message}</p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="reg-phone" className="block text-sm font-medium mb-1">
-          {t("phonePlaceholder")}
-        </label>
-        <input
-          id="reg-phone"
-          {...register("phone")}
-          placeholder={t("phonePlaceholder")}
-          className={inputClasses}
-        />
-        {errors.phone && (
-          <p className="text-red-600 text-sm mt-1" role="alert">{errors.phone.message}</p>
-        )}
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">
-          {t("numberOfTickets")}
-        </label>
-        <input
-          type="number"
-          min={1}
-          max={10}
-          {...register("numberOfTickets")}
-          className={inputClasses}
-        />
-      </div>
+      <Input
+        label={t("namePlaceholder")}
+        id="reg-name"
+        registration={register("name")}
+        placeholder={t("namePlaceholder")}
+        error={errors.name?.message}
+      />
+      <Input
+        label={t("emailPlaceholder")}
+        id="reg-email"
+        registration={register("email")}
+        type="email"
+        placeholder={t("emailPlaceholder")}
+        error={errors.email?.message}
+      />
+      <Input
+        label={t("phonePlaceholder")}
+        id="reg-phone"
+        registration={register("phone")}
+        placeholder={t("phonePlaceholder")}
+        error={errors.phone?.message}
+      />
+      <Input
+        label={t("numberOfTickets")}
+        id="reg-tickets"
+        registration={register("numberOfTickets")}
+        type="number"
+        min={1}
+        max={10}
+      />
 
       {status === "error" && (
         <p className="text-red-600 text-sm">{t("errorGeneric")}</p>

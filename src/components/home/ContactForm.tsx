@@ -10,6 +10,7 @@ import SectionContainer from "@/components/ui/SectionContainer";
 import FadeInView from "@/components/ui/FadeInView";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
+import Input from "@/components/ui/Input";
 
 const SUBJECT_VALUES = [
   "General",
@@ -18,9 +19,6 @@ const SUBJECT_VALUES = [
   "Volunteering",
   "Media",
 ] as const;
-
-const inputClasses =
-  "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
 
 export default function ContactForm() {
   const t = useTranslations("home.contactForm");
@@ -90,71 +88,40 @@ export default function ContactForm() {
           className="flex flex-col gap-4"
           noValidate
         >
-          <div>
-            <label htmlFor="contact-name" className="block text-sm font-medium mb-1">
-              {t("namePlaceholder")}
-            </label>
-            <input
-              id="contact-name"
-              {...register("name")}
-              placeholder={t("namePlaceholder")}
-              className={inputClasses}
-            />
-            {errors.name && (
-              <p className="text-red-600 text-sm mt-1" role="alert">
-                {errors.name.message}
-              </p>
-            )}
-          </div>
+          <Input
+            label={t("namePlaceholder")}
+            id="contact-name"
+            registration={register("name")}
+            placeholder={t("namePlaceholder")}
+            error={errors.name?.message}
+          />
 
-          <div>
-            <label htmlFor="contact-email" className="block text-sm font-medium mb-1">
-              {t("emailPlaceholder")}
-            </label>
-            <input
-              id="contact-email"
-              {...register("email")}
-              type="email"
-              placeholder={t("emailPlaceholder")}
-              className={inputClasses}
-            />
-            {errors.email && (
-              <p className="text-red-600 text-sm mt-1" role="alert">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
+          <Input
+            label={t("emailPlaceholder")}
+            id="contact-email"
+            registration={register("email")}
+            type="email"
+            placeholder={t("emailPlaceholder")}
+            error={errors.email?.message}
+          />
 
-          <div>
-            <label htmlFor="contact-subject" className="block text-sm font-medium mb-1">
-              Subject
-            </label>
-            <select id="contact-subject" {...register("subject")} className={inputClasses}>
-              {SUBJECT_VALUES.map((value) => (
-                <option key={value} value={value}>
-                  {subjectLabels[value]}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Input label="Subject" id="contact-subject" registration={register("subject")} select>
+            {SUBJECT_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {subjectLabels[value]}
+              </option>
+            ))}
+          </Input>
 
-          <div>
-            <label htmlFor="contact-message" className="block text-sm font-medium mb-1">
-              {t("messagePlaceholder")}
-            </label>
-            <textarea
-              id="contact-message"
-              {...register("message")}
-              placeholder={t("messagePlaceholder")}
-              rows={5}
-              className={inputClasses}
-            />
-            {errors.message && (
-              <p className="text-red-600 text-sm mt-1" role="alert">
-                {errors.message.message}
-              </p>
-            )}
-          </div>
+          <Input
+            label={t("messagePlaceholder")}
+            id="contact-message"
+            registration={register("message")}
+            placeholder={t("messagePlaceholder")}
+            textarea
+            rows={5}
+            error={errors.message?.message}
+          />
 
           {status === "error" && (
             <p className="text-red-600 text-sm">{t("errorGeneric")}</p>
