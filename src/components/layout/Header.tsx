@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useRTL } from "@/hooks/useRTL";
 import { Menu, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
@@ -11,6 +12,7 @@ import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const { isRTL } = useRTL();
   const t = useTranslations("common.nav");
   const tCommon = useTranslations("common");
   const pathname = usePathname();
@@ -66,7 +68,7 @@ export default function Header() {
             >
               {link.label}
               <motion.span
-                className="absolute -bottom-0.5 left-0 h-0.5 bg-tedx-red rounded-full"
+                className="absolute -bottom-0.5 start-0 h-0.5 bg-tedx-red rounded-full"
                 layoutId="nav-underline"
                 initial={false}
                 style={{ width: pathname === link.href ? "100%" : 0 }}
@@ -120,7 +122,7 @@ export default function Header() {
               {NAV_LINKS.map((link, i) => (
                 <motion.div
                   key={link.href}
-                  initial={shouldReduceMotion ? {} : { opacity: 0, x: -15 }}
+                  initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 15 : -15 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={shouldReduceMotion ? {} : { duration: 0.2, delay: i * 0.04 }}
                 >

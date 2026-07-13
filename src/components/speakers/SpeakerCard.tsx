@@ -71,7 +71,7 @@ export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
         perspective: 900,
       }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="cursor-pointer text-left group"
+      className="cursor-pointer text-start group"
     >
       <motion.div
         className="relative w-full aspect-square rounded-lg overflow-hidden mb-3"

@@ -55,7 +55,7 @@ export default function CustomCursor() {
   return (
     <motion.div
       aria-hidden="true"
-      className="fixed top-0 left-0 z-[9999] rounded-full pointer-events-none border-2 border-tedx-white/60"
+      className="fixed top-0 start-0 z-[9999] rounded-full pointer-events-none border-2 border-tedx-white/60"
       style={{
         x: springX,
         y: springY,

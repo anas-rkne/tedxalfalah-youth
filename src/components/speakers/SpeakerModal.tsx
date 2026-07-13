@@ -60,7 +60,7 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
             <motion.button
               onClick={onClose}
               aria-label="Close"
-              className="absolute top-4 right-4 z-10 bg-tedx-white rounded-full p-2 shadow"
+              className="absolute top-4 end-4 z-10 bg-tedx-white rounded-full p-2 shadow"
               whileHover={shouldReduceMotion ? {} : { rotate: 360 }}
               whileTap={shouldReduceMotion ? {} : { scale: 0.8 }}
               transition={{ duration: 0.5 }}

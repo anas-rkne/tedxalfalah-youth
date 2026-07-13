@@ -37,7 +37,7 @@ export default function TeamAccordionSection({
     <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between text-left text-2xl font-bold mb-2 border-b border-gray-200 pb-2"
+        className="w-full flex items-center justify-between text-start text-2xl font-bold mb-2 border-b border-gray-200 pb-2"
       >
         <span>{departmentName}</span>
         <motion.span

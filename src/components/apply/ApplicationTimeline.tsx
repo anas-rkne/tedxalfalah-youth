@@ -36,7 +36,7 @@ export default function ApplicationTimeline() {
           >
             {/* connector line */}
             {index < stages.length - 1 && (
-              <div className="hidden lg:block absolute top-4 left-1/2 w-full h-px bg-gray-300" />
+              <div className="hidden lg:block absolute top-4 start-1/2 w-full h-px bg-gray-300" />
             )}
 
             <div className="flex-shrink-0 relative z-10 w-8 h-8 rounded-full bg-tedx-red text-tedx-white flex items-center justify-center text-sm font-bold">

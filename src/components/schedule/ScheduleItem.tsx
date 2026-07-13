@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { useRTL } from "@/hooks/useRTL";
 import { Link } from "@/i18n/navigation";
 import { Session } from "@/lib/types";
 
@@ -38,12 +39,13 @@ interface ScheduleItemProps {
 
 export default function ScheduleItem({ session, typeLabels, index }: ScheduleItemProps) {
   const shouldReduceMotion = useReducedMotion();
+  const { isRTL } = useRTL();
   const style = TYPE_STYLES[session.type];
 
   return (
     <motion.div
-      className={`flex flex-col sm:flex-row gap-2 sm:gap-6 border-l-4 ${style.borderClass} bg-tedx-white rounded-r-lg p-4 sm:p-5 shadow-sm`}
-      initial={shouldReduceMotion ? {} : { opacity: 0, x: -20 }}
+      className={`flex flex-col sm:flex-row gap-2 sm:gap-6 border-s-4 ${style.borderClass} bg-tedx-white rounded-e-lg p-4 sm:p-5 shadow-sm`}
+      initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 20 : -20 }}
       whileInView={shouldReduceMotion ? {} : { opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.4, ease: "easeOut", delay: index * 0.08 }}

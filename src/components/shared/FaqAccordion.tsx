@@ -33,7 +33,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
           >
             <button
               id={buttonId}
-              className="w-full flex items-center justify-between py-4 text-left font-medium gap-4"
+              className="w-full flex items-center justify-between py-4 text-start font-medium gap-4"
               onClick={() => setOpenIndex(isOpen ? null : index)}
               aria-expanded={isOpen}
               aria-controls={panelId}
