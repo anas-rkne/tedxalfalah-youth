@@ -1,29 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import { useRouter } from "@/i18n/navigation";
-
-const ticketSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Enter a valid email address"),
-  phone: z.string().min(1, "Phone is required"),
-  numberOfTickets: z.coerce.number().min(1).max(10),
-});
-
-type TicketFormValues = z.infer<typeof ticketSchema>;
 
 const inputClasses =
   "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
 
 export default function TicketRegistrationForm() {
+  const t = useTranslations("page.tickets.registerForm");
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
+
+  const ticketSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(1, t("errors.nameRequired")),
+        email: z.string().email(t("errors.emailInvalid")),
+        phone: z.string().min(1, t("errors.phoneRequired")),
+        numberOfTickets: z.coerce.number().min(1).max(10),
+      }),
+    [t]
+  );
+
+  type TicketFormValues = z.infer<typeof ticketSchema>;
+
   const {
     register,
     handleSubmit,
@@ -57,7 +64,7 @@ export default function TicketRegistrationForm() {
       <div>
         <input
           {...register("name")}
-          placeholder="Full name"
+          placeholder={t("namePlaceholder")}
           className={inputClasses}
         />
         {errors.name && (
@@ -68,7 +75,7 @@ export default function TicketRegistrationForm() {
         <input
           {...register("email")}
           type="email"
-          placeholder="Email"
+          placeholder={t("emailPlaceholder")}
           className={inputClasses}
         />
         {errors.email && (
@@ -78,7 +85,7 @@ export default function TicketRegistrationForm() {
       <div>
         <input
           {...register("phone")}
-          placeholder="Phone"
+          placeholder={t("phonePlaceholder")}
           className={inputClasses}
         />
         {errors.phone && (
@@ -87,7 +94,7 @@ export default function TicketRegistrationForm() {
       </div>
       <div>
         <label className="block text-sm font-medium mb-1">
-          Number of Tickets
+          {t("numberOfTickets")}
         </label>
         <input
           type="number"
@@ -99,15 +106,13 @@ export default function TicketRegistrationForm() {
       </div>
 
       {status === "error" && (
-        <p className="text-red-600 text-sm">
-          Something went wrong. Please try again.
-        </p>
+        <p className="text-red-600 text-sm">{t("errorGeneric")}</p>
       )}
 
       <TurnstileWidget onVerify={setTurnstileToken} />
 
       <Button variant="primary" size="md" disabled={isSubmitting}>
-        {isSubmitting ? "Registering..." : "Register"}
+        {isSubmitting ? t("submitting") : t("submit")}
       </Button>
     </form>
   );

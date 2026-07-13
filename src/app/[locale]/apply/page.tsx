@@ -1,19 +1,26 @@
-import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import ApplicationTimeline from "@/components/apply/ApplicationTimeline";
 import ApplicationForm from "@/components/apply/ApplicationForm";
 import ApplyFAQ from "@/components/apply/ApplyFAQ";
+import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Apply",
-  description:
-    "Apply to speak at TEDxAlFalah Youth as a Young Speaker (10-14) or an Expert in the field of children and youth.",
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "page.apply" });
+  return {
+    title: t("meta.title"),
+    description: t("meta.description"),
+  };
+}
 
 // TODO: replace with the real application deadline once confirmed by client
 const APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00";
 
-export default function ApplyPage() {
+export default async function ApplyPage() {
+  const t = await getTranslations("page.apply");
   const isClosed = new Date() > new Date(APPLICATION_DEADLINE);
 
   return (
@@ -22,14 +29,10 @@ export default function ApplyPage() {
       <section className="py-16 bg-tedx-black text-tedx-white text-center">
         <SectionContainer className="max-w-3xl">
           <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
-            Tomorrow, Now: Young voices. Real ideas. The future starts
-            earlier than we think.
+            {t("theme.title")}
           </h1>
           <p className="text-tedx-white/80 leading-relaxed">
-            In the UAE, youth are inventing, creating, performing, competing,
-            and asking bold questions. TEDxYouth is a stage for their ideas
-            and stories. Real experiences that inspire young people and
-            remind adults how powerful youth voices can be.
+            {t("theme.body")}
           </p>
         </SectionContainer>
       </section>
@@ -38,36 +41,31 @@ export default function ApplyPage() {
       <section className="py-16">
         <SectionContainer className="max-w-4xl">
           <h2 className="text-3xl font-bold text-center mb-10">
-            Who Can Apply
+            {t("whoCanApply.title")}
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="p-6 bg-tedx-gray-light rounded-lg">
               <h3 className="font-bold text-lg mb-2">
-                Young Speakers, Ages 10 to 14
+                {t("whoCanApply.youngSpeakers.title")}
               </h3>
               <p className="text-sm text-tedx-gray leading-relaxed">
-                The heart of the event. 80% of speaking slots are dedicated
-                to youth voices.
+                {t("whoCanApply.youngSpeakers.body")}
               </p>
             </div>
             <div className="p-6 bg-tedx-gray-light rounded-lg">
               <h3 className="font-bold text-lg mb-2">
-                Adult Experts in the Field of Children and Youth
+                {t("whoCanApply.experts.title")}
               </h3>
               <p className="text-sm text-tedx-gray leading-relaxed">
-                The remaining slots are open to adults with strong and
-                inspiring stories to share.
+                {t("whoCanApply.experts.body")}
               </p>
             </div>
           </div>
           <p className="text-center text-tedx-gray mt-8 leading-relaxed">
-            Two worlds that need each other: young people bring the
-            questions, the energy, and the ideas; those who work alongside
-            them bring the experience, perspective, and proof of what is
-            possible when youth voices are taken seriously.
+            {t("whoCanApply.connector")}
           </p>
           <p className="text-center font-bold text-lg mt-6">
-            Everyone is welcome to apply.
+            {t("whoCanApply.everyoneWelcome")}
           </p>
         </SectionContainer>
       </section>
@@ -76,12 +74,10 @@ export default function ApplyPage() {
       <section className="py-16 bg-tedx-gray-light">
         <SectionContainer className="max-w-3xl text-center">
           <h2 className="text-2xl font-bold mb-4">
-            How Applications Are Reviewed
+            {t("reviewProcess.title")}
           </h2>
           <p className="text-tedx-gray leading-relaxed">
-            A dedicated review community will assess every application to
-            ensure each story aligns with the event theme, alongside
-            originality, clarity of idea, and readiness to develop the talk.
+            {t("reviewProcess.body")}
           </p>
         </SectionContainer>
       </section>
@@ -90,7 +86,7 @@ export default function ApplyPage() {
       <section className="py-16">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-12">
-            Your Application Journey
+            {t("journey.title")}
           </h2>
           <ApplicationTimeline />
         </SectionContainer>
@@ -102,11 +98,10 @@ export default function ApplyPage() {
           {isClosed ? (
             <div className="max-w-xl mx-auto text-center p-8 bg-tedx-white rounded-lg">
               <h2 className="text-2xl font-bold mb-4">
-                Applications Are Now Closed
+                {t("closed.title")}
               </h2>
               <p className="text-tedx-gray">
-                Thank you to everyone who applied — stay tuned for
-                announcements.
+                {t("closed.body")}
               </p>
             </div>
           ) : (
@@ -118,12 +113,9 @@ export default function ApplyPage() {
       {/* Non-selection message */}
       <section className="py-16">
         <SectionContainer className="max-w-2xl text-center">
-          <h2 className="text-xl font-bold mb-4">A Note on Selection</h2>
+          <h2 className="text-xl font-bold mb-4">{t("nonSelection.title")}</h2>
           <p className="text-tedx-gray leading-relaxed">
-            If you are not selected, it means nothing more than that we were
-            limited in spots. We are confident your story is worth sharing.
-            We warmly encourage you to attend the event and to explore other
-            platforms to share your story.
+            {t("nonSelection.body")}
           </p>
         </SectionContainer>
       </section>
@@ -132,7 +124,7 @@ export default function ApplyPage() {
       <section id="faq" className="py-16 bg-tedx-gray-light">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-10">
-            Frequently Asked Questions
+            {t("faqTitle")}
           </h2>
           <ApplyFAQ />
         </SectionContainer>

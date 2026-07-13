@@ -1,23 +1,32 @@
-import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import TicketRegistrationForm from "@/components/tickets/TicketRegistrationForm";
 import TicketPurchaseForm from "@/components/tickets/TicketPurchaseForm";
 import { TICKET_TYPES } from "@/lib/tickets";
 import { isStripeConfigured } from "@/lib/stripe";
 import { Link } from "@/i18n/navigation";
+import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Tickets",
-  description: "Get your tickets for TEDxAlFalah Youth.",
-};
+type Props = { params: Promise<{ locale: string }> };
 
-export default function TicketsPage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "page.tickets" });
+  return {
+    title: t("meta.title"),
+    description: t("meta.description"),
+  };
+}
+
+export default async function TicketsPage() {
+  const t = await getTranslations("page.tickets");
+
   return (
     <>
       <section className="py-16">
         <SectionContainer>
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">
-            Tickets
+            {t("title")}
           </h1>
           <div className="grid sm:grid-cols-3 gap-6">
             {TICKET_TYPES.map((ticket) => (
@@ -25,12 +34,13 @@ export default function TicketsPage() {
                 key={ticket.id}
                 className="p-6 border border-gray-200 rounded-lg text-center flex flex-col"
               >
-                <h3 className="font-bold text-lg mb-1">{ticket.name}</h3>
+                <h3 className="font-bold text-lg mb-1">{t(`ticketNames.${ticket.id}`)}</h3>
                 <p className="text-2xl font-bold text-tedx-red mb-4">
-                  {isStripeConfigured ? `${ticket.priceAED} AED` : "[Price TBD]"}
+                  {isStripeConfigured ? `${ticket.priceAED} AED` : t("priceTbd")}
                 </p>
+                <p className="text-sm text-tedx-gray mb-3">{t(`ticketDescriptions.${ticket.id}`)}</p>
                 <ul className="text-sm text-tedx-gray space-y-1 flex-1">
-                  {ticket.includes.map((item) => (
+                  {(t.raw(`ticketIncludes.${ticket.id}`) as string[]).map((item: string) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
@@ -40,16 +50,10 @@ export default function TicketsPage() {
         </SectionContainer>
       </section>
 
-      {/*
-        هذا القسم يتحول تلقائياً حسب توفر STRIPE_SECRET_KEY:
-        - مفعّل → دفع فعلي عبر Stripe Checkout (تذاكر مدفوعة)
-        - غير مفعّل → فورم تسجيل مجاني (يُستخدم إن كان الحدث مجانياً، أو
-          مؤقتاً قبل تفعيل الدفع). راجع القسم 7.6 بملف DOCUMENTATION.md.
-      */}
       <section className="py-16 bg-tedx-gray-light">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-8">
-            {isStripeConfigured ? "Buy Your Ticket" : "Register Now"}
+            {isStripeConfigured ? t("buyTitle") : t("registerTitle")}
           </h2>
           {isStripeConfigured ? (
             <TicketPurchaseForm ticketTypes={TICKET_TYPES} />
@@ -61,25 +65,25 @@ export default function TicketsPage() {
 
       <section className="py-16">
         <SectionContainer className="max-w-3xl">
-          <h2 className="text-2xl font-bold mb-4">Event Day Information</h2>
+          <h2 className="text-2xl font-bold mb-4">{t("eventDayInfo.title")}</h2>
           <ul className="text-tedx-gray space-y-2">
             <li>
-              <strong>Date:</strong> [PLACEHOLDER]
+              <strong>{t("eventDayInfo.date")}</strong> [PLACEHOLDER]
             </li>
             <li>
-              <strong>Timing:</strong> [PLACEHOLDER]
+              <strong>{t("eventDayInfo.timing")}</strong> [PLACEHOLDER]
             </li>
             <li>
-              <strong>Venue:</strong>{" "}
+              <strong>{t("eventDayInfo.venue")}</strong>{" "}
               <Link href="/venue" className="underline text-tedx-red">
-                View venue details
+                {t("eventDayInfo.venueLink")}
               </Link>
             </li>
             <li>
-              <strong>Age Guidance:</strong> [PLACEHOLDER]
+              <strong>{t("eventDayInfo.ageGuidance")}</strong> [PLACEHOLDER]
             </li>
             <li>
-              <strong>What to Bring:</strong> [PLACEHOLDER]
+              <strong>{t("eventDayInfo.whatToBring")}</strong> [PLACEHOLDER]
             </li>
           </ul>
         </SectionContainer>
@@ -88,11 +92,11 @@ export default function TicketsPage() {
       <section className="py-16 bg-tedx-gray-light">
         <SectionContainer className="max-w-3xl text-center">
           <p className="text-sm text-tedx-gray">
-            [PLACEHOLDER: refund and transfer policy summary.] See our{" "}
+            {t("refundPolicy.body")}{" "}
             <Link href="/terms" className="underline text-tedx-red">
-              Terms and Conditions
+              {t("refundPolicy.termsLink")}
             </Link>{" "}
-            for details.
+            {t("refundPolicy.forDetails")}
           </p>
         </SectionContainer>
       </section>

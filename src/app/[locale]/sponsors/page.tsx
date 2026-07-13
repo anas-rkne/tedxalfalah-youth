@@ -1,48 +1,36 @@
-import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import SectionContainer from "@/components/ui/SectionContainer";
 import PartnerInquiryForm from "@/components/sponsors/PartnerInquiryForm";
 import { getSponsors } from "@/lib/data";
-import { SponsorTier } from "@/lib/types";
+import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Sponsors",
-  description: "Partner with TEDxAlFalah Youth and invest in young voices.",
-};
+type Props = { params: Promise<{ locale: string }> };
 
-const TIERS: { name: SponsorTier; benefits: string[] }[] = [
-  {
-    name: "Platinum",
-    benefits: ["Top logo placement", "Stage recognition", "VIP seats"],
-  },
-  {
-    name: "Gold",
-    benefits: ["Logo on website", "Social media mentions"],
-  },
-  {
-    name: "Silver",
-    benefits: ["Logo on website", "Event day signage"],
-  },
-  {
-    name: "Community",
-    benefits: ["Listed as community supporter"],
-  },
-];
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "page.sponsors" });
+  return {
+    title: t("meta.title"),
+    description: t("meta.description"),
+  };
+}
+
+const TIER_KEYS = ["platinum", "gold", "silver", "community"] as const;
 
 export default async function SponsorsPage() {
   const sponsors = await getSponsors();
+  const t = await getTranslations("page.sponsors");
 
   return (
     <>
       <section className="py-16">
         <SectionContainer className="max-w-3xl text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Become a Partner
+            {t("hero.title")}
           </h1>
           <p className="text-tedx-gray leading-relaxed">
-            [PLACEHOLDER: opening statement on why partners support
-            TEDxAlFalah Youth and the value of investing in young voices —
-            to be provided by the client.]
+            {t("hero.body")}
           </p>
         </SectionContainer>
       </section>
@@ -50,17 +38,17 @@ export default async function SponsorsPage() {
       <section className="py-16 bg-tedx-gray-light">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-10">
-            Sponsorship Tiers
+            {t("tiers.title")}
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TIERS.map((tier) => (
+            {TIER_KEYS.map((key) => (
               <div
-                key={tier.name}
+                key={key}
                 className="p-6 bg-tedx-white rounded-lg text-center"
               >
-                <h3 className="font-bold text-lg mb-3">{tier.name}</h3>
+                <h3 className="font-bold text-lg mb-3">{t(`tiers.${key}.name`)}</h3>
                 <ul className="text-sm text-tedx-gray space-y-1">
-                  {tier.benefits.map((b) => (
+                  {(t.raw(`tiers.${key}.benefits`) as string[]).map((b: string) => (
                     <li key={b}>{b}</li>
                   ))}
                 </ul>
@@ -68,7 +56,7 @@ export default async function SponsorsPage() {
             ))}
           </div>
           <p className="text-center text-sm text-tedx-gray mt-8">
-            Full packages available on request.
+            {t("tiers.fullPackagesNote")}
           </p>
         </SectionContainer>
       </section>
@@ -77,7 +65,7 @@ export default async function SponsorsPage() {
         <section className="py-16">
           <SectionContainer>
             <h2 className="text-2xl font-bold text-center mb-10">
-              Current Partners
+              {t("currentPartners.title")}
             </h2>
             <div className="flex flex-wrap justify-center gap-8">
               {sponsors.map((sponsor) => (
@@ -104,10 +92,10 @@ export default async function SponsorsPage() {
       <section className="py-16 bg-tedx-gray-light">
         <SectionContainer>
           <h2 className="text-2xl font-bold text-center mb-2">
-            Become a Partner
+            {t("formSection.title")}
           </h2>
           <p className="text-center text-sm text-tedx-gray mb-8">
-            Interested in partnering? Send us a message.
+            {t("formSection.subtitle")}
           </p>
           <PartnerInquiryForm />
           <p className="text-center text-sm mt-8">
@@ -115,7 +103,7 @@ export default async function SponsorsPage() {
               href="/sponsorship-deck.pdf"
               className="underline text-tedx-red"
             >
-              Download Sponsorship Deck (PDF)
+              {t("formSection.downloadDeck")}
             </a>
           </p>
         </SectionContainer>

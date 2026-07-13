@@ -1,30 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import { useRouter } from "@/i18n/navigation";
-
-const partnerSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  organization: z.string().min(1, "Organization is required"),
-  email: z.string().email("Enter a valid email address"),
-  phone: z.string().min(1, "Phone is required"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
-
-type PartnerFormValues = z.infer<typeof partnerSchema>;
 
 const inputClasses =
   "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
 
 export default function PartnerInquiryForm() {
+  const t = useTranslations("page.sponsors.form");
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
+
+  const partnerSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(1, t("errors.nameRequired")),
+        organization: z.string().min(1, t("errors.organizationRequired")),
+        email: z.string().email(t("errors.emailInvalid")),
+        phone: z.string().min(1, t("errors.phoneRequired")),
+        message: z.string().min(10, t("errors.messageMinLength")),
+      }),
+    [t]
+  );
+
+  type PartnerFormValues = z.infer<typeof partnerSchema>;
+
   const {
     register,
     handleSubmit,
@@ -55,7 +62,7 @@ export default function PartnerInquiryForm() {
       <div>
         <input
           {...register("name")}
-          placeholder="Full name"
+          placeholder={t("namePlaceholder")}
           className={inputClasses}
         />
         {errors.name && (
@@ -65,7 +72,7 @@ export default function PartnerInquiryForm() {
       <div>
         <input
           {...register("organization")}
-          placeholder="Organization"
+          placeholder={t("organizationPlaceholder")}
           className={inputClasses}
         />
         {errors.organization && (
@@ -78,7 +85,7 @@ export default function PartnerInquiryForm() {
         <input
           {...register("email")}
           type="email"
-          placeholder="Email"
+          placeholder={t("emailPlaceholder")}
           className={inputClasses}
         />
         {errors.email && (
@@ -88,7 +95,7 @@ export default function PartnerInquiryForm() {
       <div>
         <input
           {...register("phone")}
-          placeholder="Phone"
+          placeholder={t("phonePlaceholder")}
           className={inputClasses}
         />
         {errors.phone && (
@@ -98,7 +105,7 @@ export default function PartnerInquiryForm() {
       <div>
         <textarea
           {...register("message")}
-          placeholder="Tell us about your organization and interest in partnering"
+          placeholder={t("messagePlaceholder")}
           rows={4}
           className={inputClasses}
         />
@@ -110,15 +117,13 @@ export default function PartnerInquiryForm() {
       </div>
 
       {status === "error" && (
-        <p className="text-red-600 text-sm">
-          Something went wrong. Please try again.
-        </p>
+        <p className="text-red-600 text-sm">{t("errorGeneric")}</p>
       )}
 
       <TurnstileWidget onVerify={setTurnstileToken} />
 
       <Button variant="primary" size="md" disabled={isSubmitting}>
-        {isSubmitting ? "Sending..." : "Send Inquiry"}
+        {isSubmitting ? t("submitting") : t("submit")}
       </Button>
     </form>
   );

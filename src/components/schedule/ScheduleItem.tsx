@@ -29,9 +29,10 @@ const TYPE_STYLES: Record<
 
 interface ScheduleItemProps {
   session: Session;
+  typeLabels: Record<string, string>;
 }
 
-export default function ScheduleItem({ session }: ScheduleItemProps) {
+export default function ScheduleItem({ session, typeLabels }: ScheduleItemProps) {
   const style = TYPE_STYLES[session.type];
 
   return (
@@ -51,7 +52,7 @@ export default function ScheduleItem({ session }: ScheduleItemProps) {
         <span
           className={`inline-block text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded mb-1 ${style.badgeClass}`}
         >
-          {style.label}
+          {typeLabels[session.type]}
         </span>
         <h3 className="font-semibold">{session.title}</h3>
         {session.speakerName && (

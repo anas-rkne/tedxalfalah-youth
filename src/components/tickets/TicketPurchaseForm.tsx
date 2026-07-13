@@ -1,21 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import { TicketType } from "@/lib/tickets";
-
-const purchaseSchema = z.object({
-  ticketTypeId: z.string().min(1),
-  quantity: z.coerce.number().min(1).max(10),
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Enter a valid email address"),
-});
-
-type PurchaseFormValues = z.infer<typeof purchaseSchema>;
 
 const inputClasses =
   "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
@@ -27,8 +19,22 @@ interface TicketPurchaseFormProps {
 export default function TicketPurchaseForm({
   ticketTypes,
 }: TicketPurchaseFormProps) {
+  const t = useTranslations("page.tickets.purchaseForm");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
+
+  const purchaseSchema = useMemo(
+    () =>
+      z.object({
+        ticketTypeId: z.string().min(1),
+        quantity: z.coerce.number().min(1).max(10),
+        name: z.string().min(1, t("errors.nameRequired")),
+        email: z.string().email(t("errors.emailInvalid")),
+      }),
+    [t]
+  );
+
+  type PurchaseFormValues = z.infer<typeof purchaseSchema>;
 
   const {
     register,
@@ -65,18 +71,18 @@ export default function TicketPurchaseForm({
       noValidate
     >
       <div>
-        <label className="block text-sm font-medium mb-1">Ticket Type</label>
+        <label className="block text-sm font-medium mb-1">{t("ticketType")}</label>
         <select {...register("ticketTypeId")} className={inputClasses}>
-          {ticketTypes.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name} — {t.priceAED} AED
+          {ticketTypes.map((ticket) => (
+            <option key={ticket.id} value={ticket.id}>
+              {ticket.name} — {ticket.priceAED} AED
             </option>
           ))}
         </select>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Quantity</label>
+        <label className="block text-sm font-medium mb-1">{t("quantity")}</label>
         <input
           type="number"
           min={1}
@@ -89,7 +95,7 @@ export default function TicketPurchaseForm({
       <div>
         <input
           {...register("name")}
-          placeholder="Full name"
+          placeholder={t("namePlaceholder")}
           className={inputClasses}
         />
         {errors.name && (
@@ -101,7 +107,7 @@ export default function TicketPurchaseForm({
         <input
           {...register("email")}
           type="email"
-          placeholder="Email"
+          placeholder={t("emailPlaceholder")}
           className={inputClasses}
         />
         {errors.email && (
@@ -110,19 +116,17 @@ export default function TicketPurchaseForm({
       </div>
 
       {status === "error" && (
-        <p className="text-red-600 text-sm">
-          Something went wrong starting checkout. Please try again.
-        </p>
+        <p className="text-red-600 text-sm">{t("errorGeneric")}</p>
       )}
 
       <TurnstileWidget onVerify={setTurnstileToken} />
 
       <Button variant="primary" size="md" disabled={status === "loading"}>
-        {status === "loading" ? "Redirecting..." : "Proceed to Payment"}
+        {status === "loading" ? t("submitting") : t("submit")}
       </Button>
 
       <p className="text-xs text-tedx-gray text-center">
-        You&apos;ll be redirected to Stripe&apos;s secure checkout page.
+        {t("stripeNote")}
       </p>
     </form>
   );
