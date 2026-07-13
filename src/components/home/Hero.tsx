@@ -1,10 +1,9 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import Countdown from "@/components/shared/Countdown";
-import HeroParticlesBackground from "@/components/home/HeroParticlesBackground";
-import HeroTypewriterTitle from "@/components/home/HeroTypewriterTitle";
 import ActionButtons from "@/components/home/ActionButtons";
-import WelcomeConfetti from "@/components/ui/WelcomeConfetti";
+import HeroTypewriterTitle from "@/components/home/HeroTypewriterTitle";
+import HeroDynamicContent from "@/components/home/HeroDynamicContent";
 
 // TODO: replace with real event date once confirmed by client
 const EVENT_DATE = "2026-11-15T09:00:00+04:00";
@@ -23,11 +22,7 @@ export default async function Hero() {
       />
       <div className="absolute inset-0 bg-black/40" />
 
-      {/* خلفية جسيمات تفاعلية (فوق الصورة، تحت النص) */}
-      <HeroParticlesBackground />
-
-      {/* قصاصات ورقية ترحيبية عند أول زيارة فقط */}
-      <WelcomeConfetti />
+      <HeroDynamicContent />
 
       <div className="relative z-10 px-4 flex flex-col items-center gap-6 py-24">
         <HeroTypewriterTitle title={t("title")} />

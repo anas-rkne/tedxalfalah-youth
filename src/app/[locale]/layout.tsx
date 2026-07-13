@@ -6,7 +6,7 @@ import { setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import CustomCursor from "@/components/ui/CustomCursor";
+import CustomCursorWrapper from "@/components/ui/CustomCursorWrapper";
 import { routing } from "@/i18n/routing";
 
 const geistSans = Geist({
@@ -77,7 +77,7 @@ export default async function RootLayout({
         className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : ""}`}
       >
         <NextIntlClientProvider>
-          <CustomCursor />
+          <CustomCursorWrapper />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />

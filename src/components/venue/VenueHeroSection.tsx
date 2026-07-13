@@ -28,6 +28,7 @@ export default function VenueHeroSection({
           src="/mock/hero-placeholder.svg"
           alt={heroAlt}
           fill
+          priority
           className="object-cover"
         />
       </motion.div>
