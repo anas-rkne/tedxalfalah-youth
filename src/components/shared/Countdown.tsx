@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import FlipDigit from "./FlipDigit";
 
 interface CountdownProps {
   targetDate: string; // ISO date string
@@ -30,6 +32,7 @@ export default function Countdown({ targetDate }: CountdownProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() =>
     calculateTimeLeft(targetDate)
   );
+  const [justFinished, setJustFinished] = useState(false);
 
   useEffect(() => {
     // Intentional: renders a placeholder on the server, then flips to the
@@ -39,7 +42,15 @@ export default function Countdown({ targetDate }: CountdownProps) {
     setMounted(true);
 
     const interval = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(targetDate));
+      setTimeLeft((prev) => {
+        const next = calculateTimeLeft(targetDate);
+        // عند اللحظة التي يصل فيها العداد للصفر لأول مرة، فعّل أنيميشن
+        // الارتداد لمرة واحدة فقط.
+        if (prev && !next) {
+          setJustFinished(true);
+        }
+        return next;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
@@ -52,7 +63,13 @@ export default function Countdown({ targetDate }: CountdownProps) {
 
   if (!timeLeft) {
     return (
-      <p className="text-2xl font-bold text-tedx-red">We&apos;re live!</p>
+      <motion.p
+        className="text-2xl font-bold text-tedx-red"
+        animate={justFinished ? { scale: [1, 1.5, 0.8, 1] } : {}}
+        transition={{ type: "spring", stiffness: 200 }}
+      >
+        We&apos;re live!
+      </motion.p>
     );
   }
 
@@ -67,11 +84,7 @@ export default function Countdown({ targetDate }: CountdownProps) {
     <div className="flex gap-4 md:gap-6">
       {units.map((unit) => (
         <div key={unit.label} className="flex flex-col items-center">
-          <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-tedx-white/10 border border-tedx-white/30 rounded">
-            <span className="text-2xl md:text-3xl font-bold text-tedx-white tabular-nums">
-              {String(unit.value).padStart(2, "0")}
-            </span>
-          </div>
+          <FlipDigit value={unit.value} />
           <span className="text-xs md:text-sm text-tedx-white/70 mt-1 uppercase tracking-wide">
             {unit.label}
           </span>

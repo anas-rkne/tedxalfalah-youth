@@ -1,15 +1,16 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import SectionContainer from "@/components/ui/SectionContainer";
+import AnimatedStats from "@/components/home/AnimatedStats";
 
 export default async function Highlights() {
   const t = await getTranslations("home.highlights");
 
   // TODO: replace with real figures once confirmed by client
   const STATS = [
-    { label: t("statsSpeakers"), value: "12+" },
-    { label: t("statsAttendees"), value: "400+" },
-    { label: t("statsActivations"), value: "5+" },
+    { label: t("statsSpeakers"), targetValue: 12, suffix: "+" },
+    { label: t("statsAttendees"), targetValue: 400, suffix: "+" },
+    { label: t("statsActivations"), targetValue: 5, suffix: "+" },
   ];
 
   return (
@@ -36,16 +37,7 @@ export default async function Highlights() {
             <p className="text-sm text-tedx-gray">{t("activationsTeaser")}</p>
           </Link>
 
-          <div className="p-8 bg-tedx-black text-tedx-white rounded-lg flex flex-col justify-center gap-4">
-            {STATS.map((stat) => (
-              <div key={stat.label} className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold">{stat.value}</span>
-                <span className="text-sm text-tedx-white/70">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
-          </div>
+          <AnimatedStats stats={STATS} />
         </div>
       </SectionContainer>
     </section>
