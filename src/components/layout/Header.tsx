@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Menu, X } from "lucide-react";
@@ -39,11 +40,18 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className={`text-sm font-medium transition-colors hover:text-tedx-red ${
+              className={`relative text-sm font-medium transition-colors hover:text-tedx-red ${
                 pathname === link.href ? "text-tedx-red" : "text-tedx-black"
               }`}
             >
               {link.label}
+              <motion.span
+                className="absolute -bottom-0.5 left-0 h-0.5 bg-tedx-red rounded-full"
+                layoutId="nav-underline"
+                initial={false}
+                style={{ width: pathname === link.href ? "100%" : 0 }}
+                animate={{ width: pathname === link.href ? "100%" : 0 }}
+              />
             </Link>
           ))}
         </nav>
@@ -61,40 +69,59 @@ export default function Header() {
           aria-label="Toggle menu"
           onClick={() => setIsMenuOpen((prev) => !prev)}
         >
-          {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          <motion.div
+            animate={{ rotate: isMenuOpen ? 90 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </motion.div>
         </button>
       </div>
 
       {/* Mobile fullscreen menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-20 bg-tedx-white z-40 flex flex-col">
-          <nav className="flex flex-col gap-2 p-6">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMenuOpen(false)}
-                className="py-3 text-lg font-medium border-b border-gray-100"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-4 flex items-center justify-between gap-4">
-              <LanguageSwitcher />
-            </div>
-            <div className="pt-4">
-              <Button
-                href="/apply"
-                variant="primary"
-                size="md"
-                className="w-full"
-              >
-                {tCommon("applyNow")}
-              </Button>
-            </div>
-          </nav>
-        </div>
-      )}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            className="lg:hidden fixed inset-0 top-20 bg-tedx-white z-40 flex flex-col"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+          >
+            <nav className="flex flex-col gap-2 p-6">
+              {NAV_LINKS.map((link, i) => (
+                <motion.div
+                  key={link.href}
+                  initial={{ opacity: 0, x: -15 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2, delay: i * 0.04 }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="py-3 text-lg font-medium border-b border-gray-100 block"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+              <div className="pt-4 flex items-center justify-between gap-4">
+                <LanguageSwitcher />
+              </div>
+              <div className="pt-4">
+                <Button
+                  href="/apply"
+                  variant="primary"
+                  size="md"
+                  className="w-full"
+                >
+                  {tCommon("applyNow")}
+                </Button>
+              </div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

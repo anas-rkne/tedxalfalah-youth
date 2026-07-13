@@ -45,8 +45,8 @@ export default async function SchedulePage() {
           </p>
         ) : (
           <div className="flex flex-col gap-4">
-            {sessions.map((session) => (
-              <ScheduleItem key={session.id} session={session} typeLabels={typeLabels} />
+            {sessions.map((session, index) => (
+              <ScheduleItem key={session.id} session={session} typeLabels={typeLabels} index={index} />
             ))}
           </div>
         )}

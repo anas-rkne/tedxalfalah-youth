@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
+import FadeInView from "@/components/ui/FadeInView";
 import Button from "@/components/ui/Button";
 import SpeakersCarousel from "@/components/home/SpeakersCarousel";
 import { getSpeakers } from "@/lib/data";
@@ -11,17 +12,21 @@ export default async function SpeakersPreview() {
   return (
     <section className="py-16 md:py-24 bg-tedx-gray-light">
       <SectionContainer>
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          {t("heading")}
-        </h2>
+        <FadeInView>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            {t("heading")}
+          </h2>
+        </FadeInView>
 
         <SpeakersCarousel speakers={speakers} />
 
-        <div className="text-center mt-10">
-          <Button href="/speakers" variant="outline">
-            {t("seeAll")}
-          </Button>
-        </div>
+        <FadeInView delay={0.2}>
+          <div className="text-center mt-10">
+            <Button href="/speakers" variant="outline">
+              {t("seeAll")}
+            </Button>
+          </div>
+        </FadeInView>
       </SectionContainer>
     </section>
   );

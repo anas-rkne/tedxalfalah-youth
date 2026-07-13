@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import SectionContainer from "@/components/ui/SectionContainer";
+import FadeInView from "@/components/ui/FadeInView";
 import AnimatedStats from "@/components/home/AnimatedStats";
 
 export default async function Highlights() {
@@ -17,27 +18,33 @@ export default async function Highlights() {
     <section className="py-16 md:py-24 bg-tedx-white">
       <SectionContainer>
         <div className="grid md:grid-cols-3 gap-8">
-          <Link
-            href="/venue"
-            className="group block p-8 bg-tedx-gray-light rounded-lg hover:shadow-md transition-shadow"
-          >
-            <h3 className="text-xl font-bold mb-2 group-hover:text-tedx-red">
-              {t("venueTitle")}
-            </h3>
-            <p className="text-sm text-tedx-gray">{t("venueTeaser")}</p>
-          </Link>
+          <FadeInView delay={0.05}>
+            <Link
+              href="/venue"
+              className="group block p-8 bg-tedx-gray-light rounded-lg hover:shadow-md transition-shadow"
+            >
+              <h3 className="text-xl font-bold mb-2 group-hover:text-tedx-red">
+                {t("venueTitle")}
+              </h3>
+              <p className="text-sm text-tedx-gray">{t("venueTeaser")}</p>
+            </Link>
+          </FadeInView>
 
-          <Link
-            href="/activations"
-            className="group block p-8 bg-tedx-gray-light rounded-lg hover:shadow-md transition-shadow"
-          >
-            <h3 className="text-xl font-bold mb-2 group-hover:text-tedx-red">
-              {t("activationsTitle")}
-            </h3>
-            <p className="text-sm text-tedx-gray">{t("activationsTeaser")}</p>
-          </Link>
+          <FadeInView delay={0.1}>
+            <Link
+              href="/activations"
+              className="group block p-8 bg-tedx-gray-light rounded-lg hover:shadow-md transition-shadow"
+            >
+              <h3 className="text-xl font-bold mb-2 group-hover:text-tedx-red">
+                {t("activationsTitle")}
+              </h3>
+              <p className="text-sm text-tedx-gray">{t("activationsTeaser")}</p>
+            </Link>
+          </FadeInView>
 
-          <AnimatedStats stats={STATS} />
+          <FadeInView delay={0.15}>
+            <AnimatedStats stats={STATS} />
+          </FadeInView>
         </div>
       </SectionContainer>
     </section>

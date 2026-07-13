@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
 import SectionContainer from "@/components/ui/SectionContainer";
+import ActivationCard from "@/components/activations/ActivationCard";
 import { getActivations } from "@/lib/data";
 import { Metadata } from "next";
 
@@ -36,32 +36,11 @@ export default async function ActivationsPage() {
         ) : (
           <div className="flex flex-col gap-16">
             {activations.map((activation, index) => (
-              <div
+              <ActivationCard
                 key={activation.id}
-                className={`flex flex-col md:flex-row gap-8 items-center ${
-                  index % 2 === 1 ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                <div className="relative w-full md:w-1/2 aspect-video rounded-lg overflow-hidden">
-                  <Image
-                    src={activation.imageUrl}
-                    alt={activation.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="w-full md:w-1/2">
-                  <h2 className="text-2xl font-bold mb-2">
-                    {activation.name}
-                  </h2>
-                  <p className="text-sm text-tedx-red font-medium mb-3">
-                    {activation.locationInVenue}
-                  </p>
-                  <p className="text-tedx-gray leading-relaxed">
-                    {activation.description}
-                  </p>
-                </div>
-              </div>
+                activation={activation}
+                index={index}
+              />
             ))}
           </div>
         )}

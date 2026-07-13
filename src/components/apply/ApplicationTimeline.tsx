@@ -1,6 +1,16 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+
+const stageVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" as const, delay: i * 0.08 },
+  }),
+};
 
 export default function ApplicationTimeline() {
   const t = useTranslations("page.apply.timeline");
@@ -15,9 +25,14 @@ export default function ApplicationTimeline() {
     <div className="w-full overflow-x-auto">
       <div className="flex flex-col md:flex-row md:min-w-[1400px] gap-8 md:gap-0">
         {stages.map((stage, index) => (
-          <div
+          <motion.div
             key={stage.stageNumber}
             className="flex md:flex-col items-start md:items-center gap-4 md:gap-0 md:flex-1 relative"
+            custom={index}
+            variants={stageVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
           >
             {/* connector line */}
             {index < stages.length - 1 && (
@@ -33,7 +48,7 @@ export default function ApplicationTimeline() {
               <p className="text-xs text-tedx-red mb-1">{stage.dateLabel}</p>
               <p className="text-xs text-tedx-gray">{stage.description}</p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

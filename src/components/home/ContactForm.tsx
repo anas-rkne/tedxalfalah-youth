@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import SectionContainer from "@/components/ui/SectionContainer";
+import FadeInView from "@/components/ui/FadeInView";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 
@@ -77,10 +78,12 @@ export default function ContactForm() {
   return (
     <section className="py-16 md:py-24 bg-tedx-white">
       <SectionContainer className="max-w-xl">
-        <h2 className="text-3xl font-bold text-center mb-2">{t("heading")}</h2>
-        <p className="text-center text-sm text-tedx-gray mb-8">
-          marhaba@tedxalfalahyouth.com
-        </p>
+        <FadeInView>
+          <h2 className="text-3xl font-bold text-center mb-2">{t("heading")}</h2>
+          <p className="text-center text-sm text-tedx-gray mb-8">
+            marhaba@tedxalfalahyouth.com
+          </p>
+        </FadeInView>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
