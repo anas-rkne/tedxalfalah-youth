@@ -37,3 +37,35 @@ export const FADE_UP = {
   viewport: VIEWPORT,
   transition: { duration: DURATIONS.medium, ease: EASINGS.standard },
 };
+
+export const SLIDE_UP = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: VIEWPORT,
+  transition: { duration: DURATIONS.medium, ease: EASINGS.standard },
+};
+
+export const SCALE_IN = {
+  initial: { opacity: 0, scale: 0.9 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: VIEWPORT,
+  transition: { duration: DURATIONS.medium, ease: EASINGS.standard },
+};
+
+export const CLIP_REVEAL = {
+  initial: { clipPath: "inset(0 100% 0 0)" },
+  whileInView: { clipPath: "inset(0 0% 0 0)" },
+  viewport: { once: true, amount: 0.3 },
+  transition: { duration: DURATIONS.reveal, ease: "easeInOut" },
+};
+
+export const SPRING_LIFT = {
+  whileHover: { y: -6, boxShadow: "0 12px 30px rgba(0,0,0,0.12)" },
+  transition: { type: "spring", stiffness: 300, damping: 20 },
+};
+
+export const MAGNETIC = {
+  stiffness: 150,
+  damping: 15,
+  mass: 0.1,
+};

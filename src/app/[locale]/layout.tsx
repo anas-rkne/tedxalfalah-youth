@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
+import { Inter, Noto_Kufi_Arabic } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
@@ -7,22 +7,16 @@ import "../globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CustomCursorWrapper from "@/components/ui/CustomCursorWrapper";
+import ReadingProgress from "@/components/ui/ReadingProgress";
 import { routing } from "@/i18n/routing";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-// خط عربي مخصص — Geist لا يدعم الحروف العربية، لذلك نحمّل خطاً منفصلاً
-// يُستخدم فقط عند locale=ar عبر متغير CSS مشروط بالـ <html lang>.
-const notoSansArabic = Noto_Sans_Arabic({
-  variable: "--font-noto-arabic",
+const notoKufiArabic = Noto_Kufi_Arabic({
+  variable: "--font-noto-kufi-arabic",
   subsets: ["arabic"],
 });
 
@@ -71,7 +65,7 @@ export default async function RootLayout({
       <html
         lang={locale}
         dir={dir}
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSansArabic.variable} h-full antialiased`}
+        className={`${inter.variable} ${notoKufiArabic.variable} h-full antialiased`}
       >
         <head>
           <link rel="preconnect" href="https://cdn.sanity.io" />
@@ -86,6 +80,7 @@ export default async function RootLayout({
           >
             Skip to content
           </a>
+          <ReadingProgress />
           <CustomCursorWrapper />
           <Header />
           <main id="main-content" className="flex-1">

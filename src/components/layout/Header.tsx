@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useRTL } from "@/hooks/useRTL";
@@ -18,6 +18,11 @@ export default function Header() {
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
+
+  const { scrollY } = useScroll();
+  const headerOpacity = useTransform(scrollY, [0, 80], [0, 1]);
+  const borderOpacity = useTransform(scrollY, [0, 80], [0, 1]);
+  const blurValue = useTransform(scrollY, [0, 80], [0, 12]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -69,8 +74,20 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-tedx-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 flex h-20 items-center justify-center">
+      <motion.div
+        className="absolute inset-0 pointer-events-none bg-white/80 dark:bg-black/50"
+        style={{
+          opacity: headerOpacity,
+          backdropFilter: shouldReduceMotion ? "none" : "blur(12px)",
+          WebkitBackdropFilter: shouldReduceMotion ? "none" : "blur(12px)",
+        }}
+      />
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-px bg-black/10 dark:bg-white/10"
+        style={{ opacity: borderOpacity }}
+      />
+      <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex w-full items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl">
           <span className="text-tedx-red">TEDx</span>
           <span>AlFalah Youth</span>

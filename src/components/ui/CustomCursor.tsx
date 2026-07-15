@@ -14,23 +14,21 @@ export default function CustomCursor() {
   const springX = useSpring(cursorX, springConfig);
   const springY = useSpring(cursorY, springConfig);
 
+  const dotX = useSpring(cursorX, { damping: 35, stiffness: 150 });
+  const dotY = useSpring(cursorY, { damping: 35, stiffness: 150 });
+
   useEffect(() => {
-    // يُعطَّل تلقائياً على أجهزة اللمس (لا معنى لمؤشر ماوس هناك) وعند
-    // تفعيل "تقليل الحركة" بالنظام لإمكانية الوصول.
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
     if (isTouchDevice || prefersReducedMotion) return;
-    // Intentional: single non-cascading state update once we know this is
-    // a real mouse-driven device (checked via browser-only matchMedia API).
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEnabled(true);
 
     function handleMouseMove(e: MouseEvent) {
-      cursorX.set(e.clientX - 15);
-      cursorY.set(e.clientY - 15);
+      cursorX.set(e.clientX - 6);
+      cursorY.set(e.clientY - 6);
       setIsVisible(true);
     }
 
@@ -53,21 +51,38 @@ export default function CustomCursor() {
   if (!enabled || !isVisible) return null;
 
   return (
-    <motion.div
-      aria-hidden="true"
-      className="fixed top-0 start-0 z-[9999] rounded-full pointer-events-none border-2 border-tedx-white/60"
-      style={{
-        x: springX,
-        y: springY,
-      }}
-      animate={{
-        width: isHoveringInteractive ? 50 : 30,
-        height: isHoveringInteractive ? 50 : 30,
-        backgroundColor: isHoveringInteractive
-          ? "rgba(248, 113, 113, 0.6)"
-          : "rgba(255, 255, 255, 0.5)",
-      }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-    />
+    <>
+      {/* Trailing dot */}
+      <motion.div
+        aria-hidden="true"
+        className="fixed top-0 start-0 z-[9998] rounded-full pointer-events-none bg-tedx-red/30"
+        style={{
+          x: dotX,
+          y: dotY,
+          width: 8,
+          height: 8,
+        }}
+      />
+      {/* Main cursor */}
+      <motion.div
+        aria-hidden="true"
+        className="fixed top-0 start-0 z-[9999] rounded-full pointer-events-none border-2"
+        style={{
+          x: springX,
+          y: springY,
+          borderColor: isHoveringInteractive
+            ? "rgba(230, 43, 30, 0.6)"
+            : "rgba(230, 43, 30, 0.4)",
+        }}
+        animate={{
+          width: isHoveringInteractive ? 40 : 12,
+          height: isHoveringInteractive ? 40 : 12,
+          backgroundColor: isHoveringInteractive
+            ? "rgba(230, 43, 30, 0.15)"
+            : "transparent",
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      />
+    </>
   );
 }
