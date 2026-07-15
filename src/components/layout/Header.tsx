@@ -117,9 +117,24 @@ export default function Header() {
 
         <div className="hidden lg:flex items-center gap-4">
           <LanguageSwitcher />
-          <Button href="/apply" variant="primary" size="sm">
-            {tCommon("applyNow")}
-          </Button>
+          <Link
+            href="/apply"
+            className="group relative overflow-hidden rounded-full border border-tedx-red bg-tedx-red px-6 py-2 text-center font-semibold text-tedx-white"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-white transition-all duration-300 group-hover:scale-[100.8]" />
+              <span className="inline-block transition-all duration-300 group-hover:translate-x-12 group-hover:opacity-0">
+                {tCommon("applyNow")}
+              </span>
+            </div>
+            <div className="absolute inset-0 z-10 flex translate-x-12 items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:-translate-x-5 group-hover:opacity-100">
+              <span>{tCommon("applyNow")}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </div>
+          </Link>
         </div>
 
         {/* Mobile toggle */}

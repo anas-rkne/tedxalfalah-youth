@@ -102,8 +102,8 @@ export default function PartnerInquiryForm() {
 
       <TurnstileWidget onVerify={setTurnstileToken} />
 
-      <Button variant="primary" size="md" disabled={isSubmitting}>
-        {isSubmitting ? t("submitting") : t("submit")}
+      <Button variant="primary" size="md" loading={isSubmitting}>
+        {t("submit")}
       </Button>
     </form>
   );

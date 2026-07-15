@@ -129,13 +129,8 @@ export default function ContactForm() {
 
           <TurnstileWidget onVerify={setTurnstileToken} />
 
-          <Button
-            variant="primary"
-            size="md"
-            className="w-full"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? t("submitting") : t("submit")}
+          <Button variant="primary" size="md" className="w-full" loading={isSubmitting}>
+            {t("submit")}
           </Button>
         </form>
       </SectionContainer>

@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { ButtonHTMLAttributes, ReactNode } from "react";
+import { Loader2, Check } from "lucide-react";
 
 type ButtonVariant = "primary" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
@@ -9,6 +10,8 @@ interface ButtonBaseProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   className?: string;
+  loading?: boolean;
+  showCheck?: boolean;
 }
 
 interface ButtonAsLink extends ButtonBaseProps {
@@ -42,24 +45,41 @@ export default function Button({
   size = "md",
   className = "",
   href,
+  loading = false,
+  showCheck = false,
   ...rest
 }: ButtonProps) {
-  const isDisabled = "disabled" in rest && rest.disabled;
+  const { disabled: _disabled, ...safeRest } = rest as ButtonHTMLAttributes<HTMLButtonElement>;
+  const isDisabled = _disabled || loading;
   const classes = `inline-flex items-center justify-center font-semibold uppercase tracking-wide transition-all duration-200 rounded-lg ${sizeClasses[size]} ${variantClasses[variant]} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tedx-red focus-visible:ring-offset-2 ${
     isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "active:scale-95"
   } ${className}`;
 
+  const content = loading ? (
+    <span className="flex items-center gap-2">
+      <Loader2 className="h-4 w-4 animate-spin" />
+      <span>{children}</span>
+    </span>
+  ) : showCheck ? (
+    <span className="flex items-center gap-2">
+      <Check className="h-4 w-4" />
+      <span>{children}</span>
+    </span>
+  ) : (
+    children
+  );
+
   if (href) {
     return (
       <Link href={href} className={classes}>
-        {children}
+        {content}
       </Link>
     );
   }
 
   return (
-    <button className={classes} {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}>
-      {children}
+    <button className={classes} disabled={isDisabled} {...safeRest}>
+      {content}
     </button>
   );
 }

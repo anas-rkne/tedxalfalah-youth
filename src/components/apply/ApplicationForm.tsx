@@ -380,13 +380,8 @@ export default function ApplicationForm() {
 
       <TurnstileWidget onVerify={setTurnstileToken} />
 
-      <Button
-        variant="primary"
-        size="lg"
-        className="w-full"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? t("submitting") : t("submit")}
+      <Button variant="primary" size="lg" className="w-full" loading={isSubmitting}>
+        {t("submit")}
       </Button>
     </form>
   );

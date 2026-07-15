@@ -108,8 +108,8 @@ export default function TicketPurchaseForm({
 
       <TurnstileWidget onVerify={setTurnstileToken} />
 
-      <Button variant="primary" size="md" disabled={status === "loading"}>
-        {status === "loading" ? t("submitting") : t("submit")}
+      <Button variant="primary" size="md" loading={status === "loading"}>
+        {t("submit")}
       </Button>
 
       <p className="text-xs text-tedx-gray text-center">
