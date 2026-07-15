@@ -79,13 +79,13 @@ export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
         initial={shouldReduceMotion ? {} : { clipPath: "inset(0 50% 0 50%)", scale: 0.8 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        whileHover={shouldReduceMotion ? {} : { boxShadow: "0 0 30px rgba(234, 56, 76, 0.4)" }}
+        whileHover={shouldReduceMotion ? {} : { y: -6, boxShadow: "0 12px 30px rgba(230, 43, 30, 0.2)" }}
       >
         <Image
           src={speaker.imageUrl}
           alt={speaker.name}
           fill
-                className="object-cover"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
       </motion.div>

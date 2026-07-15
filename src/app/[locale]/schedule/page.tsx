@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import ScheduleItem from "@/components/schedule/ScheduleItem";
+import TextReveal from "@/components/ui/TextReveal";
 import { getSessions } from "@/lib/data";
 import { Metadata } from "next";
 
@@ -29,9 +30,11 @@ export default async function SchedulePage() {
   return (
     <section className="section-padding">
       <SectionContainer className="max-w-3xl">
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
-          {t("title")}
-        </h1>
+        <TextReveal
+          text={t("title")}
+          as="h1"
+          className="text-4xl md:text-5xl font-bold text-center mb-4"
+        />
         <p className="text-center text-tedx-gray mb-2">
           {t("datePlaceholder")}
         </p>

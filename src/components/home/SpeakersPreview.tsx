@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
-import FadeInView from "@/components/ui/FadeInView";
 import Button from "@/components/ui/Button";
 import SpeakersCarousel from "@/components/home/SpeakersCarousel";
+import TextReveal from "@/components/ui/TextReveal";
 import { getSpeakers } from "@/lib/data";
 
 export default async function SpeakersPreview() {
@@ -12,21 +12,20 @@ export default async function SpeakersPreview() {
   return (
     <section className="section-padding bg-tedx-gray-light">
       <SectionContainer>
-        <FadeInView>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            {t("heading")}
-          </h2>
-        </FadeInView>
+        <TextReveal
+          text={t("heading")}
+          as="h2"
+          className="text-3xl md:text-4xl font-bold text-center mb-12"
+          wordDelay={0.08}
+        />
 
         <SpeakersCarousel speakers={speakers} />
 
-        <FadeInView delay={0.2}>
-          <div className="text-center mt-10">
-            <Button href="/speakers" variant="outline">
-              {t("seeAll")}
-            </Button>
-          </div>
-        </FadeInView>
+        <div className="text-center mt-10">
+          <Button href="/speakers" variant="outline">
+            {t("seeAll")}
+          </Button>
+        </div>
       </SectionContainer>
     </section>
   );

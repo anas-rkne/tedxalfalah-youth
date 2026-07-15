@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import TeamAccordionSection from "@/components/team/TeamAccordionSection";
+import TextReveal from "@/components/ui/TextReveal";
 import { getTeamMembers } from "@/lib/data";
 import { TeamDepartment } from "@/lib/types";
 import { Metadata } from "next";
@@ -32,9 +33,11 @@ export default async function TeamPage() {
   return (
     <section className="section-padding">
       <SectionContainer>
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">
-          {t("title")}
-        </h1>
+        <TextReveal
+          text={t("title")}
+          as="h1"
+          className="text-4xl md:text-5xl font-bold text-center mb-12"
+        />
 
         <div className="flex flex-col gap-6">
           {DEPARTMENTS.map((department, index) => {

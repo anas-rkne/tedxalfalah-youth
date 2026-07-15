@@ -14,15 +14,9 @@ export default function TeamMemberCard({ member, index }: TeamMemberCardProps) {
 
   return (
     <motion.div
-      className="text-center p-4 rounded-lg hover:bg-gray-50/50 transition-colors duration-300"
-      animate={shouldReduceMotion ? {} : { y: [0, -10, 0] }}
-      transition={shouldReduceMotion ? {} : {
-        duration: 3,
-        ease: "easeInOut",
-        repeat: Infinity,
-        repeatType: "reverse",
-        delay: index * 0.15,
-      }}
+      className="text-center p-4 rounded-lg transition-colors duration-300"
+      whileHover={shouldReduceMotion ? {} : { y: -6, boxShadow: "0 12px 30px rgba(0,0,0,0.08)" }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
       whileTap={{ scale: 0.95 }}
     >
       <div className="relative w-24 h-24 mx-auto rounded-full overflow-hidden mb-3">

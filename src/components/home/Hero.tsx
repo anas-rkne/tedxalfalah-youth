@@ -4,8 +4,8 @@ import Countdown from "@/components/shared/Countdown";
 import ActionButtons from "@/components/home/ActionButtons";
 import HeroTypewriterTitle from "@/components/home/HeroTypewriterTitle";
 import HeroDynamicContent from "@/components/home/HeroDynamicContent";
+import ScrollIndicator from "@/components/ui/ScrollIndicator";
 
-// TODO: replace with real event date once confirmed by client
 const EVENT_DATE = "2026-11-15T09:00:00+04:00";
 
 export default async function Hero() {
@@ -35,6 +35,8 @@ export default async function Hero() {
 
         <ActionButtons applyLabel={t("applyNow")} ticketsLabel={t("getTickets")} />
       </div>
+
+      <ScrollIndicator text={t("scroll")} />
     </section>
   );
 }
