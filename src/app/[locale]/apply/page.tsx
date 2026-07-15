@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import FadeInView from "@/components/ui/FadeInView";
+import TextReveal from "@/components/ui/TextReveal";
 import ApplicationTimeline from "@/components/apply/ApplicationTimeline";
 import ApplicationForm from "@/components/apply/ApplicationForm";
 import ApplyFAQ from "@/components/apply/ApplyFAQ";
@@ -27,16 +28,17 @@ export default async function ApplyPage() {
   return (
     <>
       {/* Theme */}
-      <section className="section-padding bg-tedx-black text-tedx-white text-center">
-        <SectionContainer className="max-w-3xl">
-          <FadeInView>
-            <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
-              {t("theme.title")}
-            </h1>
-            <p className="text-tedx-white/80 leading-relaxed">
-              {t("theme.body")}
-            </p>
-          </FadeInView>
+      <section className="section-padding bg-tedx-black text-tedx-white text-center relative overflow-hidden">
+        <div className="noise-overlay" />
+        <SectionContainer className="max-w-3xl relative z-10">
+          <TextReveal
+            text={t("theme.title")}
+            as="h1"
+            className="text-3xl md:text-5xl font-bold mb-6 leading-tight"
+          />
+          <p className="text-tedx-white/80 leading-relaxed">
+            {t("theme.body")}
+          </p>
         </SectionContainer>
       </section>
 

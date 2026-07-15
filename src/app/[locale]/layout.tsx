@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import CustomCursorWrapper from "@/components/ui/CustomCursorWrapper";
 import ReadingProgress from "@/components/ui/ReadingProgress";
 import { routing } from "@/i18n/routing";
+import PageTransition from "@/components/ui/PageTransition";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -84,7 +85,9 @@ export default async function RootLayout({
           <CustomCursorWrapper />
           <Header />
           <main id="main-content" className="flex-1">
-            {children}
+            <PageTransition>
+              {children}
+            </PageTransition>
           </main>
           <Footer />
         </NextIntlClientProvider>

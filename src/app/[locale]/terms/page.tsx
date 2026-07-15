@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
+import TextReveal from "@/components/ui/TextReveal";
 import { Metadata } from "next";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -21,9 +22,11 @@ export default async function TermsPage() {
   return (
     <section className="section-padding">
       <SectionContainer className="max-w-3xl">
-        <h1 className="text-4xl md:text-5xl font-bold mb-2">
-          {t("title")}
-        </h1>
+        <TextReveal
+          text={t("title")}
+          as="h1"
+          className="text-4xl md:text-5xl font-bold mb-2"
+        />
         <p className="text-sm text-tedx-gray mb-10">
           {t("lastUpdated")}
         </p>

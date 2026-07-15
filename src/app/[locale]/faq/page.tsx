@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import FaqAccordion, { FaqItem } from "@/components/shared/FaqAccordion";
+import TextReveal from "@/components/ui/TextReveal";
 import { Link } from "@/i18n/navigation";
 import { Metadata } from "next";
 
@@ -26,9 +27,11 @@ export default async function FaqPage() {
   return (
     <section className="section-padding">
       <SectionContainer>
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
-          {t("title")}
-        </h1>
+        <TextReveal
+          text={t("title")}
+          as="h1"
+          className="text-4xl md:text-5xl font-bold text-center mb-4"
+        />
         <p className="text-center text-tedx-gray max-w-xl mx-auto mb-12">
           {t("subtitle")}{" "}
           <Link href="/apply#faq" className="underline text-tedx-red">

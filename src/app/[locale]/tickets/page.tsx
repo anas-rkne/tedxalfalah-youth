@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import TicketRegistrationForm from "@/components/tickets/TicketRegistrationForm";
 import TicketPurchaseForm from "@/components/tickets/TicketPurchaseForm";
+import TextReveal from "@/components/ui/TextReveal";
 import { TICKET_TYPES } from "@/lib/tickets";
 import { isStripeConfigured } from "@/lib/stripe";
 import { Link } from "@/i18n/navigation";
@@ -25,9 +26,11 @@ export default async function TicketsPage() {
     <>
       <section className="section-padding">
         <SectionContainer>
-          <h1 className="heading-h1 text-center mb-12">
-            {t("title")}
-          </h1>
+          <TextReveal
+            text={t("title")}
+            as="h1"
+            className="heading-h1 text-center mb-12"
+          />
           <div className="grid sm:grid-cols-3 gap-6">
             {TICKET_TYPES.map((ticket) => (
               <div

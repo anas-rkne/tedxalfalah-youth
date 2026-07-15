@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import ActivationCard from "@/components/activations/ActivationCard";
+import TextReveal from "@/components/ui/TextReveal";
 import { getActivations } from "@/lib/data";
 import { Metadata } from "next";
 
@@ -22,9 +23,11 @@ export default async function ActivationsPage() {
   return (
     <section className="section-padding">
       <SectionContainer>
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
-          {t("title")}
-        </h1>
+        <TextReveal
+          text={t("title")}
+          as="h1"
+          className="text-4xl md:text-5xl font-bold text-center mb-4"
+        />
         <p className="text-center text-tedx-gray max-w-2xl mx-auto mb-12">
           {t("subtitle")}
         </p>

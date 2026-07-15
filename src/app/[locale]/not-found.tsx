@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { Metadata } from "next";
 import SectionContainer from "@/components/ui/SectionContainer";
 import Button from "@/components/ui/Button";
+import TextReveal from "@/components/ui/TextReveal";
 
 export const metadata: Metadata = {
   title: "Page Not Found",
@@ -18,7 +19,7 @@ export default async function NotFound() {
         <p className="text-tedx-red font-bold text-sm uppercase tracking-widest mb-4">
           {t("eyebrow")}
         </p>
-        <h1 className="text-4xl md:text-5xl font-bold mb-6">{t("title")}</h1>
+        <TextReveal text={t("title")} as="h1" className="text-4xl md:text-5xl font-bold mb-6" />
         <p className="text-tedx-gray leading-relaxed mb-10">{t("body")}</p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

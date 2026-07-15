@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import SectionContainer from "@/components/ui/SectionContainer";
 import Button from "@/components/ui/Button";
 import AnimatedCheck from "@/components/ui/AnimatedCheck";
+import TextReveal from "@/components/ui/TextReveal";
 
 export const metadata: Metadata = {
   title: "Thank You",
@@ -33,7 +34,7 @@ export default async function ThankYouPage({
     <section className="min-h-[70vh] flex items-center justify-center section-padding">
       <SectionContainer className="max-w-lg text-center">
         <AnimatedCheck />
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">{t("title")}</h1>
+        <TextReveal text={t("title")} as="h1" className="text-3xl md:text-4xl font-bold mb-4" />
         <p className="text-tedx-gray leading-relaxed mb-10">{t("body")}</p>
         <Button href={ctaHref} variant="primary" size="md">
           {t("cta")}

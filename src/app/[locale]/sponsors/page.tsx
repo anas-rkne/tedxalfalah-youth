@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import SectionContainer from "@/components/ui/SectionContainer";
 import PartnerInquiryForm from "@/components/sponsors/PartnerInquiryForm";
+import TextReveal from "@/components/ui/TextReveal";
 import { getSponsors } from "@/lib/data";
 import { Metadata } from "next";
 
@@ -26,9 +27,11 @@ export default async function SponsorsPage() {
     <>
       <section className="section-padding">
         <SectionContainer className="max-w-3xl text-center">
-          <h1 className="heading-h1 mb-12">
-            {t("hero.title")}
-          </h1>
+          <TextReveal
+            text={t("hero.title")}
+            as="h1"
+            className="heading-h1 mb-12"
+          />
           <p className="text-tedx-gray leading-relaxed">
             {t("hero.body")}
           </p>
