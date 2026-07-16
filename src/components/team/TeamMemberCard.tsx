@@ -6,10 +6,9 @@ import { TeamMember } from "@/lib/types";
 
 interface TeamMemberCardProps {
   member: TeamMember;
-  index: number;
 }
 
-export default function TeamMemberCard({ member, index }: TeamMemberCardProps) {
+export default function TeamMemberCard({ member }: TeamMemberCardProps) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -29,9 +28,9 @@ export default function TeamMemberCard({ member, index }: TeamMemberCardProps) {
         />
       </div>
       <h3 className="font-semibold">{member.name}</h3>
-      <p className="text-sm text-tedx-gray">{member.role}</p>
+      <p className="text-sm text-gray-500">{member.role}</p>
       {member.quote && (
-        <p className="text-xs text-tedx-gray italic mt-1">
+        <p className="text-xs text-gray-500 italic mt-1">
           &ldquo;{member.quote}&rdquo;
         </p>
       )}

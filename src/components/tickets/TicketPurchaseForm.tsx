@@ -112,7 +112,7 @@ export default function TicketPurchaseForm({
         {t("submit")}
       </Button>
 
-      <p className="text-xs text-tedx-gray text-center">
+      <p className="text-xs text-gray-500 text-center">
         {t("stripeNote")}
       </p>
     </form>

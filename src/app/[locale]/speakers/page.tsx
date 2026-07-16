@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import SpeakersGrid from "@/components/speakers/SpeakersGrid";
 import TextReveal from "@/components/ui/TextReveal";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { getSpeakers } from "@/lib/data";
 import { Metadata } from "next";
 
@@ -27,18 +28,21 @@ export default async function SpeakersPage() {
           text={t("title")}
           as="h1"
           className="text-4xl md:text-5xl font-bold text-center mb-4"
+          serif
         />
-        <p className="text-center text-tedx-gray max-w-2xl mx-auto mb-12">
-          {t("subtitle")}
-        </p>
-
-        {speakers.length > 0 ? (
-          <SpeakersGrid speakers={speakers} />
-        ) : (
-          <p className="text-center text-tedx-gray py-16">
-            {t("empty")}
+        <ScrollReveal>
+          <p className="text-center text-gray-500 max-w-2xl mx-auto mb-12">
+            {t("subtitle")}
           </p>
-        )}
+
+          {speakers.length > 0 ? (
+            <SpeakersGrid speakers={speakers} />
+          ) : (
+            <p className="text-center text-gray-500 py-16">
+              {t("empty")}
+            </p>
+          )}
+        </ScrollReveal>
       </SectionContainer>
     </section>
   );

@@ -2,11 +2,11 @@
 
 import dynamic from "next/dynamic";
 
-const CustomCursor = dynamic(
-  () => import("@/components/ui/CustomCursor"),
+const SmoothCursor = dynamic(
+  () => import("@/components/ui/smooth-cursor"),
   { ssr: false }
 );
 
 export default function CustomCursorWrapper() {
-  return <CustomCursor />;
+  return <SmoothCursor />;
 }

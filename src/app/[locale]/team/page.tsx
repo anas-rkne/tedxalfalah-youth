@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import TeamAccordionSection from "@/components/team/TeamAccordionSection";
 import TextReveal from "@/components/ui/TextReveal";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { getTeamMembers } from "@/lib/data";
 import { TeamDepartment } from "@/lib/types";
 import { Metadata } from "next";
@@ -37,25 +38,28 @@ export default async function TeamPage() {
           text={t("title")}
           as="h1"
           className="text-4xl md:text-5xl font-bold text-center mb-12"
+          serif
         />
 
-        <div className="flex flex-col gap-6">
-          {DEPARTMENTS.map((department, index) => {
-            const departmentMembers = members.filter(
-              (m) => m.department === department
-            );
-            if (departmentMembers.length === 0) return null;
+        <ScrollReveal>
+          <div className="flex flex-col gap-6">
+            {DEPARTMENTS.map((department, index) => {
+              const departmentMembers = members.filter(
+                (m) => m.department === department
+              );
+              if (departmentMembers.length === 0) return null;
 
-            return (
-              <TeamAccordionSection
-                key={department}
-                departmentName={t(`departments.${department}`)}
-                members={departmentMembers}
-                defaultOpen={index === 0}
-              />
-            );
-          })}
-        </div>
+              return (
+                <TeamAccordionSection
+                  key={department}
+                  departmentName={t(`departments.${department}`)}
+                  members={departmentMembers}
+                  defaultOpen={index === 0}
+                />
+              );
+            })}
+          </div>
+        </ScrollReveal>
       </SectionContainer>
     </section>
   );

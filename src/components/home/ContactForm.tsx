@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import SectionContainer from "@/components/ui/SectionContainer";
 import FadeInView from "@/components/ui/FadeInView";
+import TextReveal from "@/components/ui/TextReveal";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import Input from "@/components/ui/Input";
@@ -74,11 +75,11 @@ export default function ContactForm() {
   };
 
   return (
-    <section className="section-padding bg-tedx-white">
+    <section className="section-padding">
       <SectionContainer className="max-w-xl">
         <FadeInView>
-          <h2 className="text-3xl font-bold text-center mb-2">{t("heading")}</h2>
-          <p className="text-center text-sm text-tedx-gray mb-8">
+          <TextReveal text={t("heading")} as="h2" className="text-3xl md:text-4xl font-bold text-center mb-2 text-black" serif />
+          <p className="text-center text-sm text-gray-500 mb-8">
             marhaba@tedxalfalahyouth.com
           </p>
         </FadeInView>
@@ -105,7 +106,7 @@ export default function ContactForm() {
             error={errors.email?.message}
           />
 
-          <Input label="Subject" id="contact-subject" registration={register("subject")} select>
+          <Input label={t("subjectLabel")} id="contact-subject" registration={register("subject")} select>
             {SUBJECT_VALUES.map((value) => (
               <option key={value} value={value}>
                 {subjectLabels[value]}

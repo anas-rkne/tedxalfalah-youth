@@ -61,6 +61,7 @@ export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
   return (
     <motion.div
       ref={cardRef}
+      id={`speaker-${speaker.id}`}
       onMouseMove={shouldReduceMotion ? undefined : handleMouseMove}
       onMouseLeave={shouldReduceMotion ? undefined : handleMouseLeave}
       onClick={onClick}
@@ -93,10 +94,10 @@ export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
       <h3 className="font-semibold text-lg">
         {shouldReduceMotion ? speaker.name : <WavyText text={speaker.name} />}
       </h3>
-      <p className="text-sm text-tedx-gray">
+      <p className="text-sm text-gray-500">
         {shouldReduceMotion ? speaker.shortDescriptor : <WavyText text={speaker.shortDescriptor} />}
       </p>
-      <p className="text-sm text-tedx-red mt-1">{speaker.talkTitle}</p>
+      <p className="text-sm text-red-600 mt-1">{speaker.talkTitle}</p>
     </motion.div>
   );
 }

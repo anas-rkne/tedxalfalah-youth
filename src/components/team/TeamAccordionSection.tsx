@@ -37,6 +37,7 @@ export default function TeamAccordionSection({
     <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
         className="w-full flex items-center justify-between text-start text-2xl font-bold mb-2 border-b border-gray-200 pb-2"
       >
         <span>{departmentName}</span>
@@ -60,9 +61,9 @@ export default function TeamAccordionSection({
             exit={shouldReduceMotion ? {} : { opacity: 0, transition: { duration: 0.2 } }}
             layout={!shouldReduceMotion}
           >
-            {members.map((member, index) => (
+            {members.map((member) => (
               <motion.div key={member.id} variants={shouldReduceMotion ? {} : childVariants} layout={!shouldReduceMotion}>
-                <TeamMemberCard member={member} index={index} />
+                <TeamMemberCard member={member} />
               </motion.div>
             ))}
           </motion.div>

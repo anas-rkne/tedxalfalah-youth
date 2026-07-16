@@ -34,7 +34,7 @@ export default function VenueHeroSection({
         />
       </motion.div>
       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-        <h1 className="text-4xl md:text-5xl font-bold text-tedx-white text-center px-4">
+        <h1 className="text-4xl md:text-5xl font-bold font-serif text-white text-center px-4">
           {heroTitle}
         </h1>
       </div>

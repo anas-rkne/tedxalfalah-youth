@@ -46,6 +46,7 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
   useEffect(() => {
     if (speaker) {
       previousFocusRef.current = document.activeElement as HTMLElement;
+      document.body.style.overflow = "hidden";
       document.addEventListener("keydown", handleKeyDown);
       requestAnimationFrame(() => {
         // Focus the first focusable element inside the modal
@@ -56,6 +57,7 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
       });
     }
     return () => {
+      document.body.style.overflow = "";
       document.removeEventListener("keydown", handleKeyDown);
       previousFocusRef.current?.focus();
     };
@@ -77,7 +79,7 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
           <motion.div
             ref={modalRef}
             tabIndex={-1}
-            className="bg-tedx-white rounded-lg max-w-2xl w-full max-h-[85vh] overflow-y-auto relative outline-none"
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[85vh] overflow-y-auto relative outline-none"
             onClick={(e) => e.stopPropagation()}
             initial={shouldReduceMotion ? {} : { scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -87,7 +89,7 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
             <motion.button
               onClick={onClose}
               aria-label="Close"
-              className="absolute top-4 end-4 z-10 bg-tedx-white rounded-full p-2 shadow"
+              className="absolute top-4 end-4 z-10 bg-white rounded-full p-2 shadow"
               whileHover={shouldReduceMotion ? {} : { rotate: 360 }}
               whileTap={shouldReduceMotion ? {} : { scale: 0.8 }}
               transition={{ duration: 0.5 }}
@@ -107,14 +109,14 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
 
             <div className="p-6 md:p-8">
               <h2 id="speaker-modal-title" className="text-2xl font-bold">{speaker.name}</h2>
-              <p className="text-tedx-red font-medium mb-1">
+              <p className="text-red-600 font-medium mb-1">
                 {speaker.shortDescriptor}
               </p>
               <p className="text-lg font-semibold mb-1">{speaker.talkTitle}</p>
-              <p className="text-sm text-tedx-gray italic mb-4">
+              <p className="text-sm text-gray-500 italic mb-4">
                 {speaker.themeConnection}
               </p>
-              <p className="text-tedx-gray leading-relaxed mb-6">
+              <p className="text-gray-500 leading-relaxed mb-6">
                 {speaker.bio}
               </p>
 

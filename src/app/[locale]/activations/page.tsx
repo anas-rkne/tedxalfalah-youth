@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import ActivationCard from "@/components/activations/ActivationCard";
 import TextReveal from "@/components/ui/TextReveal";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { getActivations } from "@/lib/data";
 import { Metadata } from "next";
 
@@ -27,26 +28,29 @@ export default async function ActivationsPage() {
           text={t("title")}
           as="h1"
           className="text-4xl md:text-5xl font-bold text-center mb-4"
+          serif
         />
-        <p className="text-center text-tedx-gray max-w-2xl mx-auto mb-12">
-          {t("subtitle")}
-        </p>
-
-        {activations.length === 0 ? (
-          <p className="text-center text-tedx-gray py-16">
-            {t("empty")}
+        <ScrollReveal>
+          <p className="text-center text-gray-500 max-w-2xl mx-auto mb-12">
+            {t("subtitle")}
           </p>
-        ) : (
-          <div className="flex flex-col gap-16">
-            {activations.map((activation, index) => (
-              <ActivationCard
-                key={activation.id}
-                activation={activation}
-                index={index}
-              />
-            ))}
-          </div>
-        )}
+
+          {activations.length === 0 ? (
+            <p className="text-center text-gray-500 py-16">
+              {t("empty")}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-16">
+              {activations.map((activation, index) => (
+                <ActivationCard
+                  key={activation.id}
+                  activation={activation}
+                  index={index}
+                />
+              ))}
+            </div>
+          )}
+        </ScrollReveal>
       </SectionContainer>
     </section>
   );

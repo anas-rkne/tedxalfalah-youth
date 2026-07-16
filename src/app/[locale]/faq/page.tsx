@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import FaqAccordion, { FaqItem } from "@/components/shared/FaqAccordion";
 import TextReveal from "@/components/ui/TextReveal";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { Link } from "@/i18n/navigation";
 import { Metadata } from "next";
 
@@ -31,15 +32,18 @@ export default async function FaqPage() {
           text={t("title")}
           as="h1"
           className="text-4xl md:text-5xl font-bold text-center mb-4"
+          serif
         />
-        <p className="text-center text-tedx-gray max-w-xl mx-auto mb-12">
-          {t("subtitle")}{" "}
-          <Link href="/apply#faq" className="underline text-tedx-red">
-            {t("applyFaqLink")}
-          </Link>
-        </p>
+        <ScrollReveal>
+          <p className="text-center text-gray-500 max-w-xl mx-auto mb-12">
+            {t("subtitle")}{" "}
+            <Link href="/apply#faq" className="underline text-red-600">
+              {t("applyFaqLink")}
+            </Link>
+          </p>
 
-        <FaqAccordion items={GENERAL_FAQ_ITEMS} />
+          <FaqAccordion items={GENERAL_FAQ_ITEMS} />
+        </ScrollReveal>
       </SectionContainer>
     </section>
   );

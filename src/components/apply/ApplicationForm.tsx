@@ -22,7 +22,7 @@ function wordCount(text: string) {
 }
 
 const inputClasses =
-  "w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-tedx-red";
+  "w-full border border-gray-300 rounded-full px-6 py-3 text-base focus:outline-none focus:ring-2 focus:ring-red-500";
 const labelClasses = "block text-sm font-medium mb-1";
 const errorClasses = "text-red-600 text-sm mt-1";
 
@@ -156,7 +156,7 @@ export default function ApplicationForm() {
       <fieldset>
         <legend className={labelClasses}>{t("trackLabel")}</legend>
         <div className="flex flex-col sm:flex-row gap-4">
-          <label className="flex items-center gap-2 border rounded px-4 py-3 flex-1 cursor-pointer has-[:checked]:border-tedx-red">
+          <label className="flex items-center gap-2 border rounded px-4 py-3 flex-1 cursor-pointer has-[:checked]:border-red-600">
             <input
               type="radio"
               value="young-speaker"
@@ -164,7 +164,7 @@ export default function ApplicationForm() {
             />
             {t("youngSpeakerLabel")}
           </label>
-          <label className="flex items-center gap-2 border rounded px-4 py-3 flex-1 cursor-pointer has-[:checked]:border-tedx-red">
+          <label className="flex items-center gap-2 border rounded px-4 py-3 flex-1 cursor-pointer has-[:checked]:border-red-600">
             <input type="radio" value="expert" {...register("track")} />
             {t("expertLabel")}
           </label>
@@ -227,7 +227,7 @@ export default function ApplicationForm() {
       <div>
         <label className={labelClasses}>
           {t("ideaSummary")}{" "}
-          <span className="text-xs text-tedx-gray">
+          <span className="text-xs text-gray-500">
             {t("wordCount", { count: wordCount(ideaSummary), max: 300 })}
           </span>
         </label>
@@ -244,7 +244,7 @@ export default function ApplicationForm() {
       <div>
         <label className={labelClasses}>
           {t("whyItMatters")}{" "}
-          <span className="text-xs text-tedx-gray">
+          <span className="text-xs text-gray-500">
             {t("wordCount", { count: wordCount(whyItMatters), max: 150 })}
           </span>
         </label>
@@ -281,11 +281,11 @@ export default function ApplicationForm() {
       <div>
         <label className={labelClasses}>{t("howHeard")}</label>
         <select {...register("howHeardAboutUs")} className={inputClasses}>
-          {HOW_HEARD_VALUES.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
+          <option value="Social Media">{t("howHeardOptions.socialMedia")}</option>
+          <option value="Friend/Family">{t("howHeardOptions.friendFamily")}</option>
+          <option value="School">{t("howHeardOptions.school")}</option>
+          <option value="Partner Organization">{t("howHeardOptions.partnerOrganization")}</option>
+          <option value="Other">{t("howHeardOptions.other")}</option>
         </select>
       </div>
 
@@ -365,7 +365,7 @@ export default function ApplicationForm() {
         <input type="checkbox" {...register("consentToTerms")} />
         <span>
           {t("agreeToTerms")}{" "}
-          <Link href="/terms" className="underline text-tedx-red">
+          <Link href="/terms" className="underline text-red-600">
             {t("termsLink")}
           </Link>
         </span>

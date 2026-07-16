@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import ScheduleItem from "@/components/schedule/ScheduleItem";
 import TextReveal from "@/components/ui/TextReveal";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { getSessions } from "@/lib/data";
 import { Metadata } from "next";
 
@@ -34,25 +35,28 @@ export default async function SchedulePage() {
           text={t("title")}
           as="h1"
           className="text-4xl md:text-5xl font-bold text-center mb-4"
+          serif
         />
-        <p className="text-center text-tedx-gray mb-2">
-          {t("datePlaceholder")}
-        </p>
-        <p className="text-center text-sm text-tedx-gray mb-12">
-          {t("timesNote")}
-        </p>
-
-        {sessions.length === 0 ? (
-          <p className="text-center text-tedx-gray py-16">
-            {t("empty")}
+        <ScrollReveal>
+          <p className="text-center text-gray-500 mb-2">
+            {t("datePlaceholder")}
           </p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {sessions.map((session, index) => (
-              <ScheduleItem key={session.id} session={session} typeLabels={typeLabels} index={index} />
-            ))}
-          </div>
-        )}
+          <p className="text-center text-sm text-gray-500 mb-12">
+            {t("timesNote")}
+          </p>
+
+          {sessions.length === 0 ? (
+            <p className="text-center text-gray-500 py-16">
+              {t("empty")}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {sessions.map((session, index) => (
+                <ScheduleItem key={session.id} session={session} typeLabels={typeLabels} index={index} />
+              ))}
+            </div>
+          )}
+        </ScrollReveal>
       </SectionContainer>
     </section>
   );

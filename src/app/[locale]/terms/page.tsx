@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import TextReveal from "@/components/ui/TextReveal";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { Metadata } from "next";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -26,25 +27,28 @@ export default async function TermsPage() {
           text={t("title")}
           as="h1"
           className="text-4xl md:text-5xl font-bold mb-2"
+          serif
         />
-        <p className="text-sm text-tedx-gray mb-10">
+        <p className="text-sm text-gray-500 mb-10">
           {t("lastUpdated")}
         </p>
 
-        <div className="flex flex-col gap-10">
-          {SECTION_NAMES.map((sectionKey) => (
-            <div key={sectionKey}>
-              <h2 className="text-xl font-bold mb-3">{t(`sections.${sectionKey}.title`)}</h2>
-              <div className="flex flex-col gap-3">
-                {(t.raw(`sections.${sectionKey}.content`) as string[]).map((paragraph: string, i: number) => (
-                  <p key={i} className="text-tedx-gray leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
+        <ScrollReveal>
+          <div className="flex flex-col gap-10">
+            {SECTION_NAMES.map((sectionKey) => (
+              <div key={sectionKey}>
+                <h2 className="text-xl font-bold mb-3">{t(`sections.${sectionKey}.title`)}</h2>
+                <div className="flex flex-col gap-3">
+                  {(t.raw(`sections.${sectionKey}.content`) as string[]).map((paragraph: string, i: number) => (
+                    <p key={i} className="text-gray-500 leading-relaxed">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollReveal>
       </SectionContainer>
     </section>
   );

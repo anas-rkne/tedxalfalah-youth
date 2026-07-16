@@ -59,7 +59,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
                   transition={shouldReduceMotion ? {} : { duration: 0.3, ease: "easeInOut" }}
                   className="overflow-hidden"
                 >
-                  <p className="pb-4 text-sm text-tedx-gray leading-relaxed">
+                  <p className="pb-4 text-sm text-gray-500 leading-relaxed">
                     {item.answer}
                   </p>
                 </motion.div>

@@ -14,25 +14,30 @@
       "terms": "الشروط والأحكام"
     },
     "applyNow": "قدّم الآن",
+        "more": "المزيد",
+
     "languageSwitcher": {
       "en": "EN",
       "ar": "AR"
-    }
+    },
+    "loading": "جارٍ التحميل"
   },
   "footer": {
-    "contactHeading": "تواصل معنا",
+    "contactHeading": "تواصل",
     "quickLinksHeading": "روابط سريعة",
     "brandHeading": "TEDxAlFalah Youth",
-    "licenseNotice": "هذه الفعالية المستقلة تُدار برخصة من TED.",
+    "licenseNotice": "هذه الفعالية المستقلة تعمل برخصة من TED.",
     "termsLink": "الشروط والأحكام",
-    "copyright": "جميع الحقوق محفوظة."
+    "copyright": "جميع الحقوق محفوظة.",
+    "joinUs": "انضم إلينا!"
   },
   "home": {
     "hero": {
       "title": "الغد، الآن.",
       "subtitle": "أصوات شابة. أفكار حقيقية. المستقبل يبدأ أبكر مما نظن.",
       "applyNow": "قدّم الآن",
-      "getTickets": "احجز تذكرتك"
+      "getTickets": "احجز تذكرتك",
+      "scroll": "اسحب للاستكشاف"
     },
     "about": {
       "heading": "عن الفعالية",
@@ -68,6 +73,7 @@
       "namePlaceholder": "الاسم الكامل",
       "emailPlaceholder": "البريد الإلكتروني",
       "messagePlaceholder": "رسالتك",
+      "subjectLabel": "الموضوع",
       "subjectGeneral": "عام",
       "subjectSpeaking": "التحدث",
       "subjectSponsorship": "الرعاية",
@@ -90,6 +96,21 @@
     "backHome": "العودة للرئيسية",
     "meetSpeakers": "تعرّف على المتحدثين",
     "exploreLabel": "أو استكشف:"
+  },
+  "errorPage": {
+    "eyebrow": "خطأ",
+    "title": "حدث خطأ ما",
+    "description": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى أو العودة إلى الصفحة الرئيسية.",
+    "tryAgain": "حاول مرة أخرى",
+    "backToHome": "العودة للرئيسية"
+  },
+  "countdown": {
+    "live": "نحنبث الآن!",
+    "days": "أيام",
+    "hours": "ساعات",
+    "minutes": "دقائق",
+    "seconds": "ثواني",
+    "ariaLabel": "عداد تنازلي"
   },
   "thankYou": {
     "contact": {
@@ -323,6 +344,13 @@
         "themeConnection": "علاقة الفكرة بالموضوع",
         "videoLink": "رابط فيديو اختياري (مقطع من 60–90 ثانية)",
         "howHeard": "كيف سمعت عنا؟",
+        "howHeardOptions": {
+          "socialMedia": "وسائل التواصل الاجتماعي",
+          "friendFamily": "صديق/عائلة",
+          "school": "المدرسة",
+          "partnerOrganization": "جهة شريكة",
+          "other": "أخرى"
+        },
         "youngSpeakerSection": "تفاصيل المتحدث الشاب",
         "schoolName": "اسم المدرسة",
         "guardianName": "اسم ولي الأمر",
@@ -452,11 +480,15 @@
       "eventDayInfo": {
         "title": "معلومات يوم الفعالية",
         "date": "التاريخ:",
+        "dateValue": "السبت، ١٥ نوفمبر ٢٠٢٦",
         "timing": "الموعد:",
+        "timingValue": "٩:٠٠ صباحاً – ٥:٠٠ مساءً",
         "venue": "المكان:",
         "venueLink": "عرض تفاصيل المكان",
         "ageGuidance": "إرشادات العمر:",
-        "whatToBring": "ما يجب إحضاره:"
+        "ageGuidanceValue": "مفتوح لجميع الأعمار؛ يُنصح لمن هم فوق ١٣ سنة",
+        "whatToBring": "ما يجب إحضاره:",
+        "whatToBringValue": "هوية سارية، تذكرة رقمية أو مطبوعة، ملابس مريحة"
       },
       "refundPolicy": {
         "body": "[ملخص مؤقت لسياسة الاسترجاع والتحويل.]",

@@ -10,19 +10,19 @@ const TYPE_STYLES: Record<
   { badgeClass: string; borderClass: string }
 > = {
   talk: {
-    badgeClass: "bg-tedx-red text-tedx-white",
-    borderClass: "border-tedx-red",
+    badgeClass: "bg-red-600 text-white",
+    borderClass: "border-red-600",
   },
   break: {
-    badgeClass: "bg-tedx-gray-light text-tedx-gray",
+    badgeClass: "bg-gray-100 text-gray-500",
     borderClass: "border-gray-200",
   },
   activation: {
-    badgeClass: "bg-tedx-black text-tedx-white",
-    borderClass: "border-tedx-black",
+    badgeClass: "bg-black text-white",
+    borderClass: "border-black",
   },
   registration: {
-    badgeClass: "bg-tedx-gray-light text-tedx-gray",
+    badgeClass: "bg-gray-100 text-gray-500",
     borderClass: "border-gray-200",
   },
 };
@@ -40,7 +40,7 @@ export default function ScheduleItem({ session, typeLabels, index }: ScheduleIte
 
   return (
     <motion.div
-      className={`flex flex-col sm:flex-row gap-2 sm:gap-6 border-s-4 ${style.borderClass} bg-tedx-white rounded-e-lg p-4 sm:p-5 shadow-sm`}
+      className={`flex flex-col sm:flex-row gap-2 sm:gap-6 border-s-4 ${style.borderClass} bg-white rounded-e-lg p-4 sm:p-5 shadow-sm`}
       initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 20 : -20 }}
       whileInView={shouldReduceMotion ? {} : { opacity: 1, x: 0 }}
       viewport={{ once: true, amount: 0.3 }}
@@ -52,7 +52,7 @@ export default function ScheduleItem({ session, typeLabels, index }: ScheduleIte
           {session.startTime} – {session.endTime}
         </p>
         {session.location && (
-          <p className="text-xs text-tedx-gray mt-0.5">{session.location}</p>
+          <p className="text-xs text-gray-500 mt-0.5">{session.location}</p>
         )}
       </div>
 
@@ -64,7 +64,7 @@ export default function ScheduleItem({ session, typeLabels, index }: ScheduleIte
         </span>
         <h3 className="font-semibold">{session.title}</h3>
         {session.speakerName && (
-          <p className="text-sm text-tedx-red mt-0.5">
+          <p className="text-sm text-red-600 mt-0.5">
             {session.speakerId ? (
               <Link
                 href={`/speakers#${session.speakerId}`}
@@ -78,7 +78,7 @@ export default function ScheduleItem({ session, typeLabels, index }: ScheduleIte
           </p>
         )}
         {session.description && (
-          <p className="text-sm text-tedx-gray mt-1">{session.description}</p>
+          <p className="text-sm text-gray-500 mt-1">{session.description}</p>
         )}
       </div>
     </motion.div>

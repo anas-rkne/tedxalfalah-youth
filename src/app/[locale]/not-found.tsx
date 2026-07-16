@@ -16,11 +16,11 @@ export default async function NotFound() {
   return (
     <section className="min-h-[70vh] flex items-center justify-center py-16">
       <SectionContainer className="max-w-xl text-center">
-        <p className="text-tedx-red font-bold text-sm uppercase tracking-widest mb-4">
+        <p className="text-red-600 font-bold text-sm uppercase tracking-widest mb-4">
           {t("eyebrow")}
         </p>
         <TextReveal text={t("title")} as="h1" className="text-4xl md:text-5xl font-bold mb-6" />
-        <p className="text-tedx-gray leading-relaxed mb-10">{t("body")}</p>
+        <p className="text-gray-500 leading-relaxed mb-10">{t("body")}</p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button href="/" variant="primary" size="md">
@@ -31,17 +31,17 @@ export default async function NotFound() {
           </Button>
         </div>
 
-        <p className="text-sm text-tedx-gray mt-10">
+        <p className="text-sm text-gray-500 mt-10">
           {t("exploreLabel")}{" "}
-          <Link href="/apply" className="underline hover:text-tedx-red">
+          <Link href="/apply" className="underline hover:text-red-600">
             {tNav("apply")}
           </Link>{" "}
           ·{" "}
-          <Link href="/tickets" className="underline hover:text-tedx-red">
+          <Link href="/tickets" className="underline hover:text-red-600">
             {tNav("tickets")}
           </Link>{" "}
           ·{" "}
-          <Link href="/venue" className="underline hover:text-tedx-red">
+          <Link href="/venue" className="underline hover:text-red-600">
             {tNav("venue")}
           </Link>
         </p>

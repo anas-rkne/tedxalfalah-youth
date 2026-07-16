@@ -28,15 +28,15 @@ export default async function ApplyPage() {
   return (
     <>
       {/* Theme */}
-      <section className="section-padding bg-tedx-black text-tedx-white text-center relative overflow-hidden">
-        <div className="noise-overlay" />
-        <SectionContainer className="max-w-3xl relative z-10">
+      <section className="section-padding text-center">
+        <SectionContainer className="max-w-3xl">
           <TextReveal
             text={t("theme.title")}
             as="h1"
-            className="text-3xl md:text-5xl font-bold mb-6 leading-tight"
+            className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-black"
+            serif
           />
-          <p className="text-tedx-white/80 leading-relaxed">
+          <p className="text-gray-700 leading-relaxed">
             {t("theme.body")}
           </p>
         </SectionContainer>
@@ -46,37 +46,37 @@ export default async function ApplyPage() {
       <section className="section-padding">
         <SectionContainer className="max-w-4xl">
           <FadeInView>
-            <h2 className="text-3xl font-bold text-center mb-10">
+            <h2 className="text-3xl font-bold text-center mb-10 text-black">
               {t("whoCanApply.title")}
             </h2>
           </FadeInView>
           <div className="grid md:grid-cols-2 gap-8">
             <FadeInView delay={0.1}>
-              <div className="p-6 bg-tedx-gray-light rounded-lg">
+              <div className="p-6 bg-gray-50 rounded-xl">
                 <h3 className="font-bold text-lg mb-2">
                   {t("whoCanApply.youngSpeakers.title")}
                 </h3>
-                <p className="text-sm text-tedx-gray leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   {t("whoCanApply.youngSpeakers.body")}
                 </p>
               </div>
             </FadeInView>
             <FadeInView delay={0.2}>
-              <div className="p-6 bg-tedx-gray-light rounded-lg">
+              <div className="p-6 bg-gray-50 rounded-xl">
                 <h3 className="font-bold text-lg mb-2">
                   {t("whoCanApply.experts.title")}
                 </h3>
-                <p className="text-sm text-tedx-gray leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   {t("whoCanApply.experts.body")}
                 </p>
               </div>
             </FadeInView>
           </div>
           <FadeInView delay={0.3}>
-            <p className="text-center text-tedx-gray mt-8 leading-relaxed">
+            <p className="text-center text-gray-600 mt-8 leading-relaxed">
               {t("whoCanApply.connector")}
             </p>
-            <p className="text-center font-bold text-lg mt-6">
+            <p className="text-center font-bold text-lg mt-6 text-black">
               {t("whoCanApply.everyoneWelcome")}
             </p>
           </FadeInView>
@@ -84,13 +84,13 @@ export default async function ApplyPage() {
       </section>
 
       {/* How Applications Are Reviewed */}
-      <section className="py-16 bg-tedx-gray-light">
+      <section className="section-padding">
         <SectionContainer className="max-w-3xl text-center">
           <FadeInView>
-            <h2 className="text-2xl font-bold mb-4">
+            <h2 className="text-2xl font-bold mb-4 text-black">
               {t("reviewProcess.title")}
             </h2>
-            <p className="text-tedx-gray leading-relaxed">
+            <p className="text-gray-600 leading-relaxed">
               {t("reviewProcess.body")}
             </p>
           </FadeInView>
@@ -101,7 +101,7 @@ export default async function ApplyPage() {
       <section className="section-padding">
         <SectionContainer>
           <FadeInView>
-            <h2 className="text-2xl font-bold text-center mb-12">
+            <h2 className="text-2xl font-bold text-center mb-12 text-black">
               {t("journey.title")}
             </h2>
           </FadeInView>
@@ -110,15 +110,15 @@ export default async function ApplyPage() {
       </section>
 
       {/* Form or closed message */}
-      <section className="section-padding bg-tedx-gray-light">
+      <section className="section-padding">
         <SectionContainer>
           <FadeInView>
             {isClosed ? (
-              <div className="max-w-xl mx-auto text-center p-8 bg-tedx-white rounded-lg">
-                <h2 className="text-2xl font-bold mb-4">
+              <div className="max-w-xl mx-auto text-center p-8 bg-gray-50 rounded-xl">
+                <h2 className="text-2xl font-bold mb-4 text-black">
                   {t("closed.title")}
                 </h2>
-                <p className="text-tedx-gray">
+                <p className="text-gray-600">
                   {t("closed.body")}
                 </p>
               </div>
@@ -133,8 +133,8 @@ export default async function ApplyPage() {
       <section className="section-padding">
         <SectionContainer className="max-w-2xl text-center">
           <FadeInView>
-            <h2 className="text-xl font-bold mb-4">{t("nonSelection.title")}</h2>
-            <p className="text-tedx-gray leading-relaxed">
+            <h2 className="text-xl font-bold mb-4 text-black">{t("nonSelection.title")}</h2>
+            <p className="text-gray-600 leading-relaxed">
               {t("nonSelection.body")}
             </p>
           </FadeInView>
@@ -142,10 +142,10 @@ export default async function ApplyPage() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-16 bg-tedx-gray-light">
+      <section id="faq" className="section-padding">
         <SectionContainer>
           <FadeInView>
-            <h2 className="text-2xl font-bold text-center mb-10">
+            <h2 className="text-2xl font-bold text-center mb-10 text-black">
               {t("faqTitle")}
             </h2>
           </FadeInView>

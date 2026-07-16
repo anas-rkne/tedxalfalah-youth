@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useRTL } from "@/hooks/useRTL";
 
 interface TextRevealProps {
   text: string;
@@ -9,6 +8,7 @@ interface TextRevealProps {
   className?: string;
   delay?: number;
   wordDelay?: number;
+  serif?: boolean;
 }
 
 export default function TextReveal({
@@ -17,9 +17,9 @@ export default function TextReveal({
   className = "",
   delay = 0,
   wordDelay = 0.05,
+  serif = false,
 }: TextRevealProps) {
   const shouldReduceMotion = useReducedMotion();
-  const { isRTL } = useRTL();
 
   const words = text.split(" ");
 
@@ -52,7 +52,7 @@ export default function TextReveal({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
-      className={className}
+      className={`${serif ? "font-serif" : ""} ${className}`}
     >
       <Tag className="inline">
         {words.map((word, i) => (

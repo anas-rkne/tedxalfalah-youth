@@ -35,7 +35,6 @@ export default function SpeakersCarousel({ speakers }: SpeakersCarouselProps) {
   }, [speakers]);
 
   const totalPages = Math.max(1, Math.ceil(speakers.length / itemsPerView));
-  const cardWidth = 192; // w-48 = 192px + 24px gap = 216px per unit
 
   function goNext() {
     const next = Math.min(currentPage + 1, totalPages - 1);
@@ -81,7 +80,7 @@ export default function SpeakersCarousel({ speakers }: SpeakersCarouselProps) {
               />
             </div>
             <h3 className="font-semibold">{speaker.name}</h3>
-            <p className="text-sm text-tedx-gray">{speaker.shortDescriptor}</p>
+            <p className="text-sm text-gray-500">{speaker.shortDescriptor}</p>
           </motion.div>
         ))}
       </motion.div>

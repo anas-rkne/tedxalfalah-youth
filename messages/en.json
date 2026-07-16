@@ -14,10 +14,13 @@
       "terms": "Terms and Conditions"
     },
     "applyNow": "Apply Now",
+        "more": "More",
+
     "languageSwitcher": {
       "en": "EN",
       "ar": "AR"
-    }
+    },
+    "loading": "Loading"
   },
   "footer": {
     "contactHeading": "Contact",
@@ -25,14 +28,16 @@
     "brandHeading": "TEDxAlFalah Youth",
     "licenseNotice": "This independent TEDx event is operated under license from TED.",
     "termsLink": "Terms and Conditions",
-    "copyright": "All rights reserved."
+    "copyright": "All rights reserved.",
+    "joinUs": "Join Us!"
   },
   "home": {
     "hero": {
       "title": "Tomorrow, Now.",
       "subtitle": "Young voices. Real ideas. The future starts earlier than we think.",
       "applyNow": "Apply Now",
-      "getTickets": "Get Tickets"
+      "getTickets": "Get Tickets",
+      "scroll": "Scroll to explore"
     },
     "about": {
       "heading": "About the Event",
@@ -68,6 +73,7 @@
       "namePlaceholder": "Full name",
       "emailPlaceholder": "Email",
       "messagePlaceholder": "Your message",
+      "subjectLabel": "Subject",
       "subjectGeneral": "General",
       "subjectSpeaking": "Speaking",
       "subjectSponsorship": "Sponsorship",
@@ -90,6 +96,21 @@
     "backHome": "Back to Home",
     "meetSpeakers": "Meet the Speakers",
     "exploreLabel": "Or explore:"
+  },
+  "errorPage": {
+    "eyebrow": "Error",
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again or return to the homepage.",
+    "tryAgain": "Try Again",
+    "backToHome": "Back to Home"
+  },
+  "countdown": {
+    "live": "We're live!",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "ariaLabel": "Countdown timer"
   },
   "thankYou": {
     "contact": {
@@ -323,6 +344,13 @@
         "themeConnection": "Connection to the Theme",
         "videoLink": "Optional Video Link (60\u201390 second pitch)",
         "howHeard": "How did you hear about us?",
+        "howHeardOptions": {
+          "socialMedia": "Social Media",
+          "friendFamily": "Friend/Family",
+          "school": "School",
+          "partnerOrganization": "Partner Organization",
+          "other": "Other"
+        },
         "youngSpeakerSection": "Young Speaker Details",
         "schoolName": "School Name",
         "guardianName": "Parent/Guardian Name",
@@ -452,11 +480,15 @@
       "eventDayInfo": {
         "title": "Event Day Information",
         "date": "Date:",
+        "dateValue": "Saturday, November 15, 2026",
         "timing": "Timing:",
+        "timingValue": "9:00 AM – 5:00 PM",
         "venue": "Venue:",
         "venueLink": "View venue details",
         "ageGuidance": "Age Guidance:",
-        "whatToBring": "What to Bring:"
+        "ageGuidanceValue": "Open to all ages; recommended for 13+",
+        "whatToBring": "What to Bring:",
+        "whatToBringValue": "Valid ID, printed or digital ticket, comfortable clothing"
       },
       "refundPolicy": {
         "body": "[PLACEHOLDER: refund and transfer policy summary.] See our",

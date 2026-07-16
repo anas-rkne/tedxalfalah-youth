@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import VenueHeroSection from "@/components/venue/VenueHeroSection";
 import VenueMapSection from "@/components/venue/VenueMapSection";
 import VenueGallerySection from "@/components/venue/VenueGallerySection";
@@ -23,13 +24,15 @@ export default async function VenuePage() {
     <>
       <VenueHeroSection heroTitle={t("heroTitle")} heroAlt={t("heroAlt")} />
 
-      <section className="section-padding">
-        <SectionContainer className="content-narrow">
-          <p className="text-tedx-gray leading-relaxed">
-            {t("narrative")}
-          </p>
-        </SectionContainer>
-      </section>
+      <ScrollReveal>
+        <section className="section-padding">
+          <SectionContainer className="content-narrow">
+            <p className="text-gray-500 leading-relaxed">
+              {t("narrative")}
+            </p>
+          </SectionContainer>
+        </section>
+      </ScrollReveal>
 
       <VenueMapSection
         title={t("gettingThere.title")}
@@ -37,14 +40,16 @@ export default async function VenuePage() {
         directions={t("gettingThere.directions")}
       />
 
-      <section className="section-padding">
-        <SectionContainer className="content-narrow">
-          <h2 className="text-2xl font-bold mb-4">{t("accessibility.title")}</h2>
-          <p className="text-tedx-gray leading-relaxed">
-            {t("accessibility.body")}
-          </p>
-        </SectionContainer>
-      </section>
+      <ScrollReveal>
+        <section className="section-padding">
+          <SectionContainer className="content-narrow">
+            <h2 className="text-2xl font-bold mb-4 font-serif">{t("accessibility.title")}</h2>
+            <p className="text-gray-500 leading-relaxed">
+              {t("accessibility.body")}
+            </p>
+          </SectionContainer>
+        </section>
+      </ScrollReveal>
 
       <VenueGallerySection count={6} />
     </>

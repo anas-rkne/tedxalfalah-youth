@@ -43,7 +43,7 @@ export default function AnimatedStats({ stats }: AnimatedStatsProps) {
   return (
     <div
       ref={ref}
-      className="p-8 bg-tedx-black text-tedx-white rounded-lg flex flex-col justify-center gap-4"
+      className="p-8 bg-gray-50 text-gray-900 rounded-xl flex flex-col justify-center gap-4"
     >
       {stats.map((stat) => (
         <div key={stat.label} className="flex items-baseline gap-2">
@@ -51,7 +51,7 @@ export default function AnimatedStats({ stats }: AnimatedStatsProps) {
             <AnimatedNumber targetValue={stat.targetValue} inView={isInView} reduceMotion={!!shouldReduceMotion} />
             {stat.suffix}
           </span>
-          <span className="text-sm text-tedx-white/70">{stat.label}</span>
+          <span className="text-sm text-gray-500">{stat.label}</span>
         </div>
       ))}
     </div>

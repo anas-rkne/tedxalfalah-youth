@@ -41,11 +41,11 @@ export default function ActivationCard({
               sizes="(max-width: 768px) 100vw, 50vw"
             />
           </div>
-          <div className="absolute inset-0 [backface-visibility:hidden] rounded-lg overflow-hidden bg-tedx-gray-light p-6 flex flex-col justify-center [transform:rotateY(180deg)]">
-            <p className="text-sm text-tedx-red font-medium mb-2">
+          <div className="absolute inset-0 [backface-visibility:hidden] rounded-lg overflow-hidden bg-gray-100 p-6 flex flex-col justify-center [transform:rotateY(180deg)]">
+            <p className="text-sm text-red-600 font-medium mb-2">
               {activation.locationInVenue}
             </p>
-            <p className="text-tedx-gray leading-relaxed text-sm">
+            <p className="text-gray-500 leading-relaxed text-sm">
               {activation.description}
             </p>
           </div>
@@ -57,10 +57,10 @@ export default function ActivationCard({
         whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
       >
         <h2 className="text-2xl font-bold mb-2">{activation.name}</h2>
-        <p className="text-sm text-tedx-red font-medium mb-3">
+        <p className="text-sm text-red-600 font-medium mb-3">
           {activation.locationInVenue}
         </p>
-        <p className="text-tedx-gray leading-relaxed">
+        <p className="text-gray-500 leading-relaxed">
           {activation.description}
         </p>
       </motion.div>

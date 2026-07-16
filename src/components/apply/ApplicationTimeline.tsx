@@ -39,14 +39,14 @@ export default function ApplicationTimeline() {
               <div className="hidden lg:block absolute top-4 start-1/2 w-full h-px bg-gray-300" />
             )}
 
-            <div className="flex-shrink-0 relative z-10 w-8 h-8 rounded-full bg-tedx-red text-tedx-white flex items-center justify-center text-sm font-bold">
+            <div className="flex-shrink-0 relative z-10 w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center text-sm font-bold">
               {stage.stageNumber}
             </div>
 
             <div className="lg:mt-4 lg:text-center lg:px-2">
               <h3 className="font-semibold text-sm">{stage.title}</h3>
-              <p className="text-xs text-tedx-red mb-1">{stage.dateLabel}</p>
-              <p className="text-xs text-tedx-gray">{stage.description}</p>
+              <p className="text-xs text-red-600 mb-1">{stage.dateLabel}</p>
+              <p className="text-xs text-gray-500">{stage.description}</p>
             </div>
           </motion.div>
         ))}

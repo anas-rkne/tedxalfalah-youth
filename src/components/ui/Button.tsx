@@ -34,9 +34,9 @@ const sizeClasses: Record<ButtonSize, string> = {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-tedx-red text-tedx-white hover:bg-red-700 border border-tedx-red",
+    "bg-red-600 text-white hover:bg-red-700 border border-red-600",
   outline:
-    "bg-transparent text-tedx-black hover:bg-tedx-black hover:text-tedx-white border border-tedx-black",
+    "bg-transparent text-black hover:bg-black hover:text-white border border-black",
 };
 
 export default function Button({
@@ -51,7 +51,7 @@ export default function Button({
 }: ButtonProps) {
   const { disabled: _disabled, ...safeRest } = rest as ButtonHTMLAttributes<HTMLButtonElement>;
   const isDisabled = _disabled || loading;
-  const classes = `inline-flex items-center justify-center font-semibold uppercase tracking-wide transition-all duration-200 rounded-lg ${sizeClasses[size]} ${variantClasses[variant]} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tedx-red focus-visible:ring-offset-2 ${
+  const classes = `inline-flex items-center justify-center font-medium transition-all duration-200 rounded-full ${sizeClasses[size]} ${variantClasses[variant]} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 ${
     isDisabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "active:scale-95"
   } ${className}`;
 
