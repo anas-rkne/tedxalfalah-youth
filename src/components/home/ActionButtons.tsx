@@ -1,65 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Link } from "@/i18n/navigation";
+import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 
 interface ActionButtonsProps {
   applyLabel: string;
   ticketsLabel: string;
-}
-
-function ActionButton({
-  href,
-  children,
-  variant,
-}: {
-  href: string;
-  children: React.ReactNode;
-  variant: "primary" | "secondary";
-}) {
-  const colorClasses =
-    variant === "primary"
-      ? "bg-red-600 text-white border-2 border-black"
-      : "bg-yellow-400 text-black border-2 border-black";
-
-  return (
-    <motion.div
-      className="w-full sm:w-auto"
-      // حركة ناعمة جداً عند الضغط (اختياري)
-      whileTap={{ scale: 0.97 }}
-      transition={{ type: "spring", stiffness: 400, damping: 20 }}
-    >
-      <Link
-        href={href}
-        className={`relative inline-flex w-full sm:w-auto items-center justify-center rounded-lg border-2 px-6 py-3 text-base font-bold transition-all duration-200 shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] focus:outline-none focus:ring-2 focus:ring-red-600 ${colorClasses}`}
-      >
-        {/* النص مع سهم يتحرك قليلاً عند الهوفر */}
-        <span className="flex items-center gap-2 group">
-          <span className="transition-transform duration-200 group-hover:translate-x-1">
-            {children}
-          </span>
-          <motion.span
-            className="inline-block transition-transform duration-200 group-hover:translate-x-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
-            </svg>
-          </motion.span>
-        </span>
-      </Link>
-    </motion.div>
-  );
 }
 
 export default function ActionButtons({
@@ -67,13 +12,20 @@ export default function ActionButtons({
   ticketsLabel,
 }: ActionButtonsProps) {
   return (
-    <div className="flex flex-col sm:flex-row gap-6 mt-6 w-full max-w-md mx-auto">
-      <ActionButton href="/apply" variant="primary">
+    <div className="flex flex-row flex-nowrap items-center justify-center gap-2 sm:gap-4  w-full max-w-xs sm:max-w-sm mx-auto">
+      {/* زر Apply - أحمر افتراضي */}
+      <AnimatedSlidingButton href="/apply" variant="primary" className="flex-1">
         {applyLabel}
-      </ActionButton>
-      <ActionButton href="/tickets" variant="secondary">
+      </AnimatedSlidingButton>
+
+      {/* زر Tickets - تم تحويله إلى الأسود باستخدام className */}
+      <AnimatedSlidingButton
+        href="/tickets"
+        variant="primary" // استخدام primary وتجاوزه بالأسود هو الأكثر أماناً
+        className="bg-black text-white border-black hover:bg-gray-900 flex-1"
+      >
         {ticketsLabel}
-      </ActionButton>
+      </AnimatedSlidingButton>
     </div>
   );
 }

@@ -7,11 +7,13 @@ export default async function Hero() {
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center text-center overflow-hidden bg-background/60 backdrop-blur-xl">
       <HeroDynamicContent
-        title={t("title")}
-        subtitle={t("subtitle")}
-        scrollLabel={t("scroll")}
-        applyLabel={t("applyNow")}
-        ticketsLabel={t("getTickets")}
+        eventName={t("eventName")}
+        tagline={t("tagline")}
+        dateText={t("date")}
+        venueText={t("venue")}
+        scrollLabel={t("scrollLabel")}
+        applyLabel={t("applyLabel")}
+        ticketsLabel={t("ticketsLabel")}
       />
     </section>
   );

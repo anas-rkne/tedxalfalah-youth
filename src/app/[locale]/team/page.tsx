@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
-import TeamAccordionSection from "@/components/team/TeamAccordionSection";
 import TextReveal from "@/components/ui/TextReveal";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import TeamFunctionGroup from "@/components/team/TeamAccordionSection";
 import { getTeamMembers } from "@/lib/data";
 import { TeamDepartment } from "@/lib/types";
 import { Metadata } from "next";
@@ -32,29 +32,32 @@ export default async function TeamPage() {
   const t = await getTranslations("page.team");
 
   return (
-    <section className="section-padding">
+    <section className="section-padding bg-[#050508]">
       <SectionContainer>
         <TextReveal
           text={t("title")}
           as="h1"
-          className="text-4xl md:text-5xl font-bold text-center mb-12"
+          className="font-arabic text-4xl md:text-5xl font-bold text-center mb-4 text-white"
           serif
         />
 
+        <div className="flex justify-center mb-8">
+          <div className="h-1 w-20 bg-red-600 rounded-full" />
+        </div>
+
         <ScrollReveal>
-          <div className="flex flex-col gap-6">
-            {DEPARTMENTS.map((department, index) => {
+          <div className="flex flex-col">
+            {DEPARTMENTS.map((department) => {
               const departmentMembers = members.filter(
                 (m) => m.department === department
               );
               if (departmentMembers.length === 0) return null;
 
               return (
-                <TeamAccordionSection
+                <TeamFunctionGroup
                   key={department}
-                  departmentName={t(`departments.${department}`)}
+                  functionName={t(`departments.${department}`)}
                   members={departmentMembers}
-                  defaultOpen={index === 0}
                 />
               );
             })}

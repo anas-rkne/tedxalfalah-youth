@@ -8,6 +8,8 @@ import { useRTL } from "@/hooks/useRTL";
 import { Menu, X, Home, Users, Users2, Calendar, MapPin, Mic, Ticket, Handshake, Award, ChevronDown } from "lucide-react";
 import Button from "@/components/ui/Button";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
+ // استيراد المكون الجديد
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,7 +24,7 @@ export default function Header() {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   const { scrollY } = useScroll();
-const headerOpacity = useTransform(scrollY, [0, 300], [0, 1]);
+  const headerOpacity = useTransform(scrollY, [0, 300], [0, 1]);
   const borderOpacity = useTransform(scrollY, [0, 80], [0, 1]);
   const blurValue = useTransform(scrollY, [0, 80], [0, 12]);
 
@@ -62,25 +64,22 @@ const headerOpacity = useTransform(scrollY, [0, 300], [0, 1]);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isMenuOpen, handleKeyDown]);
 
-  // تعريف جميع الروابط
   const ALL_LINKS = [
     { label: t("home"), href: "/", icon: Home },
     { label: t("speakers"), href: "/speakers", icon: Users },
     { label: t("team"), href: "/team", icon: Users2 },
     { label: t("venue"), href: "/venue", icon: MapPin },
     { label: t("activations"), href: "/activations", icon: Mic },
-    { label: t("schedule"), href: "/schedule", icon: Calendar },
-    { label: t("apply"), href: "/apply", icon: Handshake }, // Apply كرابط إضافي في القائمة المتنقلة
+    { label: t("apply"), href: "/apply", icon: Handshake },
     { label: t("sponsors"), href: "/sponsors", icon: Award },
     { label: t("tickets"), href: "/tickets", icon: Ticket },
   ];
 
-  // تقسيم الروابط: الرئيسية (أول 6) والإضافية (الباقي)
   const mainLinks = ALL_LINKS.slice(0, 6);
   const moreLinks = ALL_LINKS.slice(6);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex h-20 items-center justify-center">
+    <header className="sticky top-0 left-0 right-0 z-50 flex h-20 items-center justify-center">
       {/* خلفية متحركة */}
       <motion.div
         className="absolute inset-0 pointer-events-none bg-gradient-to-r from-white/80 to-red-50/80 dark:from-black/50 dark:to-red-900/10"
@@ -184,33 +183,10 @@ const headerOpacity = useTransform(scrollY, [0, 300], [0, 1]);
         {/* الأزرار (LanguageSwitcher + Apply) */}
         <div className="hidden lg:flex items-center gap-3 shrink-0">
           <LanguageSwitcher />
-          <Link
-            href="/apply"
-            className="group relative inline-block overflow-hidden rounded-full border border-red-600 bg-red-600 px-5 py-2 text-center font-semibold text-white transition-colors hover:bg-red-700 shrink-0"
-          >
-            <div className="flex items-center justify-center gap-2 transition-all duration-300 group-hover:translate-x-full group-hover:opacity-0">
-              <div className="h-2 w-2 rounded-full bg-white transition-all duration-300 group-hover:scale-[100.8]" />
-              <span className="text-sm">{tCommon("applyNow")}</span>
-            </div>
-            <div className="absolute inset-0 flex -translate-x-full items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
-              <span className="text-sm">{tCommon("applyNow")}</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
-            </div>
-          </Link>
+          {/* تم استبدال الزر المخصص بـ SlidingButton */}
+          <AnimatedSlidingButton href="/apply" variant="primary">
+            {tCommon("applyNow")}
+          </AnimatedSlidingButton>
         </div>
 
         {/* زر الجوال */}

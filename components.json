@@ -23,6 +23,7 @@
   },
   "registries": {
     "@magicui": "https://magicui.design/r/{name}",
-    "@aceternity": "https://ui.aceternity.com/registry/{name}.json"
+    "@aceternity": "https://ui.aceternity.com/registry/{name}.json",
+    "@eldoraui": "https://eldoraui.site/r/{name}.json"
   }
 }

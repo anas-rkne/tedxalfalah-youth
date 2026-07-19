@@ -33,16 +33,18 @@
   },
   "home": {
     "hero": {
-      "title": "Tomorrow, Now.",
-      "subtitle": "Young voices. Real ideas. The future starts earlier than we think.",
-      "applyNow": "Apply Now",
-      "getTickets": "Get Tickets",
-      "scroll": "Scroll to explore"
+       "eventName": "TEDxAlFalah Youth",
+      "tagline": "The youth voice shaping the future.",
+      "date": "October 30, 2024",
+      "venue": "Dubai, United Arab Emirates",
+      "scrollLabel": "Explore",
+      "applyLabel": "Apply Now",
+      "ticketsLabel": "Get Tickets"
     },
     "about": {
-      "heading": "About the Event",
-      "body": "[PLACEHOLDER: short paragraph on TEDxAlFalah Youth, its purpose, and who it serves — to be provided by the client.]",
-      "licenseNote": "TEDxAlFalah Youth is organized independently and operated under license from TED."
+        "heading": "About the Event",
+      "body": "TEDxAlFalah Youth is an independently organized TED event, designed especially for young men and women in the United Arab Emirates. This event aims to inspire young minds by providing them with a platform to share their ideas, stories, and passions. We believe that the voice of youth is the voice of the future, and that great ideas start with small steps. This event serves youth of all ages and backgrounds, fostering creativity, critical thinking, and collaboration.",
+      "licenseNote": "This independent TEDx event is operated under license from TED."
     },
     "theme": {
       "title": "Tomorrow, Now: Young voices. Real ideas. The future starts earlier than we think.",
@@ -53,13 +55,13 @@
       "seeAll": "See All Speakers"
     },
     "highlights": {
-      "venueTitle": "The Venue",
-      "venueTeaser": "[PLACEHOLDER: short teaser about the venue and why it was chosen.]",
-      "activationsTitle": "Side Activations",
-      "activationsTeaser": "[PLACEHOLDER: short teaser about the experience beyond the talks.]",
-      "statsSpeakers": "Speakers",
-      "statsAttendees": "Attendees",
-      "statsActivations": "Activations"
+  "venueTitle": "Museum of the Future, Dubai",
+  "venueTeaser": "This venue is more than a stage—it's an inspiration! We chose Dubai because it brings the world together in one place. Amidst its innovative streets and a swirl of ideas, you can find the inspiration to plan a future that empowers you and our youth. The opportunities are right in front of you, waiting to be seized!",
+  "activationsTitle": "Community Activations",
+  "activationsTeaser": "The experience here goes far beyond just talks—it's a feeling that fills you up! Between every session, you'll feel the energy of the crowd, shared laughter, and exchanges of ideas that shift perspectives. Genuine connections are made here, and you can turn your curiosity into the spark of your next big journey. This event makes you feel like you're part of something truly monumental.",
+  "statsSpeakers": "Speakers",
+  "statsAttendees": "Attendees",
+  "statsActivations": "Activations"
     },
     "applyBanner": {
       "text": "Applications are open — deadline {date}",
@@ -166,25 +168,26 @@
     },
     "venue": {
       "meta": {
-        "title": "The Venue",
-        "description": "Where TEDxAlFalah Youth comes to life."
-      },
-      "heroAlt": "Venue hero",
-      "heroTitle": "[PLACEHOLDER: Venue Name]",
-      "narrative": "[PLACEHOLDER: short narrative on why this venue was chosen and its connection to the community — to be provided by the client.]",
-      "gettingThere": {
-        "title": "Getting There",
-        "mapTitle": "Venue map",
-        "directions": "[PLACEHOLDER: parking guidance and directions to be provided by the client.]"
-      },
-      "accessibility": {
-        "title": "Accessibility",
-        "body": "[PLACEHOLDER: accessibility information to be provided by the client.]"
-      },
-      "photoGallery": {
-        "title": "Photo Gallery",
-        "alt": "Venue photo {number}"
-      }
+    "title": "Venue",
+    "description": "Discover the TEDxAlFalahYouth venue"
+  },
+  "heroTitle": "A Place That Inspires",
+  "heroAlt": "Photo of the venue",
+  "narrativeLabel": "About the Venue",
+  "narrative": "A short description of the venue, its location, and atmosphere.",
+  "gettingThere": {
+    "title": "Getting There",
+    "mapTitle": "Venue Location",
+    "directions": "Follow directions to reach the venue."
+  },
+  "accessibility": {
+    "title": "Accessibility",
+    "body": "We provide dedicated parking and accessible entrances."
+  },
+  "photoGallery": {
+    "title": "Photo Gallery",
+    "alt": "Gallery image {number}"
+  }
     },
     "activations": {
       "meta": {
@@ -645,3 +648,4 @@
     }
   }
 }
+

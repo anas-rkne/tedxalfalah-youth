@@ -1,16 +1,9 @@
 /**
  * ============================================================================
- * MOCK DATA LAYER
+ * MOCK DATA LAYER — مع تحسين الصور الوهمية للعرض الفوري
  * ============================================================================
- * هذا الملف يحاكي بيانات ستأتي لاحقاً من Sanity CMS (راجع المرحلة 5 و6 من
- * خطة التنفيذ). كل دالة هنا بنفس التوقيع (signature) الذي ستحتاجه دالة
- * Sanity الحقيقية، لذلك عند ربط CMS الفعلي، فقط استبدل جسم الدالة بـ
- * client.fetch(...) دون تغيير أي مكان يستدعيها بالمشروع.
- *
- * لربط Sanity الحقيقي لاحقاً:
- * 1. أنشئ src/lib/sanity.ts بعميل Sanity (client) حسب المرحلة 5.9 بالخطة.
- * 2. استبدل جسم كل دالة أدناه باستعلام GROQ مطابق.
- * 3. لا حاجة لتعديل أي صفحة تستورد هذه الدوال.
+ * تم استبدال مسارات الصور المحلية بـ URLs خارجية لتعمل فوراً دون الحاجة
+ * لإنشاء مجلد public/mock أو تنزيل صور.
  * ============================================================================
  */
 
@@ -22,11 +15,12 @@ import {
   Session,
 } from "./types";
 
+// ----- 1. المتحدثين (Speakers) مع صور وهمية -----
 const MOCK_SPEAKERS: Speaker[] = [
   {
     id: "sp-1",
     name: "Amna Al Suwaidi",
-    imageUrl: "/mock/speaker-placeholder.svg",
+    imageUrl: "https://i.pravatar.cc/600?img=1", // صورة امرأة
     shortDescriptor: "Student Innovator",
     talkTitle: "Building Robots That Understand Empathy",
     themeConnection: "Proof that tomorrow's ideas start in today's classroom.",
@@ -38,7 +32,7 @@ const MOCK_SPEAKERS: Speaker[] = [
   {
     id: "sp-2",
     name: "Yusuf Al Marzooqi",
-    imageUrl: "/mock/speaker-placeholder.svg",
+    imageUrl: "https://i.pravatar.cc/600?img=11", // صورة رجل
     shortDescriptor: "Young Poet",
     talkTitle: "Words We Didn't Know We Needed",
     themeConnection: "Real stories, told in a voice adults forgot they had.",
@@ -50,7 +44,7 @@ const MOCK_SPEAKERS: Speaker[] = [
   {
     id: "sp-3",
     name: "Dr. Layla Haddad",
-    imageUrl: "/mock/speaker-placeholder.svg",
+    imageUrl: "https://i.pravatar.cc/600?img=5", // صورة امرأة
     shortDescriptor: "Child Development Expert",
     talkTitle: "What Kids Are Trying to Tell Us",
     themeConnection: "The adult perspective that makes youth voices louder.",
@@ -62,7 +56,7 @@ const MOCK_SPEAKERS: Speaker[] = [
   {
     id: "sp-4",
     name: "Faisal Al Nuaimi",
-    imageUrl: "/mock/speaker-placeholder.svg",
+    imageUrl: "https://i.pravatar.cc/600?img=12", // صورة رجل
     shortDescriptor: "Teen Entrepreneur",
     talkTitle: "I Started a Business With My Allowance",
     themeConnection: "Big ideas do not wait for a business degree.",
@@ -73,11 +67,12 @@ const MOCK_SPEAKERS: Speaker[] = [
   },
 ];
 
+// ----- 2. فريق العمل (Team) مع صور وهمية -----
 const MOCK_TEAM: TeamMember[] = [
   {
     id: "tm-1",
     name: "Sara Al Ketbi",
-    imageUrl: "/mock/team-placeholder.svg",
+    imageUrl: "https://i.pravatar.cc/600?img=33", // صورة امرأة
     role: "Curation Lead",
     department: "Curation",
     quote: "Every story deserves a stage.",
@@ -85,31 +80,32 @@ const MOCK_TEAM: TeamMember[] = [
   {
     id: "tm-2",
     name: "Omar Al Falasi",
-    imageUrl: "/mock/team-placeholder.svg",
+    imageUrl: "https://i.pravatar.cc/600?img=68", // صورة رجل
     role: "Production Manager",
     department: "Production",
   },
   {
     id: "tm-3",
     name: "Noura Al Shamsi",
-    imageUrl: "/mock/team-placeholder.svg",
+    imageUrl: "https://i.pravatar.cc/600?img=24", // صورة امرأة
     role: "Speaker Coach",
     department: "Speaker Coaching",
   },
   {
     id: "tm-4",
     name: "Khalid Al Zaabi",
-    imageUrl: "/mock/team-placeholder.svg",
+    imageUrl: "https://i.pravatar.cc/600?img=74", // صورة رجل
     role: "Marketing Lead",
     department: "Marketing",
   },
 ];
 
+// ----- 3. الفعاليات (Activations) مع صور وهمية -----
 const MOCK_ACTIVATIONS: Activation[] = [
   {
     id: "act-1",
     name: "Idea Wall",
-    imageUrl: "/mock/activation-placeholder.svg",
+    imageUrl: "https://placehold.co/600x400/222/fff?text=Idea+Wall", // صورة وهمية
     description:
       "An interactive wall where attendees post their own bold questions and ideas for the future. [PLACEHOLDER description, 50-80 words].",
     locationInVenue: "Main Foyer",
@@ -118,7 +114,7 @@ const MOCK_ACTIVATIONS: Activation[] = [
   {
     id: "act-2",
     name: "Youth Workshop Corner",
-    imageUrl: "/mock/activation-placeholder.svg",
+    imageUrl: "https://placehold.co/600x400/222/fff?text=Youth+Workshop", 
     description:
       "Hands-on mini workshops led by young facilitators. [PLACEHOLDER description, 50-80 words].",
     locationInVenue: "East Hall",
@@ -127,7 +123,7 @@ const MOCK_ACTIVATIONS: Activation[] = [
   {
     id: "act-3",
     name: "Photo Moment",
-    imageUrl: "/mock/activation-placeholder.svg",
+    imageUrl: "https://placehold.co/600x400/222/fff?text=Photo+Moment",
     description:
       "A branded photo backdrop to capture the day. [PLACEHOLDER description, 50-80 words].",
     locationInVenue: "Entrance",
@@ -135,23 +131,32 @@ const MOCK_ACTIVATIONS: Activation[] = [
   },
 ];
 
+// ----- 4. الشركاء (Sponsors) مع شعارات وهمية -----
 const MOCK_SPONSORS: Sponsor[] = [
   {
     id: "spn-1",
-    name: "Placeholder Platinum Partner",
-    logoUrl: "/mock/sponsor-placeholder.svg",
+    name: "Platinum Partner",
+    logoUrl: "https://placehold.co/200x100/222/fff?text=Platinum", // شعار وهمي
     tier: "Platinum",
     websiteUrl: "#",
   },
   {
     id: "spn-2",
-    name: "Placeholder Gold Partner",
-    logoUrl: "/mock/sponsor-placeholder.svg",
+    name: "Gold Partner",
+    logoUrl: "https://placehold.co/200x100/222/fff?text=Gold",
     tier: "Gold",
+    websiteUrl: "#",
+  },
+  {
+    id: "spn-3",
+    name: "Silver Partner",
+    logoUrl: "https://placehold.co/200x100/222/fff?text=Silver",
+    tier: "Silver",
     websiteUrl: "#",
   },
 ];
 
+// ----- 5. الجلسات (Sessions) -----
 const MOCK_SESSIONS: Session[] = [
   {
     id: "sess-1",

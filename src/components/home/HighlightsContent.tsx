@@ -6,11 +6,11 @@ import { MapPin, Sparkles, Users } from "lucide-react";
 import AnimatedStats from "@/components/home/AnimatedStats";
 
 interface HighlightsContentProps {
-  venueTitle: string;
-  venueTeaser: string;
-  activationsTitle: string;
-  activationsTeaser: string;
-  stats: Array<{ label: string; targetValue: number; suffix: string }>;
+  venueTitle?: string;
+  venueTeaser?: string;
+  activationsTitle?: string;
+  activationsTeaser?: string;
+  stats?: Array<{ label: string; targetValue: number; suffix: string }>;
 }
 
 export default function HighlightsContent({
@@ -35,21 +35,22 @@ export default function HighlightsContent({
   };
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center bg-white pt-20 pb-16 dark:bg-black overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full bg-red-500/5 blur-3xl pointer-events-none" />
-
+    <section className="relative flex min-h-screen flex-col items-center justify-center bg-white pt-20 pb-16 overflow-hidden">
       <div className="relative z-10 w-full max-w-7xl px-4 md:px-8 flex flex-col items-center">
-        {/* عنوان القسم */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-black dark:text-white">
+        
+        {/* عنوان القسم ونص ترحيبي إماراتي */}
+        <div className="text-center mb-12 md:mb-16 max-w-3xl">
+          <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight">
             أبرز النقاط
           </h2>
-          <p className="text-gray-500 mt-4 text-lg font-light max-w-2xl mx-auto dark:text-gray-400">
-            اكتشف المكان، الفعاليات، وأرقام الحدث التي تجعل تجربتك فريدة.
+          <div className="w-12 h-1 bg-red-600 mx-auto mt-4 rounded-full" />
+          <p className="text-gray-500 mt-6 text-lg font-light max-w-2xl mx-auto leading-relaxed">
+            عندك أسئلة أو أفكار أو بس تبي تقول مرحبا؟ بنحب نسمع منك. 
+            وتعال اكتشف المكان، الفعاليات، والأرقام اللي تجعل هالحدث فريد.
           </p>
         </div>
 
-        {/* شبكة البطاقات (تخطيط الصورة تماماً) */}
+        {/* شبكة البطاقات */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -57,76 +58,106 @@ export default function HighlightsContent({
           viewport={{ once: true }}
           className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full"
         >
-          {/* 1. البطاقة الكبيرة (المكان) - تحتل 2/3 من الشاشة */}
+          
+          {/* ========================================== */}
+          {/* ✅ 1. بطاقة المكان (تمت إزالة الحدود الحمراء) */}
+          {/* ========================================== */}
           <motion.div
             variants={cardVariants}
-            className="relative lg:col-span-2 overflow-hidden rounded-3xl bg-gradient-to-br from-red-50 via-white to-red-100/40 dark:from-red-950/10 dark:via-black dark:to-red-900/20 border border-red-200/30 dark:border-red-900/30 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-6"
+            className="relative lg:col-span-2 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden"
           >
-            <Link href="/venue" className="absolute inset-0 z-10" />
-            <div className="z-20 flex flex-col gap-4 flex-1 w-full lg:w-3/5">
-              <div className="w-fit p-3 bg-red-100 dark:bg-red-900/40 rounded-full">
-                <MapPin className="w-6 h-6 text-red-600 dark:text-red-400" />
-              </div>
-              <h3 className="text-3xl md:text-4xl font-bold text-black dark:text-white group-hover:text-red-600 transition-colors">
-                {venueTitle}
-              </h3>
-              <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed max-w-md">
-                {venueTeaser}
-              </p>
+            <Link href="/venue" className="absolute inset-0 z-20" />
+
+            {/* عنصر ديكور (أيقونة ضخمة جداً في الخلفية) */}
+            <div className="absolute -right-12 -bottom-12 z-0 pointer-events-none select-none hidden lg:block">
+              <MapPin className="w-64 h-64 text-red-600/5 transform rotate-12" />
             </div>
-            <div className="z-20 flex-1 w-full lg:w-2/5 flex justify-center lg:justify-end">
-              <div className="relative w-48 h-48 lg:w-64 lg:h-64 rounded-full bg-gradient-to-br from-red-500 to-red-200 opacity-20 group-hover:opacity-30 transition-opacity blur-xl flex items-center justify-center">
-                <MapPin className="w-24 h-24 text-red-600/80 dark:text-red-400/80 relative z-10 drop-shadow-xl" />
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between p-8 md:p-10 gap-6">
+              {/* قسم المعلومات */}
+              <div className="flex-1 flex flex-col gap-4">
+                <div className="flex flex-row items-center gap-3">
+                  <div className="flex-shrink-0 p-2.5 bg-red-50 rounded-full">
+                    <MapPin className="w-6 h-6 text-red-600" />
+                  </div>
+                  {/* ⭐ نص إماراتي افتراضي */}
+                  <h3 className="text-3xl md:text-4xl font-bold text-black group-hover:text-red-600 transition-colors">
+                    {venueTitle || "المكان اللي يجمعنا"}
+                  </h3>
+                </div>
+                {/* ⭐ نص إماراتي افتراضي */}
+                <p className="text-base text-gray-600 leading-relaxed max-w-lg border-l-2 border-gray-200 pl-4">
+                  {venueTeaser || "دبي وجهتنا هذا العام، مكان يلفّ الإبداع من كل الجهات. الكل مرحب به، سواء شارك بفكرة أو جاء يلهم ويستلهم."}
+                </p>
+                <span className="inline-flex items-center gap-2 text-red-600 font-semibold text-sm mt-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1">
+                  تفضل وشوف المكان
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </span>
+              </div>
+
+              {/* أيقونة للموبايل تختفي في الشاشات الكبيرة */}
+              <div className="lg:hidden block w-fit">
+                 <MapPin className="w-12 h-12 text-red-500/20" />
               </div>
             </div>
           </motion.div>
 
-          {/* 2. البطاقة الصغيرة (الفعاليات) - تحتل 1/3 من الشاشة */}
+          {/* ========================================== */}
+          {/* ✅ 2. بطاقة الفعاليات (أسلوب نظيف) */}
+          {/* ========================================== */}
           <motion.div
             variants={cardVariants}
-            className="relative lg:col-span-1 overflow-hidden rounded-3xl bg-gradient-to-br from-red-50 via-white to-red-100/40 dark:from-red-950/10 dark:via-black dark:to-red-900/20 border border-red-200/30 dark:border-red-900/30 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group p-8 flex flex-col items-start justify-between"
+            className="relative lg:col-span-1 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group p-8 flex flex-col items-start justify-between"
           >
             <Link href="/activations" className="absolute inset-0 z-10" />
             <div className="z-20 flex flex-col gap-4 w-full">
-              <div className="w-fit p-3 bg-red-100 dark:bg-red-900/40 rounded-full">
-                <Sparkles className="w-6 h-6 text-red-600 dark:text-red-400" />
+              <div className="w-fit p-2.5 bg-red-50 rounded-full">
+                <Sparkles className="w-6 h-6 text-red-600" />
               </div>
-              <h3 className="text-2xl md:text-3xl font-bold text-black dark:text-white group-hover:text-red-600 transition-colors">
-                {activationsTitle}
+              {/* ⭐ نص إماراتي افتراضي */}
+              <h3 className="text-2xl font-bold text-black group-hover:text-red-600 transition-colors">
+                {activationsTitle || "فعاليات بتنوّع الأفكار"}
               </h3>
-              <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                {activationsTeaser}
+              {/* ⭐ نص إماراتي افتراضي */}
+              <p className="text-base text-gray-600 leading-relaxed">
+                {activationsTeaser || "جلسات حوارية وأفكار جديدة، تشجع الكل يعبر عن رأيه ويشارك حلمه. المرح والفائدة ضيوفنا في كل زاوية."}
               </p>
             </div>
-            <div className="mt-6 w-full">
-              <div className="relative w-full h-32 rounded-xl bg-red-100/50 dark:bg-red-900/20 flex items-center justify-center border border-red-200/30 dark:border-red-800/30">
-                <Sparkles className="w-12 h-12 text-red-400/80 dark:text-red-500/80" />
+            {/* شريط سفلي رمادي يتحول لأحمر خفيف عند التمرير */}
+            <div className="mt-4 w-full h-1 bg-gray-100 rounded-full group-hover:bg-red-500/40 transition-colors duration-300" />
+          </motion.div>
+
+          {/* ========================================== */}
+          {/* ✅ 3. بطاقة الإحصائيات (إزالة الحدود العلوية الحمراء) */}
+          {/* ========================================== */}
+          <motion.div
+            variants={cardVariants}
+            className="relative lg:col-span-3 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group p-8 md:p-10 flex flex-col lg:flex-row items-center justify-between gap-8"
+          >
+            <div className="flex flex-col gap-2 w-full lg:w-2/5">
+              <div className="flex items-center gap-3">
+                <div className="w-fit p-2.5 bg-red-50 rounded-full">
+                  <Users className="w-6 h-6 text-red-600" />
+                </div>
+                {/* ⭐ نص إماراتي افتراضي */}
+                <h3 className="text-2xl font-bold text-black">
+                  حدث بحجم طموحنا
+                </h3>
+              </div>
+              {/* ⭐ نص إماراتي افتراضي */}
+              <p className="text-base text-gray-600 max-w-md">
+                نحن نجمع العقول الشبابية والخبرات عشان نصنع أثر حقيقي بالمجتمع. الكل يختار إنه يكون جزء من هالشيء.
+              </p>
+            </div>
+            
+            {/* العداد الإحصائي */}
+            <div className="flex-1 w-full lg:w-3/5 flex justify-end">
+              <div className="bg-black rounded-xl p-4 md:p-6 w-full border border-gray-800 rounded-xl p-4 md:p-6 w-full border border-gray-200">
+                <AnimatedStats stats={stats || []} />
               </div>
             </div>
           </motion.div>
 
-          {/* 3. البطاقة السفلية العريضة (الإحصائيات) - تحتل 3/3 من الشاشة */}
-          <motion.div
-            variants={cardVariants}
-            className="relative lg:col-span-3 overflow-hidden rounded-3xl bg-gradient-to-br from-red-50 via-white to-red-100/40 dark:from-red-950/10 dark:via-black dark:to-red-900/20 border border-red-200/30 dark:border-red-900/30 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group p-8 md:p-12"
-          >
-            <div className="z-20 flex flex-col lg:flex-row items-center justify-between gap-8">
-              <div className="flex flex-col gap-2">
-                <div className="w-fit p-3 bg-red-100 dark:bg-red-900/40 rounded-full">
-                  <Users className="w-6 h-6 text-red-600 dark:text-red-400" />
-                </div>
-                <h3 className="text-3xl md:text-4xl font-bold text-black dark:text-white">
-                  حدث بحجم تأثيرك
-                </h3>
-                <p className="text-base text-gray-600 dark:text-gray-400 max-w-lg">
-                  نحن نجمع بين العقول الشابة والخبراء لنصنع تأثيرًا مستدامًا.
-                </p>
-              </div>
-              <div className="flex-1 w-full flex justify-end">
-                <AnimatedStats stats={stats} />
-              </div>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </section>

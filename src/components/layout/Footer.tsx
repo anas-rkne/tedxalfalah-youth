@@ -1,6 +1,9 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import TrackingEyes from "@/components/ui/TrackingEyes";
+
+// ✅ إعادة استيراد أيقونات السوشل ميديا ومكونها المتحرك
 import AnimatedSocialIcon from "@/components/ui/AnimatedSocialIcon";
 import { InstagramIcon, LinkedinIcon, XIcon } from "@/components/ui/SocialIcons";
 
@@ -24,31 +27,41 @@ export default function Footer() {
   return (
     <footer className="relative w-full bg-background/70 backdrop-blur-xl mt-auto py-12">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-10 px-4">
-        {/* Social icons */}
-        <div className="flex items-center gap-4">
-          <AnimatedSocialIcon href="#" ariaLabel="Instagram">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-[inset_0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow">
-              <InstagramIcon size={18} className="text-gray-700" />
-            </div>
-          </AnimatedSocialIcon>
-          <AnimatedSocialIcon href="#" ariaLabel="LinkedIn">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-[inset_0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow">
-              <LinkedinIcon size={18} className="text-gray-700" />
-            </div>
-          </AnimatedSocialIcon>
-          <AnimatedSocialIcon href="#" ariaLabel="X">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-[inset_0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow">
-              <XIcon size={18} className="text-gray-700" />
-            </div>
-          </AnimatedSocialIcon>
+        
+        {/* ✅ حاوية موحدة للعناصر (تظهر أيقونات السوشل في الموبايل، والعيون في الديسكتوب) */}
+        <div className="flex flex-col items-center gap-4">
+          
+          {/* 1. أيقونات السوشل ميديا (تظهر فقط في شاشات الموبايل) */}
+          <div className="flex md:hidden items-center gap-4">
+            <AnimatedSocialIcon href="#" ariaLabel="Instagram">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-[inset_0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow">
+                <InstagramIcon size={18} className="text-gray-700" />
+              </div>
+            </AnimatedSocialIcon>
+            <AnimatedSocialIcon href="#" ariaLabel="LinkedIn">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-[inset_0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow">
+                <LinkedinIcon size={18} className="text-gray-700" />
+              </div>
+            </AnimatedSocialIcon>
+            <AnimatedSocialIcon href="#" ariaLabel="X">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-[inset_0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-md transition-shadow">
+                <XIcon size={18} className="text-gray-700" />
+              </div>
+            </AnimatedSocialIcon>
+          </div>
+
+          {/* 2. العيون المتحركة (تظهر فقط في شاشات الكمبيوتر) */}
+          <div className="hidden md:flex flex-col items-center gap-2">
+            <TrackingEyes size={50} className="mx-auto" />
+          </div>
         </div>
 
-        {/* Decorative "Join Us!" divider */}
+        {/* جملة "انضم إلينا" */}
         <div className="flex w-full items-center justify-center gap-4">
           <div className="h-px flex-1 bg-gray-300 relative">
             <div className="absolute right-0 top-1/2 -translate-y-1/2 h-1.5 w-1.5 rounded-full border border-gray-300 bg-white" />
           </div>
-          <span className="font-serif text-4xl text-center font-bold tracking-tight text-gray-800 sm:text-5xl px-2">
+          <span className="text-4xl md:text-5xl font-bold text-black tracking-tight">
             {tFooter("joinUs")}
           </span>
           <div className="h-px flex-1 bg-gray-300 relative">
@@ -95,7 +108,6 @@ export default function Footer() {
           </ScrollReveal>
         </div>
 
-        {/* Bottom bar */}
         <div className="w-full border-t border-gray-200 pt-6 text-center text-xs text-gray-500">
           © {new Date().getFullYear()} TEDxAlFalah Youth. {tFooter("copyright")}
         </div>

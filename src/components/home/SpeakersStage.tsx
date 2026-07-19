@@ -5,6 +5,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton"; // تأكد من المسار الصحيح للملف
+
 
 // (حل بديل لأيقونات التواصل في حال واجهت مشكلة في lucide-react)
 const SocialIcon = ({ type }: { type: "twitter" | "instagram" | "linkedin" }) => {
@@ -35,8 +37,8 @@ interface SpeakersStageProps {
   heading: string;
   subtitle?: string;
   speakers: Speaker[];
-  seeAllLabel: string;
-  seeAllHref: string;
+  seeAllLabel: string;  // يتم تمرير نص الزر (مثلاً: "عرض جميع المتحدثين")
+  seeAllHref: string;   // يتم تمرير رابط الزر (مثلاً: "/speakers")
 }
 
 export default function SpeakersStage({
@@ -112,7 +114,7 @@ export default function SpeakersStage({
                   {speaker.bio || "متحدث ملهم ينضم إلينا لمشاركة رحلته وأفكاره."}
                 </p>
 
-                {/* أزرار التواصل الاجتماعي (بأسلوب هوية TEDx) */}
+                {/* أزرار التواصل الاجتماعي */}
                 <div className="flex gap-2 justify-center sm:justify-start">
                   <a
                     href={speaker.socialLinks?.twitter || "#"}
@@ -144,15 +146,11 @@ export default function SpeakersStage({
           ))}
         </div>
 
-        {/* زر "عرض الكل" بأسلوب Neubrutalism (نفس أسلوب الأزرار السابقة) */}
-        <ScrollReveal>
+       <ScrollReveal>
           <div className="mt-16">
-            <Link
-              href={seeAllHref}
-              className="inline-flex items-center justify-center rounded-lg border-2 border-black bg-red-600 px-8 py-3 text-white font-bold shadow-[4px_4px_0px_0px_#000] transition-all hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] dark:shadow-[4px_4px_0px_0px_#fff] dark:border-white dark:hover:shadow-none"
-            >
+            <AnimatedSlidingButton href={seeAllHref} variant="primary">
               {seeAllLabel}
-            </Link>
+            </AnimatedSlidingButton>
           </div>
         </ScrollReveal>
       </div>

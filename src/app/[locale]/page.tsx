@@ -17,7 +17,10 @@ export default function Home() {
       <Highlights />
       <ApplyBanner />
       <SponsorsStrip />
-      <ContactForm />
+      <ContactForm 
+      leftImageSrc="/images/boy-lap.jpg"
+      rightImageSrc="/images/girl-lap.jpg" // أو أي صورة تريد وضعها
+/>
     </>
   );
 }

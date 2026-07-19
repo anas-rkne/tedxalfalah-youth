@@ -1,11 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { Link } from "@/i18n/navigation";
+import { motion, useReducedMotion, Variants } from "framer-motion";
 import Image from "next/image";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect"; // استيراد مُسمى
 
 interface Sponsor {
   id: string;
@@ -25,73 +23,76 @@ export default function SponsorsStripContent({
   const shouldReduceMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const duplicatedSponsors = [...sponsors, ...sponsors];
-
   if (sponsors.length === 0) {
     return (
-      <section className="flex min-h-screen items-center justify-center bg-white dark:bg-black pt-20 pb-16">
+      <section className="flex min-h-screen items-center justify-center bg-white pt-20 pb-16">
         <p className="text-gray-500 text-lg">No sponsors yet.</p>
       </section>
     );
   }
 
+  // تأثيرات الظهور المتدرج للبطاقات
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }, // ظهور واحد تلو الآخر
+    },
+  };
+
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  };
+
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-screen flex-col items-center justify-center bg-white pt-20 pb-16 overflow-hidden dark:bg-black"
+      className="relative flex flex-col items-center justify-center bg-white pt-24 pb-20 overflow-hidden"
     >
-      {/* خلفية Ripple Effect (دون طبقة شفافة بيضاء) */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <BackgroundRippleEffect rows={10} cols={30} cellSize={48} />
-      </div>
-
-      {/* توهج خلفي ناعم */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-red-500/5 blur-3xl pointer-events-none z-0" />
-
-      {/* المحتوى الرئيسي */}
-      <div className="relative z-10 w-full flex flex-col items-center gap-8 md:gap-12">
+      <div className="relative z-10 w-full flex flex-col items-center gap-10 md:gap-14">
+        
+        {/* عنوان القسم */}
         <ScrollReveal>
-          <Link href="/sponsors">
-            <h2 className="text-center text-sm md:text-base font-semibold uppercase tracking-widest text-gray-500 hover:text-red-600 transition-colors dark:text-gray-400 dark:hover:text-red-500">
+          <div className="text-center max-w-3xl">
+            <h2 className="text-4xl md:text-5xl font-bold text-black tracking-tight">
               {heading}
             </h2>
-          </Link>
+            <div className="w-12 h-1 bg-red-600 mx-auto mt-4 rounded-full" />
+            <p className="text-gray-500 mt-6 text-lg font-light max-w-2xl mx-auto leading-relaxed">
+              نفتخر بشراكاتنا مع المؤسسات الرائدة التي تدعم رؤيتنا وتشاركنا شغف نشر الأفكار.
+            </p>
+          </div>
         </ScrollReveal>
 
-        <div className="w-full overflow-hidden relative">
-          <motion.div
-            className="flex gap-12 md:gap-16 whitespace-nowrap"
-            animate={
-              shouldReduceMotion ? {} : { x: ["0%", `-${sponsors.length * 100}%`] }
-            }
-            transition={{
-              duration: 30,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-            whileHover={
-              shouldReduceMotion ? {} : { animationPlayState: "paused" }
-            }
-          >
-            {duplicatedSponsors.map((sponsor, index) => (
-              <div
-                key={`${sponsor.id}-${index}`}
-                className="relative w-24 h-12 md:w-32 md:h-16 grayscale hover:grayscale-0 transition-all duration-300"
-              >
+        {/* ✅ شبكة الشركاء الثابتة والأنيقة */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="w-full max-w-6xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 mt-4"
+        >
+          {sponsors.map((sponsor) => (
+            <motion.div
+              key={sponsor.id}
+              variants={cardVariants}
+              className="group relative w-full aspect-[2/1] bg-white rounded-2xl border border-gray-100/60 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex items-center justify-center p-6 md:p-8"
+            >
+              {/* تحويل الشعار إلى "أبيض وأسود" صافٍ، ثم يعود لونه عند التمرير */}
+              <div className="relative w-full h-full filter  transition-all duration-500">
                 <Image
                   src={sponsor.logoUrl}
                   alt={sponsor.name}
                   fill
                   className="object-contain"
-                  sizes="(max-width: 768px) 96px, 128px"
+                  sizes="(max-width: 768px) 50vw, 20vw"
                 />
               </div>
-            ))}
-          </motion.div>
+            </motion.div>
+          ))}
+        </motion.div>
 
-          <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent pointer-events-none dark:from-black" />
-          <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-r from-transparent to-white pointer-events-none dark:to-black" />
-        </div>
       </div>
     </section>
   );

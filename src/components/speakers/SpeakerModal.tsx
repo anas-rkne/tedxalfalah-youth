@@ -23,7 +23,6 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
         onClose();
         return;
       }
-      // Focus trap: cycle Tab within the modal
       if (e.key === "Tab" && modalRef.current) {
         const focusable = modalRef.current.querySelectorAll<HTMLElement>(
           'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
@@ -49,7 +48,6 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
       document.body.style.overflow = "hidden";
       document.addEventListener("keydown", handleKeyDown);
       requestAnimationFrame(() => {
-        // Focus the first focusable element inside the modal
         const focusable = modalRef.current?.querySelector<HTMLElement>(
           'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
         );
@@ -79,7 +77,8 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
           <motion.div
             ref={modalRef}
             tabIndex={-1}
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[85vh] overflow-y-auto relative outline-none"
+            // ✅ تم تغيير التنسيق هنا ليصبح flex row في الشاشات الكبيرة
+            className="bg-white rounded-lg max-w-4xl w-full max-h-[85vh] overflow-hidden relative outline-none flex flex-col md:flex-row"
             onClick={(e) => e.stopPropagation()}
             initial={shouldReduceMotion ? {} : { scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -97,17 +96,19 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
               <X size={20} />
             </motion.button>
 
-            <div className="relative w-full h-64">
+            {/* ✅ الصورة تأخذ عرض 40% على الشاشات الكبيرة */}
+            <div className="relative w-full md:w-2/5 h-64 md:h-auto shrink-0 bg-gray-100">
               <Image
                 src={speaker.imageUrl}
                 alt={speaker.name}
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 672px"
+                sizes="(max-width: 768px) 100vw, 40vw"
               />
             </div>
 
-            <div className="p-6 md:p-8">
+            {/* ✅ النص يأخذ مساحة الـ flex-1 المتبقية */}
+            <div className="flex-1 p-6 md:p-8 overflow-y-auto">
               <h2 id="speaker-modal-title" className="text-2xl font-bold">{speaker.name}</h2>
               <p className="text-red-600 font-medium mb-1">
                 {speaker.shortDescriptor}

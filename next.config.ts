@@ -33,12 +33,16 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   images: {
-    formats: ["image/avif", "image/webp"],
-    remotePatterns: [
+  remotePatterns: [
       {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
       },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+      // ... إذا كنت تستخدم صوراً من Unsplash أو غيره، يمكنك إضافتها هنا
     ],
   },
   async headers() {

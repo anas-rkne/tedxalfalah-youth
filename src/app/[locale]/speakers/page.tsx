@@ -24,14 +24,21 @@ export default async function SpeakersPage() {
   return (
     <section className="section-padding">
       <SectionContainer>
+        {/* عنوان رئيسي بخط الموقع (serif) مع تأثير ظهور تدريجي */}
         <TextReveal
           text={t("title")}
           as="h1"
-          className="text-4xl md:text-5xl font-bold text-center mb-4"
+          className="font-arabic text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-4 text-gray-900"
           serif
         />
+
+        {/* خط زخرفي أحمر تحت العنوان */}
+        <div className="flex justify-center mb-6">
+          <div className="h-1 w-20 bg-red-600 rounded-full" />
+        </div>
+
         <ScrollReveal>
-          <p className="text-center text-gray-500 max-w-2xl mx-auto mb-12">
+          <p className="text-center text-gray-500 max-w-2xl mx-auto mb-12 text-lg leading-relaxed">
             {t("subtitle")}
           </p>
 
