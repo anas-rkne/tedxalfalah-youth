@@ -62,42 +62,53 @@ export default function HighlightsContent({
           {/* ========================================== */}
           {/* ✅ 1. بطاقة المكان (تمت إزالة الحدود الحمراء) */}
           {/* ========================================== */}
-          <motion.div
+   <motion.div
             variants={cardVariants}
-            className="relative lg:col-span-2 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden"
+            className="group relative lg:col-span-2 rounded-3xl bg-white border border-black/[0.06] overflow-hidden cursor-pointer
+              hover:border-black/[0.1] hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.02)]
+              hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
           >
             <Link href="/venue" className="absolute inset-0 z-20" />
 
-            {/* عنصر ديكور (أيقونة ضخمة جداً في الخلفية) */}
-            <div className="absolute -right-12 -bottom-12 z-0 pointer-events-none select-none hidden lg:block">
-              <MapPin className="w-64 h-64 text-red-600/5 transform rotate-12" />
-            </div>
+            {/* توهج خلفي */}
+            <div
+              className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] opacity-0 group-hover:opacity-100 transition-opacity duration-[600ms] pointer-events-none"
+              style={{
+                background: "radial-gradient(circle at 50% 0%, rgba(230,43,30,0.04), transparent 60%)",
+              }}
+            />
 
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between p-8 md:p-10 gap-6">
-              {/* قسم المعلومات */}
               <div className="flex-1 flex flex-col gap-4">
-                <div className="flex flex-row items-center gap-3">
-                  <div className="flex-shrink-0 p-2.5 bg-red-50 rounded-full">
-                    <MapPin className="w-6 h-6 text-red-600" />
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-[14px] flex items-center justify-center flex-shrink-0
+                    bg-gradient-to-br from-red-50 to-rose-50 text-[#e62b1e] group-hover:scale-105 transition-transform duration-400">
+                    <MapPin className="w-5 h-5" strokeWidth={2} />
                   </div>
-                  {/* ⭐ نص إماراتي افتراضي */}
-                  <h3 className="text-3xl md:text-4xl font-bold text-black group-hover:text-red-600 transition-colors">
+                  <h3 className="font-bold text-[22px] text-zinc-900 leading-[1.25] tracking-[-0.01em] group-hover:text-[#e62b1e] transition-colors duration-300">
                     {venueTitle || "المكان اللي يجمعنا"}
                   </h3>
                 </div>
-                {/* ⭐ نص إماراتي افتراضي */}
-                <p className="text-base text-gray-600 leading-relaxed max-w-lg border-l-2 border-gray-200 pl-4">
+                <p className="text-sm text-zinc-500 leading-[1.7]">
                   {venueTeaser || "دبي وجهتنا هذا العام، مكان يلفّ الإبداع من كل الجهات. الكل مرحب به، سواء شارك بفكرة أو جاء يلهم ويستلهم."}
                 </p>
-                <span className="inline-flex items-center gap-2 text-red-600 font-semibold text-sm mt-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1">
+                <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#e62b1e] mt-1
+                  opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0
+                  transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
                   تفضل وشوف المكان
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  <svg className="w-3.5 h-3.5 group-hover:translate-x-[3px] transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                  </svg>
                 </span>
               </div>
 
-              {/* أيقونة للموبايل تختفي في الشاشات الكبيرة */}
-              <div className="lg:hidden block w-fit">
-                 <MapPin className="w-12 h-12 text-red-500/20" />
+              {/* صورة توضيحية */}
+              <div className="w-full max-w-[280px] aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-red-50 to-rose-100 flex-shrink-0">
+                <img
+                  src="/mock/venue-preview.svg"
+                  alt=""
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-[600ms]"
+                />
               </div>
             </div>
           </motion.div>
