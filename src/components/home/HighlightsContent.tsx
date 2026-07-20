@@ -122,18 +122,20 @@ export default function HighlightsContent({
           >
             <Link href="/activations" className="absolute inset-0 z-10" />
             <div className="z-20 flex flex-col gap-4 w-full">
-              <div className="w-fit p-2.5 bg-red-50 rounded-full">
-                <Sparkles className="w-6 h-6 text-red-600" />
-              </div>
-              {/* ⭐ نص إماراتي افتراضي */}
-              <h3 className="text-2xl font-bold text-black group-hover:text-red-600 transition-colors">
-                {activationsTitle || "فعاليات بتنوّع الأفكار"}
-              </h3>
-              {/* ⭐ نص إماراتي افتراضي */}
-              <p className="text-base text-gray-600 leading-relaxed">
-                {activationsTeaser || "جلسات حوارية وأفكار جديدة، تشجع الكل يعبر عن رأيه ويشارك حلمه. المرح والفائدة ضيوفنا في كل زاوية."}
-              </p>
-            </div>
+  {/* الأيقونة والعنوان في سطر واحد */}
+  <div className="flex flex-row items-center gap-3">
+    <div className="w-fit p-2.5 bg-red-50 rounded-full">
+      <Sparkles className="w-6 h-6 text-red-600" />
+    </div>
+    <h3 className="text-2xl font-bold text-black group-hover:text-red-600 transition-colors">
+      {activationsTitle || "فعاليات بتنوّع الأفكار"}
+    </h3>
+  </div>
+  {/* الوصف يبقى أسفل السطر الأول */}
+  <p className="text-base text-gray-600 leading-relaxed">
+    {activationsTeaser || "جلسات حوارية وأفكار جديدة، تشجع الكل يعبر عن رأيه ويشارك حلمه. المرح والفائدة ضيوفنا في كل زاوية."}
+  </p>
+</div>
             {/* شريط سفلي رمادي يتحول لأحمر خفيف عند التمرير */}
             <div className="mt-4 w-full h-1 bg-gray-100 rounded-full group-hover:bg-red-500/40 transition-colors duration-300" />
           </motion.div>
