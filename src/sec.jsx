@@ -17,18 +17,6 @@ const HOW_HEARD_VALUES = [
   "Other",
 ] as const;
 
-// ✅ الخيارات الجديدة للعلاقة بالموضوع (قائمة منسدلة)
-const THEME_OPTIONS = [
-  "identity",
-  "future skills",
-  "wellbeing",
-  "creativity",
-  "community",
-  "stems",
-  "ai",
-  "life skills",
-] as const;
-
 function wordCount(text: string) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
@@ -106,14 +94,13 @@ export default function ApplicationForm() {
   const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
 
-  // ✅ نظام التحقق المعدل: جميع الحقول إجبارية (إلزامية)
   const applicationSchema = useMemo(
     () =>
       z
         .object({
           track: z.enum(["young-speaker", "expert"]),
           fullName: z.string().min(1, t("errors.fullNameRequired")),
-          age: z.coerce.number().min(10).max(99, t("errors.ageRange")),
+          age: z.coerce.number().min(10).max(99),
           email: z.string().email(t("errors.emailInvalid")),
           phone: z.string().min(1, t("errors.phoneRequired")),
           city: z.string().min(1, t("errors.cityRequired")),
@@ -126,18 +113,16 @@ export default function ApplicationForm() {
             .string()
             .min(1, t("errors.thisFieldRequired"))
             .refine((val) => wordCount(val) <= 150, t("errors.maxWords", { count: 150 })),
-          themeConnection: z.enum(THEME_OPTIONS), // ✅ أصبح قائمة منسدلة وإجبارية
-          videoLink: z.string().url(t("errors.invalidUrl")), // ✅ أصبح إجبارياً (إذا أردت تركه اختيارياً، غيّره إلى .optional())
+          themeConnection: z.string().min(1, t("errors.themeConnectionRequired")),
+          videoLink: z.string().url(t("errors.invalidUrl")).optional().or(z.literal("")),
           howHeardAboutUs: z.enum(HOW_HEARD_VALUES),
           consentToTerms: z.literal(true, {
             errorMap: () => ({ message: t("errors.consentRequired") }),
           }),
-          // الحقول الشرطية للشباب
           schoolName: z.string().optional(),
           guardianName: z.string().optional(),
           guardianContact: z.string().optional(),
           parentalConsent: z.boolean().optional(),
-          // الحقول الشرطية للخبراء
           organizationAndRole: z.string().optional(),
           areaOfWorkWithYouth: z.string().optional(),
         })
@@ -202,7 +187,7 @@ export default function ApplicationForm() {
     formState: { errors, isSubmitting },
   } = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
-    defaultValues: { track: "young-speaker", howHeardAboutUs: "Social Media", themeConnection: "identity" },
+    defaultValues: { track: "young-speaker", howHeardAboutUs: "Social Media" },
   });
 
   const track = watch("track");
@@ -357,18 +342,8 @@ export default function ApplicationForm() {
           <textarea {...register("whyItMatters")} rows={3} className={textareaClasses} placeholder={t("whyItMattersPlaceholder")} />
         </Field>
 
-        {/* ✅ العلاقة بالموضوع: استبدلنا الحقل النصي بقائمة منسدلة */}
         <Field label={t("themeConnection")} error={errors.themeConnection?.message}>
-          <select
-            {...register("themeConnection")}
-            className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] pr-10`}
-          >
-            {THEME_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {t(`themeConnectionOptions.${option}`)}
-              </option>
-            ))}
-          </select>
+          <textarea {...register("themeConnection")} rows={2} className={textareaClasses} placeholder={t("themeConnectionPlaceholder")} />
         </Field>
 
         <Field label={t("videoLink")} error={errors.videoLink?.message}>

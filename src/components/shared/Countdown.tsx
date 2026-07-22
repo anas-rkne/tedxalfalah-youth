@@ -4,6 +4,7 @@ import { useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import FlipClock from "@/components/ui/flip-clock";
+import { useRTL } from "@/hooks/useRTL"; // ✅ إضافة هوك RTL
 
 interface CountdownProps {
   targetDate: string; // ISO date string
@@ -31,7 +32,7 @@ function useScreenSize() {
 export default function Countdown({ targetDate }: CountdownProps) {
   const shouldReduceMotion = useReducedMotion();
   const t = useTranslations("countdown");
-  
+  const { isRTL } = useRTL(); // ✅ تحديد اتجاه الصفحة
   const screenSize = useScreenSize();
 
   const orderedLabels = [
@@ -43,14 +44,17 @@ export default function Countdown({ targetDate }: CountdownProps) {
 
   return (
     <div className="flex flex-col items-center gap-2 md:gap-4 w-full max-w-full overflow-hidden">
-      {/* تم تغيير المسافات لتكون أصغر */}
-      <div className="flex flex-row flex-nowrap items-end gap-1 sm:gap-2 md:gap-3" dir="rtl">
+      {/* ✅ تم تغيير dir="rtl" الثابت إلى isRTL ديناميكي */}
+      <div 
+        className="flex flex-row flex-nowrap items-end gap-1 sm:gap-2 md:gap-3" 
+        dir={isRTL ? "rtl" : "ltr"}
+      >
         <FlipClock
           countdown
           targetDate={new Date(targetDate)}
           size="md" 
           variant="outline"
-          unitClassName="bg-black text-white border-0 rounded-sm"
+          unitClassName="bg-[var(--color-tedx-black)] text-white border-0 rounded-sm" // ✅ استخدام متغير اللون الأسود
           separatorClassName="text-tedx-red"
           labels={orderedLabels}
         />

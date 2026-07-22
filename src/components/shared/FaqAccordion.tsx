@@ -32,8 +32,8 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
             transition={{ duration: 0.4, delay: index * 0.06 }}
             className={`rounded-2xl border transition-all duration-300 ${
               isOpen 
-                ? "bg-white/[0.05] border-white/[0.12] shadow-[0_4px_20px_-8px_rgba(0,0,0,0.2)]" 
-                : "bg-white/[0.03] border-white/[0.06] hover:border-white/[0.1]"
+                ? "bg-white border-black/[0.08] shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)]" 
+                : "bg-[#fafafa] border-black/[0.04] hover:border-black/[0.08]"
             }`}
           >
             <button
@@ -44,7 +44,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
               aria-controls={panelId}
             >
               <span className={`text-sm font-semibold transition-colors duration-200 ${
-                isOpen ? "text-[#e62b1e]" : "text-white"
+                isOpen ? "text-[#e62b1e]" : "text-zinc-800"
               }`}>
                 {item.question}
               </span>
@@ -52,7 +52,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
                 animate={shouldReduceMotion ? {} : { rotate: isOpen ? 180 : 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
-                  isOpen ? "bg-[#e62b1e]/[0.12] text-[#e62b1e] border border-[#e62b1e]/[0.2]" : "bg-white/[0.06] text-slate-400 border border-white/[0.08]"
+                  isOpen ? "bg-red-50 text-[#e62b1e]" : "bg-zinc-100 text-zinc-400"
                 }`}
               >
                 <ChevronDown size={14} strokeWidth={2.5} />
@@ -71,7 +71,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
                   transition={shouldReduceMotion ? {} : { duration: 0.3, ease: "easeInOut" }}
                   className="overflow-hidden"
                 >
-                  <p className="px-6 pb-5 text-sm text-slate-400/70 leading-[1.8]">
+                  <p className="px-6 pb-5 text-sm text-zinc-500 leading-[1.8]">
                     {item.answer}
                   </p>
                 </motion.div>

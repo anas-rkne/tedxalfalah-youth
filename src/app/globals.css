@@ -5,12 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-
   /* TEDx brand colors */
   --color-tedx-red: #E62B1E;
   --color-tedx-black: #000000;
-  --background: oklch(1 0 0);
   --color-tedx-gray: #6b7280;
+  
+  /* System colors (OKLCH) */
+  --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -47,13 +48,14 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
---font-sans: var(--font-inter);
+  --font-sans: var(--font-inter);
   --font-serif: Georgia, "Times New Roman", serif;
 
-  /* expose brand colors as Tailwind utilities: bg-tedx-red, text-tedx-black, etc. */
+  /* Expose brand colors as Tailwind utilities: bg-tedx-red, text-tedx-black, etc. */
   --color-tedx-red: var(--color-tedx-red);
   --color-tedx-black: var(--color-tedx-black);
   --color-tedx-gray: var(--color-tedx-gray);
+  
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -94,37 +96,59 @@
 }
 
 @layer base {
-  /* طµظپط­ط© ظƒط§ظ…ظ„ط©: طھط¨ط§ط¹ط¯ ط±ط£ط³ظٹ ظ…ظˆط­ظ‘ط¯ */
+  /* ===== فئات المساعدة الموحدة ===== */
+  
+  /* مسافات الأقسام (تطبق في بداية كل قسم) */
   .section-padding {
     @apply py-16 md:py-24;
   }
   .section-padding-sm {
     @apply py-12 md:py-16;
   }
-  /* ط¹ظ†ط§ظˆظٹظ† ط§ظ„طµظپط­ط§طھ (h1) */
+  
+  /* هوامش جانبية موحدة لجميع الحاويات (لتجنب التصاق المحتوى بالحافة) */
+  .container-padding {
+    @apply px-4 md:px-8 lg:px-12;
+  }
+
+  /* العناوين (تستخدم لبدايات الأقسام) */
   .heading-h1 {
-    @apply text-4xl md:text-5xl font-bold;
+    @apply text-4xl md:text-5xl font-bold tracking-tight;
   }
-  /* ط¹ظ†ط§ظˆظٹظ† ط§ظ„ط£ظ‚ط³ط§ظ… (h2) */
   .heading-h2 {
-    @apply text-3xl md:text-4xl font-bold;
+    @apply text-3xl md:text-4xl font-bold tracking-tight;
   }
-  /* ظ‡ظˆط§ظ…ط´ طھط­طھ ط§ظ„ط¹ظ†ظˆط§ظ† */
+  .heading-h3 {
+    @apply text-2xl md:text-3xl font-bold;
+  }
   .heading-margin {
-    @apply mb-12;
+    @apply mb-8 md:mb-12;
   }
-  /* ط­ط§ظˆظٹط© ظ†طµظٹط© ط¶ظٹظ‘ظ‚ط© ظ„ظ„طµظپط­ط§طھ ط§ظ„ظ‚ط±ط§ط¦ظٹط© */
+  
+  /* حاوية نصية ضيقة (للمحتوى النصي الطويل) */
   .content-narrow {
     @apply max-w-3xl mx-auto;
   }
+
+  /* إعدادات أساسية */
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    /* تحسين المؤشر: لا نخفيه عن الجميع، بل نتركه افتراضياً */
+    cursor: default;
   }
   html {
-    @apply font-sans;
+    @apply font-sans scroll-smooth;
+  }
+  
+  /* إعادة ظهور المؤشر للعناصر القابلة للتفاعل */
+  a, button, input, textarea, select, [role="button"] {
+    cursor: pointer;
+  }
+  input, textarea, select {
+    cursor: text;
   }
 }
 
@@ -132,12 +156,47 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* ظٹظڈط³طھط®ط¯ظ… ظپظ‚ط· ط¹ظ†ط¯ locale=ar â€” ط±ط§ط¬ط¹ src/app/[locale]/layout.tsx */
 .font-arabic {
   font-family: var(--font-noto-kufi-arabic), Arial, Helvetica, sans-serif;
 }
 
-/* FadeInView animations â€” replaces framer-motion for layout-level animations */
+/* ===== Animations ===== (تم حذف التكرار والاحتفاظ بواحد لكل منها) */
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out both;
+}
+
+@keyframes fade-in-left {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-fade-in-left {
+  animation: fade-in-left 0.5s ease-out both;
+}
+
+@keyframes fade-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* دعم RTL تلقائي للـ animations */
+[dir="rtl"] .animate-fade-in-left {
+  animation: fade-in-right 0.5s ease-out both;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, #f5f5f5 25%, #e8e8e8 50%, #f5f5f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
 
 @keyframes pulse-glow {
   0% { opacity: 0.6; transform: scale(0.9); }
@@ -154,86 +213,50 @@ body {
   50% { transform: translateY(-40px) scale(1.2); opacity: 1; }
 }
 
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-shift {
+  animation: gradient-shift 3s ease-in-out infinite;
+  background-size: 200% 200%;
 }
 
-@keyframes fade-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+@keyframes gradient-border {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-border {
+  animation: gradient-border 3s ease-in-out infinite;
+  background-size: 300% 300%;
 }
 
-.animate-fade-in-up {
-  animation: fade-in-up 0.5s ease-out both;
+@keyframes cell-ripple {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
 }
 
-.animate-fade-in-left {
-  animation: fade-in-left 0.5s ease-out both;
+@keyframes grid-move {
+  0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+  100% { transform: perspective(500px) rotateX(60deg) translateY(60px); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-in-up,
-  .animate-fade-in-left {
-    animation: none;
-  }
-
-  .animate-bounce {
-    animation: none;
-  }
-
-  .animate-pulse {
-    animation: none;
-  }
-
-  [style*="pulse-glow"],
-  [style*="rotate-ring"],
-  [style*="float-particle"] {
-    animation: none !important;
-  }
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-tedx-red);
+  border-radius: 3px;
 }
 
-/* RTL: flip fade-in-left to slide from the right */
-[dir="rtl"] .animate-fade-in-left {
-  animation: fade-in-right 0.5s ease-out both;
-}
-
-@keyframes fade-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Shimmer ظ„ظ„ظ€ skeleton loading */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, #f5f5f5 25%, #e8e8e8 50%, #f5f5f5 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
-}
-
-/* Scroll progress bar */
+/* ===== Reading Progress ===== */
 .reading-progress {
   position: fixed;
   top: 0;
@@ -247,90 +270,38 @@ body {
   will-change: transform;
 }
 
-/* SmoothCursor â€” hide native cursor */
-* {
-  cursor: none !important;
+/* ===== Scroll Indicator ===== */
+.scroll-indicator {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.scroll-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: pointer;
+}
+.scroll-indicator-dot.active {
+  background: var(--color-tedx-red);
+  transform: scale(1.5);
+}
+.scroll-indicator-dot:hover {
+  background: var(--color-tedx-red);
+  opacity: 0.7;
+}
+@media (max-width: 1024px) {
+  .scroll-indicator { display: none; }
 }
 
-input,
-textarea,
-select {
-  cursor: text !important;
-}
-
-/* Hero background effects */
-@keyframes pulse-glow {
-  from { opacity: 0.7; transform: scale(1); }
-  to { opacity: 1; transform: scale(1.08); }
-}
-
-@keyframes rotate-ring {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-@keyframes float-particle {
-  0% { opacity: 0; transform: translateY(0) scale(0); }
-  10% { opacity: 0.6; transform: translateY(-10px) scale(1); }
-  90% { opacity: 0.3; }
-  100% { opacity: 0; transform: translateY(-200px) scale(0.5); }
-}
-
-/* AnimatedCheck SVG draw */
-@keyframes tedx-circle-draw {
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes tedx-check-draw {
-  to { stroke-dashoffset: 0; }
-}
-
-/* تدرج لوني متحرك للأزرار */
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.animate-gradient-shift {
-  animation: gradient-shift 3s ease-in-out infinite;
-}
-/* أنيميشن الحدود المتدرجة المتحركة */
-@keyframes gradient-border {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* كلاس مساعد لـ Tailwind */
-.animate-gradient-border {
-  animation: gradient-border 3s ease-in-out infinite;
-  background-size: 300% 300%; /* هذا هو سر الحركة */
-}
-.animate-gradient-border {
-  animation: gradient-border 3s ease-in-out infinite;
-  background-size: 300% 300%; /* هام جداً: يسمح للخلفية بالتحرك */
-}
-
-
-
-/* أنيميشن الجسيمات لخلفية الهيرو */
-@keyframes float-particle {
-  0% {
-    transform: translateY(0px) translateX(0px);
-    opacity: 0.3;
-  }
-  100% {
-    transform: translateY(-35px) translateX(15px);
-    opacity: 0.8;
-  }
-}
-
+/* ===== Dark Mode ===== */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -366,23 +337,29 @@ select {
 }
 
 @theme inline {
-  --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1
-  var(--delay, 0ms);
- 
-  @keyframes cell-ripple {
-    0% {
-      opacity: 0.4;
-    }
-    50% {
-      opacity: 0.8;
-    }
-    100% {
-      opacity: 0.4;
-    }
+  --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1 var(--delay, 0ms);
+}
+
+/* ===== Safe Area ===== */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-pb {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
 
-@keyframes grid-move {
-  0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
-  100% { transform: perspective(500px) rotateX(60deg) translateY(60px); }
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animate-fade-in-left,
+  .animate-bounce,
+  .animate-pulse,
+  .animate-gradient-shift,
+  .animate-gradient-border {
+    animation: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

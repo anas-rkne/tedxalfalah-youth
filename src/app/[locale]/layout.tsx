@@ -5,9 +5,10 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import Footer from "@/components/layout/FooterWrapper" ;
 import CustomCursorWrapper from "@/components/ui/CustomCursorWrapper";
 import ReadingProgress from "@/components/ui/ReadingProgress";
+import ScrollIndicator from "@/components/ui/ScrollIndicator";
 import { routing } from "@/i18n/routing";
 import PageTransition from "@/components/ui/PageTransition";
 
@@ -56,21 +57,19 @@ export default async function RootLayout({
     notFound();
   }
 
-  // يُخبر next-intl أن هذه الصفحة تُصيَّر بلغة ثابتة، مما يسمح بالتوليد
-  // الثابت (Static Rendering) لكل الصفحات بدل جعلها كلها ديناميكية.
   setRequestLocale(locale);
 
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
-      <html
-        lang={locale}
-        dir={dir}
-        className={`${inter.variable} ${notoKufiArabic.variable} h-full antialiased`}
-      >
-        <head>
-          <link rel="preconnect" href="https://cdn.sanity.io" />
-        </head>
+    <html
+      lang={locale}
+      dir={dir}
+      className={`${inter.variable} ${notoKufiArabic.variable} h-full antialiased`}
+    >
+      <head>
+        <link rel="preconnect" href="https://cdn.sanity.io" />
+      </head>
       <body
         className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : ""}`}
       >
@@ -84,11 +83,17 @@ export default async function RootLayout({
           <ReadingProgress />
           <CustomCursorWrapper />
           <Header />
-          <main id="main-content" className="flex-1">
+
+          <main
+            id="main-content"
+            className="flex-1 relative"
+          >
             <PageTransition>
               {children}
             </PageTransition>
           </main>
+
+          <ScrollIndicator />
           <Footer />
         </NextIntlClientProvider>
       </body>

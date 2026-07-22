@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import SectionContainer from "@/components/ui/SectionContainer";
+import SectionBadge from "@/components/ui/SectionBadge"; // ✅ استيراد الشارة الموحدة
 
 interface VenueGallerySectionProps {
   count: number;
@@ -30,27 +31,20 @@ export default function VenueGallerySection({ count }: VenueGallerySectionProps)
   const t = useTranslations("page.venue");
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#0a0a0e]">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-background">
       <SectionContainer>
-        {/* عنوان المجموعة */}
+        {/* عنوان المجموعة - ✅ تم استبدال الشارة بـ SectionBadge */}
         <div className="flex items-center gap-4 mb-8">
-          <div
-            className="flex-1 h-px"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, rgba(148,163,184,0.15), transparent)",
-            }}
-          />
-          <span className="text-[13px] font-semibold text-slate-400/60 uppercase tracking-[0.08em] whitespace-nowrap px-4 py-1.5 bg-slate-400/[0.06] border border-slate-400/[0.08] rounded-full">
+          {/* الخط الأيسر */}
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+          
+          {/* الشارة الحمراء النابضة */}
+          <SectionBadge>
             {t("photoGallery.title")}
-          </span>
-          <div
-            className="flex-1 h-px"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, rgba(148,163,184,0.15), transparent)",
-            }}
-          />
+          </SectionBadge>
+          
+          {/* الخط الأيمن */}
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         </div>
 
         <motion.div
@@ -64,7 +58,7 @@ export default function VenueGallerySection({ count }: VenueGallerySectionProps)
             <motion.div
               key={i}
               className={`
-                relative rounded-2xl overflow-hidden cursor-pointer bg-[#1a1a20]
+                relative rounded-2xl overflow-hidden cursor-pointer bg-muted
                 ${i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-auto" : "aspect-[16/10]"}
               `}
               variants={shouldReduceMotion ? {} : childVariants}
@@ -90,24 +84,24 @@ export default function VenueGallerySection({ count }: VenueGallerySectionProps)
                 }
               />
 
-              {/* تدرج داكن أسفل */}
+              {/* تدرج داكن أسفل - تم تعديله ليكون أكثر شفافية */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
                 style={{
                   background:
-                    "linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%)",
+                    "linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.6) 100%)",
                 }}
               />
 
               {/* رقم الصورة */}
-              <span className="absolute bottom-4 left-4 text-xs font-semibold text-white/60 tracking-wide
+              <span className="absolute bottom-4 left-4 text-xs font-semibold text-white/80 tracking-wide
                 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0
                 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]">
                 {String(i + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
               </span>
 
-              {/* إطار داخلي */}
-              <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] group-hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)] transition-shadow duration-300 pointer-events-none" />
+              {/* إطار داخلي - تم تحديثه ليكون مناسباً للخلفية الفاتحة */}
+              <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)] group-hover:shadow-[inset_0_0_0_1px_rgba(0,0,0,0.12)] transition-shadow duration-300 pointer-events-none" />
             </motion.div>
           ))}
         </motion.div>

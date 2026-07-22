@@ -1,7 +1,7 @@
 "use client"
 
 import { FC, useEffect, useRef, useState } from "react"
-import { motion, useSpring } from "framer-motion"
+import { motion, useSpring, AnimatePresence } from "framer-motion"
 
 interface Position {
   x: number
@@ -9,7 +9,7 @@ interface Position {
 }
 
 export interface SmoothCursorProps {
-  cursor?: React.ReactNode
+  cursor?: "paper-plane" | "pulse-dot" | "blend-circle" | "bubble-trail" | "ring"
   springConfig?: {
     damping: number
     stiffness: number
@@ -24,6 +24,197 @@ function isTrackablePointer(pointerType: string) {
   return pointerType !== "touch"
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   أيقونة طائرة ورقية TEDx — الأنيقة والشبابية
+   ═══════════════════════════════════════════════════════════════ */
+const PaperPlaneCursor: FC<{ hovering: boolean }> = ({ hovering }) => {
+  return (
+    <motion.div
+      animate={{
+        scale: hovering ? 1.2 : 1,
+        rotate: hovering ? -15 : 0,
+      }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      className="relative"
+    >
+      {/* توهج hover */}
+      <AnimatePresence>
+        {hovering && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1.5, opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut" }}
+            className="absolute inset-0 rounded-full bg-[#e62b1e]/20"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* الطائرة الورقية */}
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#e62b1e"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="drop-shadow-[0_2px_8px_rgba(230,43,30,0.3)]"
+      >
+        {/* جسم الطائرة */}
+        <path d="M2 12l20-9-9 20-2-9-9-2z" />
+        {/* خط التفصيل */}
+        <path d="M13 3l-2 9" strokeWidth="1.2" opacity="0.6" />
+      </svg>
+
+      {/* نقطة حمراء صغيرة تتبع */}
+      <motion.div
+        animate={{
+          scale: hovering ? 1 : 0,
+          opacity: hovering ? 1 : 0,
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        className="absolute -bottom-1 -right-1 w-2 h-2 rounded-full bg-[#e62b1e]"
+      />
+    </motion.div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ١: نقطة نبض TEDx
+   ═══════════════════════════════════════════════════════════════ */
+const PulseDotCursor: FC<{ hovering: boolean }> = ({ hovering }) => {
+  return (
+    <div className="relative flex items-center justify-center">
+      <AnimatePresence>
+        {hovering && (
+          <motion.div
+            initial={{ scale: 1, opacity: 0.5 }}
+            animate={{ scale: 2.5, opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: "easeOut" }}
+            className="absolute inset-0 rounded-full bg-[#e62b1e]/30"
+          />
+        )}
+      </AnimatePresence>
+      <motion.div
+        animate={{
+          width: hovering ? 16 : 8,
+          height: hovering ? 16 : 8,
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        className="rounded-full bg-[#e62b1e]"
+      />
+      <motion.div
+        animate={{
+          scale: hovering ? 0.5 : 0,
+          opacity: hovering ? 1 : 0,
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        className="absolute w-2 h-2 rounded-full bg-white"
+      />
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ٢: دائرة blend mode
+   ═══════════════════════════════════════════════════════════════ */
+const BlendCircleCursor: FC<{ hovering: boolean }> = ({ hovering }) => {
+  return (
+    <div className="relative flex items-center justify-center">
+      <motion.div
+        animate={{
+          width: hovering ? 48 : 24,
+          height: hovering ? 48 : 24,
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        className="rounded-full bg-white border-2 border-[#e62b1e]"
+        style={{ mixBlendMode: "difference" }}
+      />
+      <motion.div
+        animate={{
+          scale: hovering ? 0.6 : 1,
+          opacity: hovering ? 0.5 : 1,
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        className="absolute w-1.5 h-1.5 rounded-full bg-[#e62b1e]"
+      />
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ٣: أثر فقاعات TEDx
+   ═══════════════════════════════════════════════════════════════ */
+interface Bubble {
+  id: number
+  x: number
+  y: number
+  size: number
+}
+
+const BubbleTrailCursor: FC<{
+  hovering: boolean
+  position: Position
+}> = ({ hovering, position }) => {
+  const [bubbles, setBubbles] = useState<Bubble[]>([])
+  const bubbleId = useRef(0)
+  const lastBubbleTime = useRef(0)
+
+  useEffect(() => {
+    const now = Date.now()
+    if (now - lastBubbleTime.current > 80) {
+      lastBubbleTime.current = now
+      const newBubble: Bubble = {
+        id: bubbleId.current++,
+        x: position.x,
+        y: position.y,
+        size: Math.random() * 6 + 4,
+      }
+      setBubbles((prev) => [...prev.slice(-12), newBubble])
+    }
+  }, [position])
+
+  return (
+    <>
+      <AnimatePresence>
+        {bubbles.map((bubble) => (
+          <motion.div
+            key={bubble.id}
+            initial={{ scale: 1, opacity: 0.6 }}
+            animate={{ scale: 0, opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="absolute rounded-full bg-[#e62b1e]/20 pointer-events-none"
+            style={{
+              width: bubble.size,
+              height: bubble.size,
+              left: bubble.x - bubble.size / 2,
+              top: bubble.y - bubble.size / 2,
+            }}
+          />
+        ))}
+      </AnimatePresence>
+      <motion.div
+        animate={{
+          width: hovering ? 20 : 10,
+          height: hovering ? 20 : 10,
+          boxShadow: hovering
+            ? "0 0 20px rgba(230,43,30,0.4), 0 0 40px rgba(230,43,30,0.2)"
+            : "0 0 10px rgba(230,43,30,0.2)",
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        className="rounded-full bg-[#e62b1e]"
+      />
+    </>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   الدائرة الحمراء القديمة
+   ═══════════════════════════════════════════════════════════════ */
 const TedxRing: FC<{ hovering: boolean }> = ({ hovering }) => (
   <motion.div
     animate={{
@@ -47,7 +238,7 @@ const TedxRing: FC<{ hovering: boolean }> = ({ hovering }) => (
 )
 
 export function SmoothCursor({
-  cursor,
+  cursor = "paper-plane",
   springConfig = {
     damping: 45,
     stiffness: 400,
@@ -63,6 +254,7 @@ export function SmoothCursor({
   const [isEnabled, setIsEnabled] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
+  const [currentPos, setCurrentPos] = useState<Position>({ x: 0, y: 0 })
 
   const cursorX = useSpring(0, springConfig)
   const cursorY = useSpring(0, springConfig)
@@ -126,15 +318,16 @@ export function SmoothCursor({
 
       setIsVisible(true)
 
-      const currentPos = { x: e.clientX, y: e.clientY }
-      updateVelocity(currentPos)
+      const pos = { x: e.clientX, y: e.clientY }
+      setCurrentPos(pos)
+      updateVelocity(pos)
 
       const speed = Math.sqrt(
         Math.pow(velocity.current.x, 2) + Math.pow(velocity.current.y, 2)
       )
 
-      cursorX.set(currentPos.x)
-      cursorY.set(currentPos.y)
+      cursorX.set(pos.x)
+      cursorY.set(pos.y)
 
       if (speed > 0.1) {
         const currentAngle =
@@ -207,6 +400,22 @@ export function SmoothCursor({
     return null
   }
 
+  const renderCursor = () => {
+    switch (cursor) {
+      case "paper-plane":
+        return <PaperPlaneCursor hovering={isHovering} />
+      case "blend-circle":
+        return <BlendCircleCursor hovering={isHovering} />
+      case "bubble-trail":
+        return <BubbleTrailCursor hovering={isHovering} position={currentPos} />
+      case "ring":
+        return <TedxRing hovering={isHovering} />
+      case "pulse-dot":
+      default:
+        return <PulseDotCursor hovering={isHovering} />
+    }
+  }
+
   return (
     <motion.div
       style={{
@@ -224,11 +433,9 @@ export function SmoothCursor({
       }}
       initial={false}
       animate={{ opacity: isVisible ? 1 : 0 }}
-      transition={{
-        duration: 0.15,
-      }}
+      transition={{ duration: 0.15 }}
     >
-      {cursor ?? <TedxRing hovering={isHovering} />}
+      {renderCursor()}
     </motion.div>
   )
 }

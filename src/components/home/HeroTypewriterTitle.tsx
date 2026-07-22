@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useLocale } from "next-intl"; // استيراد للكشف عن اللغة الحالية
+import { useLocale } from "next-intl";
 
 interface HeroTypewriterTitleProps {
   title: string;
@@ -9,32 +9,37 @@ interface HeroTypewriterTitleProps {
 
 export default function HeroTypewriterTitle({ title }: HeroTypewriterTitleProps) {
   const shouldReduceMotion = useReducedMotion();
-  const locale = useLocale(); // معرفة اللغة الحالية
+  const locale = useLocale();
 
   // اختيار الخط المناسب بناءً على اللغة
   const fontClass = locale === "ar" ? "font-arabic" : "font-sans";
+const headingClass = `text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl font-bold tracking-tight leading-tight ${fontClass} text-black dark:text-white`;
 
-  // ✅ التعديل هنا:
-  // - text-3xl (جوال صغير)
-  // - sm:text-4xl, md:text-5xl (تابلت)
-  // - lg:text-6xl, xl:text-7xl (شاشات كبيرة)
-  // - md:whitespace-nowrap (يبقى في سطر واحد في الشاشات الأكبر من الهاتف فقط)
-const headingClass = `text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-4xl font-bold ${fontClass} text-black dark:text-white text-balance leading-snug`; if (shouldReduceMotion) {
-    return (
-      <h1 className={headingClass}>
-        {title}
-      </h1>
-    );
+  // تقسيم النص إلى كلمات لعرضها بشكل مرن
+  const words = title.split(" ");
+
+  // محتوى العنوان (داخل دالة لتجنب تكرار الكود)
+  const TitleContent = () => (
+    <h1 className={`${headingClass} flex flex-wrap justify-center items-center gap-x-2 md:gap-x-3`}>
+      {words.map((word, index) => (
+        <span key={index} className="inline-block">
+          {word}
+        </span>
+      ))}
+    </h1>
+  );
+
+  if (shouldReduceMotion) {
+    return <TitleContent />;
   }
 
   return (
-    <motion.h1
-      className={headingClass}
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
     >
-      {title}
-    </motion.h1>
+      <TitleContent />
+    </motion.div>
   );
 }

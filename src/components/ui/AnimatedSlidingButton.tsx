@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { useRTL } from "@/hooks/useRTL";
 
 interface AnimatedSlidingButtonProps {
   href: string;
@@ -18,10 +19,12 @@ export default function AnimatedSlidingButton({
   variant = "primary",
   className = "",
 }: AnimatedSlidingButtonProps) {
+  const { isRTL } = useRTL();
+
   const baseClasses =
-  variant === "primary"
-    ? "bg-tedx-red text-white border border-tedx-red hover:bg-[#C42516]"
-    : "border-2 border-tedx-red text-tedx-red bg-transparent hover:bg-tedx-red hover:text-white";
+    variant === "primary"
+      ? "bg-tedx-red text-white border border-tedx-red hover:bg-tedx-red/90 hover:border-tedx-red/90"
+      : "border-2 border-tedx-red text-tedx-red bg-transparent hover:bg-tedx-red hover:text-white";
 
   return (
     <motion.div
@@ -32,21 +35,27 @@ export default function AnimatedSlidingButton({
       <Link
         href={href}
         className={cn(
-          `group relative inline-block w-full sm:w-auto min-w-[120px] sm:min-w-[160px] overflow-hidden rounded-full border px-4 py-2 sm:px-6 sm:py-3 text-center text-sm sm:text-base font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-600`,
+          `group relative inline-block w-full sm:w-auto min-w-[120px] sm:min-w-[160px] overflow-hidden rounded-full border px-4 py-2 sm:px-6 sm:py-3 text-center text-sm sm:text-base font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-tedx-red focus:ring-offset-2`,
           baseClasses,
           className
         )}
       >
-        {/* 1. النص الأصلي مع النقطة (يخرج لليمين عند التمرير) */}
-        <div className="flex items-center justify-center gap-2 transition-all duration-300 group-hover:translate-x-full group-hover:opacity-0">
-          <div className="h-2 w-2 rounded-full bg-white transition-all duration-300 group-hover:scale-[100.8]" />
-          {/* إضافة whitespace-nowrap هنا لمنع التفاف النص */}
-          <span className="inline-block whitespace-nowrap">{children}</span>
+        {/* 1. النص الأصلي مع النقطة (يخرج في اتجاه معاكس لاتجاه القراءة عند التمرير) */}
+        <div
+          className={`flex items-center justify-center gap-2 transition-all duration-300 group-hover:opacity-0 ${
+            isRTL ? "group-hover:-translate-x-full" : "group-hover:translate-x-full"
+          }`}
+        >
+          <div className="h-2 w-2 rounded-full bg-current transition-all duration-300 group-hover:scale-[100.8]" />
+                    <span className="inline-block whitespace-nowrap">{children}</span>
         </div>
 
-        {/* 2. النص البديل مع السهم (يدخل من اليسار عند التمرير) */}
-        <div className="absolute inset-0 flex -translate-x-full items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
-          {/* إضافة whitespace-nowrap هنا أيضاً */}
+        {/* 2. النص البديل مع السهم (يدخل من الاتجاه المعاكس عند التمرير) */}
+        <div
+          className={`absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 ${
+            isRTL ? "translate-x-full" : "-translate-x-full"
+          }`}
+        >
           <span className="inline-block whitespace-nowrap">{children}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -59,6 +68,7 @@ export default function AnimatedSlidingButton({
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
+            className={isRTL ? "scale-x-[-1]" : ""}
           >
             <path d="M5 12h14" />
             <path d="m12 5 7 7-7 7" />

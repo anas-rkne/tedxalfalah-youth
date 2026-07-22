@@ -14,8 +14,7 @@
       "terms": "Terms and Conditions"
     },
     "applyNow": "Apply Now",
-        "more": "More",
-
+    "more": "More",
     "languageSwitcher": {
       "en": "EN",
       "ar": "AR"
@@ -29,62 +28,145 @@
     "licenseNotice": "This independent TEDx event is operated under license from TED.",
     "termsLink": "Terms and Conditions",
     "copyright": "All rights reserved.",
-    "joinUs": "Join Us!"
+    "joinUs": "Join Us!",
+    "ctaLabel": "Ideas worth spreading",
+    "ctaDescription": "Be part of a community that believes in the power of ideas to change the world.",
+    "applyButton": "Apply Now",
+    "ticketsButton": "Get Tickets",
+    "brandDescription": "An independently organized TEDx event bringing together young voices and real ideas.",
+    "moreHeading": "More",
+    "backToTop": "Back to top",
+    "licenseHeading": "TEDx License",
+    "venueAddress": "Museum of the Future, Dubai, United Arab Emirates",
+    "phoneNumber": "+971 4 123 4567"
   },
   "home": {
     "hero": {
-       "eventName": "TEDxAlFalah Youth",
+      "eventName": "TEDxAlFalah Youth",
       "tagline": "The youth voice shaping the future.",
       "date": "October 30, 2024",
       "venue": "Dubai, United Arab Emirates",
       "scrollLabel": "Explore",
       "applyLabel": "Apply Now",
-      "ticketsLabel": "Get Tickets"
+      "ticketsLabel": "Get Tickets",
+      "badgeLabel": "TEDx Youth Event",
+      "eventYear": "2026"
     },
     "about": {
-        "heading": "About the Event",
+      "heading": "About the Event",
       "body": "TEDxAlFalah Youth is an independently organized TED event, designed especially for young men and women in the United Arab Emirates. This event aims to inspire young minds by providing them with a platform to share their ideas, stories, and passions. We believe that the voice of youth is the voice of the future, and that great ideas start with small steps. This event serves youth of all ages and backgrounds, fostering creativity, critical thinking, and collaboration.",
-      "licenseNote": "This independent TEDx event is operated under license from TED."
+      "licenseNote": "This independent TEDx event is operated under license from TED.",
+      "badge": "About The Event",
+      "valuesPlatform": "Global Platform",
+      "valuesCommunity": "Youth Community",
+      "valuesIdeas": "Inspiring Ideas",
+      "ctaHeading": "Be Part of the Movement",
+      "ctaDescription": "Join us and discover how you can contribute to a future full of inspiring ideas."
     },
     "theme": {
       "title": "Tomorrow, Now: Young voices. Real ideas. The future starts earlier than we think.",
-      "body": "In the UAE, youth are inventing, creating, performing, competing, and asking bold questions. TEDxYouth is a stage for their ideas and stories. Real experiences that inspire young people and remind adults how powerful youth voices can be."
+      "body": "In the UAE, youth are inventing, creating, performing, competing, and asking bold questions. TEDxYouth is a stage for their ideas and stories. Real experiences that inspire young people and remind adults how powerful youth voices can be.",
+      "badgeLabel": "Our Theme",
+      "statSpeakers": "Speakers",
+      "statSeats": "Seats",
+      "statDay": "Inspiring Day",
+      "beliefsHeading": "What We Believe",
+      "valuesHeading": "Our TEDx Values",
+      "value1Title": "Ideas Deserve a Stage",
+      "value1Desc": "Every idea, no matter how small, deserves to be heard and shared with the world.",
+      "value2Title": "Youth are the Future",
+      "value2Desc": "We believe in the power of youth and their ability to create real change.",
+      "value3Title": "Diversity Fuels Creativity",
+      "value3Desc": "Different backgrounds and experiences create deeper ideas and stronger impact.",
+      "ctaHeading": "Be Part of the Event",
+      "ctaDescription": "Join us on a journey to explore inspiring ideas and create unforgettable memories."
     },
     "speakersPreview": {
       "heading": "Meet the Speakers",
-      "seeAll": "See All Speakers"
+      "seeAll": "See All Speakers",
+      "badgeLabel": "Speakers",
+      "subtitle": "Discover the voices behind TEDxAlFalah Youth.",
+      "bioFallback": "An inspiring speaker joining us to share their journey and ideas."
     },
     "highlights": {
-  "venueTitle": "Museum of the Future, Dubai",
-  "venueTeaser": "This venue is more than a stage—it's an inspiration! We chose Dubai because it brings the world together in one place. Amidst its innovative streets and a swirl of ideas, you can find the inspiration to plan a future that empowers you and our youth. The opportunities are right in front of you, waiting to be seized!",
-  "activationsTitle": "Community Activations",
-  "activationsTeaser": "The experience here goes far beyond just talks—it's a feeling that fills you up! Between every session, you'll feel the energy of the crowd, shared laughter, and exchanges of ideas that shift perspectives. Genuine connections are made here, and you can turn your curiosity into the spark of your next big journey. This event makes you feel like you're part of something truly monumental.",
-  "statsSpeakers": "Speakers",
-  "statsAttendees": "Attendees",
-  "statsActivations": "Activations"
+      "venueTitle": "Museum of the Future, Dubai",
+      "venueTeaser": "This venue is more than a stage—it's an inspiration! We chose Dubai because it brings the world together in one place. Amidst its innovative streets and a swirl of ideas, you can find the inspiration to plan a future that empowers you and our youth. The opportunities are right in front of you, waiting to be seized!",
+      "activationsTitle": "Community Activations",
+      "activationsTeaser": "The experience here goes far beyond just talks—it's a feeling that fills you up! Between every session, you'll feel the energy of the crowd, shared laughter, and exchanges of ideas that shift perspectives. Genuine connections are made here, and you can turn your curiosity into the spark of your next big journey. This event makes you feel like you're part of something truly monumental.",
+      "statsSpeakers": "Speakers",
+      "statsAttendees": "Attendees",
+      "statsActivations": "Activations",
+      "mainHeading": "Highlights",
+      "mainSubtitle": "Have questions, ideas, or just want to say hello? We'd love to hear from you. Discover the venue, activations, and the numbers that make this event unique.",
+      "venueBadgeText": "Venue",
+      "venueLinkText": "Explore the Venue",
+      "activationsBadgeText": "Activations",
+      "activationsLinkText": "Discover Activations",
+      "statsBadgeText": "Impact",
+      "statsTitle": "An Event as Big as Our Ambition",
+      "statsDescription": "We bring together young minds and expertise to create a real impact in the community. Everyone chooses to be part of this.",
+      "dateBadgeText": "Date",
+      "dateNumber": "15",
+      "dateMonthYear": "November 2026",
+      "dateDescription": "One day full of inspiring ideas and impactful conversations.",
+      "speakerBadgeText": "Speaker",
+      "speakerTitle": "Got an idea worth sharing?",
+      "speakerDescription": "Apply now to speak at TEDx and share your story with the world. We're looking for ideas that change the future."
     },
     "applyBanner": {
       "text": "Applications are open — deadline {date}",
-      "cta": "Apply Now"
+      "cta": "Apply Now",
+      "badgeLabel": "Share Your Voice Today",
+      "subtitle": "This opportunity is in your hands! Your voice and ideas can make a real impact. Register and join us, we can't wait to see what you've got!",
+      "stepsHeading": "How to Apply",
+      "step1Title": "Submit Your Idea",
+      "step1Desc": "Share your inspiring idea and unique story through the application form.",
+      "step2Title": "Team Review",
+      "step2Desc": "Our team will review your application and contact you with the next steps.",
+      "step3Title": "Become a Speaker",
+      "step3Desc": "Get the chance to deliver your talk on the TEDx stage and inspire everyone.",
+      "whyApplyLabel": "Why Apply?",
+      "whyApplyHeading": "Why Apply as a Speaker?",
+      "reason1": "A global platform to share your idea",
+      "reason2": "Connect with a community of thinkers and creators",
+      "reason3": "A chance to inspire thousands of people",
+      "reason4": "Certificate of participation from TEDx",
+      "reason5": "Professional coaching on public speaking",
+      "ctaHeading": "Ready to share your idea?",
+      "ctaDescription": "Don't wait for the opportunity, create it. Apply now and be part of an event that changes the world.",
+      "placeholderTitle": "The TEDx stage awaits you",
+      "placeholderSubtitle": "Your Story, Our Stage.",
+      "stageBadgeLabel": "Coming Soon",
+      "stageTitle": "The Stage Awaits Your Voice",
+      "stageDescription": "Join 12+ young speakers who will change how we see the future."
     },
     "sponsorsStrip": {
-      "heading": "Our Partners"
+      "heading": "Our Partners",
+      "badgeLabel": "Our Partners",
+      "introText": "We are proud to partner with leading organizations that support our vision and share our passion for spreading ideas.",
+      "stat1Label": "Partners",
+      "stat2Label": "Community Support",
+      "stat3Label": "Year of Partnership",
+      "ctaHeading": "Become a Partner",
+      "ctaDescription": "Join our network of partners and be part of an event that inspires the next generation of thinkers and creators.",
+      "ctaLabel": "Contact Us"
     },
     "contactForm": {
       "heading": "Contact Us",
+      "badge": "Get in Touch",
+      "intro": "Our team is here to answer your inquiries or receive your ideas for participation. Just fill out the form and we'll get back to you soon.",
+      "emailLabel": "marhaba@tedxalfalahyouth.com",
       "namePlaceholder": "Full name",
       "emailPlaceholder": "Email",
-      "messagePlaceholder": "Your message",
       "subjectLabel": "Subject",
       "subjectGeneral": "General",
       "subjectSpeaking": "Speaking",
       "subjectSponsorship": "Sponsorship",
       "subjectVolunteering": "Volunteering",
       "subjectMedia": "Media",
+      "messagePlaceholder": "Your message",
       "submit": "Send Message",
       "submitting": "Sending...",
-      "successHeading": "Message Sent",
-      "successBody": "Thanks for reaching out — we'll get back to you soon.",
       "errorGeneric": "Something went wrong. Please try again.",
       "nameRequired": "Name is required",
       "emailInvalid": "Enter a valid email address",
@@ -163,31 +245,32 @@
         "Speaker Coaching": "Speaker Coaching",
         "Marketing": "Marketing",
         "Partnerships": "Partnerships",
-        "Volunteers": "Volunteers"
+        "Volunteers": "Volunteers",
+        "ctaContactText": "Contact Us"
       }
     },
     "venue": {
       "meta": {
-    "title": "Venue",
-    "description": "Discover the TEDxAlFalahYouth venue"
-  },
-  "heroTitle": "A Place That Inspires",
-  "heroAlt": "Photo of the venue",
-  "narrativeLabel": "About the Venue",
-  "narrative": "A short description of the venue, its location, and atmosphere.",
-  "gettingThere": {
-    "title": "Getting There",
-    "mapTitle": "Venue Location",
-    "directions": "Follow directions to reach the venue."
-  },
-  "accessibility": {
-    "title": "Accessibility",
-    "body": "We provide dedicated parking and accessible entrances."
-  },
-  "photoGallery": {
-    "title": "Photo Gallery",
-    "alt": "Gallery image {number}"
-  }
+        "title": "Venue",
+        "description": "Discover the TEDxAlFalahYouth venue"
+      },
+      "heroTitle": "A Place That Inspires",
+      "heroAlt": "Photo of the venue",
+      "narrativeLabel": "About the Venue",
+      "narrative": "A short description of the venue, its location, and atmosphere.",
+      "gettingThere": {
+        "title": "Getting There",
+        "mapTitle": "Venue Location",
+        "directions": "Follow directions to reach the venue."
+      },
+      "accessibility": {
+        "title": "Accessibility",
+        "body": "We provide dedicated parking and accessible entrances."
+      },
+      "photoGallery": {
+        "title": "Photo Gallery",
+        "alt": "Gallery image {number}"
+      }
     },
     "activations": {
       "meta": {
@@ -217,16 +300,19 @@
     "apply": {
       "meta": {
         "title": "Apply",
-        "description": "Apply to speak at TEDxAlFalah Youth as a Young Speaker (10-14) or an Expert in the field of children and youth."
+        "description": "Apply to speak at TEDxAlFalah Youth as a Young Speaker (10-18) or an Expert in the field of children and youth."
       },
       "theme": {
         "title": "Tomorrow, Now: Young voices. Real ideas. The future starts earlier than we think.",
-        "body": "In the UAE, youth are inventing, creating, performing, competing, and asking bold questions. TEDxYouth is a stage for their ideas and stories. Real experiences that inspire young people and remind adults how powerful youth voices can be."
+        "body": "In the UAE, youth are inventing, creating, performing, competing, and asking bold questions. TEDxYouth is a stage for their ideas and stories. Real experiences that inspire young people and remind adults how powerful youth voices can be.",
+        "subtitle": "TEDxYouth — A stage for their ideas and stories"
       },
       "whoCanApply": {
         "title": "Who Can Apply",
+        "youngSpeakersStats": "80% of speaking slots",
+        "expertsStats": "20% of speaking slots",
         "youngSpeakers": {
-          "title": "Young Speakers, Ages 10 to 14",
+          "title": "Young Speakers, Ages 10 to 18",
           "body": "The heart of the event. 80% of speaking slots are dedicated to youth voices."
         },
         "experts": {
@@ -238,7 +324,21 @@
       },
       "reviewProcess": {
         "title": "How Applications Are Reviewed",
-        "body": "A dedicated review community will assess every application to ensure each story aligns with the event theme, alongside originality, clarity of idea, and readiness to develop the talk."
+        "body": "A dedicated review community will assess every application to ensure each story aligns with the event theme, alongside originality, clarity of idea, and readiness to develop the talk.",
+        "items": [
+          {
+            "label": "Originality",
+            "desc": "A unique story"
+          },
+          {
+            "label": "Clarity of Idea",
+            "desc": "A clear and specific message"
+          },
+          {
+            "label": "Readiness",
+            "desc": "Willingness to develop"
+          }
+        ]
       },
       "journey": {
         "title": "Your Application Journey"
@@ -253,61 +353,76 @@
       },
       "faqTitle": "Frequently Asked Questions",
       "timeline": {
-        "stage1": {
-          "title": "Applications Open",
-          "dateLabel": "[Date]",
-          "description": "Submit your application through the form below."
-        },
-        "stage2": {
-          "title": "Applications Close",
-          "dateLabel": "[Date]",
-          "description": "Final day to submit your application."
-        },
-        "stage3": {
-          "title": "Screening of Applications",
-          "dateLabel": "[Date range]",
-          "description": "Our review community reads every application."
-        },
-        "stage4": {
-          "title": "Shortlisting Announced",
-          "dateLabel": "[Date]",
-          "description": "Shortlisted applicants are notified by email."
-        },
-        "stage5": {
-          "title": "First Interview",
-          "dateLabel": "[Date range]",
-          "description": "A short conversation to explore your idea further."
-        },
-        "stage6": {
-          "title": "Confirmation of Progression",
-          "dateLabel": "[Date]",
-          "description": "You'll hear if you're moving to the next round."
-        },
-        "stage7": {
-          "title": "Second Interview",
-          "dateLabel": "[Date range]",
-          "description": "A deeper look at your talk idea and readiness."
-        },
-        "stage8": {
-          "title": "Final Speaker Selection Announced",
-          "dateLabel": "[Date]",
-          "description": "Final speakers are confirmed and notified."
-        },
-        "stage9": {
-          "title": "Coaching and Talk Development",
-          "dateLabel": "[Date range]",
-          "description": "Selected speakers work with coaches to shape their talk."
-        },
-        "stage10": {
-          "title": "Rehearsals",
-          "dateLabel": "[Date range]",
-          "description": "Practice sessions ahead of event day."
-        },
-        "stage11": {
-          "title": "Event Day",
-          "dateLabel": "[Date]",
-          "description": "TEDxAlFalah Youth takes the stage."
-        }
+        "title": "Application Journey",
+        "expectLabel": "What to expect:",
+        "phases": [
+          {
+            "title": "Applications Open",
+            "date": "September 15, 2026",
+            "description": "Applications open for young speakers and experts.",
+            "whatToExpect": "Fill out the application form carefully and attach a video pitch if possible."
+          },
+          {
+            "title": "Applications Close",
+            "date": "October 15, 2026",
+            "description": "Final deadline to submit applications.",
+            "whatToExpect": "Make sure to submit your application before midnight."
+          },
+          {
+            "title": "Reviewing Applications",
+            "dateRange": "October 16–31, 2026",
+            "description": "The review community evaluates all applications.",
+            "whatToExpect": "We read every application carefully and assess it based on originality, clarity, and readiness."
+          },
+          {
+            "title": "Shortlist Announced",
+            "date": "November 5, 2026",
+            "description": "We announce the shortlisted candidates.",
+            "whatToExpect": "You will receive an email within 48 hours."
+          },
+          {
+            "title": "First Interview",
+            "dateRange": "November 10–20, 2026",
+            "description": "One-on-one interviews with shortlisted candidates.",
+            "whatToExpect": "We discuss your idea and see how it connects to the theme."
+          },
+          {
+            "title": "Progression Confirmed",
+            "date": "November 25, 2026",
+            "description": "Announcement of candidates advancing to the next stage.",
+            "whatToExpect": "Your coaching and talk preparation journey begins."
+          },
+          {
+            "title": "Second Interview",
+            "dateRange": "December 1–10, 2026",
+            "description": "Second interview for advanced candidates.",
+            "whatToExpect": "We discuss the development of your idea and identify areas for improvement."
+          },
+          {
+            "title": "Final Selection Announced",
+            "date": "December 20, 2026",
+            "description": "Official announcement of the final speakers.",
+            "whatToExpect": "Congratulations! Your intensive coaching journey begins."
+          },
+          {
+            "title": "Coaching & Mentorship",
+            "dateRange": "January – February 2027",
+            "description": "Intensive coaching program to prepare the talk.",
+            "whatToExpect": "Weekly sessions with professional TEDx coaches."
+          },
+          {
+            "title": "Rehearsals",
+            "dateRange": "March 1–10, 2027",
+            "description": "Final rehearsals on stage before the event.",
+            "whatToExpect": "Experience the real stage and get used to the lighting and sound."
+          },
+          {
+            "title": "Event Day",
+            "date": "March 15, 2027",
+            "description": "The big day — take a deep breath and share your story.",
+            "whatToExpect": "You are ready. The world is waiting to hear your voice."
+          }
+        ]
       },
       "faqItems": {
         "item1": {
@@ -333,7 +448,7 @@
       },
       "form": {
         "trackLabel": "I am applying as a:",
-        "youngSpeakerLabel": "Young Speaker (10\u201314)",
+        "youngSpeakerLabel": "Young Speaker (10–14)",
         "expertLabel": "Expert in the Field of Children and Youth",
         "fullName": "Full Name",
         "age": "Age",
@@ -345,7 +460,7 @@
         "wordCount": "({count}/{max} words)",
         "whyItMatters": "Why This Idea Matters to You",
         "themeConnection": "Connection to the Theme",
-        "videoLink": "Optional Video Link (60\u201390 second pitch)",
+        "videoLink": "Video Link (60–90 second clip)",
         "howHeard": "How did you hear about us?",
         "howHeardOptions": {
           "socialMedia": "Social Media",
@@ -376,7 +491,7 @@
           "ideaSummaryRequired": "Idea summary is required",
           "maxWords": "Maximum {count} words",
           "thisFieldRequired": "This field is required",
-          "themeConnectionRequired": "Please describe the connection to the theme",
+          "themeConnectionRequired": "Please select the connection to the theme",
           "invalidUrl": "Enter a valid URL",
           "consentRequired": "You must agree to the Terms and Conditions",
           "schoolNameRequired": "School name is required",
@@ -384,7 +499,31 @@
           "guardianContactRequired": "Parent/guardian contact is required",
           "parentalConsentRequired": "Parental consent is required",
           "organizationRequired": "Organization and role is required",
-          "areaOfWorkRequired": "Please describe your area of work with children/youth"
+          "areaOfWorkRequired": "Please describe your area of work with children/youth",
+          "ageRange": "Age must be between 10 and 99"
+        },
+        "formTitle": "Application Form",
+        "youngSpeakerDesc": "For students and youth ages 10 to 14",
+        "expertDesc": "For professionals and leaders in their fields",
+        "personalInfoTitle": "Personal Information",
+        "fullNamePlaceholder": "Mohammed Ahmed",
+        "cityPlaceholder": "Dubai",
+        "talkIdeaTitlePlaceholder": "An attention-grabbing title",
+        "ideaSummaryPlaceholder": "Briefly explain your idea...",
+        "whyItMattersPlaceholder": "What impact will it have?",
+        "themeConnectionPlaceholder": "Select from the list",
+        "schoolNamePlaceholder": "School name",
+        "guardianNamePlaceholder": "Parent/guardian name",
+        "guardianContactPlaceholder": "Parent/guardian contact number",
+        "themeConnectionOptions": {
+          "identity": "Identity & Belonging",
+          "future skills": "Future Skills",
+          "wellbeing": "Wellbeing & Mental Health",
+          "creativity": "Creativity & Innovation",
+          "community": "Community & Connection",
+          "stems": "Science, Tech, Engineering, Math (STEMs)",
+          "ai": "Artificial Intelligence",
+          "life skills": "Life Skills"
         }
       }
     },
@@ -401,19 +540,31 @@
         "title": "Sponsorship Tiers",
         "platinum": {
           "name": "Platinum",
-          "benefits": ["Top logo placement", "Stage recognition", "VIP seats"]
+          "benefits": [
+            "Top logo placement",
+            "Stage recognition",
+            "VIP seats"
+          ]
         },
         "gold": {
           "name": "Gold",
-          "benefits": ["Logo on website", "Social media mentions"]
+          "benefits": [
+            "Logo on website",
+            "Social media mentions"
+          ]
         },
         "silver": {
           "name": "Silver",
-          "benefits": ["Logo on website", "Event day signage"]
+          "benefits": [
+            "Logo on website",
+            "Event day signage"
+          ]
         },
         "community": {
           "name": "Community",
-          "benefits": ["Listed as community supporter"]
+          "benefits": [
+            "Listed as community supporter"
+          ]
         },
         "fullPackagesNote": "Full packages available on request."
       },
@@ -449,13 +600,17 @@
         "description": "Get your tickets for TEDxAlFalah Youth."
       },
       "cancel": {
-        "meta": { "title": "Checkout Cancelled" },
+        "meta": {
+          "title": "Checkout Cancelled"
+        },
         "title": "Checkout Cancelled",
         "body": "No worries — your payment was not processed. You can try again whenever you're ready.",
         "cta": "Back to Tickets"
       },
       "success": {
-        "meta": { "title": "Payment Successful" },
+        "meta": {
+          "title": "Payment Successful"
+        },
         "eyebrow": "Payment Successful",
         "title": "You're going to TEDxAlFalah Youth!",
         "body": "A confirmation email with your ticket details is on its way to your inbox. See you on event day!",
@@ -476,9 +631,21 @@
         "group": "Discounted group rate for 5 or more attendees."
       },
       "ticketIncludes": {
-        "general": ["Full-day access", "All talks", "Access to activations"],
-        "student": ["Full-day access", "All talks", "Valid student ID required at entry"],
-        "group": ["Full-day access", "All talks", "Discounted group rate"]
+        "general": [
+          "Full-day access",
+          "All talks",
+          "Access to activations"
+        ],
+        "student": [
+          "Full-day access",
+          "All talks",
+          "Valid student ID required at entry"
+        ],
+        "group": [
+          "Full-day access",
+          "All talks",
+          "Discounted group rate"
+        ]
       },
       "eventDayInfo": {
         "title": "Event Day Information",
@@ -648,4 +815,3 @@
     }
   }
 }
-

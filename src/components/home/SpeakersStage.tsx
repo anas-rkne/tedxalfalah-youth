@@ -4,11 +4,13 @@ import { useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useRTL } from "@/hooks/useRTL";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
+import SectionBadge from "@/components/ui/SectionBadge";
 
 /* ═══════════════════════════════════════════════════════════════
-   أيقونات التواصل الاجتماعي
+   أيقونات التواصل الاجتماعي (SVG يدوي لتفادي أخطاء المكتبات)
    ═══════════════════════════════════════════════════════════════ */
 const SocialIcon = ({ type }: { type: "twitter" | "instagram" | "linkedin" }) => {
   const color = "currentColor";
@@ -53,35 +55,35 @@ interface Speaker {
 
 interface SpeakersStageProps {
   heading: string;
-  subtitle?: string;
+  subtitle: string;
+  badgeLabel: string;
   speakers: Speaker[];
   seeAllLabel: string;
   seeAllHref: string;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   قسم المتحدثين — تصميم عصري على خلفية بيضاء
-   ═══════════════════════════════════════════════════════════════ */
 export default function SpeakersStage({
   heading,
-  subtitle = "تعرف على الأشخاص الذين يصنعون هذا الحدث.",
+  subtitle,
+  badgeLabel,
   speakers,
   seeAllLabel,
   seeAllHref,
 }: SpeakersStageProps) {
   const shouldReduceMotion = useReducedMotion();
+  const { isRTL } = useRTL(); // ✅ عكس اتجاه النص في البطاقات
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-screen flex-col items-center justify-center py-24 px-4 md:px-8 overflow-hidden bg-[#fafafa]"
+      className="section-padding relative flex flex-col items-center justify-center px-4 md:px-8 overflow-hidden bg-background"
     >
-      {/* نمط خلفي دقيق */}
+      {/* نمط خلفي دقيق (استخدام متغيرات ألوان CSS) */}
       <div
-        className="absolute inset-0 opacity-35 pointer-events-none"
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
-          backgroundImage: "radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0)",
+          backgroundImage: "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
           backgroundSize: "40px 40px",
         }}
       />
@@ -90,20 +92,16 @@ export default function SpeakersStage({
         {/* ═══════ العنوان ═══════ */}
         <ScrollReveal>
           <div className="text-center mb-16">
-            <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] uppercase text-[#e62b1e] mb-4 px-4 py-1.5 bg-[#e62b1e]/[0.06] border border-[#e62b1e]/[0.1] rounded-full">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-50" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#e62b1e]" />
-              </span>
-              Speakers
-            </span>
-            <h2
-              className="font-bold text-zinc-900 text-center leading-[1.1] tracking-[-0.03em] mb-3"
-              style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
-            >
+            {/* ✅ الشارة الموحدة */}
+            <div className="flex justify-center mb-4">
+              <SectionBadge>{badgeLabel}</SectionBadge>
+            </div>
+            
+            <h2 className="heading-h1 tracking-[-0.03em] mb-3 text-center">
               {heading}
             </h2>
-            <p className="text-zinc-500 text-base max-w-md mx-auto leading-[1.7]">
+            
+            <p className="text-muted-foreground text-base max-w-md mx-auto leading-[1.7]">
               {subtitle}
             </p>
           </div>
@@ -121,11 +119,11 @@ export default function SpeakersStage({
                 duration: 0.6,
                 delay: shouldReduceMotion ? 0 : index * 0.1,
               }}
-              className="group relative flex flex-col sm:flex-row gap-6 p-8 rounded-3xl bg-white border border-black/[0.05] overflow-hidden
-                hover:border-black/[0.08] hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.02)]
+              className="group relative flex flex-col sm:flex-row gap-6 p-8 rounded-3xl bg-card border border-border overflow-hidden
+                hover:border-tedx-red/20 hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.02)]
                 hover:-translate-y-[3px] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
             >
-              {/* توهج خلفي */}
+              {/* توهج خلفي عند التمرير */}
               <div
                 className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] opacity-0 group-hover:opacity-100 transition-opacity duration-[600ms] pointer-events-none"
                 style={{
@@ -134,7 +132,7 @@ export default function SpeakersStage({
               />
 
               {/* ═══════ الصورة ═══════ */}
-              <div className="relative w-[120px] h-[120px] rounded-[20px] overflow-hidden flex-shrink-0 mx-auto sm:mx-0 bg-zinc-100">
+              <div className="relative w-[120px] h-[120px] rounded-[20px] overflow-hidden flex-shrink-0 mx-auto sm:mx-0 bg-muted">
                 {speaker.imageUrl ? (
                   <Image
                     src={speaker.imageUrl}
@@ -144,7 +142,7 @@ export default function SpeakersStage({
                     sizes="120px"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-zinc-400">
+                  <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-muted-foreground">
                     {speaker.name.charAt(0)}
                   </div>
                 )}
@@ -154,40 +152,30 @@ export default function SpeakersStage({
 
               {/* ═══════ المحتوى ═══════ */}
               <div className="flex-1 flex flex-col text-center sm:text-left relative z-10">
-                <h3 className="font-bold text-xl text-zinc-900 leading-[1.3] tracking-[-0.01em] group-hover:text-[#e62b1e] transition-colors duration-300">
+                <h3 className="font-bold text-xl text-foreground leading-[1.3] tracking-[-0.01em] group-hover:text-tedx-red transition-colors duration-300">
                   {speaker.name}
                 </h3>
-                <p className="text-[13px] font-semibold text-[#e62b1e] mt-1 tracking-[0.02em]">
+                <p className="text-[13px] font-semibold text-tedx-red mt-1 tracking-[0.02em]">
                   {speaker.role}
                 </p>
 
                 {/* فاصل */}
-                <div
-                  className="h-px my-3.5"
-                  style={{
-                    background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)",
-                  }}
-                />
-                <div
-                  className="hidden sm:block h-px my-3.5"
-                  style={{
-                    background: "linear-gradient(90deg, rgba(0,0,0,0.06), transparent)",
-                  }}
-                />
+                <div className="h-px my-3.5 bg-border/50" />
+                <div className="hidden sm:block h-px my-3.5 bg-border/50" />
 
-                <p className="text-sm text-zinc-500 leading-[1.7] line-clamp-3">
-                  {speaker.bio || "متحدث ملهم ينضم إلينا لمشاركة رحلته وأفكاره."}
+                <p className="text-sm text-muted-foreground leading-[1.7] line-clamp-3">
+                  {speaker.bio}
                 </p>
 
                 {/* ═══════ أزرار التواصل ═══════ */}
-                <div className="flex gap-2 mt-4 justify-center sm:justify-start">
+                <div className={`flex gap-2 mt-4 ${isRTL ? "sm:justify-end" : "sm:justify-start"} justify-center`}>
                   {speaker.socialLinks?.twitter && (
                     <a
                       href={speaker.socialLinks.twitter}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center bg-zinc-100 text-zinc-400
-                        hover:bg-red-50 hover:text-[#e62b1e] hover:border hover:border-[#e62b1e]/10 hover:-translate-y-0.5
+                      className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center bg-muted text-muted-foreground
+                        hover:bg-tedx-red/10 hover:text-tedx-red hover:border hover:border-tedx-red/10 hover:-translate-y-0.5
                         transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     >
                       <SocialIcon type="twitter" />
@@ -198,8 +186,8 @@ export default function SpeakersStage({
                       href={speaker.socialLinks.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center bg-zinc-100 text-zinc-400
-                        hover:bg-red-50 hover:text-[#e62b1e] hover:border hover:border-[#e62b1e]/10 hover:-translate-y-0.5
+                      className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center bg-muted text-muted-foreground
+                        hover:bg-tedx-red/10 hover:text-tedx-red hover:border hover:border-tedx-red/10 hover:-translate-y-0.5
                         transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     >
                       <SocialIcon type="instagram" />
@@ -210,8 +198,8 @@ export default function SpeakersStage({
                       href={speaker.socialLinks.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center bg-zinc-100 text-zinc-400
-                        hover:bg-red-50 hover:text-[#e62b1e] hover:border hover:border-[#e62b1e]/10 hover:-translate-y-0.5
+                      className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center bg-muted text-muted-foreground
+                        hover:bg-tedx-red/10 hover:text-tedx-red hover:border hover:border-tedx-red/10 hover:-translate-y-0.5
                         transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
                     >
                       <SocialIcon type="linkedin" />

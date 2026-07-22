@@ -3,11 +3,12 @@
 import { useScroll, useTransform } from "framer-motion";
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
+import SectionBadge from "@/components/ui/SectionBadge";
 
 interface VenueHeroSectionProps {
   heroTitle: string;
   heroAlt: string;
-  heroImage?: string;   // صورة اختيارية، إن لم تُمرَّر نستخدم الافتراضية
+  heroImage?: string;   // صورة اختيارية
 }
 
 export default function VenueHeroSection({
@@ -28,12 +29,12 @@ export default function VenueHeroSection({
     [1, shouldReduceMotion ? 1 : 1.1]
   );
 
-  // ✅ الصورة المعتمدة: التي يمررها المستخدم، أو الصورة الافتراضية من public
-  const imageSrc = heroImage || "/public/images/venue-hero.webp";
+  const imageSrc = heroImage || "/images/venue-hero.webp";
 
   return (
     <section className="relative h-[65vh] min-h-[420px] overflow-hidden">
-      {/* الصورة مع parallax */}
+      
+      {/* الصورة مع Parallax */}
       <motion.div
         style={{ y: imageY, scale: imageScale }}
         className="absolute inset-0"
@@ -48,7 +49,7 @@ export default function VenueHeroSection({
         />
       </motion.div>
 
-      {/* تدرج أنيق */}
+      {/* تدرج مظلم لضمان قراءة النص */}
       <div
         className="absolute inset-0"
         style={{
@@ -57,7 +58,7 @@ export default function VenueHeroSection({
         }}
       />
 
-      {/* شريط TEDx أحمر في الأسفل */}
+      {/* شريط TEDx الأحمر في الأسفل */}
       <div
         className="absolute bottom-0 left-0 right-0 h-[3px]"
         style={{
@@ -65,22 +66,40 @@ export default function VenueHeroSection({
         }}
       />
 
-      {/* المحتوى */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
-        <span
-          className="text-xs font-semibold tracking-[0.15em] uppercase text-white/50 mb-4
-            px-4 py-1.5 border border-white/15 rounded-full backdrop-blur-md"
-        >
-          The Venue
-        </span>
-        <h1 className="font-bold text-white text-center leading-[1.1] tracking-[-0.02em] drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)] max-w-[800px]"
-          style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)" }}
-        >
-          {heroTitle}
-        </h1>
+      {/* المحتوى - هيكلية متطابقة مع الفريق والمتحدثين */}
+      <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-12 lg:px-24">
+        <div className="max-w-[1400px] mx-auto w-full relative z-10 flex flex-col md:flex-row justify-between md:items-end gap-6 md:gap-12 text-white">
+          
+          {/* الجهة اليسرى */}
+          <div className="space-y-6">
+            {/* ✅ تم تخصيص الـ Badge ليتطابق مع النمط الموجود في الصورة */}
+            <div className="flex items-start">
+              <SectionBadge className="bg-[#e62b1e]/20 border-[#e62b1e]/30 text-[#e62b1e]">
+                TEDxVenue 2026
+              </SectionBadge>
+            </div>
+            
+            {/* ✅ العنوان الضخم مع التدرج اللوني في الجزء الثاني */}
+            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[7rem] font-black tracking-tighter leading-none text-balance">
+              THE VENUE <br/> 
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-[#e62b1e]/50">
+                OF INNOVATION.
+              </span>
+            </h1>
+          </div>
+          
+          {/* الجهة اليمنى: شعار TEDx والوصف */}
+          <div className="flex flex-col justify-center md:justify-end md:items-end items-start text-left md:text-right md:pb-4">
+             <div className="text-[#e62b1e] font-black text-4xl italic leading-none hidden md:block">TEDx</div>
+             <div className="text-[11px] font-medium tracking-[0.3em] opacity-50 mt-1 uppercase hidden md:block">Youth</div>
+             <p className="text-gray-400 text-base md:text-lg lg:text-xl font-medium leading-relaxed max-w-xs md:max-w-sm mx-auto md:mx-0 mt-6 md:mt-8">
+                A home for bold ideas and human connection.
+             </p>
+          </div>
+        </div>
       </div>
 
-      {/* سهم التمرير */}
+      {/* سهم التمرير أسفل الصفحة */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40">
         <span className="text-[11px] tracking-[0.1em] uppercase">Scroll</span>
         <div

@@ -5,6 +5,7 @@ export interface Speaker {
   shortDescriptor: string;
   talkTitle: string;
   themeConnection: string;
+  
   bio: string;
   socialLinks: {
     instagram?: string;
@@ -13,6 +14,8 @@ export interface Speaker {
   };
   wave: number;
   isPublished: boolean;
+
+  
 }
 
 export type TeamDepartment =

@@ -43,7 +43,7 @@ export default function AnimatedStats({ stats }: AnimatedStatsProps) {
 return (
   <div
     ref={ref}
-    className="p-0 bg-black text-white rounded-xl flex flex-col justify-center gap-4" // تم تغيير bg-gray-50 إلى bg-white
+    className="p-0 bg-black text-white rounded-xl flex flex-col justify-center gap-4 p-3" // تم تغيير bg-gray-50 إلى bg-white
   >
     {stats.map((stat) => (
       <div key={stat.label} className="flex items-baseline gap-2">
