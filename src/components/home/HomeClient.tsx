@@ -10,7 +10,6 @@ import SpeakersPreview from "@/components/home/SpeakersPreview";
 import Highlights from "@/components/home/Highlights";
 import ApplyBanner from "@/components/home/ApplyBanner";
 import SponsorsStrip from "@/components/home/SponsorsStrip";
-import ContactForm from "@/components/home/ContactForm";
 
 export default function HomeClient() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,14 +60,7 @@ export default function HomeClient() {
       </main>
 
       {/* 2. الأقسام العادية (خارج المكدس، تعمل بشكل طبيعي) */}
-      <SpeakersPreview />
-      <Highlights />
-      <ApplyBanner />
-      <SponsorsStrip />
-      <ContactForm 
-        leftImageSrc="/images/boy-lap.jpg"
-        rightImageSrc="/images/girl-lap.jpg"
-      />
+      
     </>
   );
 }
