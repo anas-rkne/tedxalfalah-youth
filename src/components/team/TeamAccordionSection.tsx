@@ -1,5 +1,7 @@
 "use client";
-
+import { useLocale } from "next-intl";
+const locale = useLocale();
+const isArabic = locale === "ar";
 import { motion } from "framer-motion";
 import { TeamMember } from "@/lib/types";
 import TeamMemberCard from "./TeamMemberCard";
@@ -36,7 +38,7 @@ export default function TeamFunctionGroup({
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.5, delay: i * 0.1, ease: [0.23, 1, 0.32, 1] }}
           >
-            <TeamMemberCard member={member} />
+<TeamMemberCard member={member} index={i} isArabic={isArabic} />
           </motion.div>
         ))}
       </div>
