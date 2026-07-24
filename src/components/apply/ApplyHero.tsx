@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import TextType from "@/components/TextType";
 
 interface ApplyHeroProps {
   title: string;
@@ -62,7 +63,7 @@ export default function ApplyHero({
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[85vh] overflow-hidden flex items-end pb-20"
+      className="relative min-h-[85vh] overflow-hidden flex items-center pb-20"
     >
       {/* ── الصورة كخلفية مع بارالكس ── */}
       <motion.div
@@ -113,18 +114,26 @@ export default function ApplyHero({
         className="relative z-10 w-full max-w-4xl mx-auto px-6 text-center"
         style={{ opacity: contentOpacity, y: contentY }}
       >
-        {/* العنوان الرئيسي — مع ظل إضافي للقراءة */}
-        <motion.h1
+        {/* العنوان الرئيسي — مع تأثير الكتابة */}
+        <h1
           className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-white leading-[1.25] tracking-[-0.01em]"
           style={{
             textShadow: "0 2px 30px rgba(0,0,0,0.7), 0 1px 8px rgba(0,0,0,0.5)",
           }}
-          initial={shouldReduceMotion ? {} : { opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
         >
-          {title}
-        </motion.h1>
+          <TextType
+            text={[title]}
+            typingSpeed={60}
+            pauseDuration={2000}
+            loop={false}
+            showCursor
+            cursorCharacter="|"
+            cursorClassName="text-[#e62b1e]"
+            cursorBlinkDuration={0.6}
+            hideCursorWhileTyping={false}
+            initialDelay={300}
+          />
+        </h1>
 
         {/* الفاصل الأحمر */}
         <motion.div
@@ -165,8 +174,8 @@ export default function ApplyHero({
         />
       </div>
 
-      {/* ── سهم التمرير ── */}
-      <ScrollIndicator />
+      {/* ── مؤشر التمرير ── */}
+      <ScrollIndicator/>
     </section>
   );
 }

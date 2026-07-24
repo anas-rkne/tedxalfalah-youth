@@ -141,7 +141,7 @@ function TableOfContents({
     <div className="p-6 rounded-2xl bg-[#fafafa] border border-black/[0.06] mb-12">
       <h3 className="text-sm font-bold text-zinc-900 mb-4 flex items-center gap-2">
         <FileText className="w-4 h-4 text-[#e62b1e]" />
-        محتويات الصفحة
+        {t("toc.title")}
       </h3>
       <nav className="flex flex-col gap-2">
         {sections.map((sectionKey, index) => (
@@ -192,7 +192,9 @@ export default async function TermsPage({ params }: Props) {
         <div className="relative max-w-3xl mx-auto">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-xs text-zinc-400 mb-6">
-            <Link href="/" className="hover:text-[#e62b1e] transition-colors">الرئيسية</Link>
+            <Link href="/" className="hover:text-[#e62b1e] transition-colors">
+              {t("breadcrumb.home")}
+            </Link>
             <span>/</span>
             <span className="text-zinc-600">{t("meta.title")}</span>
           </div>
@@ -242,18 +244,16 @@ export default async function TermsPage({ params }: Props) {
             <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-[#e62b1e] mx-auto mb-4">
               <Mail className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 mb-2">لديك سؤال؟</h3>
-            <p className="text-sm text-zinc-500 mb-5">
-              إذا كانت لديك أي استفسارات حول الشروط والأحكام، فريقنا جاهز للمساعدة.
-            </p>
+            <h3 className="text-lg font-bold text-zinc-900 mb-2">{t("cta.title")}</h3>
+            <p className="text-sm text-zinc-500 mb-5">{t("cta.description")}</p>
             <Link
-              href="/"
+              href={t("cta.link")}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#e62b1e] to-red-600 text-white text-sm font-bold rounded-xl
                 hover:from-red-700 hover:to-red-800 transition-all duration-300
                 shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)] hover:shadow-[0_12px_40px_-12px_rgba(230,43,30,0.5)]
                 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <span>تواصل معنا</span>
+              <span>{t("cta.button")}</span>
               <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>

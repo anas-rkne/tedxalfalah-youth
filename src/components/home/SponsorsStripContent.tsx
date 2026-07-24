@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { motion, useReducedMotion, useAnimationFrame } from "framer-motion";
 import Image from "next/image";
-import { Sparkles, ArrowUpRight, Handshake, Award, Star, Users, Ticket, Calendar } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Handshake, Users, Ticket, Calendar } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import SectionBadge from "@/components/ui/SectionBadge";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
@@ -33,103 +32,7 @@ interface SponsorsStripContentProps {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   مكون شارة التصنيف (تم تحديث الألوان)
-   ═══════════════════════════════════════════════════════════════ */
-function TierBadge({ tier }: { tier: string }) {
-  const styles: Record<string, string> = {
-    Platinum: "bg-gradient-to-r from-slate-700 to-slate-900 text-white",
-    Gold: "bg-gradient-to-r from-amber-400 to-yellow-500 text-white",
-    Silver: "bg-gradient-to-r from-zinc-300 to-zinc-400 text-zinc-900",
-    Community: "bg-muted text-muted-foreground",
-  };
-
-  const icons: Record<string, React.ReactNode> = {
-    Platinum: <Award className="w-3 h-3" />,
-    Gold: <Star className="w-3 h-3" />,
-    Silver: <Star className="w-3 h-3" />,
-    Community: <Handshake className="w-3 h-3" />,
-  };
-
-  return (
-    <span
-      className={`absolute top-3 ${tier === "Community" ? "left-3" : "right-3"} 
-        inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase
-        ${styles[tier] || styles.Community}`}
-    >
-      {icons[tier]}
-      {tier}
-    </span>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   مكون بطاقة شريك
-   ═══════════════════════════════════════════════════════════════ */
-function SponsorCard({
-  sponsor,
-  index,
-  shouldReduceMotion,
-}: {
-  sponsor: Sponsor;
-  index: number;
-  shouldReduceMotion: boolean | null;
-}) {
-  return (
-    <motion.div
-      initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.23, 1, 0.32, 1] }}
-      className="group relative"
-    >
-      <div
-        className="relative w-full aspect-[4/3] bg-card rounded-2xl border border-border 
-          shadow-sm
-          hover:shadow-[0_12px_40px_-12px_rgba(230,43,30,0.15)]
-          hover:border-tedx-red/30
-          hover:-translate-y-1.5
-          transition-all duration-500 ease-out
-          overflow-hidden flex flex-col items-center justify-center p-6"
-      >
-        {/* شارة التصنيف */}
-        {sponsor.tier && <TierBadge tier={sponsor.tier} />}
-
-        {/* الشعار */}
-        <div className="relative w-full h-16 flex items-center justify-center">
-          <Image
-            src={sponsor.logoUrl}
-            alt={sponsor.name}
-            fill
-            className="object-contain filter grayscale group-hover:grayscale-0 
-              opacity-60 group-hover:opacity-100
-              transition-all duration-500"
-            sizes="(max-width: 768px) 50vw, 25vw"
-          />
-        </div>
-
-        {/* اسم الشريك — يظهر عند hover */}
-        <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 
-          transition-transform duration-500 ease-out">
-          <p className="text-center text-xs font-semibold text-foreground truncate">
-            {sponsor.name}
-          </p>
-        </div>
-
-        {/* خط TEDx سفلي */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 group-hover:w-3/4 
-          h-[2px] bg-gradient-to-r from-transparent via-tedx-red to-transparent
-          transition-all duration-500 ease-out" />
-
-        {/* توهج خلفي */}
-        <div className="absolute inset-0 bg-gradient-to-t from-tedx-red/[0.02] to-transparent 
-          opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      </div>
-    </motion.div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   مكون إحصائية TEDx — نسخة متحركة وحيوية (تم التحسين)
+   مكون إحصائية TEDx — مع عدّاد متحرك
    ═══════════════════════════════════════════════════════════════ */
 function StatItem({
   number,
@@ -147,12 +50,14 @@ function StatItem({
   const [count, setCount] = useState(0);
   const numericValue = parseInt(number.replace(/\D/g, '')) || 0;
   const suffix = number.replace(/[0-9]/g, '');
+  const hasAnimated = useRef(false);
 
   useEffect(() => {
-    if (shouldReduceMotion) {
+    if (shouldReduceMotion || hasAnimated.current) {
       setCount(numericValue);
       return;
     }
+    hasAnimated.current = true;
     const timer = setTimeout(() => {
       const duration = 2000;
       const steps = 60;
@@ -180,7 +85,6 @@ function StatItem({
       transition={{ duration: 0.7, delay, ease: [0.23, 1, 0.32, 1] }}
       className="relative group text-center px-4 py-6"
     >
-      {/* أيقونة متحركة */}
       <motion.div
         initial={shouldReduceMotion ? {} : { scale: 0 }}
         whileInView={{ scale: 1 }}
@@ -191,21 +95,17 @@ function StatItem({
         {icon}
       </motion.div>
 
-      {/* الرقم مع تأثير العدّ */}
       <div className="relative">
         <span className="text-4xl md:text-5xl lg:text-6xl font-black text-zinc-900 tracking-[-0.04em] tabular-nums">
           {count}{suffix}
         </span>
-        {/* توهج خلفي للرقم */}
         <div className="absolute inset-0 -z-10 blur-3xl bg-[#e62b1e]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
 
-      {/* التسمية */}
       <p className="text-sm md:text-base text-zinc-400 mt-3 font-medium tracking-wide uppercase">
         {label}
       </p>
 
-      {/* خط زخرفي سفلي */}
       <motion.div
         initial={shouldReduceMotion ? {} : { scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
@@ -214,6 +114,85 @@ function StatItem({
         className="mt-4 h-0.5 w-12 mx-auto bg-gradient-to-r from-transparent via-[#e62b1e]/40 to-transparent origin-center"
       />
     </motion.div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   شريط الشعارات المتحرك — Marquee احترافي بدون فراغات
+   ═══════════════════════════════════════════════════════════════ */
+function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
+  const shouldReduceMotion = useReducedMotion();
+  const [isHovered, setIsHovered] = useState(false);
+  const baseVelocity = useRef(0.5); // pixels per frame
+  const containerRef = useRef<HTMLDivElement>(null);
+  const xPosition = useRef(0);
+
+  // نسخ الشعارات 3 مرات لضمان عدم وجود فراغات
+  const tripleSponsors = [...sponsors, ...sponsors, ...sponsors];
+
+  // حساب العرض الكلي لمجموعة واحدة
+  const getSetWidth = useCallback(() => {
+    if (!containerRef.current) return 0;
+    const items = containerRef.current.querySelectorAll('.marquee-item');
+    if (items.length === 0) return 0;
+    const firstSetWidth = Array.from(items).slice(0, sponsors.length).reduce((acc, item) => {
+      return acc + (item as HTMLElement).offsetWidth + 64; // 64 = gap (4rem)
+    }, 0);
+    return firstSetWidth;
+  }, [sponsors.length]);
+
+  useAnimationFrame((_, delta) => {
+    if (shouldReduceMotion || isHovered || !containerRef.current) return;
+
+    const setWidth = getSetWidth();
+    if (setWidth === 0) return;
+
+    // التحرك بسرعة ثابتة
+    const moveBy = (baseVelocity.current * delta) / 16;
+    xPosition.current -= moveBy;
+
+    // إعادة الضبط عند تجاوز عرض المجموعة
+    if (Math.abs(xPosition.current) >= setWidth) {
+      xPosition.current = 0;
+    }
+
+    containerRef.current.style.transform = `translateX(${xPosition.current}px)`;
+  });
+
+  if (sponsors.length === 0) return null;
+
+  return (
+    <div 
+      className="relative w-full overflow-hidden border-y border-zinc-100 py-8 md:py-10"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* تدرجات جانبية للإخفاء الناعم */}
+      <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+
+      {/* الشريط المتحرك */}
+      <div 
+        ref={containerRef}
+        className="flex items-center gap-16 md:gap-20 w-max"
+        style={{ willChange: 'transform' }}
+      >
+        {tripleSponsors.map((sponsor, index) => (
+          <div
+            key={`${sponsor.id}-${index}`}
+            className="marquee-item relative w-32 md:w-40 h-16 md:h-20 flex-shrink-0 flex items-center justify-center group/logo"
+          >
+            <Image
+              src={sponsor.logoUrl}
+              alt={sponsor.name}
+              fill
+              className="object-contain filter grayscale opacity-60 group-hover/logo:grayscale-0 group-hover/logo:opacity-100 transition-all duration-300"
+              sizes="160px"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -234,7 +213,6 @@ export default function SponsorsStripContent({
 }: SponsorsStripContentProps) {
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
-  const containerRef = useRef<HTMLDivElement>(null);
 
   if (sponsors.length === 0) {
     return (
@@ -252,30 +230,17 @@ export default function SponsorsStripContent({
     );
   }
 
-  const tiers = ["Platinum", "Gold", "Silver", "Community"] as const;
-  const sponsorsByTier = tiers.reduce(
-    (acc, tier) => {
-      acc[tier] = sponsors.filter((s) => s.tier === tier || (!s.tier && tier === "Community"));
-      return acc;
-    },
-    {} as Record<string, Sponsor[]>
-  );
-
   return (
-    <section
-      ref={containerRef}
-      className="section-padding relative bg-background overflow-hidden"
-    >
-      {/* ═══════════════════════════════════════════════════════════════
-          HERO HEADER
-          ═══════════════════════════════════════════════════════════════ */}
+    <section className="section-padding relative bg-background overflow-hidden">
+
+      {/* ═══════ HERO HEADER ═══════ */}
       <div className="relative pb-12 md:pb-16">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-tedx-red/5 blur-3xl" />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#e62b1e]/5 blur-3xl" />
         </div>
 
         <div className="container-padding relative z-10 max-w-5xl mx-auto text-center">
-          
+
           <motion.div
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -283,9 +248,7 @@ export default function SponsorsStripContent({
             transition={{ duration: 0.6 }}
           >
             <div className="flex justify-center mb-4">
-              <SectionBadge>
-                {badgeLabel}
-              </SectionBadge>
+              <SectionBadge>{badgeLabel}</SectionBadge>
             </div>
           </motion.div>
 
@@ -306,9 +269,9 @@ export default function SponsorsStripContent({
             transition={{ duration: 0.8, delay: 0.3, ease: [0.23, 1, 0.32, 1] }}
             className="flex items-center justify-center gap-3 origin-center"
           >
-            <div className="h-px w-10 bg-border" />
-            <div className="h-1 w-14 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" />
-            <div className="h-px w-10 bg-border" />
+            <div className="h-px w-10 bg-zinc-200" />
+            <div className="h-1 w-14 bg-gradient-to-r from-[#e62b1e] to-red-400 rounded-full" />
+            <div className="h-px w-10 bg-zinc-200" />
           </motion.div>
 
           <motion.p
@@ -316,7 +279,7 @@ export default function SponsorsStripContent({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-muted-foreground mt-8 text-lg font-light max-w-2xl mx-auto leading-relaxed"
+            className="text-zinc-400 mt-8 text-lg font-light max-w-2xl mx-auto leading-relaxed"
             dir={isRTL ? "rtl" : "ltr"}
           >
             {introText}
@@ -324,108 +287,14 @@ export default function SponsorsStripContent({
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SPONSORS GRID
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══════ SPONSORS MARQUEE ═══════ */}
       <div className="container-padding relative pb-20 md:pb-28">
         <div className="max-w-7xl mx-auto">
-          {sponsorsByTier.Platinum.length > 0 && (
-            <div className="mb-16">
-              <motion.div
-                initial={shouldReduceMotion ? {} : { opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="flex items-center gap-4 mb-8"
-              >
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-                <span className="text-xs font-bold tracking-[0.15em] uppercase text-muted-foreground px-4 py-1.5 bg-muted border border-border rounded-full">
-                  Platinum Partners
-                </span>
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-              </motion.div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                {sponsorsByTier.Platinum.map((sponsor, i) => (
-                  <SponsorCard key={sponsor.id} sponsor={sponsor} index={i} shouldReduceMotion={shouldReduceMotion} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {sponsorsByTier.Gold.length > 0 && (
-            <div className="mb-16">
-              <motion.div
-                initial={shouldReduceMotion ? {} : { opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="flex items-center gap-4 mb-8"
-              >
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-                <span className="text-xs font-bold tracking-[0.15em] uppercase text-amber-600 px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full">
-                  Gold Partners
-                </span>
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-              </motion.div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6">
-                {sponsorsByTier.Gold.map((sponsor, i) => (
-                  <SponsorCard key={sponsor.id} sponsor={sponsor} index={i} shouldReduceMotion={shouldReduceMotion} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {sponsorsByTier.Silver.length > 0 && (
-            <div className="mb-16">
-              <motion.div
-                initial={shouldReduceMotion ? {} : { opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="flex items-center gap-4 mb-8"
-              >
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-                <span className="text-xs font-bold tracking-[0.15em] uppercase text-muted-foreground px-4 py-1.5 bg-muted border border-border rounded-full">
-                  Silver Partners
-                </span>
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-              </motion.div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
-                {sponsorsByTier.Silver.map((sponsor, i) => (
-                  <SponsorCard key={sponsor.id} sponsor={sponsor} index={i} shouldReduceMotion={shouldReduceMotion} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {sponsorsByTier.Community.length > 0 && (
-            <div>
-              <motion.div
-                initial={shouldReduceMotion ? {} : { opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="flex items-center gap-4 mb-8"
-              >
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-                <span className="text-xs font-bold tracking-[0.15em] uppercase text-muted-foreground px-4 py-1.5 bg-muted border border-border rounded-full">
-                  Community Partners
-                </span>
-                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-              </motion.div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-                {sponsorsByTier.Community.map((sponsor, i) => (
-                  <SponsorCard key={sponsor.id} sponsor={sponsor} index={i} shouldReduceMotion={shouldReduceMotion} />
-                ))}
-              </div>
-            </div>
-          )}
+          <SponsorMarquee sponsors={sponsors} />
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          STATS SECTION — تم التحسين بالكامل
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══════ STATS SECTION ═══════ */}
       <div className="container-padding relative pb-20 md:pb-28">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div
@@ -435,10 +304,8 @@ export default function SponsorsStripContent({
             transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
             className="relative"
           >
-            {/* الخلفية الرئيسية */}
             <div className="relative rounded-[32px] bg-gradient-to-b from-white to-zinc-50/80 border border-zinc-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] overflow-hidden">
-              
-              {/* نمط نقاط زخرفي */}
+
               <div 
                 className="absolute inset-0 opacity-[0.03]"
                 style={{
@@ -446,11 +313,8 @@ export default function SponsorsStripContent({
                   backgroundSize: "24px 24px",
                 }}
               />
-
-              {/* توهج أحمر علوي */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-[#e62b1e]/[0.03] blur-3xl rounded-full" />
 
-              {/* شبكة الإحصائيات */}
               <div className="relative grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-zinc-100">
                 <StatItem 
                   number={stat1Number} 
@@ -475,7 +339,6 @@ export default function SponsorsStripContent({
                 />
               </div>
 
-              {/* خط سفلي متحرك */}
               <motion.div
                 initial={shouldReduceMotion ? {} : { scaleX: 0 }}
                 whileInView={{ scaleX: 1 }}
@@ -484,16 +347,12 @@ export default function SponsorsStripContent({
                 className="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/30 to-transparent origin-center"
               />
             </div>
-
-            {/* ظل خارجي ناعم */}
             <div className="absolute -inset-4 -z-10 rounded-[40px] bg-gradient-to-b from-[#e62b1e]/[0.02] to-transparent blur-2xl" />
           </motion.div>
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          CTA SECTION
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══════ CTA SECTION ═══════ */}
       <div className="container-padding relative pb-24 md:pb-32">
         <div className="max-w-4xl mx-auto">
           <motion.div
@@ -503,14 +362,14 @@ export default function SponsorsStripContent({
             transition={{ duration: 0.7 }}
             className="p-10 md:p-14 rounded-[32px] bg-gradient-to-br from-zinc-900 to-zinc-800 text-white relative overflow-hidden text-center"
           >
-            <div className="absolute top-0 right-0 w-72 h-72 bg-tedx-red/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-tedx-red/5 rounded-full blur-2xl" />
+            <div className="absolute top-0 right-0 w-72 h-72 bg-[#e62b1e]/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#e62b1e]/5 rounded-full blur-2xl" />
 
             <div className="relative z-10">
-              <Handshake className="w-10 h-10 text-tedx-red mx-auto mb-4" />
+              <Handshake className="w-10 h-10 text-[#e62b1e] mx-auto mb-4" />
               <h2 className="heading-h2 mb-4 text-white">{ctaHeading}</h2>
               <p className="text-zinc-400 max-w-lg mx-auto mb-8 leading-relaxed">{ctaDescription}</p>
-              
+
               <div className="flex justify-center">
                 <AnimatedSlidingButton href="/contact" variant="primary" className="min-w-[160px] shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)]">
                   {ctaLabel}

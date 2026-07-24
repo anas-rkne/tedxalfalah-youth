@@ -11,7 +11,9 @@
       "sponsors": "Sponsors",
       "tickets": "Tickets",
       "faq": "FAQ",
-      "terms": "Terms and Conditions"
+         "contact": "Contact",
+    "terms": "Terms"
+      
     },
     "applyNow": "Apply Now",
     "more": "More",
@@ -229,6 +231,12 @@
         "title": "Speakers",
         "description": "Meet the young speakers and adult experts taking the stage at TEDxAlFalah Youth."
       },
+       "hero": {
+    "badge": "TEDxSpeakers 2026",
+    "mainTitle": "THE VOICES",
+    "highlightTitle": "OF TOMORROW.",
+    "brandSub": "AlFalah Youth"
+  },
       "title": "Meet the Speakers",
       "subtitle": "Speakers are announced in waves as our lineup is confirmed. Check back for updates.",
       "empty": "Speakers coming soon."
@@ -247,9 +255,37 @@
         "Partnerships": "Partnerships",
         "Volunteers": "Volunteers",
         "ctaContactText": "Contact Us"
-      }
+      },
+        "hero": {
+    "badge": "TEDxTeam 2026",
+    "mainTitle": "THE ARCHITECTS",
+    "highlightTitle": "OF IDEAS.",
+    "discoverLabel": "Discover Lineup"
+  },
+  "footer": {
+    "totalMembers": "Total Members",
+    "activeYears": "Active Years",
+    "sessions": "Sessions",
+    "followJourney": "Follow the Journey"
+  },
+  "quotes": {
+    "ideas": "IDEAS WORTH SPREADING",
+    "step": "WE MAKE CHANGE STEP BY STEP",
+    "inspiration": "INSPIRATION COMMUNITY"
+  },
+  "marquee": {
+    "text1": "IDEAS WORTH SPREADING",
+    "text2": "INSPIRATION COMMUNITY",
+    "text3": "CHANGE MAKERS"
+  }
     },
     "venue": {
+        "hero": {
+    "badgeLabel": "TEDxVenue 2026",
+    "line1": "THE VENUE",
+    "line2": "OF INNOVATION.",
+    "description": "A home for bold ideas and human connection."
+  },
       "meta": {
         "title": "Venue",
         "description": "Discover the TEDxAlFalahYouth venue"
@@ -272,15 +308,21 @@
         "alt": "Gallery image {number}"
       }
     },
-    "activations": {
-      "meta": {
-        "title": "Side Activations",
-        "description": "The experience beyond the talks at TEDxAlFalah Youth."
-      },
-      "title": "Side Activations",
-      "subtitle": "Showcasing the experience beyond the talks.",
-      "empty": "Activations coming soon."
-    },
+"activations": {
+  "meta": {
+    "title": "Activations | TEDx",
+    "description": "Experience beyond the talks."
+  },
+  "hero": {
+    "badge": "TEDx Activations 2026",
+    "mainTitle": "THE ACTIVATIONS",
+    "highlightTitle": "THAT INSPIRE.",
+    "discoverLabel": "Discover"
+  },
+  "title": " the Activations",
+  "subtitle": "Interactive experiences that spark conversation.",
+  "empty": "No activations yet. Stay tuned!"
+},
     "schedule": {
       "meta": {
         "title": "Schedule",
@@ -297,34 +339,34 @@
         "registration": "Registration"
       }
     },
-    "apply": {
+ "apply": {
       "meta": {
-        "title": "Apply",
-        "description": "Apply to speak at TEDxAlFalah Youth as a Young Speaker (10-18) or an Expert in the field of children and youth."
+        "title": "Apply Now",
+        "description": "Apply to speak at TEDxAlFalah Youth as a young speaker (10-18) or an expert in child and youth development."
       },
       "theme": {
-        "title": "Tomorrow, Now: Young voices. Real ideas. The future starts earlier than we think.",
-        "body": "In the UAE, youth are inventing, creating, performing, competing, and asking bold questions. TEDxYouth is a stage for their ideas and stories. Real experiences that inspire young people and remind adults how powerful youth voices can be.",
-        "subtitle": "TEDxYouth — A stage for their ideas and stories"
+        "title": "Tomorrow, Now: Young Voices, Real Ideas. The future starts sooner than we think.",
+        "body": "In the UAE, young people innovate, create, perform, compete, and ask bold questions. TEDxYouth is a platform for their ideas and stories — real experiences that inspire youth and remind adults of the power of young voices.",
+        "subtitle": "TEDxYouth — A platform for their ideas and stories"
       },
       "whoCanApply": {
         "title": "Who Can Apply",
         "youngSpeakersStats": "80% of speaking slots",
         "expertsStats": "20% of speaking slots",
         "youngSpeakers": {
-          "title": "Young Speakers, Ages 10 to 18",
-          "body": "The heart of the event. 80% of speaking slots are dedicated to youth voices."
+          "title": "Young Speakers, Ages 10–18",
+          "body": "The heart of the event. 80% of speaking slots are dedicated to young voices."
         },
         "experts": {
-          "title": "Adult Experts in the Field of Children and Youth",
-          "body": "The remaining slots are open to adults with strong and inspiring stories to share."
+          "title": "Adult Experts in Child & Youth Fields",
+          "body": "The remaining slots are open to adults with powerful, inspiring stories to share."
         },
-        "connector": "Two worlds that need each other: young people bring the questions, the energy, and the ideas; those who work alongside them bring the experience, perspective, and proof of what is possible when youth voices are taken seriously.",
+        "connector": "Two worlds that need each other: young people bring the questions, energy, and ideas; those working alongside them bring experience, perspective, and proof of what's possible when young voices are taken seriously.",
         "everyoneWelcome": "Everyone is welcome to apply."
       },
       "reviewProcess": {
         "title": "How Applications Are Reviewed",
-        "body": "A dedicated review community will assess every application to ensure each story aligns with the event theme, alongside originality, clarity of idea, and readiness to develop the talk.",
+        "body": "A dedicated review committee will assess each application to ensure every story aligns with the event theme, plus originality, clarity of idea, and readiness to develop the talk.",
         "items": [
           {
             "label": "Originality",
@@ -332,7 +374,7 @@
           },
           {
             "label": "Clarity of Idea",
-            "desc": "A clear and specific message"
+            "desc": "A clear, specific message"
           },
           {
             "label": "Readiness",
@@ -349,33 +391,33 @@
       },
       "nonSelection": {
         "title": "A Note on Selection",
-        "body": "If you are not selected, it means nothing more than that we were limited in spots. We are confident your story is worth sharing. We warmly encourage you to attend the event and to explore other platforms to share your story."
+        "body": "If you were not selected, it simply means spots were limited. We believe your story deserves to be shared. We strongly encourage you to attend the event and explore other platforms to share your story."
       },
-      "faqTitle": "Frequently Asked Questions",
+      "faqTitle": "FAQ",
       "timeline": {
-        "title": "Application Journey",
-        "expectLabel": "What to expect:",
+        "title": "Your Application Journey",
+        "expectLabel": "What we expect from you:",
         "phases": [
           {
             "title": "Applications Open",
             "date": "September 15, 2026",
             "description": "Applications open for young speakers and experts.",
-            "whatToExpect": "Fill out the application form carefully and attach a video pitch if possible."
+            "whatToExpect": "Complete the form carefully and include a test video if possible."
           },
           {
             "title": "Applications Close",
             "date": "October 15, 2026",
-            "description": "Final deadline to submit applications.",
-            "whatToExpect": "Make sure to submit your application before midnight."
+            "description": "Last day to submit applications.",
+            "whatToExpect": "Make sure to submit before midnight."
           },
           {
-            "title": "Reviewing Applications",
+            "title": "Application Screening",
             "dateRange": "October 16–31, 2026",
             "description": "The review community evaluates all applications.",
-            "whatToExpect": "We read every application carefully and assess it based on originality, clarity, and readiness."
+            "whatToExpect": "We read every application carefully and assess based on originality, clarity, and readiness."
           },
           {
-            "title": "Shortlist Announced",
+            "title": "Shortlist Announcement",
             "date": "November 5, 2026",
             "description": "We announce the shortlisted candidates.",
             "whatToExpect": "You will receive an email within 48 hours."
@@ -384,72 +426,75 @@
             "title": "First Interview",
             "dateRange": "November 10–20, 2026",
             "description": "One-on-one interviews with shortlisted candidates.",
-            "whatToExpect": "We discuss your idea and see how it connects to the theme."
+            "whatToExpect": "We discuss your idea and how it connects to the theme."
           },
           {
-            "title": "Progression Confirmed",
+            "title": "Advancement Confirmation",
             "date": "November 25, 2026",
-            "description": "Announcement of candidates advancing to the next stage.",
+            "description": "Candidates advancing to the next stage are announced.",
             "whatToExpect": "Your coaching and talk preparation journey begins."
           },
           {
             "title": "Second Interview",
             "dateRange": "December 1–10, 2026",
             "description": "Second interview for advanced candidates.",
-            "whatToExpect": "We discuss the development of your idea and identify areas for improvement."
+            "whatToExpect": "We discuss how your idea has evolved and identify areas to refine."
           },
           {
-            "title": "Final Selection Announced",
+            "title": "Final Selection Announcement",
             "date": "December 20, 2026",
-            "description": "Official announcement of the final speakers.",
-            "whatToExpect": "Congratulations! Your intensive coaching journey begins."
+            "description": "Official announcement of final speakers.",
+            "whatToExpect": "Congratulations! Intensive coaching begins."
           },
           {
-            "title": "Coaching & Mentorship",
+            "title": "Coaching & Mentoring",
             "dateRange": "January – February 2027",
-            "description": "Intensive coaching program to prepare the talk.",
+            "description": "Intensive training program to prepare your talk.",
             "whatToExpect": "Weekly sessions with professional TEDx coaches."
           },
           {
             "title": "Rehearsals",
             "dateRange": "March 1–10, 2027",
-            "description": "Final rehearsals on stage before the event.",
-            "whatToExpect": "Experience the real stage and get used to the lighting and sound."
+            "description": "Final on-stage rehearsals before the event.",
+            "whatToExpect": "Experience the real stage, lighting, and sound."
           },
           {
             "title": "Event Day",
             "date": "March 15, 2027",
             "description": "The big day — take a deep breath and share your story.",
-            "whatToExpect": "You are ready. The world is waiting to hear your voice."
+            "whatToExpect": "You're ready. The world is waiting to hear your voice."
           }
         ]
       },
-      "faqItems": {
-        "item1": {
-          "question": "Who is eligible for the Young Speaker track?",
-          "answer": "[PLACEHOLDER: eligibility details for ages 10-14 to be confirmed by client.]"
-        },
-        "item2": {
-          "question": "Who is eligible for the Expert track?",
-          "answer": "[PLACEHOLDER: eligibility details for adult experts to be confirmed by client.]"
-        },
-        "item3": {
-          "question": "What language should the talk be in?",
-          "answer": "[PLACEHOLDER: language requirements to be confirmed by client.]"
-        },
-        "item4": {
-          "question": "Will I receive coaching support?",
-          "answer": "[PLACEHOLDER: details on coaching and talk development support.]"
-        },
-        "item5": {
-          "question": "What is the time commitment if selected?",
-          "answer": "[PLACEHOLDER: expected time commitment for coaching, rehearsals, and event day.]"
-        }
-      },
+"faqItems": {
+  "item1": {
+    "question": "Who is eligible to apply as a young speaker?",
+    "answer": "The young speaker track is open to anyone aged 10 to 18, regardless of nationality or background. We're looking for young people with an original idea, an inspiring personal story, or a unique vision worth sharing on the TEDx stage. No prior public speaking experience is required—just passion and a willingness to grow."
+  },
+  "item2": {
+    "question": "Who is eligible to apply as an expert?",
+    "answer": "The expert track is for adults (18+) who work in fields related to children and youth, such as education, mental health, technology, social innovation, and the arts. We welcome experts with a powerful story or groundbreaking research that can inspire the next generation."
+  },
+  "item3": {
+    "question": "What language should the talk be in?",
+    "answer": "Talks can be delivered in either Arabic or English. If the talk is in a language not understood by the entire audience, we may provide on-screen subtitles to ensure the idea reaches everyone. What matters most is the clarity of the message and its ability to inspire."
+  },
+  "item4": {
+    "question": "Will I receive coaching support?",
+    "answer": "Yes, all selected speakers receive a tailored coaching program that includes multiple one-on-one and group sessions with professional speaking coaches and content developers. We'll help you transform your idea into a compelling TEDx talk, from structure to body language and stage rehearsal."
+  },
+  "item5": {
+    "question": "What is the time commitment if I am selected?",
+    "answer": "Selected speakers should expect to dedicate about 4–6 hours per week over 6–8 weeks before the event. This includes coaching sessions, content writing, and rehearsals. The week before the event, hours increase slightly for final on-stage rehearsals. On event day, you'll need to be present from morning until the event concludes in the evening."
+  }
+},
       "form": {
-        "trackLabel": "I am applying as a:",
-        "youngSpeakerLabel": "Young Speaker (10–14)",
-        "expertLabel": "Expert in the Field of Children and Youth",
+        "badge": "Speaker Application",
+        "trackLabel": "I am applying as:",
+        "youngSpeakerLabel": "Young Speaker",
+        "expertLabel": "Expert",
+        "youngAgeRange": "10–18 years",
+        "expertAgeRange": "Adults",
         "fullName": "Full Name",
         "age": "Age",
         "email": "Email",
@@ -458,8 +503,8 @@
         "talkIdeaTitle": "Talk Idea Title",
         "ideaSummary": "Idea Summary",
         "wordCount": "({count}/{max} words)",
-        "whyItMatters": "Why This Idea Matters to You",
-        "themeConnection": "Connection to the Theme",
+        "whyItMatters": "Why It Matters",
+        "themeConnection": "Connection to Theme",
         "videoLink": "Video Link (60–90 second clip)",
         "howHeard": "How did you hear about us?",
         "howHeardOptions": {
@@ -471,229 +516,151 @@
         },
         "youngSpeakerSection": "Young Speaker Details",
         "schoolName": "School Name",
-        "guardianName": "Parent/Guardian Name",
-        "guardianContact": "Parent/Guardian Contact",
-        "parentalConsentLabel": "I confirm I am the parent/guardian and consent to this application.",
+        "guardianName": "Guardian Name",
+        "guardianContact": "Guardian Contact",
+        "parentalConsentLabel": "I confirm I am the guardian and approve this application.",
         "expertSection": "Expert Details",
-        "organizationAndRole": "Organization and Role",
-        "areaOfWork": "Area of Work with Children/Youth",
-        "agreeToTerms": "I agree to the",
-        "termsLink": "Terms and Conditions",
+        "organizationAndRole": "Organization & Role",
+        "areaOfWork": "Area of Work with Youth",
+        "agreeToTerms": "I agree to",
+        "termsLink": "Terms & Conditions",
         "submit": "Submit Application",
         "submitting": "Submitting...",
-        "errorGeneric": "Something went wrong submitting your application. Please try again.",
+        "errorGeneric": "Something went wrong. Please try again.",
         "errors": {
           "fullNameRequired": "Full name is required",
-          "emailInvalid": "Enter a valid email address",
+          "emailInvalid": "Please enter a valid email",
           "phoneRequired": "Phone number is required",
           "cityRequired": "City is required",
           "talkIdeaTitleRequired": "Talk idea title is required",
           "ideaSummaryRequired": "Idea summary is required",
           "maxWords": "Maximum {count} words",
           "thisFieldRequired": "This field is required",
-          "themeConnectionRequired": "Please select the connection to the theme",
-          "invalidUrl": "Enter a valid URL",
-          "consentRequired": "You must agree to the Terms and Conditions",
+          "themeConnectionRequired": "Please select a theme connection",
+          "invalidUrl": "Please enter a valid URL",
+          "consentRequired": "You must agree to the terms and conditions",
           "schoolNameRequired": "School name is required",
-          "guardianNameRequired": "Parent/guardian name is required",
-          "guardianContactRequired": "Parent/guardian contact is required",
-          "parentalConsentRequired": "Parental consent is required",
-          "organizationRequired": "Organization and role is required",
-          "areaOfWorkRequired": "Please describe your area of work with children/youth",
+          "guardianNameRequired": "Guardian name is required",
+          "guardianContactRequired": "Guardian contact is required",
+          "parentalConsentRequired": "Guardian consent is required",
+          "organizationRequired": "Organization and role are required",
+          "areaOfWorkRequired": "Please describe your area of work with youth",
           "ageRange": "Age must be between 10 and 99"
         },
         "formTitle": "Application Form",
-        "youngSpeakerDesc": "For students and youth ages 10 to 14",
-        "expertDesc": "For professionals and leaders in their fields",
+        "youngSpeakerDesc": "For students and youth",
+        "expertDesc": "For professionals and pioneers in their fields",
         "personalInfoTitle": "Personal Information",
         "fullNamePlaceholder": "Mohammed Ahmed",
+        "agePlaceholder": "14",
+        "emailPlaceholder": "name@example.com",
+        "phonePlaceholder": "+971 50 123 4567",
         "cityPlaceholder": "Dubai",
         "talkIdeaTitlePlaceholder": "An attention-grabbing title",
         "ideaSummaryPlaceholder": "Briefly explain your idea...",
-        "whyItMattersPlaceholder": "What impact will it have?",
-        "themeConnectionPlaceholder": "Select from the list",
-        "schoolNamePlaceholder": "School name",
-        "guardianNamePlaceholder": "Parent/guardian name",
-        "guardianContactPlaceholder": "Parent/guardian contact number",
+        "whyItMattersPlaceholder": "What impact will it make?",
+        "videoLinkPlaceholder": "https://... (60–90 sec)",
         "themeConnectionOptions": {
           "identity": "Identity & Belonging",
           "future skills": "Future Skills",
           "wellbeing": "Wellbeing & Mental Health",
           "creativity": "Creativity & Innovation",
           "community": "Community & Connection",
-          "stems": "Science, Tech, Engineering, Math (STEMs)",
+          "stems": "Science, Tech, Engineering & Math (STEMs)",
           "ai": "Artificial Intelligence",
           "life skills": "Life Skills"
-        }
+        },
+        "schoolNamePlaceholder": "School Name",
+        "guardianNamePlaceholder": "Guardian's Full Name",
+        "guardianContactPlaceholder": "Guardian's Phone/Email",
+        "organizationPlaceholder": "Organization & Job Title",
+        "areaOfWorkPlaceholder": "Describe your work with youth..."
       }
     },
-    "sponsors": {
-      "meta": {
-        "title": "Sponsors",
-        "description": "Partner with TEDxAlFalah Youth and invest in young voices."
-      },
-      "hero": {
-        "title": "Become a Partner",
-        "body": "[PLACEHOLDER: opening statement on why partners support TEDxAlFalah Youth and the value of investing in young voices — to be provided by the client.]"
-      },
-      "tiers": {
-        "title": "Sponsorship Tiers",
-        "platinum": {
-          "name": "Platinum",
-          "benefits": [
-            "Top logo placement",
-            "Stage recognition",
-            "VIP seats"
-          ]
-        },
-        "gold": {
-          "name": "Gold",
-          "benefits": [
-            "Logo on website",
-            "Social media mentions"
-          ]
-        },
-        "silver": {
-          "name": "Silver",
-          "benefits": [
-            "Logo on website",
-            "Event day signage"
-          ]
-        },
-        "community": {
-          "name": "Community",
-          "benefits": [
-            "Listed as community supporter"
-          ]
-        },
-        "fullPackagesNote": "Full packages available on request."
-      },
-      "currentPartners": {
-        "title": "Current Partners"
-      },
-      "formSection": {
-        "title": "Become a Partner",
-        "subtitle": "Interested in partnering? Send us a message.",
-        "downloadDeck": "Download Sponsorship Deck (PDF)"
-      },
-      "form": {
-        "namePlaceholder": "Full name",
-        "organizationPlaceholder": "Organization",
-        "emailPlaceholder": "Email",
-        "phonePlaceholder": "Phone",
-        "messagePlaceholder": "Tell us about your organization and interest in partnering",
-        "submit": "Send Inquiry",
-        "submitting": "Sending...",
-        "errorGeneric": "Something went wrong. Please try again.",
-        "errors": {
-          "nameRequired": "Name is required",
-          "organizationRequired": "Organization is required",
-          "emailInvalid": "Enter a valid email address",
-          "phoneRequired": "Phone is required",
-          "messageMinLength": "Message must be at least 10 characters"
-        }
-      }
-    },
-    "tickets": {
-      "meta": {
-        "title": "Tickets",
-        "description": "Get your tickets for TEDxAlFalah Youth."
-      },
-      "cancel": {
-        "meta": {
-          "title": "Checkout Cancelled"
-        },
-        "title": "Checkout Cancelled",
-        "body": "No worries — your payment was not processed. You can try again whenever you're ready.",
-        "cta": "Back to Tickets"
-      },
-      "success": {
-        "meta": {
-          "title": "Payment Successful"
-        },
-        "eyebrow": "Payment Successful",
-        "title": "You're going to TEDxAlFalah Youth!",
-        "body": "A confirmation email with your ticket details is on its way to your inbox. See you on event day!",
-        "cta": "View Venue Details"
-      },
+"sponsors": {
+  "hero": {
+    "badge": "Our Partners",
+    "titleLine1": "Our Partners in",
+    "titleHighlight": "Success",
+    "description": "Proud to collaborate with industry leaders who share our vision of the future"
+  },
+  "tiers": {
+    "platinum": { "name": "Platinum" },
+    "gold": { "name": "Gold" },
+    "silver": { "name": "Silver" }
+  },
+  "stats": {
+    "partners": "Partners",
+    "countries": "Countries",
+    "years": "Years"
+  },
+  "cta": {
+    "badge": "Join Us",
+    "heading": "Want to become a",
+    "headingHighlight": "Partner",
+    "description": "Join our list of partners and be part of an event that inspires the next generation",
+    "button": "Contact Us",
+    "email": "partnerships@tedxyouth.ae"
+  }
+},
+"tickets": {
+    "meta": {
       "title": "Tickets",
-      "priceTbd": "[Price TBD]",
-      "buyTitle": "Buy Your Ticket",
-      "registerTitle": "Register Now",
-      "ticketNames": {
-        "general": "General",
-        "student": "Student",
-        "group": "Group (5+)"
-      },
-      "ticketDescriptions": {
-        "general": "Full-day access to all talks and activations.",
-        "student": "Discounted rate for students with valid ID.",
-        "group": "Discounted group rate for 5 or more attendees."
-      },
-      "ticketIncludes": {
-        "general": [
-          "Full-day access",
-          "All talks",
-          "Access to activations"
-        ],
-        "student": [
-          "Full-day access",
-          "All talks",
-          "Valid student ID required at entry"
-        ],
-        "group": [
-          "Full-day access",
-          "All talks",
-          "Discounted group rate"
-        ]
-      },
-      "eventDayInfo": {
-        "title": "Event Day Information",
-        "date": "Date:",
-        "dateValue": "Saturday, November 15, 2026",
-        "timing": "Timing:",
-        "timingValue": "9:00 AM – 5:00 PM",
-        "venue": "Venue:",
-        "venueLink": "View venue details",
-        "ageGuidance": "Age Guidance:",
-        "ageGuidanceValue": "Open to all ages; recommended for 13+",
-        "whatToBring": "What to Bring:",
-        "whatToBringValue": "Valid ID, printed or digital ticket, comfortable clothing"
-      },
-      "refundPolicy": {
-        "body": "[PLACEHOLDER: refund and transfer policy summary.] See our",
-        "termsLink": "Terms and Conditions",
-        "forDetails": "for details."
-      },
-      "registerForm": {
-        "namePlaceholder": "Full name",
-        "emailPlaceholder": "Email",
-        "phonePlaceholder": "Phone",
-        "numberOfTickets": "Number of Tickets",
-        "submit": "Register",
-        "submitting": "Registering...",
-        "errorGeneric": "Something went wrong. Please try again.",
-        "errors": {
-          "nameRequired": "Name is required",
-          "emailInvalid": "Enter a valid email address",
-          "phoneRequired": "Phone is required"
-        }
-      },
-      "purchaseForm": {
-        "ticketType": "Ticket Type",
-        "quantity": "Quantity",
-        "namePlaceholder": "Full name",
-        "emailPlaceholder": "Email",
-        "submit": "Proceed to Payment",
-        "submitting": "Redirecting...",
-        "stripeNote": "You'll be redirected to Stripe's secure checkout page.",
-        "errorGeneric": "Something went wrong starting checkout. Please try again.",
-        "errors": {
-          "nameRequired": "Name is required",
-          "emailInvalid": "Enter a valid email address"
-        }
-      }
+      "description": "Get your ticket to TEDxAlFalah Youth — General Admission 200 AED."
     },
+    "hero": {
+      "badge": "Tickets Available Now",
+      "title": "Get Your Ticket",
+      "description": "Join us at TEDxAlFalah Youth for an inspiring experience of talks, interaction, and creativity."
+    },
+    "ticket": {
+      "available": "Available Now",
+      "type": "General Admission",
+      "description": "Full-day access to all talks, side activations, and breaks.",
+      "price": "200",
+      "currency": "AED",
+      "seats": "200 seats available",
+      "cta": "Book Now via Platinumlist",
+      "note": "You will be redirected to Platinumlist to complete your purchase securely.",
+      "brandName": "TEDx",
+      "brandSub": "AlFalah Youth",
+      "barcodeText": "TEDX-2026"
+    },
+    "info": {
+      "badge": "Event Details",
+      "title": "Event Day Information",
+      "dateLabel": "Date",
+      "dateValue": "Saturday, 15 November 2026",
+      "timeLabel": "Time",
+      "timeValue": "9:00 AM – 5:00 PM",
+      "venueLabel": "Venue",
+      "venueValue": "Museum of the Future, Dubai",
+      "venueLink": "View Venue Details",
+      "ageLabel": "Age Guidelines",
+      "ageValue": "Open to all ages; recommended for 13+",
+      "seatsLabel": "Seats"
+    },
+    "bring": {
+      "title": "What to Bring",
+      "items": [
+        "Valid ID (Passport or Emirates ID)",
+        "Digital or Printed Ticket",
+        "Comfortable Clothes",
+        "Phone Charger"
+      ]
+    },
+    "refund": {
+      "title": "Refund Policy",
+      "body": "Ticket refund requests can be made via email before the event date. Refunds are not guaranteed after the event starts.",
+      "termsLink": "Terms & Conditions",
+      "termsNote": "Read the full details."
+    },
+    "thankYou": {
+      "title": "Your booking is confirmed!",
+      "body": "Ticket details will be sent to your email. See you on event day!",
+      "cta": "View Schedule"
+    }
+  },
     "faq": {
       "meta": {
         "title": "FAQ",
@@ -741,77 +708,89 @@
         }
       }
     },
-    "terms": {
+     "terms": {
       "meta": {
-        "title": "Terms and Conditions",
-        "description": "Terms and Conditions and Privacy Policy for TEDxAlFalah Youth."
+        "title": "Terms & Conditions",
+        "description": "Terms & Conditions and Privacy Policy for TEDxAlFalah Youth."
       },
-      "title": "Terms and Conditions & Privacy Policy",
-      "lastUpdated": "Last updated: [PLACEHOLDER: date] · Effective for TEDxAlFalah Youth",
+      "title": "Terms & Conditions and Privacy Policy",
+      "lastUpdated": "Last updated: October 1, 2026 · Effective for TEDxAlFalah Youth",
+      "breadcrumb": {
+        "home": "Home"
+      },
+      "toc": {
+        "title": "Table of Contents"
+      },
       "sections": {
         "section1": {
           "title": "1. Application Terms",
           "content": [
-            "By submitting an application to speak at TEDxAlFalah Youth, you confirm that all information provided is accurate and truthful to the best of your knowledge.",
-            "Applications submitted under the Young Speaker track (ages 10–14) require the explicit consent of a parent or legal guardian, provided via the checkbox on the application form. The organizing team may contact the parent/guardian directly to verify this consent before proceeding.",
-            "By submitting your talk idea, summary, and any accompanying video pitch, you grant TEDxAlFalah Youth a non-exclusive license to review, discuss internally, and — if selected — further develop this content with you for the purpose of the event. You retain ownership of your original ideas and content.",
-            "All selection decisions made by the review committee are final. As explained on the Apply page, non-selection reflects limited available slots and is not a judgment on the value of your story.",
-            "TEDxAlFalah Youth reserves the right to adjust the application timeline, including extending or closing the application window earlier than originally announced, and will communicate any such changes on this website."
+            "By submitting an application to speak at TEDxAlFalah Youth, you confirm that all provided information is accurate and true to the best of your knowledge.",
+            "Applications submitted under the young speaker track (ages 10–14) require explicit guardian consent, given via the checkbox in the application form. The organizing team may contact the guardian directly to verify this consent before proceeding.",
+            "By submitting your talk idea, summary, and any attached video, you grant TEDxAlFalah Youth a non-exclusive license to review, discuss internally, and — if selected — develop it with you for the event. You retain ownership of your ideas and original content.",
+            "All selection decisions made by the review committee are final. As stated on the application page, not being selected reflects limited slots, not a judgment on your story's worth.",
+            "TEDxAlFalah Youth reserves the right to adjust the application timeline, including extending or closing the application window before the announced date; any changes will be communicated via this website."
           ]
         },
         "section2": {
-          "title": "2. Ticketing Terms",
+          "title": "2. Ticket Terms",
           "content": [
-            "[PLACEHOLDER: confirm final ticketing model — paid via Stripe or free registration — before finalizing this section.]",
-            "Tickets are issued to the named purchaser and are non-transferable unless otherwise arranged with the organizing team in advance.",
-            "Refund requests must be submitted by email to marhaba@tedxalfalahyouth.com no later than [PLACEHOLDER: number of days] before the event date. Refunds are not guaranteed after this period.",
-            "TEDxAlFalah Youth reserves the right to refuse entry or revoke a ticket in cases of safety concerns, capacity limits, or violation of these terms.",
-            "In the unlikely event the event is postponed or cancelled, ticket holders will be notified via the email provided at purchase/registration, and refund or credit options will be communicated at that time."
+            "Tickets are issued in the buyer's name and are non-transferable unless arranged with the organizing team in advance.",
+            "Refund requests must be submitted via email to marhaba@tedxalfalahyouth.com no later than 7 days before the event date. Refunds are not guaranteed after this period.",
+            "TEDxAlFalah Youth reserves the right to deny entry or cancel a ticket in cases of security concerns, capacity limits, or violation of these terms.",
+            "If the event is postponed or canceled, ticket holders will be notified via the email provided at purchase/registration, and options for refund or compensation will be communicated at that time."
           ]
         },
         "section3": {
-          "title": "3. Photography and Filming Consent",
+          "title": "3. Photography & Recording Consent",
           "content": [
-            "Photography, video, and audio recording will take place throughout TEDxAlFalah Youth for archival, promotional, and TED licensing compliance purposes.",
-            "By attending the event or submitting a speaker application, you (or, for applicants under 18, your parent/guardian) consent to being photographed and/or recorded, and to the use of this media across TEDxAlFalah Youth's website, social media channels, and TED's global platforms under the terms of the TEDx license.",
-            "If you do not wish to be photographed or filmed, please inform a member of the event team upon arrival so reasonable accommodations can be made where possible; however, blanket exclusion from all recorded areas (such as the main stage during talks) may not always be feasible.",
-            "Speaker talks are recorded and may be published publicly (including on YouTube via the TEDx program) following the event, in line with standard TEDx licensing requirements."
+            "Photography, video, and audio recording will take place throughout TEDxAlFalah Youth for archival, promotional, and TED license compliance purposes.",
+            "By attending the event or submitting an application to speak, you (or your guardian for applicants under 18) consent to being photographed and/or recorded and to the use of such media on the TEDxAlFalah Youth website, social media platforms, and TED global platforms under the terms of the TEDx license.",
+            "If you do not wish to be photographed or recorded, please inform a member of the event team upon arrival to make appropriate arrangements where possible; however, complete exclusion from all recorded areas (such as the main hall during talks) may not always be feasible.",
+            "Speaker talks are recorded and may be publicly published (including on YouTube via the TEDx program) after the event, in accordance with standard TEDx license requirements."
           ]
         },
         "section4": {
           "title": "4. Privacy Policy",
           "content": [
-            "This section explains what personal data TEDxAlFalah Youth collects through this website, why we collect it, how it is stored, and the rights you have over it. We take particular care with data belonging to children (ages 10–14) submitted through the Young Speaker application track.",
-            "**What we collect.** Depending on which form you use, we may collect: full name, age, email address, phone number, city, school name (Young Speaker track only), parent/guardian name and contact details (Young Speaker track only), organization and role (Expert track only), talk idea details, and any message you send us via the Contact or Partnership forms. For ticket purchases, payment is processed directly by Stripe — we do not receive or store your full card details.",
-            "**Why we collect it.** We use this information solely to: evaluate speaker applications, communicate with applicants and their parents/guardians about the selection process, process ticket registrations and send event-day information, respond to inquiries, and coordinate with prospective partners/sponsors.",
-            "**Children's data.** For applicants under 18, we collect parent/guardian contact details specifically so that consent can be verified and so that the organizing team communicates with the parent/guardian throughout the process, not only with the child. We do not use children's data for any purpose beyond event organization, and we do not share it with third parties for marketing purposes.",
-            "**Where your data is stored.** Application and registration data is stored in Google Sheets, accessible only to members of the TEDxAlFalah Youth organizing and review team. Speaker, team, sponsor, and schedule content displayed publicly on this website is managed via Sanity, a third-party content management platform. Email communications are sent via Resend. Ticket payments, where applicable, are processed by Stripe. Each of these providers has its own privacy and security practices as independent data processors.",
-            "**How long we keep it.** We retain application data for [PLACEHOLDER: retention period, e.g. 12 months] after the event for record-keeping and to plan future editions, after which it is deleted upon request or as part of routine data hygiene. You may request earlier deletion at any time (see 'Your rights' below).",
-            "**Your rights.** You (or, for a minor's data, their parent/guardian) may request to access, correct, or delete the personal data we hold about you by emailing marhaba@tedxalfalahyouth.com. We will respond within a reasonable timeframe and in accordance with applicable UAE data protection law.",
-            "**Security.** We restrict access to application data to authorized organizing team members only, and rely on the security practices of our third-party providers (Google, Sanity, Resend, Stripe) for data in transit and at rest.",
-            "**Cookies.** This website does not use tracking or advertising cookies. [PLACEHOLDER: update this line if analytics tools such as Google Analytics are added later, and disclose accordingly.]",
+            "This section explains the personal data TEDxAlFalah Youth collects via this website, why we collect it, how it is stored, and the rights you have over it. We give special care to data concerning children (ages 10–14) submitted through the young speaker application track.",
+            "**What We Collect.** Depending on the form you use, we may collect: full name, age, email, phone number, city, school name (young speaker track only), guardian name and contact details (young speaker track only), organization and role (expert track only), talk idea details, and any message you send us via the contact or partnership form. For ticket purchases, payment is processed directly by Stripe — we do not receive or store your full card details.",
+            "**Why We Collect It.** We use this information solely to: evaluate speaker applications, communicate with applicants and their guardians about the selection process, process ticket registrations and send event-day information, respond to inquiries, and coordinate with potential partners/sponsors.",
+            "**Children's Data.** For applicants under 18, we collect guardian contact details specifically so consent can be verified and so the organizing team communicates with the guardian throughout the process, not the child alone. We do not use children's data for any purpose beyond event organization, nor do we share it with third parties for marketing purposes.",
+            "**Where Your Data Is Stored.** Application and registration data is stored in Google Sheets, accessible only to members of the TEDxAlFalah Youth organizing and review team. Public content on this site (speakers, team, sponsors, schedule) is managed via Sanity, a third-party content management platform. Email communication is sent via Resend. Ticket payments, when applicable, are processed by Stripe. Each of these providers has its own privacy and security practices as independent data processors.",
+            "**Retention Period.** We retain application data for 12 months after the event for record-keeping and future edition planning, after which it is deleted upon request or as part of routine data hygiene. You can request early deletion at any time (see 'Your Rights' below).",
+            "**Your Rights.** You (or the guardian for a minor's data) can request access to, correction of, or deletion of personal data we hold about you by emailing marhaba@tedxalfalahyouth.com. We will respond within a reasonable timeframe and in accordance with applicable UAE data protection law.",
+            "**Security.** We restrict access to application data to authorized organizing team members only and rely on the security practices of our external providers (Google, Sanity, Resend, Stripe) for data in transit and at rest.",
+            "**Cookies.** This site does not use tracking or advertising cookies.",
             "**Contact.** Questions about this privacy policy or your data can be directed to marhaba@tedxalfalahyouth.com."
           ]
         },
         "section5": {
-          "title": "5. TEDx Licensing Acknowledgement",
+          "title": "5. TEDx License Acknowledgment",
           "content": [
-            "TEDxAlFalah Youth is organized independently and operated under a free license granted by TED, in accordance with the TEDx program's mission of discovering and spreading great ideas within local communities.",
-            "This event is not officially affiliated with, sponsored by, or organized by TED or TEDx staff beyond the terms of the standard TEDx license. All content, speaker selection, and event operations are the sole responsibility of the independent TEDxAlFalah Youth organizing team.",
+            "TEDxAlFalah Youth is independently organized and operated under a free license from TED, in line with the TEDx program's mission of discovering and spreading great ideas within local communities.",
+            "This event is not officially affiliated with, sponsored by, or organized by TED or TEDx staff beyond the standard TEDx license terms. All content, speaker selection, and event operations are the sole responsibility of the independent TEDxAlFalah Youth organizing team.",
             "Speaker talks may be submitted to TED for potential inclusion on the official TEDx YouTube channel, in accordance with standard TEDx content guidelines, at the discretion of the TEDx program."
           ]
         },
         "section6": {
-          "title": "6. Liability and General Conditions",
+          "title": "6. Liability & General Terms",
           "content": [
-            "TEDxAlFalah Youth, its organizers, and volunteers make reasonable efforts to ensure a safe and well-run event but do not accept liability for personal injury, loss, or damage to property during the event, except where required by applicable law.",
-            "Attendees and applicants participate at their own risk. Parents/guardians of Young Speaker applicants remain responsible for their child's welfare while under their own supervision before and after any scheduled coaching, rehearsal, or event-day sessions, unless otherwise explicitly arranged with the organizing team.",
-            "These terms are governed by the laws of the United Arab Emirates. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the competent courts of [PLACEHOLDER: Emirate, e.g. Dubai / Sharjah].",
-            "TEDxAlFalah Youth reserves the right to update these Terms and Conditions and Privacy Policy from time to time. The most current version will always be available on this page, with the effective date noted below.",
-            "[PLACEHOLDER: legal entity name and registered address of the organizing body, if applicable.]"
+            "TEDxAlFalah Youth, its organizers, and volunteers make reasonable efforts to ensure a safe and well-run event but do not accept liability for personal injury, loss, or property damage during the event, except where required by applicable law.",
+            "Attendees and applicants participate at their own risk. Parents of young speaker applicants remain responsible for their children's care while under their own supervision before and after any scheduled coaching sessions, rehearsals, or the event day, unless explicitly arranged with the organizing team.",
+            "These terms are governed by the laws of the United Arab Emirates. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the competent courts in Dubai.",
+            "TEDxAlFalah Youth reserves the right to update these terms and conditions and privacy policy from time to time. The latest version will always be available on this page, with the effective date below."
           ]
         }
+      },
+      "cta": {
+        "title": "Have a Question?",
+        "description": "If you have any questions about these terms, our team is ready to help.",
+        "button": "Contact Us",
+        "link": "/"
       }
     }
-  }
-}
+
+
+  
+}}

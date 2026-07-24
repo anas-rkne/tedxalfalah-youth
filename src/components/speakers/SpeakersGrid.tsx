@@ -46,8 +46,8 @@ export default function SpeakersGrid({ speakers }: SpeakersGridProps) {
   const shouldReduceMotion = useReducedMotion();
   const [activeSpeaker, setActiveSpeaker] = useState<Speaker | null>(null);
 
-  // إعدادات الشبكة الموحدة
-  const gridClasses = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-10 max-w-7xl mx-auto px-4";
+  // ✅ تم تعديل الشبكة: إضافة xl:grid-cols-4 لتوزيع البطاقات على الشاشات العريضة
+  const gridClasses = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 xl:gap-8 max-w-7xl mx-auto px-4";
 
   if (shouldReduceMotion) {
     return (

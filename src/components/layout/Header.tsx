@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import {
@@ -23,6 +24,8 @@ import {
   Handshake,
   Award,
   ChevronDown,
+    Mail,       // ✅ أيقونة التواصل
+  FileText,   // ✅ أيقونة الشروط
 } from "lucide-react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
@@ -50,6 +53,8 @@ export default function Header() {
       { label: t("apply"), href: "/apply", icon: Handshake },
       { label: t("sponsors"), href: "/sponsors", icon: Award },
       { label: t("tickets"), href: "/tickets", icon: Ticket },
+         { label: t("contact"), href: "/contact", icon: Mail },       // ✅ رابط التواصل
+    { label: t("terms"), href: "/terms", icon: FileText },   
     ],
     [t]
   );
@@ -68,7 +73,7 @@ export default function Header() {
   const borderOpacity = useTransform(scrollY, [0, 60], [0, 1]);
   const shadowOpacity = useTransform(scrollY, [0, 80], [0, 0.1]);
 
-  // ... (إدارة التركيز و فحص النقر خارج القائمة كما هي) ...
+  // ... (إدارة التركيز و فحص النقر خارج القائمة  ) ...
   const handleKeyDown = useCallback((e: KeyboardEvent) => { /* ... */ }, [isMenuOpen]);
   const handleOutsideClick = useCallback((e: MouseEvent) => { /* ... */ }, [isMenuOpen]);
 
@@ -87,31 +92,25 @@ export default function Header() {
     };
   }, [isMenuOpen, handleKeyDown, handleOutsideClick]);
 
-  // مكون الشعار (Logo) - تم تحديث الألوان
-  function Logo() {
-    return (
-      <Link href="/" className="flex items-center gap-2 group">
-        <div className="relative flex items-center justify-center">
-          <div className="absolute inset-0 bg-tedx-red/10 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="relative px-2.5 py-1.5 bg-tedx-red rounded-lg">
-            <span className="text-white font-black text-sm tracking-tight leading-none">
-              TEDx
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-col leading-none">
-          <span className="font-bold text-foreground text-sm tracking-tight">
-            AlFalah
-          </span>
-          <span className="text-[10px] font-semibold text-muted-foreground tracking-[0.1em] uppercase">
-            Youth
-          </span>
-        </div>
-      </Link>
-    );
-  }
+  // مكون الشعار (Logo) 
+function Logo() {
+  return (
+    <Link href="/" className="flex items-center">
+<div className="relative h-12 w-36 sm:h-14 sm:w-40 md:h-16 md:w-48 lg:h-[72px] lg:w-56">
+        <Image
+          src="/images/logo-black.png"
+          alt="TEDxAlFalah Youth"
+            sizes="(max-width: 768px) 100px, 120px"
+          fill
+          className="object-contain"
+          priority
+        />
+      </div>
+    </Link>
+  );
+}
 
-  // مكون رابط التنقل (NavLink) - تم تحديث الألوان
+  // مكون رابط التنقل (NavLink)
   function NavLink({ link, index }: { link: (typeof ALL_LINKS)[number]; index: number }) {
     const isActive = pathname === link.href;
     const Icon = link.icon;

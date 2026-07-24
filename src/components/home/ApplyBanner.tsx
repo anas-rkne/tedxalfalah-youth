@@ -47,6 +47,8 @@ export default async function ApplyBanner() {
       ctaHeading={t("ctaHeading")}
       ctaDescription={t("ctaDescription")}
 
+      leftImageSrc="/images/طفلة 1.svg"   
+      rightImageSrc="/images/صفل 1.svg"
 
 
 

@@ -39,86 +39,7 @@ interface ContactFormProps {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   مكون صورة جانبية مائلة — تصميم TEDx عصري (تم توحيد الألوان)
-   ═══════════════════════════════════════════════════════════════ */
-function TiltedImage({
-  src,
-  alt,
-  direction,
-  delay,
-}: {
-  src: string;
-  alt: string;
-  direction: "left" | "right";
-  delay: number;
-}) {
-  const rotate = direction === "left" ? "-6deg" : "6deg";
-  const xInitial = direction === "left" ? -40 : 40;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: xInitial, rotate: 0 }}
-      whileInView={{ opacity: 1, x: 0, rotate: direction === "left" ? -6 : 6 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.7, delay, ease: [0.23, 1, 0.32, 1] }}
-      whileHover={{ rotate: 0, scale: 1.03, transition: { duration: 0.4 } }}
-      className="hidden lg:block flex-shrink-0 w-56 xl:w-72 relative"
-    >
-      {/* ظل TEDx (استخدام ألوان موحدة) */}
-      <div
-        className="absolute inset-0 rounded-[28px] bg-tedx-red/10 translate-x-3 translate-y-3"
-        style={{ transform: `rotate(${rotate}) translate(12px, 12px)` }}
-      />
-
-      {/* الإطار الرئيسي */}
-      <div
-        className="relative rounded-[28px] bg-card border border-border overflow-hidden shadow-lg"
-        style={{ transform: `rotate(${rotate})` }}
-      >
-        {/* خط TEDx علوي */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-tedx-red via-red-400 to-tedx-red" />
-
-        {/* الصورة */}
-        <div className="relative aspect-[3/4] w-full p-4">
-          <div className="relative w-full h-full rounded-[20px] overflow-hidden bg-muted">
-            <Image
-              src={src}
-              alt={alt}
-              fill
-              className="object-contain p-2"
-              sizes="(max-width: 1280px) 224px, 288px"
-            />
-          </div>
-        </div>
-
-        {/* شارة TEDx سفلية */}
-        <div className="px-4 pb-4 pt-1">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-tedx-red" />
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted-foreground">
-              TEDx Youth
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* نقاط زخرفية */}
-      <div
-        className="absolute -bottom-6 opacity-20"
-        style={{
-          backgroundImage: "radial-gradient(circle, #e62b1e 1.5px, transparent 1.5px)",
-          backgroundSize: "12px 12px",
-          width: direction === "left" ? "60px" : "60px",
-          height: "60px",
-          [direction === "left" ? "right" : "left"]: "-20px",
-        }}
-      />
-    </motion.div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   مكون زر إرسال TEDx (تم توحيد الألوان)
+   مكون زر إرسال TEDx (موحد)
    ═══════════════════════════════════════════════════════════════ */
 function SubmitButton({
   loading,
@@ -175,7 +96,7 @@ export default function ContactForm({
   leftImageSrc,
   rightImageSrc,
 }: ContactFormProps) {
-  const { isRTL } = useRTL(); // ✅ فقط لتحديد اتجاه النص
+  const { isRTL } = useRTL();
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
@@ -236,7 +157,7 @@ export default function ContactForm({
   return (
     <section className="section-padding relative bg-background overflow-hidden">
       {/* ═══════════════════════════════════════════════════════════════
-          HERO HEADER — تم توحيده باستخدام المكونات والمسافات الموحدة
+          HERO HEADER — موحد
           ═══════════════════════════════════════════════════════════════ */}
       <div className="relative pb-12 md:pb-16">
         <div className="absolute inset-0 pointer-events-none">
@@ -244,7 +165,6 @@ export default function ContactForm({
         </div>
 
         <div className="container-padding relative z-10 max-w-5xl mx-auto text-center">
-          {/* ✅ الشارة الموحدة */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -304,22 +224,28 @@ export default function ContactForm({
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          FORM SECTION
+          FORM + IMAGES — تخطيط بسيط: صورة | محتوى | صورة
           ═══════════════════════════════════════════════════════════════ */}
       <div className="container-padding relative pb-20 md:pb-28">
         <div className="max-w-7xl mx-auto">
-          <div className={`flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 ${isRTL ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
-            {/* الصورة اليسرى — مائلة لليسار */}
+          {/* تخطيط أفقي: صورة يسار، فورم في الوسط، صورة يمين (فقط سطح المكتب) */}
+          <div className={`flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 ${isRTL ? "lg:flex-row-reverse" : ""}`}>
+            
+            {/* الصورة اليسرى — بلا أي زخارف */}
             {leftImageSrc && (
-              <TiltedImage
-                src={leftImageSrc}
-                alt="Contact illustration"
-                direction="left"
-                delay={0.2}
-              />
+              <div className="hidden lg:block flex-shrink-0 w-72 xl:w-80"
+>
+                <Image
+                  src={leftImageSrc}
+                  alt="Left side visual"
+                  width={320}
+                  height={400}
+                  className="w-full h-auto object-contain"
+                />
+              </div>
             )}
 
-            {/* النموذج */}
+            {/* النموذج المركزي */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -392,20 +318,24 @@ export default function ContactForm({
               </div>
             </motion.div>
 
-            {/* الصورة اليمنى — مائلة لليمين */}
+            {/* الصورة اليمنى — بلا أي زخارف */}
             {rightImageSrc && (
-              <TiltedImage
-                src={rightImageSrc}
-                alt="Contact illustration"
-                direction="right"
-                delay={0.4}
-              />
+              <div className="hidden lg:block flex-shrink-0 w-64 xl:w-72"
+>
+                <Image
+                  src={rightImageSrc}
+                  alt="Right side visual"
+                  width={224}
+                  height={336}
+                  className="w-full h-auto object-contain"
+                />
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* نمط نقاط زخرفي */}
+      {/* نمط نقاط زخرفي بسيط في الأسفل */}
       <div
         className="h-16 opacity-[0.03]"
         style={{

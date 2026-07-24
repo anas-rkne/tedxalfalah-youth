@@ -25,8 +25,8 @@ export default async function ContactPage() {
       nameRequired={t("nameRequired")}
       emailInvalid={t("emailInvalid")}
       messageMinLength={t("messageMinLength")}
-      leftImageSrc="/images/boy-lap.jpg" // يمكنك تغيير المسار إذا لم تكن الصور موجودة
-      rightImageSrc="/images/girl-lap.jpg"
+      leftImageSrc="/images/طفل 2.svg" // يمكنك تغيير المسار إذا لم تكن الصور موجودة
+      rightImageSrc="/images/طفلة 2.svg"
     />
   );
 }

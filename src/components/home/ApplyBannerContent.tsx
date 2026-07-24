@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import { Mic, Lightbulb, Users, CheckCircle2 } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
@@ -29,6 +30,8 @@ interface ApplyBannerContentProps {
   stageBadgeLabel: string;
   stageTitle: string;
   stageDescription: string;
+  leftImageSrc?: string;
+  rightImageSrc?: string;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -124,6 +127,45 @@ function FeatureItem({ text }: { text: string }) {
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   مكون صورة جانبية (ثابتة الاتجاه، لا تنعكس مع اللغة)
+   ═══════════════════════════════════════════════════════════════ */
+function ApplySideImage({
+  src,
+  alt,
+  direction,
+  delay,
+}: {
+  src: string;
+  alt: string;
+  direction: "left" | "right";
+  delay: number;
+}) {
+  const xInitial = direction === "left" ? -40 : 40;
+
+  return (
+    <motion.div
+      dir="ltr"   // ✅ يمنع الانعكاس تمامًا عند استخدام RTL
+      initial={{ opacity: 0, x: xInitial }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}
+      className="hidden lg:flex flex-col items-center flex-shrink-0 w-56 lg:w-64 xl:w-72"
+    >
+      <div className="relative w-full aspect-[3/4] bg-background">
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          priority
+          className="object-contain"
+          sizes="(max-width: 1280px) 224px, 288px"
+        />
+      </div>
+    </motion.div>
+  );
+}
+
 export default function ApplyBannerContent({
   badgeLabel,
   text,
@@ -141,11 +183,13 @@ export default function ApplyBannerContent({
   reasons,
   ctaHeading,
   ctaDescription,
-    placeholderTitle,
+  placeholderTitle,
   placeholderSubtitle,
   stageBadgeLabel,
   stageTitle,
   stageDescription,
+  leftImageSrc,
+  rightImageSrc,
 }: ApplyBannerContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
@@ -158,80 +202,105 @@ export default function ApplyBannerContent({
     <section ref={containerRef} className="section-padding relative bg-background overflow-hidden">
 
       {/* ═══════════════════════════════════════════════════════════════
-          HERO SECTION — العنوان الرئيسي
+          HERO SECTION — العنوان الرئيسي (مع صور جانبية)
           ═══════════════════════════════════════════════════════════════ */}
-      <div className="relative flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="relative flex flex-col lg:flex-row items-center justify-center min-h-[60vh]">
         {/* خلفية زخرفية */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-tedx-red/5 blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-orange-500/5 blur-3xl" />
         </div>
 
-        <div className="container-padding relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center gap-10 md:gap-12">
+        {/* حاوية رئيسية مرنة تجمع الصور والمحتوى */}
+        <div className="container-padding relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10">
 
-          {/* ✅ الشارة الموحدة */}
-          <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <SectionBadge>{badgeLabel}</SectionBadge>
-          </motion.div>
+          {/* الصورة اليسرى */}
+          {leftImageSrc && (
+            <ApplySideImage
+              src={leftImageSrc}
+              alt="Left side illustration"
+              direction="left"
+              delay={0.15}
+            />
+          )}
 
-          {/* العنوان */}
-          <div className="perspective-[1000px]">
-            <h1 className="heading-h1 tracking-[-0.03em] leading-[1.1]">
-              {titleWords.map((word, index) => (
-                <AnimatedWord
-                  key={index}
-                  word={word}
-                  index={index}
-                  isHighlight={highlightWords.some((hw) =>
-                    word.toLowerCase().includes(hw.toLowerCase())
-                  )}
-                  shouldReduceMotion={shouldReduceMotion}
-                />
-              ))}
-            </h1>
+          {/* المحتوى المركزي */}
+          <div className="flex-1 w-full max-w-4xl flex flex-col items-center text-center gap-8 md:gap-10">
+
+            {/* ✅ الشارة الموحدة */}
+            <motion.div
+              initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <SectionBadge>{badgeLabel}</SectionBadge>
+            </motion.div>
+
+            {/* العنوان */}
+            <div className="perspective-[1000px]">
+              <h1 className="heading-h1 tracking-[-0.03em] leading-[1.1]">
+                {titleWords.map((word, index) => (
+                  <AnimatedWord
+                    key={index}
+                    word={word}
+                    index={index}
+                    isHighlight={highlightWords.some((hw) =>
+                      word.toLowerCase().includes(hw.toLowerCase())
+                    )}
+                    shouldReduceMotion={shouldReduceMotion}
+                  />
+                ))}
+              </h1>
+            </div>
+
+            {/* الخط الزخرفي */}
+            <motion.div
+              initial={shouldReduceMotion ? {} : { scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              className="flex items-center gap-3 origin-center"
+            >
+              <div className="h-px w-10 bg-border" />
+              <div className="h-1 w-16 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" />
+              <div className="h-px w-10 bg-border" />
+            </motion.div>
+
+            {/* النص الفرعي */}
+            <motion.p
+              initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+              className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light"
+              dir={isRTL ? "rtl" : "ltr"}
+            >
+              {subtitle}
+            </motion.p>
+
+            {/* الزر الرئيسي */}
+            <motion.div
+              initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+            >
+              <AnimatedSlidingButton href="/apply" variant="primary">
+                {cta}
+              </AnimatedSlidingButton>
+            </motion.div>
           </div>
 
-          {/* الخط الزخرفي */}
-          <motion.div
-            initial={shouldReduceMotion ? {} : { scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.23, 1, 0.32, 1] }}
-            className="flex items-center gap-3 origin-center"
-          >
-            <div className="h-px w-10 bg-border" />
-            <div className="h-1 w-16 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" />
-            <div className="h-px w-10 bg-border" />
-          </motion.div>
-
-          {/* النص الفرعي - أصبح ديناميكي الاتجاه */}
-          <motion.p
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light"
-            dir={isRTL ? "rtl" : "ltr"}
-          >
-            {subtitle}
-          </motion.p>
-
-          {/* الزر الرئيسي */}
-          <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
-          >
-            <AnimatedSlidingButton href="/apply" variant="primary">
-              {cta}
-            </AnimatedSlidingButton>
-          </motion.div>
+          {/* الصورة اليمنى */}
+          {rightImageSrc && (
+            <ApplySideImage
+              src={rightImageSrc}
+              alt="Right side illustration"
+              direction="right"
+              delay={0.3}
+            />
+          )}
         </div>
       </div>
 
@@ -250,7 +319,7 @@ export default function ApplyBannerContent({
               {stepsHeading}
             </span>
             <h2 className="heading-h2 tracking-[-0.02em]">
-              {stepsHeading} {/* يمكنك تحويل هذا لـ heading2Title منفصل إذا أردت */}
+              {stepsHeading}
             </h2>
           </motion.div>
 
@@ -286,128 +355,54 @@ export default function ApplyBannerContent({
       <div className="section-padding relative">
         <div className="container-padding max-w-4xl mx-auto">
           <div className={`grid md:grid-cols-2 gap-10 md:gap-16 items-center ${isRTL ? "md:grid" : ""}`}>
-      {/* Left: Living TEDx Stage Preview */}
-      <motion.div
-        initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 40 : -40, scale: 0.95 }}
-        whileInView={{ opacity: 1, x: 0, scale: 1 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-        className="relative aspect-[16/10] rounded-3xl overflow-hidden group"
-      >
-        {/* ═══════════════════════════════════════════════════════════════
-            الخلفية الحية — تدرج TEDx الديناميكي
-            ═══════════════════════════════════════════════════════════════ */}
-        <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
-          {/* نمط الشبكة العصبية */}
-          <div 
-            className="absolute inset-0 opacity-[0.08]"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(230,43,30,0.3) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(230,43,30,0.3) 1px, transparent 1px)
-              `,
-              backgroundSize: '40px 40px',
-            }}
-          />
-          {/* نبض مركزي */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-32 h-32 rounded-full bg-[#e62b1e]/20 animate-ping" style={{ animationDuration: '3s' }} />
-            <div className="absolute w-20 h-20 rounded-full bg-[#e62b1e]/30 animate-pulse" style={{ animationDuration: '2s' }} />
-          </div>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════════
-            الصورة الفعلية (مع fallback ذكي)
-            ═══════════════════════════════════════════════════════════════ */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            {/* دائرة المنصة الرئيسية */}
-            <div className="relative">
-              <div className="w-48 h-48 md:w-64 md:h-64 rounded-full border-2 border-[#e62b1e]/30 flex items-center justify-center">
-                <div className="w-36 h-36 md:w-48 md:h-48 rounded-full border border-[#e62b1e]/20 flex items-center justify-center">
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-[#e62b1e] to-red-700 flex items-center justify-center shadow-[0_0_60px_rgba(230,43,30,0.4)] group-hover:shadow-[0_0_80px_rgba(230,43,30,0.6)] transition-shadow duration-500">
-                    <Mic className="w-10 h-10 md:w-14 md:h-14 text-white" />
+            
+            {/* Left: Living TEDx Stage Preview */}
+            <motion.div
+              initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 40 : -40, scale: 0.95 }}
+              whileInView={{ opacity: 1, x: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+              className="relative aspect-[16/10] rounded-3xl overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
+                <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: `linear-gradient(rgba(230,43,30,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(230,43,30,0.3) 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-32 h-32 rounded-full bg-[#e62b1e]/20 animate-ping" style={{ animationDuration: '3s' }} />
+                  <div className="absolute w-20 h-20 rounded-full bg-[#e62b1e]/30 animate-pulse" style={{ animationDuration: '2s' }} />
+                </div>
+              </div>
+              <div className="absolute inset-0">
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="relative">
+                    <div className="w-48 h-48 md:w-64 md:h-64 rounded-full border-2 border-[#e62b1e]/30 flex items-center justify-center">
+                      <div className="w-36 h-36 md:w-48 md:h-48 rounded-full border border-[#e62b1e]/20 flex items-center justify-center">
+                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-[#e62b1e] to-red-700 flex items-center justify-center shadow-[0_0_60px_rgba(230,43,30,0.4)] group-hover:shadow-[0_0_80px_rgba(230,43,30,0.6)] transition-shadow duration-500">
+                          <Mic className="w-10 h-10 md:w-14 md:h-14 text-white" />
+                        </div>
+                      </div>
+                    </div>
+                    {[0, 1, 2, 3, 4, 5].map((i) => (
+                      <motion.div key={i} className="absolute w-2 h-2 rounded-full bg-[#e62b1e]" style={{ top: '50%', left: '50%' }} animate={{ x: Math.cos((i * 60 * Math.PI) / 180) * 120, y: Math.sin((i * 60 * Math.PI) / 180) * 120, opacity: [0.3, 1, 0.3], scale: [1, 1.5, 1] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.3, ease: "easeInOut" }} />
+                    ))}
                   </div>
                 </div>
               </div>
-              
-              {/* نقاط دائرية متحركة */}
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-2 h-2 rounded-full bg-[#e62b1e]"
-                  style={{ top: '50%', left: '50%' }}
-                  animate={{
-                    x: Math.cos((i * 60 * Math.PI) / 180) * 120,
-                    y: Math.sin((i * 60 * Math.PI) / 180) * 120,
-                    opacity: [0.3, 1, 0.3],
-                    scale: [1, 1.5, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    delay: i * 0.3,
-                    ease: "easeInOut",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════════
-            Overlay Glassmorphism — المعلومات
-            ═══════════════════════════════════════════════════════════════ */}
-        <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
-          <div className="relative rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5 md:p-6 overflow-hidden group-hover:bg-white/10 transition-all duration-500">
-            {/* توهج خلفي */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#e62b1e]/20 rounded-full blur-2xl group-hover:bg-[#e62b1e]/30 transition-colors duration-500" />
-            
-            <div className="relative z-10">
-              {/* ✅ الشارة المتحركة - من الترجمة */}
-              <div className="flex items-center gap-2 mb-3">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#e62b1e]" />
-                </span>
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#e62b1e]">
-                  {stageBadgeLabel} {/* ✅ من الترجمة */}
-                </span>
+              <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
+                <div className="relative rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5 md:p-6 overflow-hidden group-hover:bg-white/10 transition-all duration-500">
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#e62b1e]/20 rounded-full blur-2xl group-hover:bg-[#e62b1e]/30 transition-colors duration-500" />
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#e62b1e]" /></span>
+                      <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#e62b1e]">{stageBadgeLabel}</span>
+                    </div>
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-1 tracking-[-0.02em]">{stageTitle}</h3>
+                    <p className="text-sm text-zinc-300 leading-relaxed">{stageDescription}</p>
+                  </div>
+                </div>
               </div>
-              
-              {/* ✅ العنوان - من الترجمة */}
-              <h3 className="text-lg md:text-xl font-bold text-white mb-1 tracking-[-0.02em]">
-                {stageTitle}
-              </h3>
-              
-              {/* ✅ الوصف - من الترجمة */}
-              <p className="text-sm text-zinc-300 leading-relaxed">
-                {stageDescription}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════════
-            زاوية TEDx العلامة التجارية
-            ═══════════════════════════════════════════════════════════════ */}
-        <div className="absolute top-5 right-5 md:top-6 md:right-6">
-          <div className="px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
-            <span className="text-[10px] font-black tracking-[0.15em] text-white">
-              TED<span className="text-[#e62b1e]">x</span>
-            </span>
-          </div>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════════
-            خطوط زخرفية متحركة
-            ═══════════════════════════════════════════════════════════════ */}
-        <motion.div
-          className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#e62b1e] to-transparent"
-          animate={{ opacity: [0, 1, 0], x: ['-100%', '100%'] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-        />
-      </motion.div>
+              <div className="absolute top-5 right-5 md:top-6 md:right-6"><div className="px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10"><span className="text-[10px] font-black tracking-[0.15em] text-white">TED<span className="text-[#e62b1e]">x</span></span></div></div>
+              <motion.div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#e62b1e] to-transparent" animate={{ opacity: [0, 1, 0], x: ['-100%', '100%'] }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} />
+            </motion.div>
 
             {/* Right: Content */}
             <motion.div
@@ -433,7 +428,7 @@ export default function ApplyBannerContent({
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════
-          CTA SECTION — دعوة نهائية (استخدام الزر الموحد)
+          CTA SECTION — دعوة نهائية
           ═══════════════════════════════════════════════════════════════ */}
       <div className="section-padding relative bg-muted/30">
         <div className="container-padding max-w-4xl mx-auto text-center">
@@ -454,7 +449,6 @@ export default function ApplyBannerContent({
                 {ctaDescription}
               </p>
               
-              {/* ✅ الزر الموحد AnimatedSlidingButton - نظراً للخلفية الداكنة، نضبطه */}
               <div className="flex justify-center">
                 <AnimatedSlidingButton href="/apply" variant="primary" className="min-w-[160px] shadow-[0_8px_30px_-12px_rgba(230,43,30,0.5)]">
                   {cta}

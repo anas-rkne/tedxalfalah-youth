@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -17,7 +17,6 @@ const HOW_HEARD_VALUES = [
   "Other",
 ] as const;
 
-// ✅ الخيارات الجديدة للعلاقة بالموضوع (قائمة منسدلة)
 const THEME_OPTIONS = [
   "identity",
   "future skills",
@@ -33,9 +32,7 @@ function wordCount(text: string) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   أيقونات
-   ═══════════════════════════════════════════════════════════════ */
+/* ───── أيقونات ───── */
 function LocationIcon({ className }: { className?: string }) {
   return (
     <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -54,14 +51,12 @@ function PenIcon({ className }: { className?: string }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   عنوان قسم النموذج
-   ═══════════════════════════════════════════════════════════════ */
-function FormSection({ num, title, children }: { num: number; title: string; children: React.ReactNode }) {
+/* ───── عنوان قسم النموذج (مع دعم اللغة) ───── */
+function FormSection({ num, title, children, isArabic }: { num: number; title: string; children: React.ReactNode; isArabic: boolean }) {
   return (
     <div className="bg-white border border-black/[0.06] rounded-[20px] p-7 mb-5 hover:border-black/[0.1] hover:shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
-      <h3 className="text-sm font-bold text-zinc-900 mb-5 pb-3 border-b border-black/[0.06] flex items-center gap-2">
-        <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-red-50 to-rose-100 text-[#e62b1e] text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+      <h3 className={`text-sm font-bold text-zinc-900 mb-5 pb-3 border-b border-black/[0.06] flex items-center gap-2 ${isArabic ? 'font-arabic' : ''}`}>
+        <span className="w-6 h-6 rounded-lg bg-[#e62b1e]/10 text-[#e62b1e] text-[11px] font-bold flex items-center justify-center flex-shrink-0">
           {num}
         </span>
         {title}
@@ -71,23 +66,23 @@ function FormSection({ num, title, children }: { num: number; title: string; chi
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   حقل إدخال
-   ═══════════════════════════════════════════════════════════════ */
+/* ───── حقل إدخال (مع دعم اللغة) ───── */
 function Field({
   label,
   error,
   children,
   hint,
+  isArabic,
 }: {
   label: string;
   error?: string;
   children: React.ReactNode;
   hint?: React.ReactNode;
+  isArabic: boolean;
 }) {
   return (
     <div className="mb-4">
-      <label className="block text-[13px] font-semibold text-zinc-600 mb-1.5">{label}</label>
+      <label className={`block text-[13px] font-semibold text-zinc-600 mb-1.5 ${isArabic ? 'font-arabic' : ''}`}>{label}</label>
       {children}
       {hint && <div className="flex justify-between items-center mt-1">{hint}</div>}
       {error && (
@@ -102,11 +97,12 @@ function Field({
 
 export default function ApplicationForm() {
   const t = useTranslations("page.apply.form");
+  const locale = useLocale();
+  const isArabic = locale === "ar";
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
 
-  // ✅ نظام التحقق المعدل: جميع الحقول إجبارية (إلزامية)
   const applicationSchema = useMemo(
     () =>
       z
@@ -126,18 +122,16 @@ export default function ApplicationForm() {
             .string()
             .min(1, t("errors.thisFieldRequired"))
             .refine((val) => wordCount(val) <= 150, t("errors.maxWords", { count: 150 })),
-          themeConnection: z.enum(THEME_OPTIONS), // ✅ أصبح قائمة منسدلة وإجبارية
-          videoLink: z.string().url(t("errors.invalidUrl")), // ✅ أصبح إجبارياً (إذا أردت تركه اختيارياً، غيّره إلى .optional())
+          themeConnection: z.enum(THEME_OPTIONS),
+          videoLink: z.string().url(t("errors.invalidUrl")),
           howHeardAboutUs: z.enum(HOW_HEARD_VALUES),
           consentToTerms: z.literal(true, {
             errorMap: () => ({ message: t("errors.consentRequired") }),
           }),
-          // الحقول الشرطية للشباب
           schoolName: z.string().optional(),
           guardianName: z.string().optional(),
           guardianContact: z.string().optional(),
           parentalConsent: z.boolean().optional(),
-          // الحقول الشرطية للخبراء
           organizationAndRole: z.string().optional(),
           areaOfWorkWithYouth: z.string().optional(),
         })
@@ -237,16 +231,16 @@ export default function ApplicationForm() {
     >
       {/* ═══════ العنوان ═══════ */}
       <div className="text-center mb-10">
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-[#e62b1e] mb-3 px-3.5 py-1.5 bg-red-50 border border-red-100 rounded-full">
-          Speaker Application
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-[#e62b1e] mb-3 px-3.5 py-1.5 bg-[#e62b1e]/10 border border-[#e62b1e]/20 rounded-full">
+          {t("badge")}
         </span>
-        <h2 className="font-bold text-2xl text-zinc-900 tracking-[-0.02em]">
+        <h2 className={`font-bold text-2xl text-zinc-900 tracking-[-0.02em] ${isArabic ? 'font-arabic' : ''}`}>
           {t("formTitle")}
         </h2>
       </div>
 
       {/* ═══════ القسم 1: اختيار المسار ═══════ */}
-      <FormSection num={1} title={t("trackLabel")}>
+      <FormSection num={1} title={t("trackLabel")} isArabic={isArabic}>
         <div className="flex flex-col sm:flex-row gap-3">
           {/* متحدث شاب */}
           <label
@@ -266,16 +260,16 @@ export default function ApplicationForm() {
             <div
               className={`w-9 h-9 rounded-[10px] flex items-center justify-center mb-2.5 transition-all duration-300 ${
                 track === "young-speaker"
-                  ? "bg-gradient-to-br from-red-50 to-rose-100 text-[#e62b1e]"
+                  ? "bg-[#e62b1e]/10 text-[#e62b1e]"
                   : "bg-zinc-100 text-zinc-400"
               }`}
             >
               <LocationIcon />
             </div>
-            <div className="text-[15px] font-bold text-zinc-900 mb-1">{t("youngSpeakerLabel")}</div>
-            <div className="text-[13px] text-zinc-500 leading-relaxed">{t("youngSpeakerDesc")}</div>
-            <div className="mt-3 text-[11px] font-semibold text-[#e62b1e] px-2 py-1 bg-red-50 border border-red-100 rounded-full inline-block">
-              10–14 سنة
+            <div className={`text-[15px] font-bold text-zinc-900 mb-1 ${isArabic ? 'font-arabic' : ''}`}>{t("youngSpeakerLabel")}</div>
+            <div className={`text-[13px] text-zinc-500 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>{t("youngSpeakerDesc")}</div>
+            <div className="mt-3 text-[11px] font-semibold text-[#e62b1e] px-2 py-1 bg-[#e62b1e]/10 border border-[#e62b1e]/20 rounded-full inline-block">
+              {t("youngAgeRange")}
             </div>
           </label>
 
@@ -297,47 +291,47 @@ export default function ApplicationForm() {
             <div
               className={`w-9 h-9 rounded-[10px] flex items-center justify-center mb-2.5 transition-all duration-300 ${
                 track === "expert"
-                  ? "bg-gradient-to-br from-red-50 to-rose-100 text-[#e62b1e]"
+                  ? "bg-[#e62b1e]/10 text-[#e62b1e]"
                   : "bg-zinc-100 text-zinc-400"
               }`}
             >
               <PenIcon />
             </div>
-            <div className="text-[15px] font-bold text-zinc-900 mb-1">{t("expertLabel")}</div>
-            <div className="text-[13px] text-zinc-500 leading-relaxed">{t("expertDesc")}</div>
-            <div className="mt-3 text-[11px] font-semibold text-violet-600 px-2 py-1 bg-violet-50 border border-violet-100 rounded-full inline-block">
-              بالغون
+            <div className={`text-[15px] font-bold text-zinc-900 mb-1 ${isArabic ? 'font-arabic' : ''}`}>{t("expertLabel")}</div>
+            <div className={`text-[13px] text-zinc-500 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>{t("expertDesc")}</div>
+            <div className="mt-3 text-[11px] font-semibold text-[#e62b1e] px-2 py-1 bg-[#e62b1e]/10 border border-[#e62b1e]/20 rounded-full inline-block">
+              {t("expertAgeRange")}
             </div>
           </label>
         </div>
       </FormSection>
 
       {/* ═══════ القسم 2: المعلومات الشخصية ═══════ */}
-      <FormSection num={2} title={t("personalInfoTitle")}>
+      <FormSection num={2} title={t("personalInfoTitle")} isArabic={isArabic}>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Field label={t("fullName")} error={errors.fullName?.message}>
+          <Field label={t("fullName")} error={errors.fullName?.message} isArabic={isArabic}>
             <input {...register("fullName")} className={inputClasses} placeholder={t("fullNamePlaceholder")} />
           </Field>
-          <Field label={t("age")} error={errors.age?.message}>
-            <input type="number" {...register("age")} className={inputClasses} placeholder="14" />
+          <Field label={t("age")} error={errors.age?.message} isArabic={isArabic}>
+            <input type="number" {...register("age")} className={inputClasses} placeholder={t("agePlaceholder")} />
           </Field>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Field label={t("email")} error={errors.email?.message}>
-            <input type="email" {...register("email")} className={inputClasses} placeholder="name@example.com" />
+          <Field label={t("email")} error={errors.email?.message} isArabic={isArabic}>
+            <input type="email" {...register("email")} className={inputClasses} placeholder={t("emailPlaceholder")} />
           </Field>
-          <Field label={t("phone")} error={errors.phone?.message}>
-            <input {...register("phone")} className={inputClasses} placeholder="+971 50 123 4567" />
+          <Field label={t("phone")} error={errors.phone?.message} isArabic={isArabic}>
+            <input {...register("phone")} className={inputClasses} placeholder={t("phonePlaceholder")} />
           </Field>
         </div>
-        <Field label={t("city")} error={errors.city?.message}>
+        <Field label={t("city")} error={errors.city?.message} isArabic={isArabic}>
           <input {...register("city")} className={inputClasses} placeholder={t("cityPlaceholder")} />
         </Field>
       </FormSection>
 
       {/* ═══════ القسم 3: فكرة المحاضرة ═══════ */}
-      <FormSection num={3} title={t("talkIdeaTitle")}>
-        <Field label={t("talkIdeaTitle")} error={errors.talkIdeaTitle?.message}>
+      <FormSection num={3} title={t("talkIdeaTitle")} isArabic={isArabic}>
+        <Field label={t("talkIdeaTitle")} error={errors.talkIdeaTitle?.message} isArabic={isArabic}>
           <input {...register("talkIdeaTitle")} className={inputClasses} placeholder={t("talkIdeaTitlePlaceholder")} />
         </Field>
 
@@ -345,6 +339,7 @@ export default function ApplicationForm() {
           label={t("ideaSummary")}
           error={errors.ideaSummary?.message}
           hint={<span className="text-[11px] text-zinc-400 font-medium">{t("wordCount", { count: wordCount(ideaSummary), max: 300 })}</span>}
+          isArabic={isArabic}
         >
           <textarea {...register("ideaSummary")} rows={4} className={textareaClasses} placeholder={t("ideaSummaryPlaceholder")} />
         </Field>
@@ -353,12 +348,12 @@ export default function ApplicationForm() {
           label={t("whyItMatters")}
           error={errors.whyItMatters?.message}
           hint={<span className="text-[11px] text-zinc-400 font-medium">{t("wordCount", { count: wordCount(whyItMatters), max: 150 })}</span>}
+          isArabic={isArabic}
         >
           <textarea {...register("whyItMatters")} rows={3} className={textareaClasses} placeholder={t("whyItMattersPlaceholder")} />
         </Field>
 
-        {/* ✅ العلاقة بالموضوع: استبدلنا الحقل النصي بقائمة منسدلة */}
-        <Field label={t("themeConnection")} error={errors.themeConnection?.message}>
+        <Field label={t("themeConnection")} error={errors.themeConnection?.message} isArabic={isArabic}>
           <select
             {...register("themeConnection")}
             className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] pr-10`}
@@ -371,11 +366,11 @@ export default function ApplicationForm() {
           </select>
         </Field>
 
-        <Field label={t("videoLink")} error={errors.videoLink?.message}>
-          <input {...register("videoLink")} className={inputClasses} placeholder="https://... (60–90 ثانية)" />
+        <Field label={t("videoLink")} error={errors.videoLink?.message} isArabic={isArabic}>
+          <input {...register("videoLink")} className={inputClasses} placeholder={t("videoLinkPlaceholder")} />
         </Field>
 
-        <Field label={t("howHeard")}>
+        <Field label={t("howHeard")} isArabic={isArabic}>
           <select {...register("howHeardAboutUs")} className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] pr-10`}>
             <option value="Social Media">{t("howHeardOptions.socialMedia")}</option>
             <option value="Friend/Family">{t("howHeardOptions.friendFamily")}</option>
@@ -388,21 +383,21 @@ export default function ApplicationForm() {
 
       {/* ═══════ القسم 4: حقول شرطية ═══════ */}
       {track === "young-speaker" && (
-        <FormSection num={4} title={t("youngSpeakerSection")}>
-          <Field label={t("schoolName")} error={errors.schoolName?.message}>
+        <FormSection num={4} title={t("youngSpeakerSection")} isArabic={isArabic}>
+          <Field label={t("schoolName")} error={errors.schoolName?.message} isArabic={isArabic}>
             <input {...register("schoolName")} className={inputClasses} placeholder={t("schoolNamePlaceholder")} />
           </Field>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Field label={t("guardianName")} error={errors.guardianName?.message}>
+            <Field label={t("guardianName")} error={errors.guardianName?.message} isArabic={isArabic}>
               <input {...register("guardianName")} className={inputClasses} placeholder={t("guardianNamePlaceholder")} />
             </Field>
-            <Field label={t("guardianContact")} error={errors.guardianContact?.message}>
+            <Field label={t("guardianContact")} error={errors.guardianContact?.message} isArabic={isArabic}>
               <input {...register("guardianContact")} className={inputClasses} placeholder={t("guardianContactPlaceholder")} />
             </Field>
           </div>
           <label className="flex items-start gap-2.5 cursor-pointer p-3 -m-3 rounded-xl hover:bg-black/[0.02] transition-colors">
             <input type="checkbox" {...register("parentalConsent")} className="w-[18px] h-[18px] border-2 border-black/15 rounded-[5px] mt-0.5 flex-shrink-0 accent-[#e62b1e] cursor-pointer" />
-            <span className="text-[13px] text-zinc-600 leading-relaxed">{t("parentalConsentLabel")}</span>
+            <span className={`text-[13px] text-zinc-600 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>{t("parentalConsentLabel")}</span>
           </label>
           {errors.parentalConsent && (
             <p className="text-xs text-[#e62b1e] mt-1 flex items-center gap-1">
@@ -414,11 +409,11 @@ export default function ApplicationForm() {
       )}
 
       {track === "expert" && (
-        <FormSection num={4} title={t("expertSection")}>
-          <Field label={t("organizationAndRole")} error={errors.organizationAndRole?.message}>
+        <FormSection num={4} title={t("expertSection")} isArabic={isArabic}>
+          <Field label={t("organizationAndRole")} error={errors.organizationAndRole?.message} isArabic={isArabic}>
             <input {...register("organizationAndRole")} className={inputClasses} placeholder={t("organizationPlaceholder")} />
           </Field>
-          <Field label={t("areaOfWork")} error={errors.areaOfWorkWithYouth?.message}>
+          <Field label={t("areaOfWork")} error={errors.areaOfWorkWithYouth?.message} isArabic={isArabic}>
             <textarea {...register("areaOfWorkWithYouth")} rows={2} className={textareaClasses} placeholder={t("areaOfWorkPlaceholder")} />
           </Field>
         </FormSection>
@@ -428,7 +423,7 @@ export default function ApplicationForm() {
       <div className="bg-white border border-black/[0.06] rounded-[20px] p-7 mb-5 hover:border-black/[0.1] transition-colors duration-300">
         <label className="flex items-start gap-2.5 cursor-pointer">
           <input type="checkbox" {...register("consentToTerms")} className="w-[18px] h-[18px] border-2 border-black/15 rounded-[5px] mt-0.5 flex-shrink-0 accent-[#e62b1e] cursor-pointer" />
-          <span className="text-[13px] text-zinc-600 leading-relaxed">
+          <span className={`text-[13px] text-zinc-600 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
             {t("agreeToTerms")}{" "}
             <Link href="/terms" className="text-[#e62b1e] font-semibold hover:underline">
               {t("termsLink")}
@@ -445,7 +440,7 @@ export default function ApplicationForm() {
 
       {/* ═══════ خطأ عام ═══════ */}
       {status === "error" && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-[#e62b1e] text-sm font-medium text-center mb-4">
+        <div className="p-4 rounded-xl bg-[#e62b1e]/10 border border-[#e62b1e]/20 text-[#e62b1e] text-sm font-medium text-center mb-4">
           {t("errorGeneric")}
         </div>
       )}

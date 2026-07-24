@@ -1,10 +1,16 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useRef, useState } from "react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+} from "framer-motion";
 import Image from "next/image";
-import { Speaker } from "@/lib/types";
 import { ArrowUpRight } from "lucide-react";
+import { Speaker } from "@/lib/types";
 
 interface SpeakerCardProps {
   speaker: Speaker;
@@ -12,162 +18,174 @@ interface SpeakerCardProps {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Wave Badge — تصميم زجاجي أنيق
+   شارة حالة نابضة — نسخة أنظف وأقل ضجيجاً
    ═══════════════════════════════════════════════════════════════ */
-function WaveBadge({ value }: { value: string | number }) {
-  const bars = [6, 12, 8, 14, 5];
-
+function StatusBadge({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-black/30 backdrop-blur-md border border-white/10 rounded-full shadow-inner">
-      <div className="flex items-end gap-[3px] h-3.5">
-        {bars.map((h, i) => (
-          <motion.span
-            key={i}
-            // تم استخدام كود اللون الأحمر الصريح لضمان عمله في أي بيئة، يمكنك تعديله إلى bg-tedx-red
-            className="w-[2px] bg-[#e62b1e] rounded-full origin-bottom"
-            animate={{ scaleY: [0.4, 1, 0.4], opacity: [0.5, 1, 0.5] }}
-            transition={{
-              duration: 1.2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.15,
-            }}
-            style={{ height: h }}
-          />
-        ))}
-      </div>
-      <span
-        dir="ltr"
-        className="text-[12px] font-semibold text-white tabular-nums tracking-wider"
-      >
-        {value}
+    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/25 backdrop-blur-xl border border-white/[0.08]">
+      <span className="relative flex h-[6px] w-[6px]">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-50" />
+        <span className="relative inline-flex rounded-full h-[6px] w-[6px] bg-[#e62b1e]" />
+      </span>
+      <span className="text-[11px] font-semibold text-white/90 tracking-wide">
+        {label}
       </span>
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Live Indicator — تأثير نبض ناعم ومضيء
-   ═══════════════════════════════════════════════════════════════ */
-function LiveDot() {
-  return (
-    <span className="relative flex h-2 w-2">
-      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-75" />
-      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e62b1e] shadow-[0_0_10px_rgba(230,43,30,0.8)]" />
-    </span>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   Speaker Card — Modern Premium Edition (Glassmorphism)
+   بطاقة المتحدث — نسخة احترافية محسّنة
    ═══════════════════════════════════════════════════════════════ */
 export default function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
   const shouldReduceMotion = useReducedMotion();
   const cardRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // ─── 3D Tilt Logic ───
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+  const glareX = useTransform(mouseXSpring, [-0.5, 0.5], ["0%", "100%"]);
+  const glareY = useTransform(mouseYSpring, [-0.5, 0.5], ["0%", "100%"]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (shouldReduceMotion || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+    setIsHovered(false);
+  };
 
   return (
     <motion.div
       ref={cardRef}
       id={`speaker-${speaker.id}`}
       onClick={onClick}
-      whileInView={shouldReduceMotion ? {} : { opacity: 1, y: 0 }}
       initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
-      viewport={{ once: true, margin: "-50px" }}
-      whileHover="hover" // استخدام Variants للتحكم بتأثيرات الـ Hover بشكل أنظف
-      className="group relative cursor-pointer text-start w-full aspect-[3/4] rounded-[24px] overflow-hidden
-        bg-neutral-900 shadow-lg isolation-auto border border-white/5"
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX: shouldReduceMotion ? 0 : rotateX,
+        rotateY: shouldReduceMotion ? 0 : rotateY,
+        transformStyle: "preserve-3d",
+      }}
+      className="group relative cursor-pointer w-full"
     >
-      {/* الصورة مع تأثير التكبير الناعم (Ken Burns) */}
-      <motion.div
-        variants={{
-          hover: { scale: 1.05, filter: "saturate(1.1) brightness(0.95)" }
-        }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute inset-0 w-full h-full"
+      {/* ─── Outer Glow (soft, only on hover) ─── */}
+      <div
+        className={`absolute -inset-1.5 rounded-[22px] bg-gradient-to-b from-[#e62b1e]/10 via-[#e62b1e]/5 to-transparent blur-2xl transition-opacity duration-700 ${
+          isHovered ? "opacity-100" : "opacity-0"
+        }`}
+      />
+
+      {/* ─── Main Card Frame ─── */}
+      <div
+        className="relative overflow-hidden rounded-[18px] border border-white/[0.06] bg-zinc-900/30 backdrop-blur-sm
+          shadow-[0_4px_20px_-8px_rgba(0,0,0,0.35)]
+          group-hover:shadow-[0_24px_60px_-15px_rgba(230,43,30,0.15),0_8px_32px_-8px_rgba(0,0,0,0.35)]
+          transition-all duration-500 ease-out"
+        style={{ transformStyle: "preserve-3d" }}
       >
-        <Image
-          src={speaker.imageUrl}
-          alt={speaker.name}
-          fill
-          className="object-cover"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-      </motion.div>
-
-      {/* تدرج لوني عميق للقراءة (Bottom Scrim) */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/95 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      {/* تدرج علوي خفيف للـ Badges */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/50 via-transparent to-transparent opacity-60" />
-
-      {/* القسم العلوي: الشارات (Badges) */}
-      <div className="absolute top-5 left-5 right-5 flex justify-between items-start z-10">
-        {speaker.shortDescriptor ? (
-          <div
-            className="inline-flex items-center gap-2 px-3 py-1.5
-              bg-black/30 backdrop-blur-md border border-white/10 rounded-full
-              transition-all duration-300 group-hover:bg-black/50"
-          >
-            <LiveDot />
-            <span
-              dir="ltr"
-              className="text-[11px] font-semibold text-white uppercase tracking-widest"
-            >
-              {speaker.shortDescriptor}
-            </span>
-          </div>
-        ) : <div />}
-        
-        {/* ظهور شارة الموجة عند الهوفر فقط لتقليل الازدحام البصري */}
-        {speaker.wave && (
-          <div className="transform translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500 ease-[0.22,1,0.36,1]">
-            <WaveBadge value={speaker.wave} />
-          </div>
+        {/* Dynamic Light Glare — follows mouse */}
+        {!shouldReduceMotion && (
+          <motion.div
+            className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-500 group-hover:opacity-100 rounded-[18px]"
+            style={{
+              background: useTransform(
+                [glareX, glareY],
+                ([latestX, latestY]) =>
+                  `radial-gradient(circle at ${latestX} ${latestY}, rgba(255,255,255,0.08) 0%, transparent 55%)`
+              ),
+            }}
+          />
         )}
-      </div>
 
-      {/* القسم السفلي: معلومات المتحدث (Glass Panel) */}
-      <div className="absolute inset-x-0 bottom-0 p-4 z-10 flex flex-col justify-end">
-        <motion.div
-          variants={{
-            hover: { y: 0, backgroundColor: "rgba(255,255,255,0.08)" }
-          }}
-          initial={{ y: 8 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-[20px] p-5 overflow-hidden
-            shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)]"
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex flex-col gap-1.5 flex-1">
-              <h3 className="font-bold text-[22px] text-white leading-tight tracking-tight drop-shadow-sm">
-                <span dir="ltr" className="inline-block">
-                  {speaker.name}
-                </span>
-              </h3>
+        {/* ─── Image Container ─── */}
+        <div className="relative aspect-[3/4] overflow-hidden rounded-[18px]">
+          <Image
+            src={speaker.imageUrl}
+            alt={`صورة ${speaker.name}`}
+            fill
+            className="object-cover transition-all duration-700 ease-out group-hover:scale-[1.05]"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
 
-              {speaker.talkTitle && (
-                <p className="text-[14px] text-white/70 leading-snug line-clamp-2">
-                  <span dir="ltr" className="inline-block">
-                    {speaker.talkTitle}
-                  </span>
-                </p>
-              )}
+          {/* Gradient Overlay — Softer, more modern */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.08) 35%, rgba(0,0,0,0.35) 65%, rgba(0,0,0,0.78) 88%, rgba(0,0,0,0.9) 100%)",
+            }}
+          />
+
+          {/* ─── Top Right: Status Badge ─── */}
+          {speaker.shortDescriptor && (
+            <div className="absolute top-4 right-4 z-10">
+              <StatusBadge label={speaker.shortDescriptor} />
             </div>
+          )}
 
-            {/* زر التفاعل الدائري */}
-            <div
-              className="w-12 h-12 flex-shrink-0 rounded-full bg-white/10 flex items-center justify-center
-                border border-white/20 group-hover:bg-[#e62b1e] group-hover:border-[#e62b1e] 
-                group-hover:shadow-[0_0_20px_rgba(230,43,30,0.5)]
-                transition-all duration-300 ease-out"
-            >
-              <ArrowUpRight
-                size={22}
-                className="text-white transform group-hover:rotate-45 group-hover:scale-110 transition-transform duration-300"
-              />
+          {/* ─── Top Left: Arrow (appears smoothly on hover) ─── */}
+          <div
+            className={`absolute top-4 left-4 z-10 transition-all duration-500 ease-out ${
+              isHovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3"
+            }`}
+          >
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 text-white transition-all duration-300 group-hover:bg-[#e62b1e] group-hover:border-[#e62b1e] group-hover:shadow-[0_0_20px_rgba(230,43,30,0.4)]">
+              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
             </div>
           </div>
-        </motion.div>
+
+          {/* ─── Bottom Content ─── */}
+          <div className="absolute inset-x-0 bottom-0 px-5 pb-5 pt-16 z-10">
+            {/* Speaker Name */}
+            <h3
+              className="text-[19px] sm:text-[21px] font-bold text-white leading-[1.15] tracking-[-0.02em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]"
+              style={{ transform: "translateZ(20px)" }}
+            >
+              <span className="block w-full line-clamp-2 break-words">
+                {speaker.name}
+              </span>
+            </h3>
+
+            {/* Talk Title */}
+            {speaker.talkTitle && (
+              <p className="mt-2 text-[13px] sm:text-[14px] text-white/70 leading-relaxed line-clamp-2 font-medium">
+                {speaker.talkTitle}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* ─── TEDx Bottom Accent Line ─── */}
+        <div className="relative h-[2px] w-full overflow-hidden bg-zinc-800/40">
+          <motion.div
+            className="h-full bg-gradient-to-r from-transparent via-[#e62b1e] to-transparent"
+            initial={{ scaleX: 0, opacity: 0 }}
+            whileInView={{ scaleX: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
+            style={{ transformOrigin: "center" }}
+          />
+        </div>
       </div>
     </motion.div>
   );
