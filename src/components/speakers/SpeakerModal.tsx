@@ -1,24 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, memo } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
 import { X } from "lucide-react";
-import { useLocale } from "next-intl"; // ✅ استيراد لتحديد اللغة وتطبيق الخط المناسب
+import { useLocale } from "next-intl";
 import { InstagramIcon, LinkedinIcon, XIcon as XSocialIcon } from "@/components/ui/SocialIcons";
 import { Speaker } from "@/lib/types";
+import SafeImage from "@/components/ui/SafeImage";
 
 interface SpeakerModalProps {
   speaker: Speaker | null;
   onClose: () => void;
 }
 
-export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
+const SpeakerModal = memo(function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
   const shouldReduceMotion = useReducedMotion();
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
-  const locale = useLocale(); // ✅ الحصول على اللغة الحالية
-  const isArabic = locale === "ar"; // ✅ تحديد إذا كانت اللغة عربية
+  const locale = useLocale();
+  const isArabic = locale === "ar";
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -80,18 +80,18 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
           <motion.div
             ref={modalRef}
             tabIndex={-1}
-            // ✅ تم إضافة cursor-default لإعادة المؤشر الافتراضي عند فتح المودال
             className="bg-card cursor-default rounded-lg max-w-4xl w-full max-h-[85vh] overflow-hidden relative outline-none flex flex-col md:flex-row"
             onClick={(e) => e.stopPropagation()}
             initial={shouldReduceMotion ? {} : { scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={shouldReduceMotion ? {} : { scale: 0, opacity: 0 }}
             transition={shouldReduceMotion ? {} : { type: "spring", stiffness: 260, damping: 25 }}
+            // ✅ تثبيت ترتيب الصورة على اليسار دائماً
+            dir="ltr"
           >
             <motion.button
               onClick={onClose}
               aria-label="Close"
-              // ✅ تم إضافة cursor-pointer لإظهار يد التفاعل
               className="absolute top-4 end-4 z-10 bg-card rounded-full p-2 shadow-sm hover:shadow-md cursor-pointer"
               whileHover={shouldReduceMotion ? {} : { rotate: 360 }}
               whileTap={shouldReduceMotion ? {} : { scale: 0.8 }}
@@ -100,9 +100,9 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
               <X size={20} className="text-muted-foreground" />
             </motion.button>
 
-            {/* الصورة تأخذ عرض 40% على الشاشات الكبيرة */}
+            {/* الصورة – ثابتة على اليسار بفضل dir="ltr" */}
             <div className="relative w-full md:w-2/5 h-64 md:h-auto shrink-0 bg-muted">
-              <Image
+              <SafeImage
                 src={speaker.imageUrl}
                 alt={speaker.name}
                 fill
@@ -111,11 +111,13 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
               />
             </div>
 
-            {/* النص يأخذ مساحة الـ flex-1 المتبقية */}
-            <div className="flex-1 p-6 md:p-8 overflow-y-auto">
-              {/* ✅ تم تطبيق isArabic ? "font-arabic" : "font-sans" على جميع النصوص */}
-              <h2 id="speaker-modal-title" className={`text-2xl font-bold text-foreground ${isArabic ? "font-arabic" : "font-sans"}`}>
-                <span dir="ltr">{speaker.name}</span>
+            {/* المحتوى النصي – يتكيف مع الاتجاه اللغوي */}
+            <div className="flex-1 p-6 md:p-8 overflow-y-auto" dir="auto">
+              <h2
+                id="speaker-modal-title"
+                className={`text-2xl font-bold text-foreground ${isArabic ? "font-arabic" : "font-sans"}`}
+              >
+                {speaker.name}
               </h2>
               <p className={`text-tedx-red font-medium mb-1 ${isArabic ? "font-arabic" : "font-sans"}`}>
                 {speaker.shortDescriptor}
@@ -171,4 +173,6 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
       )}
     </AnimatePresence>
   );
-}
+});
+
+export default SpeakerModal;

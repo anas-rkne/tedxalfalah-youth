@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useRTL } from "@/hooks/useRTL";
 
 interface Section {
   id: string;
@@ -23,88 +24,60 @@ const sections: Section[] = [
 
 export default function ScrollIndicator() {
   const pathname = usePathname();
+  const { isRTL } = useRTL();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [isRTL, setIsRTL] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ─── Only show on HOME page ───
+  // الصفحة الرئيسية فقط
   const pathWithoutLocale = pathname.replace(/^\/(ar|en)/, "") || "/";
   const isHomePage = pathWithoutLocale === "/";
 
-  // Detect RTL
-  useEffect(() => {
-    const html = document.documentElement;
-    setIsRTL(html.dir === "rtl");
-  }, []);
-
-  // ─── Setup IntersectionObserver ───
-  // Re-runs when pathname changes (page navigation)
+  // إعداد المراقب مرة واحدة عند الدخول للصفحة الرئيسية
   const setupObserver = useCallback(() => {
-    // Disconnect previous observer
     if (observerRef.current) {
       observerRef.current.disconnect();
-      observerRef.current = null;
     }
 
-    // Small delay to ensure DOM is ready after navigation
-    const timer = setTimeout(() => {
-      const options = {
-        root: null,
-        rootMargin: "-45% 0px -45% 0px",
-        threshold: 0,
-      };
-
-      observerRef.current = new IntersectionObserver((entries) => {
-        // Sort by index to prefer the LAST intersecting section (bottom-most)
+    const observer = new IntersectionObserver(
+      (entries) => {
         const intersecting = entries
           .filter((e) => e.isIntersecting)
           .map((e) => ({
-            entry: e,
             index: sections.findIndex((s) => s.id === e.target.id),
           }))
           .filter((item) => item.index !== -1)
           .sort((a, b) => b.index - a.index);
 
         if (intersecting.length > 0) {
-          const topSection = intersecting[0];
-          setActiveIndex(topSection.index);
+          const topIndex = intersecting[0].index;
+          setActiveIndex(topIndex);
 
-          // Hide when on hero (index 0), show otherwise
-          const shouldShow = topSection.index > 0;
-          if (shouldShow) {
-            // Clear any pending hide
-            if (hideTimeoutRef.current) {
-              clearTimeout(hideTimeoutRef.current);
-              hideTimeoutRef.current = null;
-            }
+          if (topIndex > 0) {
+            if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
             setIsVisible(true);
           } else {
-            // Small delay before hiding to prevent flicker
             hideTimeoutRef.current = setTimeout(() => {
               setIsVisible(false);
             }, 80);
           }
         }
-      }, options);
-
-      sections.forEach((s) => {
-        const el = document.getElementById(s.id);
-        if (el) observerRef.current?.observe(el);
-      });
-    }, 150); // 150ms delay after navigation
-
-    return () => {
-      clearTimeout(timer);
-      if (observerRef.current) {
-        observerRef.current.disconnect();
+      },
+      {
+        root: null,
+        rootMargin: "-45% 0px -45% 0px",
+        threshold: 0,
       }
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current);
-      }
-    };
+    );
+
+    sections.forEach((s) => {
+      const el = document.getElementById(s.id);
+      if (el) observer.observe(el);
+    });
+
+    observerRef.current = observer;
   }, []);
 
   useEffect(() => {
@@ -112,16 +85,18 @@ export default function ScrollIndicator() {
       setIsVisible(false);
       return;
     }
-    const cleanup = setupObserver();
-    return cleanup;
+    // انتظر قليلاً حتى يكتمل الرندر ثم أعد المراقب
+    const timer = setTimeout(setupObserver, 150);
+    return () => {
+      clearTimeout(timer);
+      observerRef.current?.disconnect();
+    };
   }, [isHomePage, setupObserver]);
 
-  // ─── Scroll handler for visibility toggle (backup) ───
+  // مؤشر التمرير الاحتياطي
   const handleScroll = useCallback(() => {
     const scrollY = window.scrollY;
     const vh = window.innerHeight;
-
-    // Hide when near top (hero section)
     if (scrollY < vh * 0.35) {
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
       hideTimeoutRef.current = setTimeout(() => {
@@ -153,7 +128,7 @@ export default function ScrollIndicator() {
           initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
-          transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] as const }}
+          transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
           className="fixed hidden lg:flex flex-col items-center"
           style={{
             zIndex: 40,
@@ -163,12 +138,11 @@ export default function ScrollIndicator() {
           }}
           aria-label="Section navigation"
         >
-          {/* Vertical line */}
           <div className="absolute w-px h-full bg-zinc-200/60" />
 
           {sections.map((section, index) => {
             const isActive = index === activeIndex;
-            if (index === 0) return null;
+            if (index === 0) return null; // إخفاء "hero"
 
             return (
               <div
@@ -177,7 +151,6 @@ export default function ScrollIndicator() {
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >
-                {/* Label tooltip */}
                 <AnimatePresence>
                   {hoveredIndex === index && (
                     <motion.span
@@ -195,7 +168,6 @@ export default function ScrollIndicator() {
                   )}
                 </AnimatePresence>
 
-                {/* Dot button */}
                 <button
                   onClick={() => scrollToSection(section.id)}
                   className="relative z-10 group"

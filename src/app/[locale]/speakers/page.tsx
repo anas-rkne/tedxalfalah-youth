@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import SpeakersGrid from "@/components/speakers/SpeakersGrid";
 import { getSpeakers } from "@/lib/data";
-import SpeakersHeroSection from "@/components/speakers/SpeakersHeroSection"; // ✅ استيراد مكون الهيرو الجديد
+import DarkHeroSection from "@/components/shared/DarkHeroSection";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -19,27 +19,21 @@ export default async function SpeakersPage({ params }: Props) {
   const { locale } = await params;
   const speakers = await getSpeakers();
   const t = await getTranslations("page.speakers");
-
   const isArabic = locale === "ar";
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden font-sans relative">
-      
-      {/* ═══════════════════════════════════════════════════════════════
-          HERO SECTION (مكون عميل مع Parallax)
-          ═══════════════════════════════════════════════════════════════ */}
-      <SpeakersHeroSection
+      {/* ═══════════ HERO ═══════════ */}
+      <DarkHeroSection
         badgeLabel={t("hero.badge")}
         mainTitle={t("hero.mainTitle")}
         highlightTitle={t("hero.highlightTitle")}
         description={t("meta.description")}
-        discoverLabel={isArabic ? 'اكتشف القائمة' : 'Discover Lineup'}
+        discoverLabel={isArabic ? "اكتشف القائمة" : "Discover Lineup"}
         isArabic={isArabic}
       />
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SPEAKERS GRID
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══════════ SPEAKERS GRID ═══════════ */}
       <section className="py-20 md:py-32 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -64,7 +58,7 @@ export default async function SpeakersPage({ params }: Props) {
         </div>
       </section>
 
-      {/* أنيميشن CSS (بقية الكود) */}
+      {/* ═══════════ CSS للهيرو ═══════════ */}
       <style>{`
         @keyframes hero-fade-up {
           from { opacity: 0; transform: translateY(40px); }

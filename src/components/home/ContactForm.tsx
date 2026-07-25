@@ -1,18 +1,24 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, memo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "@/i18n/navigation";
-import Image from "next/image";
+import {
+  motion,
+  useReducedMotion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { Mail, Send } from "lucide-react";
-import { motion } from "framer-motion";
 
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import Input from "@/components/ui/Input";
 import SectionBadge from "@/components/ui/SectionBadge";
 import { useRTL } from "@/hooks/useRTL";
+import SafeImage from "@/components/ui/SafeImage";
 
 interface ContactFormProps {
   heading: string;
@@ -38,10 +44,10 @@ interface ContactFormProps {
   rightImageSrc?: string;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   مكون زر إرسال TEDx (موحد)
-   ═══════════════════════════════════════════════════════════════ */
-function SubmitButton({
+/* ═══════════════════════════════════════════
+   SubmitButton – مذكَّر
+   ═══════════════════════════════════════════ */
+const SubmitButton = memo(function SubmitButton({
   loading,
   children,
   submittingLabel,
@@ -71,7 +77,115 @@ function SubmitButton({
       )}
     </motion.button>
   );
-}
+});
+
+/* ═══════════════════════════════════════════
+   ContactSideImage – نفس أنيميشن الهيرو
+   ═══════════════════════════════════════════ */
+const ContactSideImage = memo(function ContactSideImage({
+  src,
+  alt,
+  direction,
+  delay,
+}: {
+  src: string;
+  alt: string;
+  direction: "left" | "right";
+  delay: number;
+}) {
+  const shouldReduceMotion = useReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { stiffness: 100, damping: 30, mass: 1 };
+  const parallaxX = useSpring(
+    useTransform(mouseX, [-0.5, 0.5], direction === "left" ? [15, -15] : [-15, 15]),
+    springConfig
+  );
+  const parallaxY = useSpring(
+    useTransform(mouseY, [-0.5, 0.5], [10, -10]),
+    springConfig
+  );
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (shouldReduceMotion || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={containerRef}
+      initial={{ opacity: 0, x: direction === "left" ? -40 : 40 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}
+      className="hidden lg:flex flex-col items-center flex-shrink-0 w-56 lg:w-64 xl:w-72 relative"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <motion.div
+        className="relative w-full aspect-[3/4] z-10 overflow-visible will-change-transform"
+        style={{
+          x: shouldReduceMotion ? 0 : parallaxX,
+          y: shouldReduceMotion ? 0 : parallaxY,
+        }}
+        animate={shouldReduceMotion ? undefined : { y: [0, -12, 0] }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: [0.42, 0, 0.58, 1],
+          delay: delay + 0.5,
+        }}
+      >
+        <SafeImage
+          src={src}
+          alt={alt}
+          fill
+          className="object-contain"
+          sizes="(max-width: 1280px) 224px, 288px"
+        />
+
+        {/* 5 جزيئات حمراء */}
+        {!shouldReduceMotion && (
+          <>
+            <motion.div
+              className="absolute top-1/4 -left-4 w-2 h-2 rounded-full bg-[#e62b1e] z-20"
+              animate={{ y: [0, -20, 0], opacity: [0, 0.6, 0], scale: [0.5, 1, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, delay: delay + 0.5, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute top-1/3 -right-4 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
+              animate={{ y: [0, -15, 0], opacity: [0, 0.5, 0], scale: [0.5, 1.2, 0.5] }}
+              transition={{ duration: 2.5, repeat: Infinity, delay: delay + 1.2, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute bottom-1/3 left-1/4 w-1 h-1 rounded-full bg-[#e62b1e] z-20"
+              animate={{ y: [0, -25, 0], x: [0, 10, 0], opacity: [0, 0.4, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, delay: delay + 0.8, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute top-1/2 -right-6 w-2 h-2 rounded-full bg-[#e62b1e]/80 z-20"
+              animate={{ y: [0, -18, 0], x: [0, -8, 0], opacity: [0, 0.7, 0], scale: [0.5, 1.3, 0.5] }}
+              transition={{ duration: 3.2, repeat: Infinity, delay: delay + 1.8, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
+              animate={{ y: [0, -22, 0], x: [0, -5, 0], opacity: [0, 0.5, 0], scale: [0.6, 1.1, 0.6] }}
+              transition={{ duration: 3.8, repeat: Infinity, delay: delay + 2.2, ease: [0.23, 1, 0.32, 1] }}
+            />
+          </>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+});
 
 export default function ContactForm({
   heading,
@@ -156,12 +270,12 @@ export default function ContactForm({
 
   return (
     <section className="section-padding relative bg-background overflow-hidden">
-      {/* ═══════════════════════════════════════════════════════════════
-          HERO HEADER — موحد
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══════════ HEADER ═══════════ */}
       <div className="relative pb-12 md:pb-16">
+        {/* توهج خلفي مزدوج (مطابق للأقسام الأخرى) */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-tedx-red/5 blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-orange-500/5 blur-3xl" />
         </div>
 
         <div className="container-padding relative z-10 max-w-5xl mx-auto text-center">
@@ -223,26 +337,21 @@ export default function ContactForm({
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          FORM + IMAGES — تخطيط بسيط: صورة | محتوى | صورة
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══════════ FORM + IMAGES ═══════════ */}
       <div className="container-padding relative pb-20 md:pb-28">
         <div className="max-w-7xl mx-auto">
-          {/* تخطيط أفقي: صورة يسار، فورم في الوسط، صورة يمين (فقط سطح المكتب) */}
-          <div className={`flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 ${isRTL ? "lg:flex-row-reverse" : ""}`}>
-            
-            {/* الصورة اليسرى — بلا أي زخارف */}
+          <div
+            dir="ltr"
+            className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16"
+          >
+            {/* الصورة اليسرى (أنيميشن) */}
             {leftImageSrc && (
-              <div className="hidden lg:block flex-shrink-0 w-72 xl:w-80"
->
-                <Image
-                  src={leftImageSrc}
-                  alt="Left side visual"
-                  width={320}
-                  height={400}
-                  className="w-full h-auto object-contain"
-                />
-              </div>
+              <ContactSideImage
+                src={leftImageSrc}
+                alt="Left side visual"
+                direction="left"
+                delay={0.15}
+              />
             )}
 
             {/* النموذج المركزي */}
@@ -252,6 +361,7 @@ export default function ContactForm({
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
               className="w-full max-w-xl"
+              dir="auto"
             >
               <div className="p-8 md:p-10 rounded-[24px] bg-card border border-border">
                 <form
@@ -318,28 +428,25 @@ export default function ContactForm({
               </div>
             </motion.div>
 
-            {/* الصورة اليمنى — بلا أي زخارف */}
+            {/* الصورة اليمنى (أنيميشن) */}
             {rightImageSrc && (
-              <div className="hidden lg:block flex-shrink-0 w-64 xl:w-72"
->
-                <Image
-                  src={rightImageSrc}
-                  alt="Right side visual"
-                  width={224}
-                  height={336}
-                  className="w-full h-auto object-contain"
-                />
-              </div>
+              <ContactSideImage
+                src={rightImageSrc}
+                alt="Right side visual"
+                direction="right"
+                delay={0.3}
+              />
             )}
           </div>
         </div>
       </div>
 
-      {/* نمط نقاط زخرفي بسيط في الأسفل */}
+      {/* نمط نقاط زخرفي */}
       <div
         className="h-16 opacity-[0.03]"
         style={{
-          backgroundImage: "radial-gradient(circle at 2px 2px, #e62b1e 1px, transparent 0)",
+          backgroundImage:
+            "radial-gradient(circle at 2px 2px, #e62b1e 1px, transparent 0)",
           backgroundSize: "32px 32px",
         }}
       />

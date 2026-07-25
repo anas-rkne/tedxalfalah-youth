@@ -1,0 +1,16 @@
+// proxy.ts
+import { NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import { routing } from "@/i18n/routing";         // ✅ المسار المطلق الصحيح
+
+const intlMiddleware = createMiddleware(routing);
+
+export default function proxy(request: NextRequest) {
+  return intlMiddleware(request);
+}
+
+export const config = {
+  matcher: [
+    "/((?!api|_next|_vercel|.*\\..*).*)",
+  ],
+};

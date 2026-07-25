@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 
 interface ActionButtonsProps {
@@ -7,18 +8,16 @@ interface ActionButtonsProps {
   ticketsLabel: string;
 }
 
-export default function ActionButtons({
+const ActionButtons = memo(function ActionButtons({
   applyLabel,
   ticketsLabel,
 }: ActionButtonsProps) {
   return (
     <div className="flex flex-row flex-nowrap items-center justify-center gap-2 sm:gap-4 w-full max-w-xs sm:max-w-sm mx-auto">
-      {/* زر Apply - أحمر أساسي (Primary) */}
       <AnimatedSlidingButton href="/apply" variant="primary" className="flex-1">
         {applyLabel}
       </AnimatedSlidingButton>
 
-      {/* زر Tickets - أزرق/أسود (استخدام متغيرات CSS الموحدة بدلاً من الألوان الثابتة) */}
       <AnimatedSlidingButton
         href="/tickets"
         variant="primary"
@@ -28,4 +27,6 @@ export default function ActionButtons({
       </AnimatedSlidingButton>
     </div>
   );
-}
+});
+
+export default ActionButtons;

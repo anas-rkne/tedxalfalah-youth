@@ -1,9 +1,15 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { useRef, memo } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+} from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import TextType from "@/components/TextType";
+import SafeImage from "@/components/ui/SafeImage";
 
 interface ApplyHeroProps {
   title: string;
@@ -13,6 +19,7 @@ interface ApplyHeroProps {
   imageAlt?: string;
 }
 
+/* ═══════════ مؤشر التمرير (بدون تغيير) ═══════════ */
 function ScrollIndicator() {
   return (
     <motion.div
@@ -32,7 +39,7 @@ function ScrollIndicator() {
   );
 }
 
-export default function ApplyHero({
+const ApplyHero = memo(function ApplyHero({
   title,
   subtitle,
   body,
@@ -65,24 +72,22 @@ export default function ApplyHero({
       ref={containerRef}
       className="relative min-h-[85vh] overflow-hidden flex items-center pb-20"
     >
-      {/* ── الصورة كخلفية مع بارالكس ── */}
+      {/* صورة الخلفية مع Parallax – SafeImage لمنع الانعكاس */}
       <motion.div
         className="absolute inset-0"
         style={{ y: imageY, scale: imageScale }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <SafeImage
           src={imageUrl}
           alt={imageAlt}
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
+          sizes="100vw"
+          priority
         />
       </motion.div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          طبقات التدرج — لقراءة النص بوضوح
-          ═══════════════════════════════════════════════════════════════ */}
-
-      {/* طبقة 1: تدرج علوي — يخفف من ألوان الصورة في الأعلى */}
+      {/* طبقات التدرج – لقراءة النص بوضوح */}
       <div
         className="absolute inset-0 pointer-events-none z-[1]"
         style={{
@@ -90,8 +95,6 @@ export default function ApplyHero({
             "linear-gradient(180deg, rgba(10,10,14,0.55) 0%, rgba(10,10,14,0.20) 25%, rgba(10,10,14,0.10) 40%, rgba(10,10,14,0.30) 55%, rgba(10,10,14,0.70) 75%, rgba(10,10,14,0.95) 100%)",
         }}
       />
-
-      {/* طبقة 2: تدرج جانبي — يحيط بالنص من اليمين واليسار */}
       <div
         className="absolute inset-0 pointer-events-none z-[2]"
         style={{
@@ -99,8 +102,6 @@ export default function ApplyHero({
             "radial-gradient(ellipse 80% 60% at 50% 55%, rgba(10,10,14,0.50) 0%, transparent 70%)",
         }}
       />
-
-      {/* طبقة 3: تدرج سفلي — يضمن وضوح النص في الأسفل */}
       <div
         className="absolute inset-0 pointer-events-none z-[3]"
         style={{
@@ -109,16 +110,16 @@ export default function ApplyHero({
         }}
       />
 
-      {/* ── المحتوى ── */}
+      {/* المحتوى */}
       <motion.div
         className="relative z-10 w-full max-w-4xl mx-auto px-6 text-center"
         style={{ opacity: contentOpacity, y: contentY }}
       >
-        {/* العنوان الرئيسي — مع تأثير الكتابة */}
         <h1
           className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-white leading-[1.25] tracking-[-0.01em]"
           style={{
-            textShadow: "0 2px 30px rgba(0,0,0,0.7), 0 1px 8px rgba(0,0,0,0.5)",
+            textShadow:
+              "0 2px 30px rgba(0,0,0,0.7), 0 1px 8px rgba(0,0,0,0.5)",
           }}
         >
           <TextType
@@ -147,7 +148,6 @@ export default function ApplyHero({
           transition={{ duration: 0.8, delay: 0.4 }}
         />
 
-        {/* النص الداعم — مع ظل للقراءة */}
         {body && (
           <motion.p
             className="text-base sm:text-lg text-white/60 leading-[1.85] max-w-2xl mx-auto font-light"
@@ -156,14 +156,18 @@ export default function ApplyHero({
             }}
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: 0.6,
+              delay: 0.5,
+              ease: [0.22, 1, 0.36, 1],
+            }}
           >
             {body}
           </motion.p>
         )}
       </motion.div>
 
-      {/* ── شريط TEDx سفلي ── */}
+      {/* شريط TEDx سفلي */}
       <div className="absolute bottom-0 left-0 right-0 h-[3px] z-10">
         <div
           className="h-full"
@@ -174,8 +178,9 @@ export default function ApplyHero({
         />
       </div>
 
-      {/* ── مؤشر التمرير ── */}
-      <ScrollIndicator/>
+      <ScrollIndicator />
     </section>
   );
-}
+});
+
+export default ApplyHero;

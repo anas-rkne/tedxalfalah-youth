@@ -1,12 +1,21 @@
 "use client";
 
-import { useRef, useMemo } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
+import { useRef, useMemo, memo } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useMotionValue,   // ✅
+  useSpring,        // ✅
+  useTransform,     // ✅
+} from "framer-motion";
+
 import { Mic, Lightbulb, Users, CheckCircle2 } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 import SectionBadge from "@/components/ui/SectionBadge";
+import SafeImage from "@/components/ui/SafeImage";
+import AnimatedWord from "@/components/shared/AnimatedWord";
+import DarkCTASection from "@/components/shared/DarkCTASection";
 
 interface ApplyBannerContentProps {
   badgeLabel: string;
@@ -34,49 +43,10 @@ interface ApplyBannerContentProps {
   rightImageSrc?: string;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   مكون كلمة عنوان متحركة
-   ═══════════════════════════════════════════════════════════════ */
-function AnimatedWord({
-  word,
-  index,
-  isHighlight,
-  shouldReduceMotion,
-}: {
-  word: string;
-  index: number;
-  isHighlight: boolean;
-  shouldReduceMotion: boolean | null;
-}) {
-  return (
-    <motion.span
-      initial={shouldReduceMotion ? {} : { opacity: 0, y: 40, rotateX: -40 }}
-      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-      viewport={{ once: true }}
-      transition={{
-        duration: 0.7,
-        delay: index * 0.08,
-        ease: [0.23, 1, 0.32, 1],
-      }}
-      className={`inline-block mx-1 md:mx-1.5 ${
-        isHighlight ? "text-tedx-red" : "text-foreground"
-      }`}
-      style={{ transformStyle: "preserve-3d" }}
-    >
-      {word}
-    </motion.span>
-  );
-}
+/* ═══════════ مكونات فرعية ═══════════ */
 
-/* ═══════════════════════════════════════════════════════════════
-   مكون خطوة التقديم
-   ═══════════════════════════════════════════════════════════════ */
-function StepCard({
-  number,
-  icon,
-  title,
-  description,
-  delay,
+const StepCard = memo(function StepCard({
+  number, icon, title, description, delay,
 }: {
   number: string;
   icon: React.ReactNode;
@@ -111,12 +81,9 @@ function StepCard({
       </div>
     </motion.div>
   );
-}
+});
 
-/* ═══════════════════════════════════════════════════════════════
-   مكون ميزة
-   ═══════════════════════════════════════════════════════════════ */
-function FeatureItem({ text }: { text: string }) {
+const FeatureItem = memo(function FeatureItem({ text }: { text: string }) {
   return (
     <div className="flex items-center gap-2.5">
       <div className="w-5 h-5 rounded-full bg-tedx-red/10 flex items-center justify-center flex-shrink-0">
@@ -125,12 +92,9 @@ function FeatureItem({ text }: { text: string }) {
       <span className="text-sm text-muted-foreground">{text}</span>
     </div>
   );
-}
+});
 
-/* ═══════════════════════════════════════════════════════════════
-   مكون صورة جانبية (ثابتة الاتجاه، لا تنعكس مع اللغة)
-   ═══════════════════════════════════════════════════════════════ */
-function ApplySideImage({
+const ApplySideImage = memo(function ApplySideImage({
   src,
   alt,
   direction,
@@ -141,19 +105,58 @@ function ApplySideImage({
   direction: "left" | "right";
   delay: number;
 }) {
-  const xInitial = direction === "left" ? -40 : 40;
+  const shouldReduceMotion = useReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { stiffness: 100, damping: 30, mass: 1 };
+  const parallaxX = useSpring(
+    useTransform(mouseX, [-0.5, 0.5], direction === "left" ? [15, -15] : [-15, 15]),
+    springConfig
+  );
+  const parallaxY = useSpring(
+    useTransform(mouseY, [-0.5, 0.5], [10, -10]),
+    springConfig
+  );
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (shouldReduceMotion || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
 
   return (
     <motion.div
-      dir="ltr"   // ✅ يمنع الانعكاس تمامًا عند استخدام RTL
-      initial={{ opacity: 0, x: xInitial }}
+      ref={containerRef}
+      initial={{ opacity: 0, x: direction === "left" ? -40 : 40 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}
-      className="hidden lg:flex flex-col items-center flex-shrink-0 w-56 lg:w-64 xl:w-72"
+      className="hidden lg:flex flex-col items-center flex-shrink-0 w-56 lg:w-64 xl:w-72 relative"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
-      <div className="relative w-full aspect-[3/4] bg-background">
-        <Image
+      <motion.div
+        className="relative w-full aspect-[3/4] z-10 overflow-visible will-change-transform"
+        style={{
+          x: shouldReduceMotion ? 0 : parallaxX,
+          y: shouldReduceMotion ? 0 : parallaxY,
+        }}
+        animate={shouldReduceMotion ? undefined : { y: [0, -12, 0] }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: [0.42, 0, 0.58, 1],
+          delay: delay + 0.5,
+        }}
+      >
+        <SafeImage
           src={src}
           alt={alt}
           fill
@@ -161,73 +164,81 @@ function ApplySideImage({
           className="object-contain"
           sizes="(max-width: 1280px) 224px, 288px"
         />
-      </div>
+
+        {/* 5 جزيئات حمراء مطابقة لقسم الهيرو */}
+        {!shouldReduceMotion && (
+          <>
+            <motion.div
+              className="absolute top-1/4 -left-4 w-2 h-2 rounded-full bg-[#e62b1e] z-20"
+              animate={{ y: [0, -20, 0], opacity: [0, 0.6, 0], scale: [0.5, 1, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, delay: delay + 0.5, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute top-1/3 -right-4 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
+              animate={{ y: [0, -15, 0], opacity: [0, 0.5, 0], scale: [0.5, 1.2, 0.5] }}
+              transition={{ duration: 2.5, repeat: Infinity, delay: delay + 1.2, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute bottom-1/3 left-1/4 w-1 h-1 rounded-full bg-[#e62b1e] z-20"
+              animate={{ y: [0, -25, 0], x: [0, 10, 0], opacity: [0, 0.4, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, delay: delay + 0.8, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute top-1/2 -right-6 w-2 h-2 rounded-full bg-[#e62b1e]/80 z-20"
+              animate={{ y: [0, -18, 0], x: [0, -8, 0], opacity: [0, 0.7, 0], scale: [0.5, 1.3, 0.5] }}
+              transition={{ duration: 3.2, repeat: Infinity, delay: delay + 1.8, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
+              animate={{ y: [0, -22, 0], x: [0, -5, 0], opacity: [0, 0.5, 0], scale: [0.6, 1.1, 0.6] }}
+              transition={{ duration: 3.8, repeat: Infinity, delay: delay + 2.2, ease: [0.23, 1, 0.32, 1] }}
+            />
+          </>
+        )}
+      </motion.div>
     </motion.div>
   );
-}
+});
+
+/* ═══════════ المكون الرئيسي ═══════════ */
 
 export default function ApplyBannerContent({
-  badgeLabel,
-  text,
-  subtitle,
-  cta,
-  stepsHeading,
-  step1Title,
-  step1Desc,
-  step2Title,
-  step2Desc,
-  step3Title,
-  step3Desc,
-  whyApplyLabel,
-  whyApplyHeading,
-  reasons,
-  ctaHeading,
-  ctaDescription,
-  placeholderTitle,
-  placeholderSubtitle,
-  stageBadgeLabel,
-  stageTitle,
-  stageDescription,
-  leftImageSrc,
-  rightImageSrc,
+  badgeLabel, text, subtitle, cta,
+  stepsHeading, step1Title, step1Desc, step2Title, step2Desc, step3Title, step3Desc,
+  whyApplyLabel, whyApplyHeading, reasons,
+  ctaHeading, ctaDescription,
+  placeholderTitle, placeholderSubtitle,
+  stageBadgeLabel, stageTitle, stageDescription,
+  leftImageSrc, rightImageSrc,
 }: ApplyBannerContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
 
-  const titleWords = text.split(" ");
-  const highlightWords = ["TEDx", "TEDxYouth", "تقدم", "شارك", "صوتك", "فكرتك", "Apply", "Speak", "Voice"];
+  const titleWords = useMemo(() => text.split(" "), [text]);
+  const highlightWords = useMemo(
+    () => ["TEDx", "TEDxYouth", "تقدم", "شارك", "صوتك", "فكرتك", "Apply", "Speak", "Voice"],
+    []
+  );
 
   return (
     <section ref={containerRef} className="section-padding relative bg-background overflow-hidden">
 
-      {/* ═══════════════════════════════════════════════════════════════
-          HERO SECTION — العنوان الرئيسي (مع صور جانبية)
-          ═══════════════════════════════════════════════════════════════ */}
-      <div className="relative flex flex-col lg:flex-row items-center justify-center min-h-[60vh]">
-        {/* خلفية زخرفية */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-tedx-red/5 blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-orange-500/5 blur-3xl" />
-        </div>
+      {/* ═══════════ HERO + صور جانبية ═══════════ */}
+      <div
+        dir="ltr"
+  className="relative flex flex-col lg:flex-row items-center justify-center min-h-[60vh] pb-16 md:pb-24"
+      >
+     <div className="absolute inset-0 pointer-events-none">
+<div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rounded-[50%] bg-tedx-red/5 blur-3xl" />
+</div>
 
-        {/* حاوية رئيسية مرنة تجمع الصور والمحتوى */}
         <div className="container-padding relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10">
-
-          {/* الصورة اليسرى */}
           {leftImageSrc && (
-            <ApplySideImage
-              src={leftImageSrc}
-              alt="Left side illustration"
-              direction="left"
-              delay={0.15}
-            />
+            <ApplySideImage src={leftImageSrc} alt="Left illustration" direction="left" delay={0.15} />
           )}
 
-          {/* المحتوى المركزي */}
-          <div className="flex-1 w-full max-w-4xl flex flex-col items-center text-center gap-8 md:gap-10">
-
-            {/* ✅ الشارة الموحدة */}
+          <div className="flex-1 w-full max-w-4xl flex flex-col items-center text-center gap-8 md:gap-10" dir="auto">
             <motion.div
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -237,7 +248,6 @@ export default function ApplyBannerContent({
               <SectionBadge>{badgeLabel}</SectionBadge>
             </motion.div>
 
-            {/* العنوان */}
             <div className="perspective-[1000px]">
               <h1 className="heading-h1 tracking-[-0.03em] leading-[1.1]">
                 {titleWords.map((word, index) => (
@@ -254,7 +264,6 @@ export default function ApplyBannerContent({
               </h1>
             </div>
 
-            {/* الخط الزخرفي */}
             <motion.div
               initial={shouldReduceMotion ? {} : { scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
@@ -267,7 +276,6 @@ export default function ApplyBannerContent({
               <div className="h-px w-10 bg-border" />
             </motion.div>
 
-            {/* النص الفرعي */}
             <motion.p
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -279,7 +287,6 @@ export default function ApplyBannerContent({
               {subtitle}
             </motion.p>
 
-            {/* الزر الرئيسي */}
             <motion.div
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -292,21 +299,13 @@ export default function ApplyBannerContent({
             </motion.div>
           </div>
 
-          {/* الصورة اليمنى */}
           {rightImageSrc && (
-            <ApplySideImage
-              src={rightImageSrc}
-              alt="Right side illustration"
-              direction="right"
-              delay={0.3}
-            />
+            <ApplySideImage src={rightImageSrc} alt="Right illustration" direction="right" delay={0.3} />
           )}
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          STEPS SECTION — خطوات التقديم
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══════════ STEPS ═══════════ */}
       <div className="section-padding relative bg-muted/30">
         <div className="container-padding max-w-5xl mx-auto">
           <motion.div
@@ -318,47 +317,22 @@ export default function ApplyBannerContent({
             <span className="text-xs font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-3 block">
               {stepsHeading}
             </span>
-            <h2 className="heading-h2 tracking-[-0.02em]">
-              {stepsHeading}
-            </h2>
+            <h2 className="heading-h2 tracking-[-0.02em]">{stepsHeading}</h2>
           </motion.div>
-
           <div className="grid md:grid-cols-3 gap-5">
-            <StepCard
-              number="01"
-              icon={<Mic className="w-5 h-5" />}
-              title={step1Title}
-              description={step1Desc}
-              delay={0.1}
-            />
-            <StepCard
-              number="02"
-              icon={<Lightbulb className="w-5 h-5" />}
-              title={step2Title}
-              description={step2Desc}
-              delay={0.2}
-            />
-            <StepCard
-              number="03"
-              icon={<Users className="w-5 h-5" />}
-              title={step3Title}
-              description={step3Desc}
-              delay={0.3}
-            />
+            <StepCard number="01" icon={<Mic className="w-5 h-5" />} title={step1Title} description={step1Desc} delay={0.1} />
+            <StepCard number="02" icon={<Lightbulb className="w-5 h-5" />} title={step2Title} description={step2Desc} delay={0.2} />
+            <StepCard number="03" icon={<Users className="w-5 h-5" />} title={step3Title} description={step3Desc} delay={0.3} />
           </div>
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          WHY APPLY SECTION — لماذا تقدم؟
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ═══════════ WHY APPLY ═══════════ */}
       <div className="section-padding relative">
         <div className="container-padding max-w-4xl mx-auto">
-          <div className={`grid md:grid-cols-2 gap-10 md:gap-16 items-center ${isRTL ? "md:grid" : ""}`}>
-            
-            {/* Left: Living TEDx Stage Preview */}
+          <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
             <motion.div
-              initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 40 : -40, scale: 0.95 }}
+              initial={shouldReduceMotion ? {} : { opacity: 0, x: -40, scale: 0.95 }}
               whileInView={{ opacity: 1, x: 0, scale: 1 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
@@ -404,9 +378,8 @@ export default function ApplyBannerContent({
               <motion.div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#e62b1e] to-transparent" animate={{ opacity: [0, 1, 0], x: ['-100%', '100%'] }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} />
             </motion.div>
 
-            {/* Right: Content */}
             <motion.div
-              initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? -30 : 30 }}
+              initial={shouldReduceMotion ? {} : { opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.2 }}
@@ -414,9 +387,7 @@ export default function ApplyBannerContent({
               <span className="text-xs font-semibold tracking-[0.15em] uppercase text-tedx-red mb-3 block">
                 {whyApplyLabel}
               </span>
-              <h2 className="heading-h2 tracking-[-0.02em] mb-6">
-                {whyApplyHeading}
-              </h2>
+              <h2 className="heading-h2 tracking-[-0.02em] mb-6">{whyApplyHeading}</h2>
               <div className="space-y-4">
                 {reasons.map((reason, index) => (
                   <FeatureItem key={index} text={reason} />
@@ -427,37 +398,13 @@ export default function ApplyBannerContent({
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          CTA SECTION — دعوة نهائية
-          ═══════════════════════════════════════════════════════════════ */}
-      <div className="section-padding relative bg-muted/30">
-        <div className="container-padding max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="p-10 md:p-14 rounded-[32px] bg-gradient-to-br from-zinc-900 to-zinc-800 text-white relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-tedx-red/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-tedx-red/5 rounded-full blur-2xl" />
-
-            <div className="relative z-10">
-              <h2 className="heading-h2 mb-4 text-white">
-                {ctaHeading}
-              </h2>
-              <p className="text-zinc-400 max-w-lg mx-auto mb-8 leading-relaxed">
-                {ctaDescription}
-              </p>
-              
-              <div className="flex justify-center">
-                <AnimatedSlidingButton href="/apply" variant="primary" className="min-w-[160px] shadow-[0_8px_30px_-12px_rgba(230,43,30,0.5)]">
-                  {cta}
-                </AnimatedSlidingButton>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
+      {/* ═══════════ CTA (مشترك) ═══════════ */}
+      <DarkCTASection
+        heading={ctaHeading}
+        description={ctaDescription}
+        primaryButton={{ href: "/apply", label: cta }}
+        className="bg-muted/30 "
+      />
     </section>
   );
 }

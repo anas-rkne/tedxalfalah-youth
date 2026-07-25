@@ -62,7 +62,7 @@ export default async function RootLayout({
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html
+    <html  data-scroll-behavior="smooth"
       lang={locale}
       dir={dir}
       className={`${inter.variable} ${notoKufiArabic.variable} h-full antialiased`}

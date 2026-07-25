@@ -42,8 +42,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'placehold.co',
       },
+      
       // ... إذا كنت تستخدم صوراً من Unsplash أو غيره، يمكنك إضافتها هنا
     ],
+     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    formats: ['image/webp', 'image/avif'],
+      qualities: [75, 90],
+
   },
   async headers() {
     return [

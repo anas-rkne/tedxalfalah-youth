@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, memo } from "react";
 import { motion, useReducedMotion, useAnimationFrame } from "framer-motion";
-import Image from "next/image";
 import { Handshake, Users, Ticket, Calendar } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import SectionBadge from "@/components/ui/SectionBadge";
-import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
+import SafeImage from "@/components/ui/SafeImage";
+import DarkCTASection from "@/components/shared/DarkCTASection";
 
 export interface Sponsor {
   id: string;
@@ -31,10 +31,10 @@ interface SponsorsStripContentProps {
   ctaLabel: string;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   مكون إحصائية TEDx — مع عدّاد متحرك
-   ═══════════════════════════════════════════════════════════════ */
-function StatItem({
+/* ═══════════════════════════════════════════
+   AnimatedStatItem – عداد متحرك (مستقل + memo)
+   ═══════════════════════════════════════════ */
+const AnimatedStatItem = memo(function AnimatedStatItem({
   number,
   label,
   delay,
@@ -58,7 +58,7 @@ function StatItem({
       return;
     }
     hasAnimated.current = true;
-    const timer = setTimeout(() => {
+    const timeout = setTimeout(() => {
       const duration = 2000;
       const steps = 60;
       const increment = numericValue / steps;
@@ -74,7 +74,7 @@ function StatItem({
       }, duration / steps);
       return () => clearInterval(interval);
     }, delay * 1000);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timeout);
   }, [numericValue, delay, shouldReduceMotion]);
 
   return (
@@ -115,64 +115,53 @@ function StatItem({
       />
     </motion.div>
   );
-}
+});
 
-/* ═══════════════════════════════════════════════════════════════
-   شريط الشعارات المتحرك — Marquee احترافي بدون فراغات
-   ═══════════════════════════════════════════════════════════════ */
-function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
+/* ═══════════════════════════════════════════
+   SponsorMarquee – SafeImage + memo
+   ═══════════════════════════════════════════ */
+const SponsorMarquee = memo(function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
   const shouldReduceMotion = useReducedMotion();
   const [isHovered, setIsHovered] = useState(false);
-  const baseVelocity = useRef(0.5); // pixels per frame
+  const baseVelocity = useRef(0.5);
   const containerRef = useRef<HTMLDivElement>(null);
   const xPosition = useRef(0);
 
-  // نسخ الشعارات 3 مرات لضمان عدم وجود فراغات
   const tripleSponsors = [...sponsors, ...sponsors, ...sponsors];
 
-  // حساب العرض الكلي لمجموعة واحدة
   const getSetWidth = useCallback(() => {
     if (!containerRef.current) return 0;
     const items = containerRef.current.querySelectorAll('.marquee-item');
     if (items.length === 0) return 0;
-    const firstSetWidth = Array.from(items).slice(0, sponsors.length).reduce((acc, item) => {
-      return acc + (item as HTMLElement).offsetWidth + 64; // 64 = gap (4rem)
-    }, 0);
-    return firstSetWidth;
+    return Array.from(items)
+      .slice(0, sponsors.length)
+      .reduce((acc, item) => acc + (item as HTMLElement).offsetWidth + 64, 0);
   }, [sponsors.length]);
 
   useAnimationFrame((_, delta) => {
     if (shouldReduceMotion || isHovered || !containerRef.current) return;
-
     const setWidth = getSetWidth();
     if (setWidth === 0) return;
-
-    // التحرك بسرعة ثابتة
     const moveBy = (baseVelocity.current * delta) / 16;
     xPosition.current -= moveBy;
-
-    // إعادة الضبط عند تجاوز عرض المجموعة
     if (Math.abs(xPosition.current) >= setWidth) {
       xPosition.current = 0;
     }
-
     containerRef.current.style.transform = `translateX(${xPosition.current}px)`;
   });
 
   if (sponsors.length === 0) return null;
 
   return (
-    <div 
+    <div
       className="relative w-full overflow-hidden border-y border-zinc-100 py-8 md:py-10"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* تدرجات جانبية للإخفاء الناعم */}
       <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
       <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
-      {/* الشريط المتحرك */}
-      <div 
+      <div
         ref={containerRef}
         className="flex items-center gap-16 md:gap-20 w-max"
         style={{ willChange: 'transform' }}
@@ -182,7 +171,7 @@ function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
             key={`${sponsor.id}-${index}`}
             className="marquee-item relative w-32 md:w-40 h-16 md:h-20 flex-shrink-0 flex items-center justify-center group/logo"
           >
-            <Image
+            <SafeImage
               src={sponsor.logoUrl}
               alt={sponsor.name}
               fill
@@ -194,8 +183,11 @@ function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
       </div>
     </div>
   );
-}
+});
 
+/* ═══════════════════════════════════════════
+   المكون الرئيسي
+   ═══════════════════════════════════════════ */
 export default function SponsorsStripContent({
   heading,
   badgeLabel,
@@ -232,15 +224,15 @@ export default function SponsorsStripContent({
 
   return (
     <section className="section-padding relative bg-background overflow-hidden">
-
       {/* ═══════ HERO HEADER ═══════ */}
       <div className="relative pb-12 md:pb-16">
+        {/* خلفية متوهجة (مطابقة لجميع الأقسام) */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#e62b1e]/5 blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-orange-500/5 blur-3xl" />
         </div>
 
         <div className="container-padding relative z-10 max-w-5xl mx-auto text-center">
-
           <motion.div
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -295,7 +287,7 @@ export default function SponsorsStripContent({
       </div>
 
       {/* ═══════ STATS SECTION ═══════ */}
-      <div className="container-padding relative pb-20 md:pb-28">
+      <div className="container-padding relative pb-16 md:pb-24">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 40 }}
@@ -305,8 +297,7 @@ export default function SponsorsStripContent({
             className="relative"
           >
             <div className="relative rounded-[32px] bg-gradient-to-b from-white to-zinc-50/80 border border-zinc-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] overflow-hidden">
-
-              <div 
+              <div
                 className="absolute inset-0 opacity-[0.03]"
                 style={{
                   backgroundImage: "radial-gradient(circle at 1px 1px, #e62b1e 1px, transparent 0)",
@@ -316,24 +307,24 @@ export default function SponsorsStripContent({
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-[#e62b1e]/[0.03] blur-3xl rounded-full" />
 
               <div className="relative grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-zinc-100">
-                <StatItem 
-                  number={stat1Number} 
-                  label={stat1Label} 
-                  delay={0.1} 
+                <AnimatedStatItem
+                  number={stat1Number}
+                  label={stat1Label}
+                  delay={0.1}
                   shouldReduceMotion={shouldReduceMotion}
                   icon={<Users className="w-5 h-5" />}
                 />
-                <StatItem 
-                  number={stat2Number} 
-                  label={stat2Label} 
-                  delay={0.25} 
+                <AnimatedStatItem
+                  number={stat2Number}
+                  label={stat2Label}
+                  delay={0.25}
                   shouldReduceMotion={shouldReduceMotion}
                   icon={<Ticket className="w-5 h-5" />}
                 />
-                <StatItem 
-                  number={stat3Number} 
-                  label={stat3Label} 
-                  delay={0.4} 
+                <AnimatedStatItem
+                  number={stat3Number}
+                  label={stat3Label}
+                  delay={0.4}
                   shouldReduceMotion={shouldReduceMotion}
                   icon={<Calendar className="w-5 h-5" />}
                 />
@@ -352,42 +343,15 @@ export default function SponsorsStripContent({
         </div>
       </div>
 
-      {/* ═══════ CTA SECTION ═══════ */}
-      <div className="container-padding relative pb-24 md:pb-32">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="p-10 md:p-14 rounded-[32px] bg-gradient-to-br from-zinc-900 to-zinc-800 text-white relative overflow-hidden text-center"
-          >
-            <div className="absolute top-0 right-0 w-72 h-72 bg-[#e62b1e]/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#e62b1e]/5 rounded-full blur-2xl" />
-
-            <div className="relative z-10">
-              <Handshake className="w-10 h-10 text-[#e62b1e] mx-auto mb-4" />
-              <h2 className="heading-h2 mb-4 text-white">{ctaHeading}</h2>
-              <p className="text-zinc-400 max-w-lg mx-auto mb-8 leading-relaxed">{ctaDescription}</p>
-
-              <div className="flex justify-center">
-                <AnimatedSlidingButton href="/contact" variant="primary" className="min-w-[160px] shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)]">
-                  {ctaLabel}
-                </AnimatedSlidingButton>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* نمط نقاط زخرفي */}
-      <div
-        className="h-16 opacity-[0.03]"
-        style={{
-          backgroundImage: "radial-gradient(circle at 2px 2px, #e62b1e 1px, transparent 0)",
-          backgroundSize: "32px 32px",
-        }}
+      {/* ═══════ CTA SECTION (مشترك) ═══════ */}
+      <DarkCTASection
+        heading={ctaHeading}
+        description={ctaDescription}
+        primaryButton={{ href: "/contact", label: ctaLabel }}
+  
       />
+
+
     </section>
   );
 }

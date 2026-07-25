@@ -1,24 +1,24 @@
 "use client";
 
-import { useRef, useMemo, memo } from "react";
-import { motion, useReducedMotion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { useRTL } from "@/hooks/useRTL";
+import { useRef, memo } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import SafeImage from "@/components/ui/SafeImage";
 import HeroTypewriterTitle from "@/components/home/HeroTypewriterTitle";
 import Countdown from "@/components/shared/Countdown";
 import ActionButtons from "@/components/home/ActionButtons";
 import ScrollIndicator from "@/components/ui/ScrollIndicator";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
+import FadeUp from "@/components/shared/FadeUp";
 
 const EVENT_DATE = "2026-11-15T09:00:00+04:00";
 
 const ANIMATION_CONFIG = {
-  fadeUp: {
-    initial: { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] as const },
-  },
   fadeScale: {
     initial: { opacity: 0, scale: 0.92 },
     animate: { opacity: 1, scale: 1 },
@@ -75,27 +75,21 @@ const DecorativeDivider = memo(function DecorativeDivider() {
   );
 });
 
-/* ═══════════════════════════════════════════════════════════════
-   🎭 شخصية متحركة — تم إصلاح الظل بالكامل
-   ═══════════════════════════════════════════════════════════════ */
+/* ─── AnimatedCharacter (بدون ظل، مع 5 فقاعات) ─── */
 function AnimatedCharacter({
   src,
   alt,
-  flip,
   direction,
   delay,
 }: {
   src: string;
   alt: string;
-  flip: boolean;
   direction: "left" | "right";
   delay: number;
 }) {
   const shouldReduceMotion = useReducedMotion();
-  const { isRTL } = useRTL();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // ═══════ Parallax Mouse ═══════
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -124,107 +118,64 @@ function AnimatedCharacter({
   return (
     <motion.div
       ref={containerRef}
-      initial={{ opacity: 0, x: direction === "left" ? (isRTL ? 40 : -40) : (isRTL ? -40 : 40) }}
+      initial={{ opacity: 0, x: direction === "left" ? -40 : 40 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] as const }}
-      className="hidden lg:flex flex-col items-center flex-shrink-0 w-48 lg:w-56 xl:w-64 relative"
+      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}
+      className="hidden lg:flex flex-col items-center flex-shrink-0 w-56 lg:w-64 xl:w-72 relative"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* حاوية الصورة والظل - مع overflow-visible لمنع قص الظل */}
       <motion.div
         className="relative w-full aspect-[3/4] overflow-visible will-change-transform"
         style={{
           x: shouldReduceMotion ? 0 : parallaxX,
           y: shouldReduceMotion ? 0 : parallaxY,
         }}
-        animate={
-          shouldReduceMotion
-            ? undefined
-            : {
-                y: [0, -12, 0],
-              }
-        }
+        animate={shouldReduceMotion ? undefined : { y: [0, -12, 0] }}
         transition={{
           duration: 4,
           repeat: Infinity,
-          ease: [0.42, 0, 0.58, 1] as const,
+          ease: [0.42, 0, 0.58, 1],
           delay: delay + 0.5,
         }}
       >
-        <Image
+        <SafeImage
           src={src}
           alt={alt}
           fill
-          className={cn("object-contain", flip && "scale-x-[-1]")}
+          className="object-contain"
           sizes="(max-width: 1280px) 224px, 256px"
           priority={direction === "left"}
           loading={direction === "left" ? "eager" : "lazy"}
         />
 
-        {/* ✅ الظل النابض - متمركز تحت الصورة ومعدل الحجم والمكان */}
-        <motion.div
-          className="absolute bottom-[-12px] left-1/2 -translate-x-1/2 w-36 h-6 rounded-[100%] bg-zinc-400/40 blur-md pointer-events-none z-20"
-          animate={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  scale: [1, 1.15, 1],
-                  opacity: [0.5, 0.85, 0.5],
-                }
-          }
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: [0.42, 0, 0.58, 1] as const,
-            delay: delay + 0.5,
-          }}
-        />
-
-        {/* جزيئات حمراء */}
+        {/* 5 فقاعات حمراء */}
         {!shouldReduceMotion && (
           <>
             <motion.div
               className="absolute top-1/4 -left-4 w-2 h-2 rounded-full bg-[#e62b1e] z-20"
-              animate={{
-                y: [0, -20, 0],
-                opacity: [0, 0.6, 0],
-                scale: [0.5, 1, 0.5],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                delay: delay + 0.5,
-                ease: [0.23, 1, 0.32, 1] as const,
-              }}
+              animate={{ y: [0, -20, 0], opacity: [0, 0.6, 0], scale: [0.5, 1, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, delay: delay + 0.5, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
               className="absolute top-1/3 -right-4 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
-              animate={{
-                y: [0, -15, 0],
-                opacity: [0, 0.5, 0],
-                scale: [0.5, 1.2, 0.5],
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                delay: delay + 1.2,
-                ease: [0.23, 1, 0.32, 1] as const,
-              }}
+              animate={{ y: [0, -15, 0], opacity: [0, 0.5, 0], scale: [0.5, 1.2, 0.5] }}
+              transition={{ duration: 2.5, repeat: Infinity, delay: delay + 1.2, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
               className="absolute bottom-1/3 left-1/4 w-1 h-1 rounded-full bg-[#e62b1e] z-20"
-              animate={{
-                y: [0, -25, 0],
-                x: [0, 10, 0],
-                opacity: [0, 0.4, 0],
-              }}
-              transition={{
-                duration: 3.5,
-                repeat: Infinity,
-                delay: delay + 0.8,
-                ease: [0.23, 1, 0.32, 1] as const,
-              }}
+              animate={{ y: [0, -25, 0], x: [0, 10, 0], opacity: [0, 0.4, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, delay: delay + 0.8, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute top-1/2 -right-6 w-2 h-2 rounded-full bg-[#e62b1e]/80 z-20"
+              animate={{ y: [0, -18, 0], x: [0, -8, 0], opacity: [0, 0.7, 0], scale: [0.5, 1.3, 0.5] }}
+              transition={{ duration: 3.2, repeat: Infinity, delay: delay + 1.8, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
+              animate={{ y: [0, -22, 0], x: [0, -5, 0], opacity: [0, 0.5, 0], scale: [0.6, 1.1, 0.6] }}
+              transition={{ duration: 3.8, repeat: Infinity, delay: delay + 2.2, ease: [0.23, 1, 0.32, 1] }}
             />
           </>
         )}
@@ -256,33 +207,6 @@ const EventInfo = memo(function EventInfo({
   );
 });
 
-const FadeUp = memo(function FadeUp({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const shouldReduceMotion = useReducedMotion();
-
-  if (shouldReduceMotion) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay, ease: [0.23, 1, 0.32, 1] as const }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-});
-
 export default function HeroDynamicContent({
   eventName,
   tagline,
@@ -304,22 +228,24 @@ export default function HeroDynamicContent({
   badgeLabel: string;
   eventYear: string;
 }) {
-  const { isRTL } = useRTL();
-
   return (
-    <BackgroundBeamsWithCollision className="min-h-[calc(100dvh-80px)]">
-      <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14 w-full max-w-7xl mx-auto px-4 relative h-full">
-
+    <BackgroundBeamsWithCollision className="h-[calc(100vh-80px)]">
+      <div
+        dir="ltr"
+        className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14 w-full max-w-7xl mx-auto px-4 relative h-full"
+      >
         <AnimatedCharacter
-          src="/images/صفل 1.svg"
+                    src="/images/طفلة 1.svg"
+
           alt="صورة توضيحية — فتى يشير لليسار"
-          flip={!isRTL}
           direction="left"
           delay={0.15}
         />
 
-        <div className="relative z-10 px-4 flex flex-col items-center gap-5 md:gap-7 justify-center w-full h-full">
-
+        <div
+          dir="auto"
+          className="relative z-10 px-2 sm:px-4 flex flex-col items-center gap-5 md:gap-7 justify-center w-full h-full"
+        >
           <FadeUp delay={0.1}>
             <EventBadge label={badgeLabel} year={eventYear} />
           </FadeUp>
@@ -350,9 +276,8 @@ export default function HeroDynamicContent({
         </div>
 
         <AnimatedCharacter
-          src="/images/طفلة 1.svg"
+          src="/images/صفل 1.svg"
           alt="صورة توضيحية — فتاة تشير لليمين"
-          flip={!isRTL}
           direction="right"
           delay={0.3}
         />

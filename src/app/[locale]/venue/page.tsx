@@ -1,54 +1,48 @@
+// src/app/[locale]/venue/page.tsx
 import { getTranslations } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import VenueHeroSection from "@/components/venue/VenueHeroSection";
 import VenueMapSection from "@/components/venue/VenueMapSection";
 import VenueGallerySection from "@/components/venue/VenueGallerySection";
 import SectionBadge from "@/components/ui/SectionBadge";
 import { Metadata } from "next";
+import DarkHeroSection from "@/components/shared/DarkHeroSection";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "page.venue" });
-  return {
-    title: t("meta.title"),
-    description: t("meta.description"),
-  };
+  return { title: t("meta.title"), description: t("meta.description") };
 }
 
-export default async function VenuePage() {
+export default async function VenuePage({ params }: Props) {
+  const { locale } = await params;
+  const isArabic = locale === "ar";
   const t = await getTranslations("page.venue");
 
   return (
     <div className="bg-background">
       {/* ═══════ Hero ═══════ */}
-      <VenueHeroSection
-        heroTitle={t("heroTitle")}
-        heroAlt={t("heroAlt")}
-        heroImage="/images/venue-hero.webp"
-        // ✅ تمرير النصوص المترجمة الجديدة
+      <DarkHeroSection
         badgeLabel={t("hero.badgeLabel")}
-        mainTitleLine1={t("hero.line1")}
-        mainTitleLine2={t("hero.line2")}
+        mainTitle={t("hero.line1")}
+        highlightTitle={t("hero.line2")}
         description={t("hero.description")}
+        discoverLabel="Scroll"
+        isArabic={isArabic}
+        heroImage="/images/venue-hero.webp"
+        heroAlt={t("heroAlt")}
       />
 
-      {/* ═══════ القسم الأبيض الموحد (Meet the Venue) ═══════ */}
+      {/* ═══════ Meet the Venue ═══════ */}
       <section className="section-padding bg-background">
         <div className="container-padding max-w-5xl mx-auto text-center">
           <div className="flex justify-center mb-4">
-            <SectionBadge>
-              {t("narrativeLabel")}
-            </SectionBadge>
+            <SectionBadge>{t("narrativeLabel")}</SectionBadge>
           </div>
-          <h1 className="heading-h1 tracking-[-0.03em] heading-margin">
-            {t("heroTitle")}
-          </h1>
-          <div className="flex justify-center">
-            <div className="h-1 w-20 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" />
-          </div>
+          <h1 className="heading-h1 tracking-[-0.03em] heading-margin">{t("heroTitle")}</h1>
+          <div className="flex justify-center"><div className="h-1 w-20 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" /></div>
           <p className="text-center text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto mt-6 text-lg md:text-xl leading-relaxed">
             {t("narrative")}
           </p>
@@ -68,14 +62,10 @@ export default async function VenuePage() {
           <SectionContainer className="max-w-3xl mx-auto">
             <div className="flex items-center gap-4 mb-6">
               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-              <SectionBadge>
-                {t("accessibility.title")}
-              </SectionBadge>
+              <SectionBadge>{t("accessibility.title")}</SectionBadge>
               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
             </div>
-            <p className="text-center text-muted-foreground text-[15px] leading-[1.8]">
-              {t("accessibility.body")}
-            </p>
+            <p className="text-center text-muted-foreground text-[15px] leading-[1.8]">{t("accessibility.body")}</p>
           </SectionContainer>
         </section>
       </ScrollReveal>

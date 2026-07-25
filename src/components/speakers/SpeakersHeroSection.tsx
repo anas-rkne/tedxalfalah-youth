@@ -4,6 +4,9 @@ import { useRef, memo } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import SectionBadge from "@/components/ui/SectionBadge";
 
+/* ═══════════════════════════════════════════════════════════════
+   واجهة الخصائص
+   ═══════════════════════════════════════════════════════════════ */
 interface SpeakersHeroSectionProps {
   badgeLabel: string;
   mainTitle: string;
@@ -13,7 +16,68 @@ interface SpeakersHeroSectionProps {
   isArabic: boolean;
 }
 
-export default function SpeakersHeroSection({
+/* ═══════════════════════════════════════════════════════════════
+   مكون الخلفية – Parallax + شبكة + توهجات + عقد
+   ═══════════════════════════════════════════════════════════════ */
+const SpeakersHeroBackground = memo(function SpeakersHeroBackground({
+  shouldReduceMotion,
+  imageY,
+  imageScale,
+}: {
+  shouldReduceMotion: boolean | null;
+  imageY: any;
+  imageScale: any;
+}) {
+  return (
+    <motion.div
+      style={{ y: imageY, scale: imageScale }}
+      className="absolute inset-0 z-0"
+    >
+      <div className="absolute inset-0 bg-[#050505]" />
+
+      {/* الحرف X الضخم */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center items-center pointer-events-none opacity-[0.02] mix-blend-screen">
+        <span className="text-[60vw] md:text-[40vw] font-black leading-none select-none text-white">
+          X
+        </span>
+      </div>
+
+      {/* شبكة الانتشار (Grid) */}
+      <div
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(230,43,30,0.5) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(230,43,30,0.5) 1px, transparent 1px)
+          `,
+          backgroundSize: "40px 40px",
+          maskImage:
+            "radial-gradient(circle at center, black 20%, transparent 70%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at center, black 20%, transparent 70%)",
+        }}
+      />
+
+      {/* توهج التركيز المركزي (Spotlight) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] max-w-[800px] h-[500px] bg-[#e62b1e]/[0.08] rounded-full blur-[120px] pointer-events-none" />
+
+      {/* عقد الأفكار الجانبية */}
+      <div className="absolute top-[25%] start-[10%] hidden lg:flex flex-col items-center opacity-40">
+        <div className="w-2.5 h-2.5 rounded-full bg-[#e62b1e] animate-pulse shadow-[0_0_15px_#e62b1e]" />
+        <div className="w-px h-32 bg-gradient-to-b from-[#e62b1e] to-transparent" />
+      </div>
+      <div className="absolute bottom-[25%] end-[10%] hidden lg:flex flex-col items-center opacity-40">
+        <div className="w-px h-32 bg-gradient-to-t from-[#e62b1e] to-transparent" />
+        <div className="w-2.5 h-2.5 rounded-full bg-[#e62b1e] animate-pulse shadow-[0_0_15px_#e62b1e]" />
+      </div>
+    </motion.div>
+  );
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   المكون الرئيسي – SpeakersHeroSection
+   ═══════════════════════════════════════════════════════════════ */
+const SpeakersHeroSection = memo(function SpeakersHeroSection({
   badgeLabel,
   mainTitle,
   highlightTitle,
@@ -25,7 +89,7 @@ export default function SpeakersHeroSection({
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
 
-  // ✅ تأثيرات Parallax (نفس التأثيرات المطبقة في الفريق والمكان)
+  // تأثيرات Parallax
   const imageY = useTransform(
     scrollY,
     [0, 500],
@@ -44,104 +108,88 @@ export default function SpeakersHeroSection({
       dir={isArabic ? "rtl" : "ltr"}
     >
       {/* 1. خلفية داكنة مع تأثير Parallax */}
-      <motion.div
-        style={{ y: imageY, scale: imageScale }}
-        className="absolute inset-0 z-0"
-      >
-        <div className="absolute inset-0 bg-[#050505]" />
-        
-        {/* الحرف X الضخم (علامة TEDx) في الخلفية */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center items-center pointer-events-none opacity-[0.02] mix-blend-screen">
-          <span className="text-[60vw] md:text-[40vw] font-black leading-none select-none text-white">X</span>
-        </div>
-        
-        {/* شبكة الانتشار (Grid) تتلاشى في الأطراف */}
-        <div 
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(230,43,30,0.5) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(230,43,30,0.5) 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px',
-            maskImage: 'radial-gradient(circle at center, black 20%, transparent 70%)',
-            WebkitMaskImage: 'radial-gradient(circle at center, black 20%, transparent 70%)'
-          }}
-        />
-        
-        {/* توهج التركيز المركزي (Spotlight) */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] max-w-[800px] h-[500px] bg-[#e62b1e]/[0.08] rounded-[100%] blur-[120px] pointer-events-none" />
-
-        {/* عقد الأفكار الجانبية (Nodes) */}
-        <div className="absolute top-[25%] start-[10%] hidden lg:flex flex-col items-center opacity-40">
-           <div className="w-2.5 h-2.5 rounded-full bg-[#e62b1e] animate-pulse shadow-[0_0_15px_#e62b1e]" />
-           <div className="w-px h-32 bg-gradient-to-b from-[#e62b1e] to-transparent" />
-        </div>
-        <div className="absolute bottom-[25%] end-[10%] hidden lg:flex flex-col items-center opacity-40">
-           <div className="w-px h-32 bg-gradient-to-t from-[#e62b1e] to-transparent" />
-           <div className="w-2.5 h-2.5 rounded-full bg-[#e62b1e] animate-pulse shadow-[0_0_15px_#e62b1e]" />
-        </div>
-      </motion.div>
+      <SpeakersHeroBackground
+        shouldReduceMotion={shouldReduceMotion}
+        imageY={imageY}
+        imageScale={imageScale}
+      />
 
       {/* 2. المحتوى المركزي (فوق الخلفية) */}
       <div className="max-w-[1000px] mx-auto px-5 sm:px-6 md:px-10 relative z-10 w-full flex flex-col items-center text-center">
-            
         {/* شارة TEDx */}
-        <div className="hero-fade-up mb-6 sm:mb-8" style={{ animationDelay: '0.1s' }}>
+        <div
+          className="hero-fade-up mb-6 sm:mb-8"
+          style={{ animationDelay: "0.1s" }}
+        >
           <SectionBadge className="bg-[#e62b1e]/10 border-[#e62b1e]/20 text-[#e62b1e] px-5 py-2 backdrop-blur-md">
             {badgeLabel}
           </SectionBadge>
         </div>
 
         {/* العنوان الرئيسي */}
-        <div className="space-y-4 hero-fade-up w-full" style={{ animationDelay: '0.2s' }}>
-          <h1 className={`
-            text-[2.75rem] sm:text-5xl md:text-7xl lg:text-[6rem] 
-            font-black leading-[1.1] md:leading-[1.05]
-            ${isArabic ? "font-arabic tracking-normal" : "tracking-[-0.04em]"}
-          `}>
+        <div
+          className="space-y-4 hero-fade-up w-full"
+          style={{ animationDelay: "0.2s" }}
+        >
+          <h1
+            className={`
+              text-[2.75rem] sm:text-5xl md:text-7xl lg:text-[6rem] 
+              font-black leading-[1.1] md:leading-[1.05]
+              ${isArabic ? "font-arabic tracking-normal" : "tracking-[-0.04em]"}
+            `}
+          >
             <span className="block text-white mb-2 md:mb-4">
               {mainTitle}
             </span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#ff5e53] to-[#cc1c10] drop-shadow-sm">
-              {highlightTitle}
-            </span>
+   <span className="block text-tedx-red">
+  {highlightTitle}
+</span>
           </h1>
         </div>
 
         {/* الخط المزخرف المركزي */}
-        <div className="flex items-center justify-center gap-4 w-full hero-fade-up py-8 md:py-10" style={{ animationDelay: '0.3s' }}>
-          <div className={`h-px w-20 sm:w-32 md:w-48 bg-gradient-to-r from-transparent to-zinc-600 rounded-full`} />
+        <div
+          className="flex items-center justify-center gap-4 w-full hero-fade-up py-8 md:py-10"
+          style={{ animationDelay: "0.3s" }}
+        >
+          <div className="h-px w-20 sm:w-32 md:w-48 bg-gradient-to-r from-transparent to-zinc-600 rounded-full" />
           <div className="relative flex items-center justify-center shrink-0">
             <span className="absolute inline-flex h-3 w-3 rounded-full bg-[#e62b1e]/40 animate-ping" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-[#e62b1e]" />
           </div>
-          <div className={`h-px w-20 sm:w-32 md:w-48 bg-gradient-to-l from-transparent to-zinc-600 rounded-full`} />
+          <div className="h-px w-20 sm:w-32 md:w-48 bg-gradient-to-l from-transparent to-zinc-600 rounded-full" />
         </div>
 
         {/* الوصف */}
-        <div className="w-full max-w-lg md:max-w-2xl mx-auto hero-fade-up" style={{ animationDelay: '0.4s' }}>
-          <p className={`
-            text-zinc-400 text-base sm:text-lg md:text-xl font-medium leading-relaxed
-            ${isArabic ? 'font-arabic' : ''}
-          `}>
+        <div
+          className="w-full max-w-lg md:max-w-2xl mx-auto hero-fade-up"
+          style={{ animationDelay: "0.4s" }}
+        >
+          <p
+            className={`
+              text-zinc-400 text-base sm:text-lg md:text-xl font-medium leading-relaxed
+              ${isArabic ? "font-arabic" : ""}
+            `}
+          >
             {description}
           </p>
         </div>
 
         {/* زر التفاعل ومؤشر النزول */}
-        <div className="mt-12 md:mt-16 flex flex-col items-center gap-8 hero-fade-up" style={{ animationDelay: '0.5s' }}>
-           <div className="flex flex-col items-center gap-3 text-zinc-500 hover:text-white transition-colors cursor-pointer">
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em]">
-                {discoverLabel}
-              </span>
-              <div className="w-px h-12 bg-gradient-to-b from-zinc-500 to-transparent" />
-           </div>
+        <div
+          className="mt-12 md:mt-16 flex flex-col items-center gap-8 hero-fade-up"
+          style={{ animationDelay: "0.5s" }}
+        >
+          <div className="flex flex-col items-center gap-3 text-zinc-500 hover:text-white transition-colors cursor-pointer">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em]">
+              {discoverLabel}
+            </span>
+            <div className="w-px h-12 bg-gradient-to-b from-zinc-500 to-transparent" />
+          </div>
         </div>
       </div>
 
-
-      {/* ── شريط TEDx سفلي ── */}
+      {/* شريط TEDx سفلي */}
       <div className="absolute bottom-0 left-0 right-0 h-[3px] z-10">
         <div
           className="h-full"
@@ -153,4 +201,6 @@ export default function SpeakersHeroSection({
       </div>
     </section>
   );
-}
+});
+
+export default SpeakersHeroSection;

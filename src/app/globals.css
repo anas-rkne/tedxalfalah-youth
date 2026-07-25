@@ -371,3 +371,9 @@ body {
   display: inline-block;
   opacity: 1;
 }
+
+[dir="rtl"] img[data-safe-image],
+[dir="rtl"] svg[data-safe-image] {
+  transform: none !important;
+  rotate: none !important;
+}

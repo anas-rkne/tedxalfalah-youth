@@ -1,139 +1,77 @@
-"use client";
-
-import { useRef } from "react";
-import { useScroll, useTransform } from "framer-motion";
-import { motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
+// src/app/[locale]/venue/page.tsx
+import { getTranslations } from "next-intl/server";
+import SectionContainer from "@/components/ui/SectionContainer";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import VenueMapSection from "@/components/venue/VenueMapSection";
+import VenueGallerySection from "@/components/venue/VenueGallerySection";
 import SectionBadge from "@/components/ui/SectionBadge";
+import { Metadata } from "next";
+import DarkHeroSection from "@/components/shared/DarkHeroSection";
 
-interface VenueHeroSectionProps {
-  heroTitle: string;
-  heroAlt: string;
-  heroImage?: string;
-  badgeLabel: string;
-  mainTitleLine1: string;
-  mainTitleLine2: string;
-  description: string;
-  isArabic?: boolean; // ➕ دعم اختياري للعربية
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "page.venue" });
+  return { title: t("meta.title"), description: t("meta.description") };
 }
 
-export default function VenueHeroSection({
-  heroTitle,
-  heroAlt,
-  heroImage,
-  badgeLabel,
-  mainTitleLine1,
-  mainTitleLine2,
-  description,
-  isArabic = false,
-}: VenueHeroSectionProps) {
-  const shouldReduceMotion = useReducedMotion();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll();
-
-  const imageY = useTransform(
-    scrollY,
-    [0, 500],
-    [0, shouldReduceMotion ? 0 : 150]
-  );
-  const imageScale = useTransform(
-    scrollY,
-    [0, 500],
-    [1, shouldReduceMotion ? 1 : 1.1]
-  );
-
-  const imageSrc = heroImage || "/images/venue-hero.webp";
+export default async function VenuePage({ params }: Props) {
+  const { locale } = await params;
+  const isArabic = locale === "ar";
+  const t = await getTranslations("page.venue");
 
   return (
-    <section
-      ref={containerRef}
-      className="relative pt-24 pb-16 sm:pt-28 sm:pb-20 md:pt-36 md:pb-28 lg:pt-40 lg:pb-32 overflow-hidden bg-[#050505] flex flex-col justify-center min-h-[85vh]"
-    >
-      {/* 1. صورة الخلفية مع Parallax */}
-      <motion.div
-        style={{ y: imageY, scale: imageScale }}
-        className="absolute inset-0 z-0"
-      >
-        <Image
-          src={imageSrc}
-          alt={heroAlt}
-          fill
-          priority
-          className="object-cover saturate-[0.8] contrast-[1.1]"
-          sizes="100vw"
-        />
-      </motion.div>
-
-      {/* 2. تدرج مظلم لضمان قراءة النص */}
-      <div
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.85) 100%)",
-        }}
+    <div className="bg-background">
+      {/* ═══════ Hero ═══════ */}
+      <DarkHeroSection
+        badgeLabel={t("hero.badgeLabel")}
+        mainTitle={t("hero.line1")}
+        highlightTitle={t("hero.line2")}
+        description={t("hero.description")}
+        discoverLabel="Scroll"
+        isArabic={isArabic}
+        heroImage="/images/venue-hero.webp"
+        heroAlt={t("heroAlt")}
       />
 
-      {/* 3. المحتوى الرئيسي (مطابق لحجم الحاوية في TeamHeroSection) */}
-      <div className="max-w-[1000px] mx-auto px-5 sm:px-6 md:px-10 relative z-10 w-full flex flex-col items-center text-center">
-        {/* الشارة */}
-        <div className="hero-fade-up mb-6 sm:mb-8" style={{ animationDelay: '0.1s' }}>
-          <SectionBadge className="bg-[#e62b1e]/10 border-[#e62b1e]/20 text-[#e62b1e] px-5 py-2 backdrop-blur-md">
-            {badgeLabel}
-          </SectionBadge>
-        </div>
-
-        {/* العنوان الرئيسي - نفس الأحجام والألوان والتدرج مثل Team */}
-        <div className="space-y-4 hero-fade-up w-full" style={{ animationDelay: '0.2s' }}>
-          <h1
-            className={`text-[2.75rem] sm:text-5xl md:text-7xl lg:text-[6rem] font-black leading-[1.1] md:leading-[1.05] ${
-              isArabic ? "font-arabic tracking-normal" : "tracking-[-0.04em]"
-            }`}
-          >
-            <span className="block text-white mb-2 md:mb-4">
-              {mainTitleLine1}
-            </span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#ff5e53] to-[#cc1c10] drop-shadow-sm">
-              {mainTitleLine2}
-            </span>
-          </h1>
-        </div>
-
-        {/* الخط الزخرفي */}
-        <div className="flex items-center justify-center gap-4 w-full hero-fade-up py-8 md:py-10" style={{ animationDelay: '0.3s' }}>
-          <div className="h-px w-20 sm:w-32 md:w-48 bg-gradient-to-r from-transparent to-zinc-600 rounded-full" />
-          <div className="relative flex items-center justify-center shrink-0">
-            <span className="absolute inline-flex h-3 w-3 rounded-full bg-[#e62b1e]/40 animate-ping" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#e62b1e]" />
+      {/* ═══════ Meet the Venue ═══════ */}
+      <section className="section-padding bg-background">
+        <div className="container-padding max-w-5xl mx-auto text-center">
+          <div className="flex justify-center mb-4">
+            <SectionBadge>{t("narrativeLabel")}</SectionBadge>
           </div>
-          <div className="h-px w-20 sm:w-32 md:w-48 bg-gradient-to-l from-transparent to-zinc-600 rounded-full" />
-        </div>
-
-        {/* الوصف */}
-        <div className="w-full max-w-lg md:max-w-2xl mx-auto hero-fade-up" style={{ animationDelay: '0.4s' }}>
-          <p className={`text-zinc-400 text-base sm:text-lg md:text-xl font-medium leading-relaxed ${isArabic ? 'font-arabic' : 'font-sans'}`}>
-            {description}
+          <h1 className="heading-h1 tracking-[-0.03em] heading-margin">{t("heroTitle")}</h1>
+          <div className="flex justify-center"><div className="h-1 w-20 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" /></div>
+          <p className="text-center text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto mt-6 text-lg md:text-xl leading-relaxed">
+            {t("narrative")}
           </p>
         </div>
+      </section>
 
-        {/* مؤشر النزول */}
-        <div className="mt-12 md:mt-16 flex flex-col items-center gap-8 hero-fade-up" style={{ animationDelay: '0.5s' }}>
-          <div className="flex flex-col items-center gap-3 text-zinc-500 hover:text-white transition-colors cursor-pointer">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em]">Scroll</span>
-            <div className="w-px h-12 bg-gradient-to-b from-zinc-500 to-transparent" />
-          </div>
-        </div>
-      </div>
+      {/* ═══════ Map ═══════ */}
+      <VenueMapSection
+        title={t("gettingThere.title")}
+        mapTitle={t("gettingThere.mapTitle")}
+        directions={t("gettingThere.directions")}
+      />
 
-      {/* ── شريط TEDx سفلي ── */}
-      <div className="absolute bottom-0 left-0 right-0 h-[3px] z-10">
-        <div
-          className="h-full"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, #e62b1e, #ff4d3f, #e62b1e, transparent)",
-          }}
-        />
-      </div>
-    </section>
+      {/* ═══════ Accessibility ═══════ */}
+      <ScrollReveal>
+        <section className="section-padding px-4 sm:px-6 lg:px-8">
+          <SectionContainer className="max-w-3xl mx-auto">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+              <SectionBadge>{t("accessibility.title")}</SectionBadge>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+            </div>
+            <p className="text-center text-muted-foreground text-[15px] leading-[1.8]">{t("accessibility.body")}</p>
+          </SectionContainer>
+        </section>
+      </ScrollReveal>
+
+      {/* ═══════ Gallery ═══════ */}
+      <VenueGallerySection count={6} />
+    </div>
   );
 }

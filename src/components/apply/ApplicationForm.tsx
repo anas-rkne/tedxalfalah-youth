@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, memo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,6 +9,7 @@ import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import { Link, useRouter } from "@/i18n/navigation";
 
+/* ─── القيم الثابتة ─── */
 const HOW_HEARD_VALUES = [
   "Social Media",
   "Friend/Family",
@@ -32,27 +33,37 @@ function wordCount(text: string) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-/* ───── أيقونات ───── */
-function LocationIcon({ className }: { className?: string }) {
+/* ─── أيقونات (مذكَّرة) ─── */
+const LocationIcon = memo(function LocationIcon({ className }: { className?: string }) {
   return (
     <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" />
       <circle cx="12" cy="10" r="3" />
     </svg>
   );
-}
+});
 
-function PenIcon({ className }: { className?: string }) {
+const PenIcon = memo(function PenIcon({ className }: { className?: string }) {
   return (
     <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
     </svg>
   );
-}
+});
 
-/* ───── عنوان قسم النموذج (مع دعم اللغة) ───── */
-function FormSection({ num, title, children, isArabic }: { num: number; title: string; children: React.ReactNode; isArabic: boolean }) {
+/* ─── مكونات مساعدة (مذكَّرة) ─── */
+const FormSection = memo(function FormSection({
+  num,
+  title,
+  children,
+  isArabic,
+}: {
+  num: number;
+  title: string;
+  children: React.ReactNode;
+  isArabic: boolean;
+}) {
   return (
     <div className="bg-white border border-black/[0.06] rounded-[20px] p-7 mb-5 hover:border-black/[0.1] hover:shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
       <h3 className={`text-sm font-bold text-zinc-900 mb-5 pb-3 border-b border-black/[0.06] flex items-center gap-2 ${isArabic ? 'font-arabic' : ''}`}>
@@ -64,24 +75,25 @@ function FormSection({ num, title, children, isArabic }: { num: number; title: s
       {children}
     </div>
   );
-}
+});
 
-/* ───── حقل إدخال (مع دعم اللغة) ───── */
-function Field({
+const Field = memo(function Field({
   label,
   error,
   children,
   hint,
   isArabic,
+  className = "",
 }: {
   label: string;
   error?: string;
   children: React.ReactNode;
   hint?: React.ReactNode;
   isArabic: boolean;
+  className?: string;
 }) {
   return (
-    <div className="mb-4">
+    <div className={`mb-4 ${className}`}>
       <label className={`block text-[13px] font-semibold text-zinc-600 mb-1.5 ${isArabic ? 'font-arabic' : ''}`}>{label}</label>
       {children}
       {hint && <div className="flex justify-between items-center mt-1">{hint}</div>}
@@ -93,7 +105,7 @@ function Field({
       )}
     </div>
   );
-}
+});
 
 export default function ApplicationForm() {
   const t = useTranslations("page.apply.form");
@@ -103,6 +115,7 @@ export default function ApplicationForm() {
   const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
 
+  /* ─── سكيما التطبيق (memoized) ─── */
   const applicationSchema = useMemo(
     () =>
       z
@@ -138,48 +151,24 @@ export default function ApplicationForm() {
         .superRefine((data, ctx) => {
           if (data.track === "young-speaker") {
             if (!data.schoolName) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["schoolName"],
-                message: t("errors.schoolNameRequired"),
-              });
+              ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["schoolName"], message: t("errors.schoolNameRequired") });
             }
             if (!data.guardianName) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["guardianName"],
-                message: t("errors.guardianNameRequired"),
-              });
+              ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["guardianName"], message: t("errors.guardianNameRequired") });
             }
             if (!data.guardianContact) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["guardianContact"],
-                message: t("errors.guardianContactRequired"),
-              });
+              ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["guardianContact"], message: t("errors.guardianContactRequired") });
             }
             if (!data.parentalConsent) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["parentalConsent"],
-                message: t("errors.parentalConsentRequired"),
-              });
+              ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["parentalConsent"], message: t("errors.parentalConsentRequired") });
             }
           }
           if (data.track === "expert") {
             if (!data.organizationAndRole) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["organizationAndRole"],
-                message: t("errors.organizationRequired"),
-              });
+              ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["organizationAndRole"], message: t("errors.organizationRequired") });
             }
             if (!data.areaOfWorkWithYouth) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["areaOfWorkWithYouth"],
-                message: t("errors.areaOfWorkRequired"),
-              });
+              ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["areaOfWorkWithYouth"], message: t("errors.areaOfWorkRequired") });
             }
           }
         }),
@@ -196,7 +185,11 @@ export default function ApplicationForm() {
     formState: { errors, isSubmitting },
   } = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
-    defaultValues: { track: "young-speaker", howHeardAboutUs: "Social Media", themeConnection: "identity" },
+    defaultValues: {
+      track: "young-speaker",
+      howHeardAboutUs: "Social Media",
+      themeConnection: "identity",
+    },
   });
 
   const track = watch("track");
@@ -220,16 +213,11 @@ export default function ApplicationForm() {
 
   const inputClasses =
     "w-full border-[1.5px] border-black/[0.08] rounded-xl px-4 py-3 text-sm text-zinc-900 bg-[#fafafa] placeholder:text-zinc-400 transition-all duration-250 ease-out outline-none hover:border-black/[0.15] hover:bg-white focus:border-[#e62b1e] focus:bg-white focus:shadow-[0_0_0_3px_rgba(230,43,30,0.08)]";
-
   const textareaClasses = inputClasses + " resize-y min-h-[100px]";
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-[680px] mx-auto flex flex-col gap-0"
-      noValidate
-    >
-      {/* ═══════ العنوان ═══════ */}
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-[680px] mx-auto flex flex-col gap-0" noValidate>
+      {/* العنوان */}
       <div className="text-center mb-10">
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-[#e62b1e] mb-3 px-3.5 py-1.5 bg-[#e62b1e]/10 border border-[#e62b1e]/20 rounded-full">
           {t("badge")}
@@ -239,31 +227,19 @@ export default function ApplicationForm() {
         </h2>
       </div>
 
-      {/* ═══════ القسم 1: اختيار المسار ═══════ */}
+      {/* 1. اختيار المسار */}
       <FormSection num={1} title={t("trackLabel")} isArabic={isArabic}>
         <div className="flex flex-col sm:flex-row gap-3">
           {/* متحدث شاب */}
-          <label
-            className={`relative flex-1 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              track === "young-speaker"
-                ? "border-[#e62b1e] bg-white shadow-[0_4px_20px_-4px_rgba(230,43,30,0.1)]"
-                : "border-black/[0.06] bg-[#fafafa] hover:border-[#e62b1e]/20 hover:bg-white"
-            }`}
-          >
-            <input
-              type="radio"
-              value="young-speaker"
-              className="absolute opacity-0"
-              {...register("track")}
-              onChange={() => setValue("track", "young-speaker")}
-            />
-            <div
-              className={`w-9 h-9 rounded-[10px] flex items-center justify-center mb-2.5 transition-all duration-300 ${
-                track === "young-speaker"
-                  ? "bg-[#e62b1e]/10 text-[#e62b1e]"
-                  : "bg-zinc-100 text-zinc-400"
-              }`}
-            >
+          <label className={`relative flex-1 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            track === "young-speaker"
+              ? "border-[#e62b1e] bg-white shadow-[0_4px_20px_-4px_rgba(230,43,30,0.1)]"
+              : "border-black/[0.06] bg-[#fafafa] hover:border-[#e62b1e]/20 hover:bg-white"
+          }`}>
+            <input type="radio" value="young-speaker" className="absolute opacity-0" {...register("track")} onChange={() => setValue("track", "young-speaker")} />
+            <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center mb-2.5 transition-all duration-300 ${
+              track === "young-speaker" ? "bg-[#e62b1e]/10 text-[#e62b1e]" : "bg-zinc-100 text-zinc-400"
+            }`}>
               <LocationIcon />
             </div>
             <div className={`text-[15px] font-bold text-zinc-900 mb-1 ${isArabic ? 'font-arabic' : ''}`}>{t("youngSpeakerLabel")}</div>
@@ -274,27 +250,15 @@ export default function ApplicationForm() {
           </label>
 
           {/* خبير */}
-          <label
-            className={`relative flex-1 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              track === "expert"
-                ? "border-[#e62b1e] bg-white shadow-[0_4px_20px_-4px_rgba(230,43,30,0.1)]"
-                : "border-black/[0.06] bg-[#fafafa] hover:border-[#e62b1e]/20 hover:bg-white"
-            }`}
-          >
-            <input
-              type="radio"
-              value="expert"
-              className="absolute opacity-0"
-              {...register("track")}
-              onChange={() => setValue("track", "expert")}
-            />
-            <div
-              className={`w-9 h-9 rounded-[10px] flex items-center justify-center mb-2.5 transition-all duration-300 ${
-                track === "expert"
-                  ? "bg-[#e62b1e]/10 text-[#e62b1e]"
-                  : "bg-zinc-100 text-zinc-400"
-              }`}
-            >
+          <label className={`relative flex-1 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            track === "expert"
+              ? "border-[#e62b1e] bg-white shadow-[0_4px_20px_-4px_rgba(230,43,30,0.1)]"
+              : "border-black/[0.06] bg-[#fafafa] hover:border-[#e62b1e]/20 hover:bg-white"
+          }`}>
+            <input type="radio" value="expert" className="absolute opacity-0" {...register("track")} onChange={() => setValue("track", "expert")} />
+            <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center mb-2.5 transition-all duration-300 ${
+              track === "expert" ? "bg-[#e62b1e]/10 text-[#e62b1e]" : "bg-zinc-100 text-zinc-400"
+            }`}>
               <PenIcon />
             </div>
             <div className={`text-[15px] font-bold text-zinc-900 mb-1 ${isArabic ? 'font-arabic' : ''}`}>{t("expertLabel")}</div>
@@ -306,21 +270,21 @@ export default function ApplicationForm() {
         </div>
       </FormSection>
 
-      {/* ═══════ القسم 2: المعلومات الشخصية ═══════ */}
+      {/* 2. المعلومات الشخصية */}
       <FormSection num={2} title={t("personalInfoTitle")} isArabic={isArabic}>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Field label={t("fullName")} error={errors.fullName?.message} isArabic={isArabic}>
+          <Field label={t("fullName")} error={errors.fullName?.message} isArabic={isArabic} className="flex-1">
             <input {...register("fullName")} className={inputClasses} placeholder={t("fullNamePlaceholder")} />
           </Field>
-          <Field label={t("age")} error={errors.age?.message} isArabic={isArabic}>
+          <Field label={t("age")} error={errors.age?.message} isArabic={isArabic} className="flex-1">
             <input type="number" {...register("age")} className={inputClasses} placeholder={t("agePlaceholder")} />
           </Field>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Field label={t("email")} error={errors.email?.message} isArabic={isArabic}>
+          <Field label={t("email")} error={errors.email?.message} isArabic={isArabic} className="flex-1">
             <input type="email" {...register("email")} className={inputClasses} placeholder={t("emailPlaceholder")} />
           </Field>
-          <Field label={t("phone")} error={errors.phone?.message} isArabic={isArabic}>
+          <Field label={t("phone")} error={errors.phone?.message} isArabic={isArabic} className="flex-1">
             <input {...register("phone")} className={inputClasses} placeholder={t("phonePlaceholder")} />
           </Field>
         </div>
@@ -329,47 +293,31 @@ export default function ApplicationForm() {
         </Field>
       </FormSection>
 
-      {/* ═══════ القسم 3: فكرة المحاضرة ═══════ */}
+      {/* 3. فكرة المحاضرة */}
       <FormSection num={3} title={t("talkIdeaTitle")} isArabic={isArabic}>
         <Field label={t("talkIdeaTitle")} error={errors.talkIdeaTitle?.message} isArabic={isArabic}>
           <input {...register("talkIdeaTitle")} className={inputClasses} placeholder={t("talkIdeaTitlePlaceholder")} />
         </Field>
-
-        <Field
-          label={t("ideaSummary")}
-          error={errors.ideaSummary?.message}
+        <Field label={t("ideaSummary")} error={errors.ideaSummary?.message}
           hint={<span className="text-[11px] text-zinc-400 font-medium">{t("wordCount", { count: wordCount(ideaSummary), max: 300 })}</span>}
-          isArabic={isArabic}
-        >
+          isArabic={isArabic}>
           <textarea {...register("ideaSummary")} rows={4} className={textareaClasses} placeholder={t("ideaSummaryPlaceholder")} />
         </Field>
-
-        <Field
-          label={t("whyItMatters")}
-          error={errors.whyItMatters?.message}
+        <Field label={t("whyItMatters")} error={errors.whyItMatters?.message}
           hint={<span className="text-[11px] text-zinc-400 font-medium">{t("wordCount", { count: wordCount(whyItMatters), max: 150 })}</span>}
-          isArabic={isArabic}
-        >
+          isArabic={isArabic}>
           <textarea {...register("whyItMatters")} rows={3} className={textareaClasses} placeholder={t("whyItMattersPlaceholder")} />
         </Field>
-
         <Field label={t("themeConnection")} error={errors.themeConnection?.message} isArabic={isArabic}>
-          <select
-            {...register("themeConnection")}
-            className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] pr-10`}
-          >
+          <select {...register("themeConnection")} className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] pr-10`}>
             {THEME_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {t(`themeConnectionOptions.${option}`)}
-              </option>
+              <option key={option} value={option}>{t(`themeConnectionOptions.${option}`)}</option>
             ))}
           </select>
         </Field>
-
         <Field label={t("videoLink")} error={errors.videoLink?.message} isArabic={isArabic}>
           <input {...register("videoLink")} className={inputClasses} placeholder={t("videoLinkPlaceholder")} />
         </Field>
-
         <Field label={t("howHeard")} isArabic={isArabic}>
           <select {...register("howHeardAboutUs")} className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] pr-10`}>
             <option value="Social Media">{t("howHeardOptions.socialMedia")}</option>
@@ -381,17 +329,17 @@ export default function ApplicationForm() {
         </Field>
       </FormSection>
 
-      {/* ═══════ القسم 4: حقول شرطية ═══════ */}
+      {/* 4. حقول شرطية */}
       {track === "young-speaker" && (
         <FormSection num={4} title={t("youngSpeakerSection")} isArabic={isArabic}>
           <Field label={t("schoolName")} error={errors.schoolName?.message} isArabic={isArabic}>
             <input {...register("schoolName")} className={inputClasses} placeholder={t("schoolNamePlaceholder")} />
           </Field>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Field label={t("guardianName")} error={errors.guardianName?.message} isArabic={isArabic}>
+            <Field label={t("guardianName")} error={errors.guardianName?.message} isArabic={isArabic} className="flex-1">
               <input {...register("guardianName")} className={inputClasses} placeholder={t("guardianNamePlaceholder")} />
             </Field>
-            <Field label={t("guardianContact")} error={errors.guardianContact?.message} isArabic={isArabic}>
+            <Field label={t("guardianContact")} error={errors.guardianContact?.message} isArabic={isArabic} className="flex-1">
               <input {...register("guardianContact")} className={inputClasses} placeholder={t("guardianContactPlaceholder")} />
             </Field>
           </div>
@@ -419,15 +367,13 @@ export default function ApplicationForm() {
         </FormSection>
       )}
 
-      {/* ═══════ الموافقة على الشروط ═══════ */}
+      {/* الموافقة على الشروط */}
       <div className="bg-white border border-black/[0.06] rounded-[20px] p-7 mb-5 hover:border-black/[0.1] transition-colors duration-300">
         <label className="flex items-start gap-2.5 cursor-pointer">
           <input type="checkbox" {...register("consentToTerms")} className="w-[18px] h-[18px] border-2 border-black/15 rounded-[5px] mt-0.5 flex-shrink-0 accent-[#e62b1e] cursor-pointer" />
           <span className={`text-[13px] text-zinc-600 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
             {t("agreeToTerms")}{" "}
-            <Link href="/terms" className="text-[#e62b1e] font-semibold hover:underline">
-              {t("termsLink")}
-            </Link>
+            <Link href="/terms" className="text-[#e62b1e] font-semibold hover:underline">{t("termsLink")}</Link>
           </span>
         </label>
         {errors.consentToTerms && (
@@ -438,23 +384,18 @@ export default function ApplicationForm() {
         )}
       </div>
 
-      {/* ═══════ خطأ عام ═══════ */}
+      {/* خطأ عام */}
       {status === "error" && (
         <div className="p-4 rounded-xl bg-[#e62b1e]/10 border border-[#e62b1e]/20 text-[#e62b1e] text-sm font-medium text-center mb-4">
           {t("errorGeneric")}
         </div>
       )}
 
-      {/* ═══════ Turnstile ═══════ */}
+      {/* Turnstile */}
       <TurnstileWidget onVerify={setTurnstileToken} />
 
-      {/* ═══════ زر الإرسال ═══════ */}
-      <Button
-        variant="primary"
-        size="lg"
-        className="w-full mt-2"
-        loading={isSubmitting}
-      >
+      {/* زر الإرسال */}
+      <Button variant="primary" size="lg" className="w-full mt-2" loading={isSubmitting}>
         {t("submit")}
       </Button>
     </form>

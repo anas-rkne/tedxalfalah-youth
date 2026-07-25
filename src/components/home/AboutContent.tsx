@@ -1,11 +1,15 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { TedxGlobe } from "@/components/ui/tedx-globe";
 import { Users, Lightbulb, Globe } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 import SectionBadge from "@/components/ui/SectionBadge";
+import FadeUp from "@/components/shared/FadeUp";
+import DarkCTASection from "@/components/shared/DarkCTASection";
+
 
 interface AboutContentProps {
   heading: string;
@@ -24,9 +28,10 @@ interface AboutContentProps {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   مكون كلمة عنوان متحركة
+   مكونات فرعية مستخرجة (ثابتة، تُنشأ مرة واحدة)
    ═══════════════════════════════════════════════════════════════ */
-function AnimatedWord({
+
+const AnimatedWord = memo(function AnimatedWord({
   word,
   index,
   isHighlight,
@@ -55,12 +60,9 @@ function AnimatedWord({
       {word}
     </motion.span>
   );
-}
+});
 
-/* ═══════════════════════════════════════════════════════════════
-   مكون قيمة صغيرة (أصبحت تقبل النص كـ prop)
-   ═══════════════════════════════════════════════════════════════ */
-function MiniValue({
+const MiniValue = memo(function MiniValue({
   icon,
   text,
   delay,
@@ -83,12 +85,9 @@ function MiniValue({
       <span className="text-xs font-semibold text-muted-foreground">{text}</span>
     </motion.div>
   );
-}
+});
 
-/* ═══════════════════════════════════════════════════════════════
-   مكون فقرة نصية (يدعم التمييز)
-   ═══════════════════════════════════════════════════════════════ */
-function FormattedParagraph({
+const FormattedParagraph = memo(function FormattedParagraph({
   text,
   className,
   isRTL,
@@ -97,41 +96,34 @@ function FormattedParagraph({
   className?: string;
   isRTL: boolean;
 }) {
-  const highlightRegex = /(TEDx|TED)(?![A-Za-z0-9])/g;
-  const parts: { type: "text" | "highlight"; content: string }[] = [];
+  const parts = useMemo(() => {
+    const highlightRegex = /(TEDx|TED)(?![A-Za-z0-9])/g;
+    const result: { type: "text" | "highlight"; content: string }[] = [];
+    let lastIndex = 0;
+    let match;
 
-  let lastIndex = 0;
-  let match;
-
-  while ((match = highlightRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push({
-        type: "text",
-        content: text.slice(lastIndex, match.index),
-      });
+    while ((match = highlightRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        result.push({ type: "text", content: text.slice(lastIndex, match.index) });
+      }
+      result.push({ type: "highlight", content: match[0] });
+      lastIndex = match.index + match[0].length;
     }
-    parts.push({ type: "highlight", content: match[0] });
-    lastIndex = match.index + match[0].length;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push({ type: "text", content: text.slice(lastIndex) });
-  }
-
-  if (parts.length === 0) {
-    parts.push({ type: "text", content: text });
-  }
+    if (lastIndex < text.length) {
+      result.push({ type: "text", content: text.slice(lastIndex) });
+    }
+    if (result.length === 0) {
+      result.push({ type: "text", content: text });
+    }
+    return result;
+  }, [text]);
 
   return (
     <p className={className} dir={isRTL ? "rtl" : "ltr"}>
       {parts.map((part, index) => {
         if (part.type === "highlight") {
           return (
-            <span
-              key={index}
-              dir="ltr"
-              className="inline-block text-tedx-red font-semibold"
-            >
+            <span key={index} dir="ltr" className="inline-block text-tedx-red font-semibold">
               {part.content}
             </span>
           );
@@ -140,8 +132,11 @@ function FormattedParagraph({
       })}
     </p>
   );
-}
+});
 
+/* ═══════════════════════════════════════════════════════════════
+   المكون الرئيسي
+   ═══════════════════════════════════════════════════════════════ */
 export default function AboutContent({
   heading,
   body,
@@ -153,33 +148,21 @@ export default function AboutContent({
   applyLabel,
   ticketsLabel,
 }: AboutContentProps) {
-  const { isRTL } = useRTL(); // ✅ فقط لتحديد الاتجاه
+  const { isRTL } = useRTL();
   const shouldReduceMotion = useReducedMotion();
 
-  const titleWords = heading.split(" ");
+  const titleWords = useMemo(() => heading.split(" "), [heading]);
   const highlightWords = ["TED", "TEDx"];
 
   return (
     <section className="section-padding relative bg-background overflow-hidden">
-      
-      {/* ═══════════════════════════════════════════════════════════════
-          HEADER - بداية القسم
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ─── HEADER ─── */}
       <div className="container-padding max-w-5xl mx-auto text-center">
-        
-        <motion.div
-          initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+        <FadeUp>
           <div className="flex justify-center mb-4">
-            {/* ✅ الشارة تأتي من الـ prop الآن */}
-            <SectionBadge>
-              {badgeLabel}
-            </SectionBadge>
+            <SectionBadge>{badgeLabel}</SectionBadge>
           </div>
-        </motion.div>
+        </FadeUp>
 
         <div className="perspective-[1000px] mt-6 heading-margin">
           <h1 className="heading-h1 tracking-[-0.03em] leading-[1.1]">
@@ -210,18 +193,16 @@ export default function AboutContent({
         </motion.div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          CONTENT - المحتوى الرئيسي
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* ─── CONTENT ─── */}
       <div className="container-padding max-w-7xl mx-auto mt-10 md:mt-16">
+        {/* dir="ltr" يثبت ترتيب: الكرة يسار، النص يمين */}
         <div
-          className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-20 ${
-            isRTL ? "lg:flex-row-reverse" : "lg:flex-row"
-          }`}
+          dir="ltr"
+          className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20"
         >
-          {/* الكرة الأرضية */}
+          {/* الكرة الأرضية (ثابتة يسار) */}
           <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 40 : -40 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -235,13 +216,14 @@ export default function AboutContent({
             </div>
           </motion.div>
 
-          {/* النص التعريفي */}
+          {/* النص التعريفي (dir="auto" لاستجابة الاتجاه للغة) */}
           <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? -40 : 40 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="flex-1 max-w-xl"
+            dir="auto"
           >
             <div className="relative p-8 md:p-10 rounded-[24px] bg-card border border-border">
               <div className="w-12 h-12 rounded-2xl bg-tedx-red/10 flex items-center justify-center text-tedx-red mb-6">
@@ -254,27 +236,13 @@ export default function AboutContent({
                 isRTL={isRTL}
               />
 
-              {/* قيم صغيرة */}
               <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-border">
-                <MiniValue
-                  icon={<Globe className="w-3 h-3" />}
-                  text={valuesLabels.platform} // ✅ من الـ prop
-                  delay={0.4}
-                />
-                <MiniValue
-                  icon={<Users className="w-3 h-3" />}
-                  text={valuesLabels.community} // ✅ من الـ prop
-                  delay={0.5}
-                />
-                <MiniValue
-                  icon={<Lightbulb className="w-3 h-3" />}
-                  text={valuesLabels.ideas} // ✅ من الـ prop
-                  delay={0.6}
-                />
+                <MiniValue icon={<Globe className="w-3 h-3" />} text={valuesLabels.platform} delay={0.4} />
+                <MiniValue icon={<Users className="w-3 h-3" />} text={valuesLabels.community} delay={0.5} />
+                <MiniValue icon={<Lightbulb className="w-3 h-3" />} text={valuesLabels.ideas} delay={0.6} />
               </div>
             </div>
 
-            {/* ملاحظة الترخيص */}
             <div className="mt-6 p-5 rounded-2xl bg-card border border-border">
               <p
                 className="text-sm text-muted-foreground italic leading-relaxed"
@@ -287,52 +255,14 @@ export default function AboutContent({
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          CTA - دعوة للانضمام (تم عكس الهرمية: الأساسي للتذاكر، الثانوي للتقديم)
-          ═══════════════════════════════════════════════════════════════ */}
-      <div className="container-padding max-w-4xl mx-auto mt-16 md:mt-24">
-        <motion.div
-          initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="p-10 md:p-14 rounded-[32px] bg-gradient-to-br from-zinc-900 to-zinc-800 text-white relative overflow-hidden text-center"
-        >
-          <div className="absolute top-0 right-0 w-72 h-72 bg-tedx-red/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-tedx-red/5 rounded-full blur-2xl" />
-
-          <div className="relative z-10">
-            <h2 className="heading-h2 mb-4 text-white">
-              {ctaHeading}
-            </h2>
-            <p className="text-zinc-400 max-w-lg mx-auto mb-8 leading-relaxed">
-              {ctaDescription}
-            </p>
-            
-            {/* ✅ أزرار هرمية صحيحة */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              
-              {/* 1. زر ثانوي (للتقديم) - خلفية شفافة */}
-              <AnimatedSlidingButton
-                href="/apply"
-                variant="primary"
-                className="min-w-[140px] bg-white/10 border-2 border-white/20 text-white hover:bg-white/20 hover:border-white/30"
-              >
-                {applyLabel}
-              </AnimatedSlidingButton>
-
-              {/* 2. زر أساسي (للتذاكر) - لون أحمر */}
-              <AnimatedSlidingButton
-                href="/tickets"
-                variant="primary"
-                className="min-w-[140px] shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)]"
-              >
-                {ticketsLabel}
-              </AnimatedSlidingButton>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+      {/* ─── CTA ─── */}
+  <DarkCTASection
+  heading={ctaHeading}
+  description={ctaDescription}
+  primaryButton={{ href: "/tickets", label: ticketsLabel }}
+  secondaryButton={{ href: "/apply", label: applyLabel }}
+  className="mt-16 md:mt-24"
+/>
     </section>
   );
 }

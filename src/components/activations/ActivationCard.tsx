@@ -1,17 +1,17 @@
 "use client";
 
+import { memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import Image from "next/image";
 import { Activation } from "@/lib/types";
+import SafeImage from "@/components/ui/SafeImage";
+import { useRTL } from "@/hooks/useRTL";
 
 interface ActivationCardProps {
   activation: Activation;
   index: number;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   أيقونة الموقع
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════ LocationIcon (ثابتة) ═══════════ */
 function LocationIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -21,19 +21,19 @@ function LocationIcon() {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   بطاقة التفعيل — تصميم عصري بدون توهج أحمر
-   ═══════════════════════════════════════════════════════════════ */
-export default function ActivationCard({
+const ActivationCard = memo(function ActivationCard({
   activation,
   index,
 }: ActivationCardProps) {
   const shouldReduceMotion = useReducedMotion();
+  const { isRTL } = useRTL();
   const isReversed = index % 2 === 1;
 
   return (
     <>
       <motion.div
+        // ✅ dir="ltr" يضمن أن flex-row-reverse يعمل بصرياً دون التأثر بـ RTL
+        dir="ltr"
         className={`group flex flex-col md:flex-row gap-8 md:gap-12 items-center ${
           isReversed ? "md:flex-row-reverse" : ""
         }`}
@@ -48,7 +48,7 @@ export default function ActivationCard({
       >
         {/* ═══════ الصورة ═══════ */}
         <div className="relative w-full md:w-[55%] aspect-[16/10] rounded-[20px] overflow-hidden flex-shrink-0">
-          <Image
+          <SafeImage
             src={activation.imageUrl}
             alt={activation.name}
             fill
@@ -60,8 +60,7 @@ export default function ActivationCard({
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background:
-                "linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.4) 100%)",
+              background: "linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.4) 100%)",
             }}
           />
 
@@ -75,7 +74,7 @@ export default function ActivationCard({
         </div>
 
         {/* ═══════ المحتوى النصي ═══════ */}
-        <div className="w-full md:w-[45%] flex-1">
+        <div className="w-full md:w-[45%] flex-1" dir="auto">
           <h2 className="font-bold text-2xl text-zinc-900 leading-[1.25] tracking-[-0.02em] mb-2">
             {activation.name}
           </h2>
@@ -100,4 +99,6 @@ export default function ActivationCard({
       />
     </>
   );
-}
+});
+
+export default ActivationCard;

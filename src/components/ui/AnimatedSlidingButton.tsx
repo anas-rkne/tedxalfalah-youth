@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { ReactNode } from "react";
@@ -13,7 +14,7 @@ interface AnimatedSlidingButtonProps {
   className?: string;
 }
 
-export default function AnimatedSlidingButton({
+const AnimatedSlidingButton = memo(function AnimatedSlidingButton({
   href,
   children,
   variant = "primary",
@@ -21,10 +22,13 @@ export default function AnimatedSlidingButton({
 }: AnimatedSlidingButtonProps) {
   const { isRTL } = useRTL();
 
-  const baseClasses =
-    variant === "primary"
-      ? "bg-tedx-red text-white border border-tedx-red hover:bg-tedx-red/90 hover:border-tedx-red/90"
-      : "border-2 border-tedx-red text-tedx-red bg-transparent hover:bg-tedx-red hover:text-white";
+  const baseClasses = useMemo(
+    () =>
+      variant === "primary"
+        ? "bg-tedx-red text-white border border-tedx-red hover:bg-tedx-red/90 hover:border-tedx-red/90"
+        : "border-2 border-tedx-red text-tedx-red bg-transparent hover:bg-tedx-red hover:text-white",
+    [variant]
+  );
 
   return (
     <motion.div
@@ -40,17 +44,17 @@ export default function AnimatedSlidingButton({
           className
         )}
       >
-        {/* 1. النص الأصلي مع النقطة (يخرج في اتجاه معاكس لاتجاه القراءة عند التمرير) */}
+        {/* النص الأصلي مع النقطة */}
         <div
           className={`flex items-center justify-center gap-2 transition-all duration-300 group-hover:opacity-0 ${
             isRTL ? "group-hover:-translate-x-full" : "group-hover:translate-x-full"
           }`}
         >
           <div className="h-2 w-2 rounded-full bg-current transition-all duration-300 group-hover:scale-[100.8]" />
-                    <span className="inline-block whitespace-nowrap">{children}</span>
+          <span className="inline-block whitespace-nowrap">{children}</span>
         </div>
 
-        {/* 2. النص البديل مع السهم (يدخل من الاتجاه المعاكس عند التمرير) */}
+        {/* النص البديل مع السهم (انعكاس السهم في RTL يبقى مقصوداً) */}
         <div
           className={`absolute inset-0 flex items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 ${
             isRTL ? "translate-x-full" : "-translate-x-full"
@@ -77,4 +81,6 @@ export default function AnimatedSlidingButton({
       </Link>
     </motion.div>
   );
-}
+});
+
+export default AnimatedSlidingButton;

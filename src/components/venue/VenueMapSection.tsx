@@ -1,7 +1,9 @@
 "use client";
 
+import { memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import SectionBadge from "@/components/ui/SectionBadge"; // ✅ استيراد الشارة الموحدة
+import SectionBadge from "@/components/ui/SectionBadge";
+import { useRTL } from "@/hooks/useRTL";
 
 interface VenueMapSectionProps {
   title: string;
@@ -9,28 +11,21 @@ interface VenueMapSectionProps {
   directions: string;
 }
 
-export default function VenueMapSection({
+const VenueMapSection = memo(function VenueMapSection({
   title,
   mapTitle,
   directions,
 }: VenueMapSectionProps) {
   const shouldReduceMotion = useReducedMotion();
+  const { isRTL } = useRTL();
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-background">
       <div className="max-w-6xl mx-auto">
-        
-        {/* عنوان المجموعة - ✅ تم الإبقاء على الخطوط واستبدال النص بـ SectionBadge */}
+        {/* عنوان المجموعة */}
         <div className="flex items-center gap-4 mb-8">
-          {/* الخط الأيسر */}
           <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-          
-          {/* الشارة الجديدة */}
-          <SectionBadge>
-            {title}
-          </SectionBadge>
-          
-          {/* الخط الأيمن */}
+          <SectionBadge>{title}</SectionBadge>
           <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         </div>
 
@@ -42,9 +37,7 @@ export default function VenueMapSection({
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          {/* إطار داخلي ناعم */}
           <div className="absolute inset-0 rounded-[20px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)] pointer-events-none z-10" />
-
           <iframe
             title={mapTitle}
             src="https://www.google.com/maps?q=Dubai&output=embed"
@@ -73,11 +66,16 @@ export default function VenueMapSection({
               <circle cx="12" cy="10" r="3" />
             </svg>
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p
+            className="text-sm text-muted-foreground leading-relaxed"
+            dir={isRTL ? "rtl" : "ltr"}
+          >
             {directions}
           </p>
         </div>
       </div>
     </section>
   );
-}
+});
+
+export default VenueMapSection;
