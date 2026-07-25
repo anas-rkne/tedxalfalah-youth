@@ -229,7 +229,7 @@ export default function HeroDynamicContent({
   eventYear: string;
 }) {
   return (
-    <BackgroundBeamsWithCollision className="h-[calc(100vh-80px)]">
+    <BackgroundBeamsWithCollision className="section-padding ">
       <div
         dir="ltr"
         className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14 w-full max-w-7xl mx-auto px-4 relative h-full"

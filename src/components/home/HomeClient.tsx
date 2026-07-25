@@ -6,10 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Hero from "@/components/home/Hero";
 import About from "@/components/home/About";
 import Theme from "@/components/home/Theme";
-import SpeakersPreview from "@/components/home/SpeakersPreview";
-import Highlights from "@/components/home/Highlights";
-import ApplyBanner from "@/components/home/ApplyBanner";
-import SponsorsStrip from "@/components/home/SponsorsStrip";
+
 
 export default function HomeClient() {
   const containerRef = useRef<HTMLDivElement>(null);

@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/FooterWrapper" ;
+import Footer from "@/components/layout/FooterWrapper";
 import CustomCursorWrapper from "@/components/ui/CustomCursorWrapper";
 import ReadingProgress from "@/components/ui/ReadingProgress";
 import ScrollIndicator from "@/components/ui/ScrollIndicator";
@@ -15,11 +15,16 @@ import PageTransition from "@/components/ui/PageTransition";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 const notoKufiArabic = Noto_Kufi_Arabic({
   variable: "--font-noto-kufi-arabic",
   subsets: ["arabic"],
+  display: "swap",
+  preload: true,
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -30,6 +35,20 @@ export const metadata: Metadata = {
   },
   description:
     "Young voices. Real ideas. The future starts earlier than we think. An independently organized TEDx event.",
+  icons: {
+    icon: [
+      { url: "/my-favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/my-favicon/favicon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/my-favicon/favicon.ico",
+    apple: [
+      { url: "/my-favicon/apple-touch-icon.png", sizes: "180x180" },
+    ],
+  },
+  appleWebApp: {
+    title: "TEDxAlFalah Youth",
+  },
+  manifest: "/my-favicon/site.webmanifest",
   openGraph: {
     title: "TEDxAlFalah Youth | Tomorrow, Now.",
     description:
@@ -62,7 +81,8 @@ export default async function RootLayout({
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html  data-scroll-behavior="smooth"
+    <html
+      data-scroll-behavior="smooth"
       lang={locale}
       dir={dir}
       className={`${inter.variable} ${notoKufiArabic.variable} h-full antialiased`}
@@ -84,13 +104,8 @@ export default async function RootLayout({
           <CustomCursorWrapper />
           <Header />
 
-          <main
-            id="main-content"
-            className="flex-1 relative"
-          >
-            <PageTransition>
-              {children}
-            </PageTransition>
+          <main id="main-content" className="flex-1 relative">
+            <PageTransition>{children}</PageTransition>
           </main>
 
           <ScrollIndicator />

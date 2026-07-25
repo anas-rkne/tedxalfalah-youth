@@ -12,7 +12,6 @@ export default async function Footer() {
     { label: tCommon("team"), href: "/team" },
     { label: tCommon("venue"), href: "/venue" },
     { label: tCommon("activations"), href: "/activations" },
-    { label: tCommon("schedule"), href: "/schedule" },
     { label: tCommon("apply"), href: "/apply" },
     { label: tCommon("sponsors"), href: "/sponsors" },
     { label: tCommon("tickets"), href: "/tickets" },

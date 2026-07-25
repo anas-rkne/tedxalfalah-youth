@@ -5,7 +5,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useState, useEffect } from "react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import TrackingEyes from "@/components/ui/TrackingEyes";
-import AnimatedSocialIcon from "@/components/ui/AnimatedSocialIcon";
 import { InstagramIcon, LinkedinIcon, XIcon } from "@/components/ui/SocialIcons";
 import { Mail, ArrowUpRight, MapPin, Phone, ExternalLink } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
@@ -81,33 +80,7 @@ function QuickLinkItem({ label, href }: { label: string; href: string }) {
   );
 }
 
-function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
-  const shouldReduceMotion = useReducedMotion();
-  const [count, setCount] = useState(shouldReduceMotion ? value : 0);
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-    const duration = 2000;
-    const steps = 60;
-    const increment = value / steps;
-    let current = 0;
-    const interval = setInterval(() => {
-      current += increment;
-      if (current >= value) {
-        setCount(value);
-        clearInterval(interval);
-      } else {
-        setCount(Math.floor(current));
-      }
-    }, duration / steps);
-    return () => clearInterval(interval);
-  }, [value, shouldReduceMotion]);
-  return (
-    <span className="tabular-nums">
-      {count}
-      {suffix}
-    </span>
-  );
-}
+
 
 export default function FooterContent({
   ctaLabel,

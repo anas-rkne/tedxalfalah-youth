@@ -69,7 +69,7 @@ export default function Header() {
   const headerBg = useTransform(
     scrollY,
     [0, 80],
-    ["rgba(255,255,255,0)", "rgba(255,255,255,0.88)"]
+    ["rgba(255,255,255,0)", "rgba(255,255,255,1)"]
   );
   const headerBlur = useTransform(scrollY, [0, 80], [0, 20]);
   const borderOpacity = useTransform(scrollY, [0, 60], [0, 1]);

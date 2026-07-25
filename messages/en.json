@@ -661,50 +661,51 @@
       "cta": "View Schedule"
     }
   },
-    "faq": {
+ "faq": {
       "meta": {
         "title": "FAQ",
-        "description": "Common questions about attending TEDxAlFalah Youth."
+        "description": "Frequently asked questions about attending TEDxAlFalah Youth."
       },
+      "badge": "FAQ",
       "title": "Frequently Asked Questions",
-      "subtitle": "Answers to the most common questions from attendees. Looking for application-specific questions instead?",
-      "applyFaqLink": "See the Apply FAQ",
+      "subtitle": "Answers to the most common questions from attendees. Looking for application‑related questions instead?",
+      "applyFaqLink": "See Application FAQs",
       "items": {
         "item1": {
           "question": "How do I get to the venue?",
-          "answer": "[PLACEHOLDER: directions summary — full details, map, and parking guidance are on the Venue page.]"
+          "answer": "You can reach the venue easily by public transport or private car. Free parking is available near the main entrance. For detailed directions, maps, and parking guidance, please visit the Venue page."
         },
         "item2": {
           "question": "Are parents and guardians allowed to attend?",
-          "answer": "[PLACEHOLDER: confirm whether parents/guardians of Young Speakers and general attendees are welcome, and whether they need a separate ticket.]"
+          "answer": "Yes, parents and guardians are welcome. Everyone (including parents) needs a separate ticket for entry. Tickets can be purchased from the Tickets page."
         },
         "item3": {
           "question": "Is there an age requirement to attend as a guest?",
-          "answer": "[PLACEHOLDER: age guidance for general attendees, as opposed to Young Speaker applicants specifically.]"
+          "answer": "The event is open to all ages, but we recommend it for ages 10 and above due to the nature of the talks. Some talks may be more suitable for youth and adults, and there is no upper age limit."
         },
         "item4": {
-          "question": "Will food and drinks be available?",
-          "answer": "[PLACEHOLDER: confirm catering, food trucks, or whether attendees should eat beforehand.]"
+          "question": "Will food and beverages be provided?",
+          "answer": "Light snacks and drinks will be available for purchase in the lobby. You are also welcome to bring your own snacks. We suggest having a main meal before arriving so you can focus on the talks."
         },
         "item5": {
           "question": "What happens if I arrive late?",
-          "answer": "[PLACEHOLDER: late arrival policy — e.g. entry allowed between talks only.]"
+          "answer": "We recommend arriving before the event starts to enjoy the full experience. If you arrive late, you may be asked to wait and enter only between talks, at the discretion of the organizing team, to avoid disturbing speakers and the audience."
         },
         "item6": {
           "question": "Is the event accessible for people with disabilities?",
-          "answer": "[PLACEHOLDER: accessibility details — full information is also on the Venue page.]"
+          "answer": "We strive to provide an inclusive environment for all. Wheelchair‑accessible entrances, designated seating near the stage, and other support services are available. For more details, please visit the Venue page or contact us."
         },
         "item7": {
-          "question": "Will the talks be recorded or livestreamed?",
-          "answer": "[PLACEHOLDER: confirm if a recording/livestream will be available afterward.]"
+          "question": "Will the talks be recorded or live‑streamed?",
+          "answer": "The talks will be recorded and later shared on the official TEDx YouTube channel. A live stream may also be available – follow our social media channels for updates."
         },
         "item8": {
           "question": "How can I volunteer or get involved?",
-          "answer": "[PLACEHOLDER: point to a volunteering contact or form, or reference the Contact form on the homepage with subject 'Volunteering'.]"
+          "answer": "We always welcome passionate individuals! You can volunteer by reaching out via the contact form on our website, mentioning 'Volunteer' in the subject line. We'll send you the details and requirements."
         },
         "item9": {
-          "question": "I have another question — who do I contact?",
-          "answer": "Reach out via the contact form on our homepage, or email us directly at marhaba@tedxalfalahyouth.com."
+          "question": "I have another question – who can I contact?",
+          "answer": "Get in touch through the contact form on our homepage, or email us directly at marhaba@tedxalfalahyouth.com. We'll be happy to help."
         }
       }
     },
