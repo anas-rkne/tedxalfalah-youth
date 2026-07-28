@@ -16,9 +16,10 @@ export default function LanguageSwitcher() {
   const nextLocale = locale === "en" ? "ar" : "en";
 
   const switchTo = useCallback(() => {
+    const { locale: _, ...paramsWithoutLocale } = params;
     router.replace(
       // @ts-expect-error - التوافق مع أنواع next-intl
-      { pathname, params },
+      { pathname, params: paramsWithoutLocale },
       { locale: nextLocale }
     );
   }, [router, pathname, params, nextLocale]);

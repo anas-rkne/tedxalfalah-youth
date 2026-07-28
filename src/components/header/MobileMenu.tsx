@@ -1,5 +1,5 @@
 "use client";
-import { memo } from "react";
+import { memo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
@@ -30,6 +30,27 @@ const MobileMenu = memo(function MobileMenu({
   const internalReduceMotion = useReducedMotion();
   const shouldReduce = shouldReduceMotion ?? internalReduceMotion;
 
+  // 🔥 تعطيل التمرير في الخلفية عند فتح القائمة
+  const lockScroll = useCallback(() => {
+    document.body.style.overflow = "hidden";
+  }, []);
+
+  const unlockScroll = useCallback(() => {
+    document.body.style.overflow = "";
+  }, []);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      lockScroll();
+      // (اختياري) حفظ موضع التمرير الحالي إذا كنت تريد إعادته بعد الإغلاق
+    } else {
+      unlockScroll();
+    }
+    return () => {
+      unlockScroll(); // ضمان إعادة التمرير عند إلغاء تثبيت المكون
+    };
+  }, [isMenuOpen, lockScroll, unlockScroll]);
+
   return (
     <AnimatePresence>
       {isMenuOpen && (
@@ -50,7 +71,11 @@ const MobileMenu = memo(function MobileMenu({
             } from-transparent via-tedx-red to-transparent`}
           />
 
-          <nav className="flex flex-col gap-1 p-6" role="menu">
+          {/* 🔥 جعل القائمة قابلة للتمرير إذا كان المحتوى طويلاً */}
+          <nav
+            className="flex flex-col gap-1 p-4 sm:p-6 overflow-y-auto" 
+            role="menu"
+          >
             {allLinks.map((link, i) => {
               const isActive = pathname === link.href;
               const Icon = link.icon;

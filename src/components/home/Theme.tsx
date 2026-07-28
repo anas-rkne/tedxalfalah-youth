@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import ThemeContent from "./ThemeContent";
 
-export default async function Theme() {
-  const t = await getTranslations("home.theme");
-  const tHero = await getTranslations("home.hero");
+export default async function Theme({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "home.theme" });
+  const tHero = await getTranslations({ locale, namespace: "home.hero" });
 
   return (
     <ThemeContent

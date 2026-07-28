@@ -4,6 +4,8 @@ import { Metadata } from "next";
 import { getTeamMembers } from "@/lib/data";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
 import TeamMemberCard from "@/components/team/TeamMemberCard";
+import JsonLd from "@/components/JsonLd";
+import { personSchema } from "@/lib/json-ld";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -21,10 +23,20 @@ export default async function TeamPage({ params }: Props) {
   const isArabic = locale === "ar";
 
   const members = await getTeamMembers();
-  const t = await getTranslations("page.team");
+  const t = await getTranslations({ locale, namespace: "page.team" });
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden font-sans relative">
+    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden relative">
+      {members.map((m) => (
+        <JsonLd
+          key={m.id}
+          data={personSchema({
+            name: m.name,
+            description: m.role,
+            image: m.imageUrl,
+          })}
+        />
+      ))}
       {/* ═══════════ HERO ═══════════ */}
       <DarkHeroSection
         badgeLabel={t("hero.badge")}

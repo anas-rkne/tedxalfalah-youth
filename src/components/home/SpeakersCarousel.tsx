@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
@@ -68,19 +68,25 @@ export default function SpeakersCarousel({ speakers }: SpeakersCarouselProps) {
             whileDrag={shouldReduceMotion ? {} : { rotate: 5 }}
             className="text-center w-40 md:w-48 flex-shrink-0 select-none"
           >
-            <div className="relative w-full aspect-square rounded-full overflow-hidden mb-3 pointer-events-none">
-              <Image
-                src={speaker.imageUrl}
-                alt={speaker.name}
-                fill
-                loading="lazy"
-                className="object-cover"
-                draggable={false}
-                sizes="(max-width: 768px) 160px, 192px"
-              />
+            <div className="relative w-full aspect-square rounded-full overflow-hidden mb-3 pointer-events-none bg-muted">
+              {speaker.imageUrl ? (
+                <SafeImage
+                  src={speaker.imageUrl}
+                  alt={speaker.name}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                  draggable={false}
+                  sizes="(max-width: 768px) 160px, 192px"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-muted-foreground">
+                  {speaker.name?.charAt(0) || "?"}
+                </div>
+              )}
             </div>
-            <h3 className="font-semibold">{speaker.name}</h3>
-            <p className="text-sm text-gray-500">{speaker.shortDescriptor}</p>
+            <h3 className={`font-semibold ${isRTL ? "font-arabic" : ""}`}>{speaker.name}</h3>
+            <p className={`text-sm text-gray-500 ${isRTL ? "font-arabic" : ""}`}>{speaker.shortDescriptor}</p>
           </motion.div>
         ))}
       </motion.div>

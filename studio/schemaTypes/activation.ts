@@ -36,6 +36,12 @@ export default defineType({
       type: "number",
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: "isPublished",
+      title: "Published",
+      type: "boolean",
+      initialValue: false,
+    }),
   ],
   preview: {
     select: { title: "name", subtitle: "locationInVenue", media: "image" },

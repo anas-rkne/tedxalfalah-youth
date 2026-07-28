@@ -18,8 +18,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function FaqPage() {
-  const t = await getTranslations("page.faq");
+export default async function FaqPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "page.faq" });
 
   const GENERAL_FAQ_ITEMS: FaqItem[] = Array.from({ length: 9 }, (_, i) => ({
     question: t(`items.item${i + 1}.question`),

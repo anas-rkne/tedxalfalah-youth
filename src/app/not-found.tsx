@@ -1,27 +1,18 @@
+import Link from "next/link";
+
 export default function RootNotFound() {
   return (
-    <html lang="en">
-      <body
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "Arial, Helvetica, sans-serif",
-          textAlign: "center",
-          padding: "2rem",
-        }}
-      >
-        <div>
-          <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: "1rem" }}>
-            Page Not Found
-          </h1>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/en" style={{ color: "#e62b1e", textDecoration: "underline" }}>
-            Go to Homepage
-          </a>
-        </div>
-      </body>
-    </html>
+    <div className="min-h-screen flex items-center justify-center text-center p-8 bg-background">
+      <div>
+        <h1 className="text-6xl font-black text-tedx-red mb-4">404</h1>
+        <p className="text-xl text-muted-foreground mb-8">Page Not Found</p>
+        <Link
+          href="/en"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-tedx-red text-white font-semibold hover:bg-tedx-red/90 transition-all"
+        >
+          Go to Homepage
+        </Link>
+      </div>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   motion,
   useReducedMotion,
@@ -17,6 +17,7 @@ import {
   Users2,
   MapPin,
   Mic,
+  CalendarDays,
   Ticket,
   Handshake,
   Award,
@@ -46,25 +47,25 @@ export default function Header() {
     isMenuOpenRef.current = isMenuOpen;
   }, [isMenuOpen]);
 
-  const ALL_LINKS = useMemo(
-    () => [
-      { label: t("home"), href: "/", icon: Home },
-      { label: t("speakers"), href: "/speakers", icon: Users },
-      { label: t("team"), href: "/team", icon: Users2 },
-      { label: t("venue"), href: "/venue", icon: MapPin },
-      { label: t("activations"), href: "/activations", icon: Mic },
-      { label: t("apply"), href: "/apply", icon: Handshake },
-      { label: t("sponsors"), href: "/sponsors", icon: Award },
-      { label: t("tickets"), href: "/tickets", icon: Ticket },
-      { label: t("contact"), href: "/contact", icon: Mail },
-      { label: t("terms"), href: "/terms", icon: FileText },
-    ],
-    [t]
-  );
 
-  const mainLinks = ALL_LINKS.slice(0, 6);
-  const moreLinks = ALL_LINKS.slice(6);
+const ALL_LINKS = [
+  { label: t("home"), href: "/", icon: Home },
+  { label: t("speakers"), href: "/speakers", icon: Users },
+  { label: t("team"), href: "/team", icon: Users2 },
+  { label: t("venue"), href: "/venue", icon: MapPin },
+  { label: t("activations"), href: "/activations", icon: Mic },
+  { label: t("schedule"), href: "/schedule", icon: CalendarDays },
+  { label: t("apply"), href: "/apply", icon: Handshake },
+  { label: t("sponsors"), href: "/sponsors", icon: Award },
+  { label: t("tickets"), href: "/tickets", icon: Ticket },
+  { label: t("contact"), href: "/contact", icon: Mail },
+  { label: t("terms"), href: "/terms", icon: FileText },
+];
+  const isArabic = isRTL; // isRTL يكون true عندما تكون اللغة عربية
 
+const mainLinksCount = isArabic ? 5 : 6; 
+const mainLinks = ALL_LINKS.slice(0, mainLinksCount);
+const moreLinks = ALL_LINKS.slice(mainLinksCount);
   const { scrollY } = useScroll();
   const headerBg = useTransform(
     scrollY,
@@ -74,6 +75,14 @@ export default function Header() {
   const headerBlur = useTransform(scrollY, [0, 80], [0, 20]);
   const borderOpacity = useTransform(scrollY, [0, 60], [0, 1]);
   const shadowOpacity = useTransform(scrollY, [0, 80], [0, 0.1]);
+  const boxShadowVal = useTransform(
+    shadowOpacity,
+    (v) => `0 1px 4px rgba(0,0,0,${v})`
+  );
+  const borderColorVal = useTransform(
+    borderOpacity,
+    (v) => `rgba(228,228,231,${v})`
+  );
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === "Escape" && isMenuOpenRef.current) setIsMenuOpen(false);
@@ -106,6 +115,8 @@ export default function Header() {
     };
   }, [isMenuOpen, handleKeyDown, handleOutsideClick]);
 
+  if (pathname.startsWith("/thank-you")) return null;
+
   return (
     <header className="sticky top-0 left-0 right-0 z-50 h-20">
       <motion.div
@@ -118,14 +129,8 @@ export default function Header() {
           WebkitBackdropFilter: shouldReduceMotion
             ? "none"
             : `blur(${headerBlur}px)`,
-          boxShadow: useTransform(
-            shadowOpacity,
-            (v) => `0 1px 4px rgba(0,0,0,${v})`
-          ),
-          borderColor: useTransform(
-            borderOpacity,
-            (v) => `rgba(228,228,231,${v})`
-          ),
+          boxShadow: boxShadowVal,
+          borderColor: borderColorVal,
         }}
       />
 

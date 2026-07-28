@@ -9,6 +9,7 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { useLocale } from "next-intl";
 import { Speaker } from "@/lib/types";
 import SafeImage from "@/components/ui/SafeImage";
 
@@ -39,6 +40,8 @@ const StatusBadge = memo(function StatusBadge({ label }: { label: string }) {
    ═══════════════════════════════════════════ */
 const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardProps) {
   const shouldReduceMotion = useReducedMotion();
+  const locale = useLocale();
+  const isArabic = locale === "ar";
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -118,13 +121,20 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
 
         {/* Image Container */}
         <div className="relative aspect-[3/4] overflow-hidden rounded-[18px]">
-          <SafeImage
-            src={speaker.imageUrl}
-            alt={`صورة ${speaker.name}`}
-            fill
-            className="object-cover transition-all duration-700 ease-out group-hover:scale-[1.05]"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
+          {speaker.imageUrl ? (
+            <SafeImage
+              src={speaker.imageUrl}
+              alt={`صورة ${speaker.name}`}
+              fill
+              unoptimized
+              className="object-cover transition-all duration-700 ease-out group-hover:scale-[1.05]"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-zinc-900 text-5xl font-bold text-white/50">
+              {speaker.name?.charAt(0) || "?"}
+            </div>
+          )}
 
           {/* Gradient Overlay */}
           <div
@@ -156,7 +166,7 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
           {/* Bottom Content */}
           <div className="absolute inset-x-0 bottom-0 px-5 pb-5 pt-16 z-10">
             <h3
-              className="text-[19px] sm:text-[21px] font-bold text-white leading-[1.15] tracking-[-0.02em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]"
+              className={`text-[19px] sm:text-[21px] font-bold text-white leading-[1.15] tracking-[-0.02em] drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)] ${isArabic ? "font-arabic" : ""}`}
               style={{ transform: "translateZ(20px)" }}
             >
               <span className="block w-full line-clamp-2 break-words">
@@ -165,7 +175,7 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
             </h3>
 
             {speaker.talkTitle && (
-              <p className="mt-2 text-[13px] sm:text-[14px] text-white/70 leading-relaxed line-clamp-2 font-medium">
+              <p className={`mt-2 text-[13px] sm:text-[14px] text-white/70 leading-relaxed line-clamp-2 font-medium ${isArabic ? "font-arabic" : ""}`}>
                 {speaker.talkTitle}
               </p>
             )}

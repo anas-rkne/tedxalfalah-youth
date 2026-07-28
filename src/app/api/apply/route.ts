@@ -3,6 +3,11 @@ import { z } from "zod";
 import { escapeHtml } from "@/lib/sanitize";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
+import { validateOrigin } from "@/lib/cors";
+
+function wordCount(text: string) {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
 
 // نفس مخطط التحقق المستخدم بالفورم من جهة العميل (src/components/apply/ApplicationForm.tsx)
 const applicationSchema = z.object({
@@ -13,8 +18,8 @@ const applicationSchema = z.object({
   phone: z.string().min(1),
   city: z.string().min(1),
   talkIdeaTitle: z.string().min(1),
-  ideaSummary: z.string().min(1),
-  whyItMatters: z.string().min(1),
+  ideaSummary: z.string().min(1).refine((val) => wordCount(val) <= 300, "Idea summary must not exceed 300 words"),
+  whyItMatters: z.string().min(1).refine((val) => wordCount(val) <= 150, "Why it matters must not exceed 150 words"),
   themeConnection: z.string().min(1),
   videoLink: z.string().optional().or(z.literal("")),
   howHeardAboutUs: z.string(),
@@ -101,6 +106,9 @@ async function sendConfirmationEmail(data: ApplicationData) {
 }
 
 export async function POST(request: Request) {
+  const originError = validateOrigin(request);
+  if (originError) return originError;
+
   // 1) Rate limiting — يمنع إغراق النموذج الأهم بالموقع
   const { allowed } = await checkRateLimit(request, "apply");
   if (!allowed) {

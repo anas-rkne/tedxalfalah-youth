@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 import { Inter, Noto_Kufi_Arabic } from "next/font/google";
-import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/FooterWrapper";
 import CustomCursorWrapper from "@/components/ui/CustomCursorWrapper";
+import Analytics from "@/components/Analytics";
 import ReadingProgress from "@/components/ui/ReadingProgress";
 import ScrollIndicator from "@/components/ui/ScrollIndicator";
 import { routing } from "@/i18n/routing";
 import PageTransition from "@/components/ui/PageTransition";
+import { ClientProvider } from "@/components/ClientProvider";
+import JsonLd from "@/components/JsonLd";
+import { organizationSchema } from "@/lib/json-ld";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -77,7 +81,6 @@ export default async function RootLayout({
   }
 
   setRequestLocale(locale);
-
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
@@ -89,11 +92,14 @@ export default async function RootLayout({
     >
       <head>
         <link rel="preconnect" href="https://cdn.sanity.io" />
+        <JsonLd data={organizationSchema()} />
       </head>
       <body
         className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : ""}`}
       >
-        <NextIntlClientProvider>
+        {/* الآن نمرر locale إلى ClientProvider */}
+        <ClientProvider locale={locale}>
+          <Analytics />
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-red-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none"
@@ -102,15 +108,12 @@ export default async function RootLayout({
           </a>
           <ReadingProgress />
           <CustomCursorWrapper />
-          <Header />
-
+          <Header key={locale} />
           <main id="main-content" className="flex-1 relative">
             <PageTransition>{children}</PageTransition>
           </main>
-
           <ScrollIndicator />
-          <Footer />
-        </NextIntlClientProvider>
+<Footer />        </ClientProvider>
       </body>
     </html>
   );

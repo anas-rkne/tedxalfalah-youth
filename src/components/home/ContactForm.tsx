@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef, memo } from "react";
+import { useMemo, useState, useRef, useCallback, memo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -44,8 +44,16 @@ interface ContactFormProps {
   rightImageSrc?: string;
 }
 
+const SUBJECT_VALUES = [
+  "General",
+  "Speaking",
+  "Sponsorship",
+  "Volunteering",
+  "Media",
+] as const;
+
 /* ═══════════════════════════════════════════
-   SubmitButton – مذكَّر
+   SubmitButton
    ═══════════════════════════════════════════ */
 const SubmitButton = memo(function SubmitButton({
   loading,
@@ -60,10 +68,11 @@ const SubmitButton = memo(function SubmitButton({
     <motion.button
       type="submit"
       disabled={loading}
-      whileHover={{ scale: 1.01 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="group relative w-full flex items-center justify-center gap-2 px-8 py-4 bg-tedx-red text-white font-bold text-base rounded-xl hover:bg-tedx-red/90 transition-all duration-300 shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)] hover:shadow-[0_12px_40px_-12px_rgba(230,43,30,0.5)] disabled:opacity-60 disabled:cursor-not-allowed"
+      className="group relative w-full flex items-center justify-center gap-2.5 px-8 py-4 bg-tedx-red text-white font-bold text-base rounded-2xl hover:bg-tedx-red/90 transition-all duration-300 shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)] hover:shadow-[0_16px_48px_-12px_rgba(230,43,30,0.6)] disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
     >
+      <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
       {loading ? (
         <>
           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -71,8 +80,8 @@ const SubmitButton = memo(function SubmitButton({
         </>
       ) : (
         <>
-          <span>{children}</span>
-          <Send className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          <span className="relative z-10">{children}</span>
+          <Send className="relative z-10 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
         </>
       )}
     </motion.button>
@@ -80,8 +89,28 @@ const SubmitButton = memo(function SubmitButton({
 });
 
 /* ═══════════════════════════════════════════
-   ContactSideImage – نفس أنيميشن الهيرو
+   CSS Particles
    ═══════════════════════════════════════════ */
+const PARTICLES_CSS = `
+  @keyframes particle-float {
+    0%, 100% { transform: translateY(0) scale(0.5); opacity: 0; }
+    50% { opacity: 0.6; }
+    100% { transform: translateY(-25px) scale(1); opacity: 0; }
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: #e62b1e;
+    animation: particle-float 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+`;
+
+/* ═══════════════════════════════════════════
+   ContactSideImage
+   ═══════════════════════════════════════════ */
+const SPRING_CONFIG = { stiffness: 100, damping: 30, mass: 1 };
+
 const ContactSideImage = memo(function ContactSideImage({
   src,
   alt,
@@ -98,26 +127,26 @@ const ContactSideImage = memo(function ContactSideImage({
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springConfig = { stiffness: 100, damping: 30, mass: 1 };
   const parallaxX = useSpring(
     useTransform(mouseX, [-0.5, 0.5], direction === "left" ? [15, -15] : [-15, 15]),
-    springConfig
+    SPRING_CONFIG
   );
   const parallaxY = useSpring(
     useTransform(mouseY, [-0.5, 0.5], [10, -10]),
-    springConfig
+    SPRING_CONFIG
   );
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (shouldReduceMotion || !containerRef.current) return;
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
     mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-  const handleMouseLeave = () => {
+  }, [mouseX, mouseY]);
+
+  const handleMouseLeave = useCallback(() => {
     mouseX.set(0);
     mouseY.set(0);
-  };
+  }, [mouseX, mouseY]);
 
   return (
     <motion.div
@@ -152,33 +181,35 @@ const ContactSideImage = memo(function ContactSideImage({
           sizes="(max-width: 1280px) 224px, 288px"
         />
 
-        {/* 5 جزيئات حمراء */}
         {!shouldReduceMotion && (
           <>
-            <motion.div
-              className="absolute top-1/4 -left-4 w-2 h-2 rounded-full bg-[#e62b1e] z-20"
-              animate={{ y: [0, -20, 0], opacity: [0, 0.6, 0], scale: [0.5, 1, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity, delay: delay + 0.5, ease: [0.23, 1, 0.32, 1] }}
+            <style>{PARTICLES_CSS}</style>
+            <div
+              className="particle"
+              style={{
+                width: 8, height: 8,
+                top: "25%", left: "-10%",
+                animationDelay: `${delay + 0.5}s`,
+                animationDuration: "3s",
+              }}
             />
-            <motion.div
-              className="absolute top-1/3 -right-4 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
-              animate={{ y: [0, -15, 0], opacity: [0, 0.5, 0], scale: [0.5, 1.2, 0.5] }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: delay + 1.2, ease: [0.23, 1, 0.32, 1] }}
+            <div
+              className="particle"
+              style={{
+                width: 6, height: 6,
+                top: "35%", right: "-8%",
+                animationDelay: `${delay + 1.2}s`,
+                animationDuration: "2.5s",
+              }}
             />
-            <motion.div
-              className="absolute bottom-1/3 left-1/4 w-1 h-1 rounded-full bg-[#e62b1e] z-20"
-              animate={{ y: [0, -25, 0], x: [0, 10, 0], opacity: [0, 0.4, 0] }}
-              transition={{ duration: 3.5, repeat: Infinity, delay: delay + 0.8, ease: [0.23, 1, 0.32, 1] }}
-            />
-            <motion.div
-              className="absolute top-1/2 -right-6 w-2 h-2 rounded-full bg-[#e62b1e]/80 z-20"
-              animate={{ y: [0, -18, 0], x: [0, -8, 0], opacity: [0, 0.7, 0], scale: [0.5, 1.3, 0.5] }}
-              transition={{ duration: 3.2, repeat: Infinity, delay: delay + 1.8, ease: [0.23, 1, 0.32, 1] }}
-            />
-            <motion.div
-              className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
-              animate={{ y: [0, -22, 0], x: [0, -5, 0], opacity: [0, 0.5, 0], scale: [0.6, 1.1, 0.6] }}
-              transition={{ duration: 3.8, repeat: Infinity, delay: delay + 2.2, ease: [0.23, 1, 0.32, 1] }}
+            <div
+              className="particle"
+              style={{
+                width: 5, height: 5,
+                bottom: "30%", left: "20%",
+                animationDelay: `${delay + 2}s`,
+                animationDuration: "3.5s",
+              }}
             />
           </>
         )}
@@ -187,6 +218,9 @@ const ContactSideImage = memo(function ContactSideImage({
   );
 });
 
+/* ═══════════════════════════════════════════
+   Main ContactForm
+   ═══════════════════════════════════════════ */
 export default function ContactForm({
   heading,
   badgeLabel,
@@ -215,14 +249,6 @@ export default function ContactForm({
   const [status, setStatus] = useState<"idle" | "error">("idle");
   const [turnstileToken, setTurnstileToken] = useState("");
 
-  const SUBJECT_VALUES = [
-    "General",
-    "Speaking",
-    "Sponsorship",
-    "Volunteering",
-    "Media",
-  ] as const;
-
   const contactSchema = useMemo(
     () =>
       z.object({
@@ -245,20 +271,27 @@ export default function ContactForm({
     defaultValues: { subject: "General" },
   });
 
-  async function onSubmit(data: ContactFormValues) {
-    setStatus("idle");
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, turnstileToken }),
-      });
-      if (!res.ok) throw new Error("Request failed");
-      router.push("/thank-you?type=contact");
-    } catch {
-      setStatus("error");
-    }
-  }
+  const onSubmit = useCallback(
+    async (data: ContactFormValues) => {
+      setStatus("idle");
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, turnstileToken }),
+        });
+        if (!res.ok) throw new Error("Request failed");
+        router.push("/thank-you?type=contact");
+      } catch {
+        setStatus("error");
+      }
+    },
+    [turnstileToken, router]
+  );
+
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
 
   const subjectLabels: Record<(typeof SUBJECT_VALUES)[number], string> = {
     General: subjectGeneral,
@@ -269,10 +302,19 @@ export default function ContactForm({
   };
 
   return (
-    <section className="section-padding relative bg-background overflow-hidden">
+    <section className="section-padding relative bg-background overflow-hidden w-full">
+      {/* إصلاح عرض الفورم عن طريق تنسيق داخلي */}
+      <style>{`
+        #contact-form input,
+        #contact-form select,
+        #contact-form textarea {
+          width: 100% !important;
+          box-sizing: border-box;
+        }
+      `}</style>
+
       {/* ═══════════ HEADER ═══════════ */}
-      <div className="relative pb-12 md:pb-16">
-        {/* توهج خلفي مزدوج (مطابق للأقسام الأخرى) */}
+      <div className="relative pb-6 md:pb-10">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-tedx-red/5 blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-orange-500/5 blur-3xl" />
@@ -338,37 +380,44 @@ export default function ContactForm({
       </div>
 
       {/* ═══════════ FORM + IMAGES ═══════════ */}
-      <div className="container-padding relative pb-20 md:pb-28">
-        <div className="max-w-7xl mx-auto">
-          <div
-            dir="ltr"
-            className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16"
-          >
-            {/* الصورة اليسرى (أنيميشن) */}
-            {leftImageSrc && (
-              <ContactSideImage
-                src={leftImageSrc}
-                alt="Left side visual"
-                direction="left"
-                delay={0.15}
-              />
-            )}
+      <div className="container-padding relative pb-8 md:pb-12 w-full">
+        {/* 🔥 تم إجبار الاتجاه LTR لضمان بقاء الصور في أماكنها: صورة اليسار -> نموذج -> صورة اليمين */}
+        <div
+          dir="ltr"
+          className="w-full grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] items-center gap-8 lg:gap-12 xl:gap-16"
+        >
+          {/* 1. الصورة اليسرى (الولد) - ستظهر دائماً على اليسار بفضل dir="ltr" */}
+          {leftImageSrc && (
+            <ContactSideImage
+              src={leftImageSrc}
+              alt="Left side visual"
+              direction="left"
+              delay={0.15}
+            />
+          )}
 
-            {/* النموذج المركزي */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="w-full max-w-xl"
-              dir="auto"
-            >
-              <div className="p-8 md:p-10 rounded-[24px] bg-card border border-border">
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="flex flex-col gap-6"
-                  noValidate
-                >
+          {/* 2. النموذج (المركز) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="w-full min-w-0 lg:flex-1"
+            // 🔥 النموذج نفسه يأخذ الاتجاه العكسي حسب اللغة (النص الداخلي)، دون التأثير على مكان الصور
+            dir={isRTL ? "rtl" : "ltr"}
+          >
+            <div className="relative w-full p-6 sm:p-8 md:p-10 lg:p-12 rounded-[28px] bg-card/80 backdrop-blur-sm border border-border/60 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)]">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-tedx-red to-transparent rounded-full" />
+              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[300px] h-[200px] rounded-full bg-tedx-red/[0.04] blur-[80px] pointer-events-none" />
+
+              <form
+                id="contact-form"
+                onSubmit={handleSubmit(onSubmit)}
+                className="relative z-10 flex flex-col gap-6 md:gap-7 w-full"
+                noValidate
+              >
+                {/* الاسم */}
+                <div className="relative w-full">
                   <Input
                     label={namePlaceholder}
                     id="contact-name"
@@ -376,7 +425,10 @@ export default function ContactForm({
                     placeholder={namePlaceholder}
                     error={errors.name?.message}
                   />
+                </div>
 
+                {/* البريد */}
+                <div className="relative w-full">
                   <Input
                     label={emailPlaceholder}
                     id="contact-email"
@@ -385,7 +437,10 @@ export default function ContactForm({
                     placeholder={emailPlaceholder}
                     error={errors.email?.message}
                   />
+                </div>
 
+                {/* الموضوع */}
+                <div className="relative w-full">
                   <Input
                     label={subjectLabel}
                     id="contact-subject"
@@ -398,58 +453,54 @@ export default function ContactForm({
                       </option>
                     ))}
                   </Input>
+                </div>
 
+                {/* الرسالة */}
+                <div className="relative w-full">
                   <Input
                     label={messagePlaceholder}
                     id="contact-message"
                     registration={register("message")}
                     placeholder={messagePlaceholder}
                     textarea
-                    rows={5}
+                    rows={6}
                     error={errors.message?.message}
                   />
+                </div>
 
-                  {status === "error" && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center"
-                    >
-                      {errorGeneric}
-                    </motion.div>
-                  )}
+                {status === "error" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    {errorGeneric}
+                  </motion.div>
+                )}
 
-                  <TurnstileWidget onVerify={setTurnstileToken} />
+                <TurnstileWidget onVerify={handleTurnstileVerify} />
 
-                  <SubmitButton loading={isSubmitting} submittingLabel={submittingLabel}>
-                    {submitLabel}
-                  </SubmitButton>
-                </form>
-              </div>
-            </motion.div>
+                <SubmitButton loading={isSubmitting} submittingLabel={submittingLabel}>
+                  {submitLabel}
+                </SubmitButton>
+              </form>
+            </div>
+          </motion.div>
 
-            {/* الصورة اليمنى (أنيميشن) */}
-            {rightImageSrc && (
-              <ContactSideImage
-                src={rightImageSrc}
-                alt="Right side visual"
-                direction="right"
-                delay={0.3}
-              />
-            )}
-          </div>
+          {/* 3. الصورة اليمنى (البنت) - ستظهر دائماً على اليمين بفضل dir="ltr" */}
+          {rightImageSrc && (
+            <ContactSideImage
+              src={rightImageSrc}
+              alt="Right side visual"
+              direction="right"
+              delay={0.3}
+            />
+          )}
         </div>
       </div>
 
-      {/* نمط نقاط زخرفي */}
-      <div
-        className="h-16 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 2px 2px, #e62b1e 1px, transparent 0)",
-          backgroundSize: "32px 32px",
-        }}
-      />
     </section>
   );
 }

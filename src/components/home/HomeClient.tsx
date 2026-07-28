@@ -8,7 +8,7 @@ import About from "@/components/home/About";
 import Theme from "@/components/home/Theme";
 
 
-export default function HomeClient() {
+export default function HomeClient({ locale }: { locale: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // تتبع حركة التمرير داخل الحاوية الرئيسية
@@ -35,7 +35,7 @@ export default function HomeClient() {
           style={{ scale: scaleHero }}
           className="sticky top-0 h-screen z-10 overflow-hidden"
         >
-          <Hero />
+          <Hero locale={locale} />
         </motion.div>
 
         {/* القسم الثاني: About */}
@@ -43,7 +43,7 @@ export default function HomeClient() {
           style={{ scale: scaleAbout }}
           className="sticky top-0 h-screen z-20 overflow-hidden"
         >
-          <About />
+          <About locale={locale} />
         </motion.div>
 
         {/* القسم الثالث: Theme */}
@@ -51,7 +51,7 @@ export default function HomeClient() {
           style={{ scale: scaleTheme }}
           className="sticky top-0 h-screen z-30 overflow-hidden"
         >
-          <Theme />
+          <Theme locale={locale} />
         </motion.div>
 
       </main>

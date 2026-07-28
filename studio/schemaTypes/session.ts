@@ -64,6 +64,12 @@ export default defineType({
       description: "Optional, mainly used for breaks/activations",
       type: "text",
     }),
+    defineField({
+      name: "isPublished",
+      title: "Published",
+      type: "boolean",
+      initialValue: false,
+    }),
   ],
   orderings: [
     {

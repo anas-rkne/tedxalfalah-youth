@@ -21,11 +21,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ActivationsPage({ params }: Props) {
   const { locale } = await params;
   const activations = await getActivations();
-  const t = await getTranslations("page.activations");
+  const t = await getTranslations({ locale, namespace: "page.activations" });
   const isArabic = locale === "ar";
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden font-sans relative">
+    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden relative">
       {/* ═══════════ HERO (مشترك) ═══════════ */}
       <DarkHeroSection
         badgeLabel={t("hero.badge")}

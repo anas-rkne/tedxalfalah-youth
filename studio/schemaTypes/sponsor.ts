@@ -22,7 +22,7 @@ export default defineType({
       title: "Tier",
       type: "string",
       options: {
-        list: ["Platinum", "Gold", "Silver", "Community"],
+        list: ["Platinum", "Gold", "Silver", "Community", "Supporter"],
       },
       validation: (Rule) => Rule.required(),
     }),
@@ -30,6 +30,12 @@ export default defineType({
       name: "websiteUrl",
       title: "Website URL",
       type: "url",
+    }),
+    defineField({
+      name: "isPublished",
+      title: "Published",
+      type: "boolean",
+      initialValue: false,
     }),
   ],
   preview: {

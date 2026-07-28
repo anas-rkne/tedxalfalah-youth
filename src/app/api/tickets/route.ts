@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
+import { validateOrigin } from "@/lib/cors";
 
 const ticketSchema = z.object({
   name: z.string().min(1),
@@ -12,6 +13,9 @@ const ticketSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const originError = validateOrigin(request);
+  if (originError) return originError;
+
   const { allowed } = await checkRateLimit(request, "tickets");
   if (!allowed) {
     return NextResponse.json(

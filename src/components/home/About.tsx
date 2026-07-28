@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import AboutContent from "./AboutContent";
 
-export default async function About() {
-  const t = await getTranslations("home.about");
-  const tHero = await getTranslations("home.hero"); // لاستخدام نصوص الأزرار المتطابقة
+export default async function About({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "home.about" });
+  const tHero = await getTranslations({ locale, namespace: "home.hero" });
 
   return (
     <AboutContent

@@ -12,7 +12,7 @@ export interface Sponsor {
   id: string;
   name: string;
   logoUrl: string;
-  tier?: "Platinum" | "Gold" | "Silver" | "Community";
+  tier?: "Platinum" | "Gold" | "Silver" | "Community" | "Supporter";
 }
 
 interface SponsorsStripContentProps {
@@ -171,13 +171,20 @@ const SponsorMarquee = memo(function SponsorMarquee({ sponsors }: { sponsors: Sp
             key={`${sponsor.id}-${index}`}
             className="marquee-item relative w-32 md:w-40 h-16 md:h-20 flex-shrink-0 flex items-center justify-center group/logo"
           >
-            <SafeImage
-              src={sponsor.logoUrl}
-              alt={sponsor.name}
-              fill
-              className="object-contain filter grayscale opacity-60 group-hover/logo:grayscale-0 group-hover/logo:opacity-100 transition-all duration-300"
-              sizes="160px"
-            />
+            {sponsor.logoUrl ? (
+              <SafeImage
+                src={sponsor.logoUrl}
+                alt={sponsor.name}
+                fill
+                unoptimized
+                className="object-contain filter grayscale opacity-60 group-hover/logo:grayscale-0 group-hover/logo:opacity-100 transition-all duration-300"
+                sizes="160px"
+              />
+            ) : (
+              <span className="text-lg font-bold text-muted-foreground">
+                {sponsor.name?.charAt(0) || "?"}
+              </span>
+            )}
           </div>
         ))}
       </div>

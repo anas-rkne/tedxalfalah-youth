@@ -13,6 +13,7 @@ import {
   Activation,
   Sponsor,
   Session,
+  EventInfo,
 } from "./types";
 
 // ----- 1. المتحدثين (Speakers) مع صور وهمية -----
@@ -154,6 +155,13 @@ const MOCK_SPONSORS: Sponsor[] = [
     tier: "Silver",
     websiteUrl: "#",
   },
+  {
+    id: "spn-4",
+    name: "Supporter Partner",
+    logoUrl: "https://placehold.co/200x100/222/fff?text=Supporter",
+    tier: "Supporter",
+    websiteUrl: "#",
+  },
 ];
 
 // ----- 5. الجلسات (Sessions) -----
@@ -266,4 +274,14 @@ export async function getSessions(): Promise<Session[]> {
   return [...MOCK_SESSIONS].sort((a, b) =>
     a.startTime.localeCompare(b.startTime)
   );
+}
+
+const MOCK_EVENT_INFO: EventInfo = {
+  title: "TEDxAlFalah Youth",
+  date: "2026-11-15",
+  venue: "Dubai, United Arab Emirates",
+};
+
+export async function getEventInfo(): Promise<EventInfo | null> {
+  return MOCK_EVENT_INFO;
 }

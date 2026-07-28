@@ -3,6 +3,7 @@ import { z } from "zod";
 import { escapeHtml } from "@/lib/sanitize";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
+import { validateOrigin } from "@/lib/cors";
 
 const partnerSchema = z.object({
   name: z.string().min(1),
@@ -14,6 +15,9 @@ const partnerSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const originError = validateOrigin(request);
+  if (originError) return originError;
+
   const { allowed } = await checkRateLimit(request, "partner-inquiry");
   if (!allowed) {
     return NextResponse.json(

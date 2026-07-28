@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, memo } from "react";
+import { TeamMember } from "@/lib/types";
 import SafeImage from "@/components/ui/SafeImage";
 
 interface TeamMemberCardProps {
-  member: any;
+  member: TeamMember;
   index: number;
   isArabic: boolean;
 }
@@ -16,10 +17,9 @@ const TeamMemberCard = memo(function TeamMemberCard({
 }: TeamMemberCardProps) {
   const [imageError, setImageError] = useState(false);
 
-  // لو البيانات لم تصل بعد أو العضو undefined
   if (!member) return null;
 
-  const imageSrc = member.image || member.imageUrl;
+  const imageSrc = member.imageUrl;
   const fullName = member.name ?? "";
   const firstLetter = fullName.charAt(0).toUpperCase() || "?";
 
@@ -44,6 +44,7 @@ const TeamMemberCard = memo(function TeamMemberCard({
               src={imageSrc}
               alt={fullName}
               fill
+              unoptimized
               className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 z-0"
               onError={() => setImageError(true)}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -58,11 +59,11 @@ const TeamMemberCard = memo(function TeamMemberCard({
         >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-tedx-red/90 backdrop-blur-sm rounded-full mb-3 border border-white/10">
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            <span className="text-[10px] font-bold text-white uppercase tracking-wider">
-              {member.role || member.position || member.department || ""}
+            <span className={`text-[10px] font-bold text-white uppercase tracking-wider ${isArabic ? "font-arabic" : ""}`}>
+              {member.role || member.department || ""}
             </span>
           </div>
-          <h3 className="text-xl md:text-2xl font-bold text-white mb-1 truncate drop-shadow-md">
+          <h3 className={`text-xl md:text-2xl font-bold text-white mb-1 truncate drop-shadow-md ${isArabic ? "font-arabic" : ""}`}>
             {fullName}
           </h3>
           <div className="h-px w-0 group-hover:w-full bg-tedx-red transition-all duration-700 ease-out mt-3" />

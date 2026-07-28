@@ -2,8 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { getSpeakers } from "@/lib/data";
 import SpeakersStage from "./SpeakersStage";
 
-export default async function SpeakersPreview() {
-  const t = await getTranslations("home.speakersPreview");
+export default async function SpeakersPreview({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "home.speakersPreview" });
   const allSpeakers = await getSpeakers();
   
   // (1) إنشاء بيانات افتراضية (Placeholders) جميلة لملء الفراغ إذا لم توجد بيانات كافية
@@ -25,7 +25,7 @@ const speakers = rawSpeakers.slice(0, 4).map((s: any) => ({
   role: s.role || s.title || "Guest Speaker",
   // ✅ تحسين: إذا كان النص يحتوي على "PLACEHOLDER"، تجاهله واستخدم الترجمة الافتراضية
   bio: (s.bio && !s.bio.includes('PLACEHOLDER')) ? s.bio : t("bioFallback"),
-  imageUrl: s.image || s.photo || null,
+  imageUrl: s.imageUrl || s.image || s.photo || null,
   socialLinks: s.socialLinks || { twitter: '#', instagram: '#', linkedin: '#' }
 }));
 

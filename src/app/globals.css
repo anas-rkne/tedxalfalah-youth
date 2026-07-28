@@ -377,3 +377,27 @@ body {
   transform: none !important;
   rotate: none !important;
 }
+
+/* ============================================ */
+/* تنسيق حقل "الموضوع" في نموذج الاتصال - إصدار احترافي */
+/* ============================================ */
+#contact-subject {
+  /* 1. إخفاء السهم الافتراضي للمتصفح */
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  
+  /* 2. إضافة مساحة داخلية كافية لعدم التصاق النص والسهم بالحواف */
+  /* القيمة 3.5rem توفر مساحة ~56px على اليمين (في حالة العربية RTL سيصبح اليسار) */
+  padding-right: 3.5rem !important; 
+  padding-left: 1rem !important; /* مساحة بسيطة من الجهة الأخرى */
+  
+  /* 3. تعيين أيقونة السهم المخصص كخلفية SVG */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e") !important;
+  
+  /* 4. ضبط موضع السهم المخصص بحيث لا يلتصق بالحافة ويكون متناسقاً */
+  background-repeat: no-repeat !important;
+  background-position: right 1.2rem center !important; /* "right 1.2rem" يعني ترك مسافة 1.2rem من الحافة اليمنى */
+  background-size: 1.2em !important; /* حجم السهم مناسب */
+  /* إذا كنت تريد السهم بلون أحمر TEDx، غير stroke=%236b7280 إلى stroke=%23e62b1e */
+}

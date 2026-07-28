@@ -34,7 +34,7 @@ const ActivationCard = memo(function ActivationCard({
       <motion.div
         // ✅ dir="ltr" يضمن أن flex-row-reverse يعمل بصرياً دون التأثر بـ RTL
         dir="ltr"
-        className={`group flex flex-col md:flex-row gap-8 md:gap-12 items-center ${
+        className={`group flex flex-col md:flex-row gap-8 md:gap-12 items-center ${isRTL ? "font-arabic" : ""} ${
           isReversed ? "md:flex-row-reverse" : ""
         }`}
         initial={shouldReduceMotion ? {} : { opacity: 0, y: 40 }}
@@ -47,14 +47,21 @@ const ActivationCard = memo(function ActivationCard({
         }}
       >
         {/* ═══════ الصورة ═══════ */}
-        <div className="relative w-full md:w-[55%] aspect-[16/10] rounded-[20px] overflow-hidden flex-shrink-0">
-          <SafeImage
-            src={activation.imageUrl}
-            alt={activation.name}
-            fill
-            className="object-cover transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] saturate-[0.85] contrast-[1.02] group-hover:saturate-[0.95] group-hover:contrast-[1.04] group-hover:scale-[1.04]"
-            sizes="(max-width: 768px) 100vw, 55vw"
-          />
+        <div className="relative w-full md:w-[55%] aspect-[16/10] rounded-[20px] overflow-hidden flex-shrink-0 bg-muted">
+          {activation.imageUrl ? (
+            <SafeImage
+              src={activation.imageUrl}
+              alt={activation.name}
+              fill
+              unoptimized
+              className="object-cover transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] saturate-[0.85] contrast-[1.02] group-hover:saturate-[0.95] group-hover:contrast-[1.04] group-hover:scale-[1.04]"
+              sizes="(max-width: 768px) 100vw, 55vw"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-muted-foreground">
+              {activation.name?.charAt(0) || "?"}
+            </div>
+          )}
 
           {/* تدرج أسفل الصورة */}
           <div
@@ -75,16 +82,16 @@ const ActivationCard = memo(function ActivationCard({
 
         {/* ═══════ المحتوى النصي ═══════ */}
         <div className="w-full md:w-[45%] flex-1" dir="auto">
-          <h2 className="font-bold text-2xl text-zinc-900 leading-[1.25] tracking-[-0.02em] mb-2">
+          <h2 className={`font-bold text-2xl text-zinc-900 leading-[1.25] tracking-[-0.02em] mb-2 ${isRTL ? "font-arabic" : ""}`}>
             {activation.name}
           </h2>
 
-          <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#e62b1e] tracking-[0.02em] mb-4 px-3 py-1 bg-[#e62b1e]/[0.05] border border-[#e62b1e]/[0.08] rounded-full">
+          <span className={`inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#e62b1e] tracking-[0.02em] mb-4 px-3 py-1 bg-[#e62b1e]/[0.05] border border-[#e62b1e]/[0.08] rounded-full ${isRTL ? "font-arabic" : ""}`}>
             <LocationIcon />
             {activation.locationInVenue}
           </span>
 
-          <p className="text-[15px] text-zinc-600 leading-[1.8]">
+          <p className={`text-[15px] text-zinc-600 leading-[1.8] ${isRTL ? "font-arabic" : ""}`}>
             {activation.description}
           </p>
         </div>

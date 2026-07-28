@@ -42,7 +42,7 @@ const SocialIcon = ({ type }: { type: "twitter" | "instagram" | "linkedin" }) =>
 /* ═══════════════════════════════════════════
    واجهات
    ═══════════════════════════════════════════ */
-interface Speaker {
+export interface StageSpeaker {
   id: string;
   name: string;
   role: string;
@@ -59,7 +59,7 @@ interface SpeakersStageProps {
   heading: string;
   subtitle: string;
   badgeLabel: string;
-  speakers: Speaker[];
+  speakers: StageSpeaker[];
   seeAllLabel: string;
   seeAllHref: string;
 }
@@ -72,7 +72,7 @@ const SpeakerCard = memo(function SpeakerCard({
   index,
   isRTL,
 }: {
-  speaker: Speaker;
+  speaker: StageSpeaker;
   index: number;
   isRTL: boolean;
 }) {
@@ -106,6 +106,7 @@ const SpeakerCard = memo(function SpeakerCard({
             src={speaker.imageUrl}
             alt={speaker.name}
             fill
+            unoptimized
             className="object-cover transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] saturate-[0.85] contrast-[1.02] group-hover:saturate-[0.95] group-hover:contrast-[1.04] group-hover:scale-[1.06]"
             sizes="120px"
           />
@@ -119,15 +120,15 @@ const SpeakerCard = memo(function SpeakerCard({
 
       {/* المحتوى النصي */}
       <div className="flex-1 flex flex-col text-center sm:text-left relative z-10">
-        <h3 className="font-bold text-xl text-foreground leading-[1.3] tracking-[-0.01em] group-hover:text-tedx-red transition-colors duration-300">
+        <h3 className={`font-bold text-xl text-foreground leading-[1.3] tracking-[-0.01em] group-hover:text-tedx-red transition-colors duration-300 ${isRTL ? "font-arabic" : ""}`}>
           {speaker.name}
         </h3>
-        <p className="text-[13px] font-semibold text-tedx-red mt-1 tracking-[0.02em]">
+        <p className={`text-[13px] font-semibold text-tedx-red mt-1 tracking-[0.02em] ${isRTL ? "font-arabic" : ""}`}>
           {speaker.role}
         </p>
 
         <div className="h-px my-3.5 bg-border/50" />
-        <p className="text-sm text-muted-foreground leading-[1.7] line-clamp-3">
+        <p className={`text-sm text-muted-foreground leading-[1.7] line-clamp-3 ${isRTL ? "font-arabic" : ""}`}>
           {speaker.bio}
         </p>
 

@@ -102,13 +102,20 @@ const SpeakerModal = memo(function SpeakerModal({ speaker, onClose }: SpeakerMod
 
             {/* الصورة – ثابتة على اليسار بفضل dir="ltr" */}
             <div className="relative w-full md:w-2/5 h-64 md:h-auto shrink-0 bg-muted">
-              <SafeImage
-                src={speaker.imageUrl}
-                alt={speaker.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 40vw"
-              />
+              {speaker.imageUrl ? (
+                <SafeImage
+                  src={speaker.imageUrl}
+                  alt={speaker.name}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 40vw"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-muted-foreground">
+                  {speaker.name?.charAt(0) || "?"}
+                </div>
+              )}
             </div>
 
             {/* المحتوى النصي – يتكيف مع الاتجاه اللغوي */}

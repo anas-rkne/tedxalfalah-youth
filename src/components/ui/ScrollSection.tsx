@@ -72,9 +72,9 @@ export default function ScrollSection({
     return (
       <section
         id={id}
-        className={`min-h-screen snap-start flex items-center justify-center relative ${className}`}
+        className={`snap-start flex items-center justify-center relative ${className}`}
       >
-        {children}
+        <div className="w-full">{children}</div>
       </section>
     );
   }
@@ -83,20 +83,14 @@ export default function ScrollSection({
     <motion.section
       id={id}
       ref={ref}
-      className={`min-h-screen snap-start flex items-center justify-center relative overflow-hidden ${className}`}
+      className={`snap-start flex items-center justify-center relative overflow-hidden ${className}`}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
       variants={variants[variant]}
       style={variant === "hero" ? { y, opacity } : undefined}
     >
-      {variant === "stagger" || variant === "grid" ? (
-        <div className="w-full">
-          {children}
-        </div>
-      ) : (
-        children
-      )}
+      <div className="w-full">{children}</div>
     </motion.section>
   );
 }

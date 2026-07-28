@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function VenuePage({ params }: Props) {
   const { locale } = await params;
   const isArabic = locale === "ar";
-  const t = await getTranslations("page.venue");
+  const t = await getTranslations({ locale, namespace: "page.venue" });
 
   return (
     <div className="bg-background">
@@ -43,7 +43,7 @@ export default async function VenuePage({ params }: Props) {
           </div>
           <h1 className="heading-h1 tracking-[-0.03em] heading-margin">{t("heroTitle")}</h1>
           <div className="flex justify-center"><div className="h-1 w-20 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" /></div>
-          <p className="text-center text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto mt-6 text-lg md:text-xl leading-relaxed">
+          <p dir={isArabic ? "rtl" : "ltr"} className="text-center text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto mt-6 text-lg md:text-xl leading-relaxed">
             {t("narrative")}
           </p>
         </div>
@@ -65,7 +65,7 @@ export default async function VenuePage({ params }: Props) {
               <SectionBadge>{t("accessibility.title")}</SectionBadge>
               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
             </div>
-            <p className="text-center text-muted-foreground text-[15px] leading-[1.8]">{t("accessibility.body")}</p>
+            <p dir={isArabic ? "rtl" : "ltr"} className="text-center text-muted-foreground text-[15px] leading-[1.8]">{t("accessibility.body")}</p>
           </SectionContainer>
         </section>
       </ScrollReveal>

@@ -13,13 +13,13 @@ export default function HeroTypewriterTitle({ title }: HeroTypewriterTitleProps)
   const locale = useLocale();
 
   const fontClass = locale === "ar" ? "font-arabic" : "font-sans";
-  const headingClass = `text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl font-bold tracking-tight leading-tight ${fontClass} text-black dark:text-white`;
+  const headingClass = `text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-8xl font-bold tracking-tight leading-tight ${fontClass} text-black dark:text-white`;
 
   // تقسيم الكلمات مرة واحدة فقط
   const words = useMemo(() => title.split(" "), [title]);
 
   const content = (
-    <h1 className={`${headingClass} flex flex-wrap justify-center items-center gap-x-2 md:gap-x-3`}>
+    <h1 className={`${headingClass} flex flex-nowrap justify-center items-center gap-x-2 md:gap-x-3`}>
       {words.map((word, index) => (
         <span key={index} className="inline-block">
           {word}

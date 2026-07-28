@@ -21,8 +21,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00";
 
-export default async function ApplyPage() {
-  const t = await getTranslations("page.apply");
+export default async function ApplyPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "page.apply" });
   const isClosed = new Date() > new Date(APPLICATION_DEADLINE);
 
   return (

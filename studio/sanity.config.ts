@@ -2,6 +2,13 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schemaTypes";
 
+declare const process: {
+  env: {
+    SANITY_STUDIO_PROJECT_ID?: string;
+    SANITY_STUDIO_DATASET?: string;
+  };
+};
+
 // TODO: بعد تشغيل `npx sanity init` بمجلد studio (يتطلب حسابك على sanity.io)،
 // استبدل القيمتين أدناه بمعرّف مشروعك الحقيقي، أو اترك الاعتماد على
 // متغيرات البيئة SANITY_STUDIO_PROJECT_ID و SANITY_STUDIO_DATASET.

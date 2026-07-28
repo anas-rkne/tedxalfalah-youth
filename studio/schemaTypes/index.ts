@@ -3,5 +3,6 @@ import teamMember from "./teamMember";
 import activation from "./activation";
 import sponsor from "./sponsor";
 import session from "./session";
+import eventInfo from "./eventInfo";
 
-export const schemaTypes = [speaker, teamMember, activation, sponsor, session];
+export const schemaTypes = [speaker, teamMember, activation, sponsor, session, eventInfo];

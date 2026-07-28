@@ -1,8 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import ContactForm from "@/components/home/ContactForm";
 
-export default async function ContactPage() {
-  const t = await getTranslations("home.contactForm");
+type Props = { params: Promise<{ locale: string }> };
+
+export default async function ContactPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "home.contactForm" });
 
   return (
     <ContactForm

@@ -1,7 +1,5 @@
 "use client";
 import { useLocale } from "next-intl";
-const locale = useLocale();
-const isArabic = locale === "ar";
 import { motion } from "framer-motion";
 import { TeamMember } from "@/lib/types";
 import TeamMemberCard from "./TeamMemberCard";
@@ -13,6 +11,8 @@ export default function TeamFunctionGroup({
   functionName: string;
   members: TeamMember[];
 }) {
+  const locale = useLocale();
+  const isArabic = locale === "ar";
   return (
     <section className="relative z-10">
       {/* Section Header */}

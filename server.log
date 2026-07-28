@@ -1,0 +1,48 @@
+
+> tedxalfalahyouth-website@0.1.0 start
+> next start --port 3200
+
+▲ Next.js 16.2.10
+- Local:         http://localhost:3200
+- Network:       http://10.191.214.141:3200
+✓ Ready in 243ms
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}
+⨯ TypeError: Cannot convert argument to a ByteString because the character at index 255 has a value of 1591 which is greater than 255.
+    at ignore-listed frames {
+  digest: '2645538789'
+}

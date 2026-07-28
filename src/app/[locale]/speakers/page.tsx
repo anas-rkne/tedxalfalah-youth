@@ -3,6 +3,8 @@ import { Metadata } from "next";
 import SpeakersGrid from "@/components/speakers/SpeakersGrid";
 import { getSpeakers } from "@/lib/data";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
+import JsonLd from "@/components/JsonLd";
+import { personSchema } from "@/lib/json-ld";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -18,11 +20,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SpeakersPage({ params }: Props) {
   const { locale } = await params;
   const speakers = await getSpeakers();
-  const t = await getTranslations("page.speakers");
+  const t = await getTranslations({ locale, namespace: "page.speakers" });
   const isArabic = locale === "ar";
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden font-sans relative">
+    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden relative">
+      {speakers.map((s) => (
+        <JsonLd
+          key={s.id}
+          data={personSchema({
+            name: s.name,
+            description: s.shortDescriptor,
+            image: s.imageUrl,
+          })}
+        />
+      ))}
       {/* ═══════════ HERO ═══════════ */}
       <DarkHeroSection
         badgeLabel={t("hero.badge")}

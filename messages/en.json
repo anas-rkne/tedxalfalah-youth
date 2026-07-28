@@ -45,14 +45,16 @@
   "home": {
     "hero": {
       "eventName": "TEDxAlFalah Youth",
-      "tagline": "The youth voice shaping the future.",
-      "date": "October 30, 2024",
+      "tagline": "Tomorrow, Now.",
+      "subtitle": "Young voices. Real ideas. The future starts earlier than we think.",
+      "date": "November 15, 2026",
       "venue": "Dubai, United Arab Emirates",
       "scrollLabel": "Explore",
       "applyLabel": "Apply Now",
       "ticketsLabel": "Get Tickets",
       "badgeLabel": "TEDx Youth Event",
-      "eventYear": "2026"
+      "eventYear": "2026",
+      "countdownHeadline": "Stick Around the Neighbourhood. Big ideas are coming to the neighbourhood."
     },
     "about": {
       "heading": "About the Event",
@@ -66,7 +68,7 @@
       "ctaDescription": "Join us and discover how you can contribute to a future full of inspiring ideas."
     },
     "theme": {
-      "title": "Tomorrow, Now: Young voices. Real ideas. The future starts earlier than we think.",
+      "title": "Young voices. Real ideas. The future starts earlier than we think.",
       "body": "In the UAE, youth are inventing, creating, performing, competing, and asking bold questions. TEDxYouth is a stage for their ideas and stories. Real experiences that inspire young people and remind adults how powerful youth voices can be.",
       "badgeLabel": "Our Theme",
       "statSpeakers": "Speakers",
@@ -142,6 +144,12 @@
       "stageTitle": "The Stage Awaits Your Voice",
       "stageDescription": "Join 12+ young speakers who will change how we see the future."
     },
+    "scheduleBanner": {
+      "badge": "Schedule",
+      "title": "Explore the Full Schedule",
+      "description": "Plan your day with talks, breaks, and activations — every moment designed to inspire.",
+      "cta": "View Full Schedule"
+    },
     "sponsorsStrip": {
       "heading": "Our Partners",
       "badgeLabel": "Our Partners",
@@ -199,30 +207,75 @@
     "ariaLabel": "Countdown timer"
   },
   "thankYou": {
+    "common": {
+      "headerSubtitle": "Thank you for joining our community",
+      "stepper1": "Data",
+      "stepper2": "Review",
+      "stepper3": "Result",
+      "verticalLabel": "IDEAS WORTH SPREADING • TEDxAlFalah Youth • 2026",
+      "footerHashtag": "#TEDxIdeas2026",
+      "footerDate": "Next event: Coming soon",
+      "footerContact": "Contact: marhaba@tedxalfalahyouth.com"
+    },
     "contact": {
-      "title": "Message Sent",
-      "body": "Thanks for reaching out — we'll get back to you soon.",
-      "cta": "Back to Home"
+      "meta": { "title": "Message Sent" },
+      "eyebrow": "SENT",
+      "title": "Thanks for\nreaching out",
+      "subtitle": "We'll get back to you soon",
+      "body": "Your message has been received. Our team will review your inquiry and get back to you as soon as possible. We appreciate your interest in the TEDx event.",
+      "stat1": "Email Confirmed",
+      "stat2": "Team at Work",
+      "stat3": "Reply within 48h",
+      "cta": "Back to Home",
+      "secondaryCta": "Browse Schedule"
     },
     "apply": {
-      "title": "Application Received",
-      "body": "Thank you for applying to TEDxAlFalah Youth. A confirmation email is on its way to you, and we'll follow up according to the timeline on the Apply page.",
-      "cta": "View Schedule"
+      "meta": { "title": "Application Received" },
+      "eyebrow": "RECEIVED",
+      "title": "Application\nReceived",
+      "subtitle": "A confirmation email is on its way",
+      "body": "Thank you for applying to join us. We'll review your application and send all details and next steps via email.",
+      "stat1": "Email Confirmed",
+      "stat2": "Talent Team",
+      "stat3": "Contact within a week",
+      "cta": "View Schedule",
+      "secondaryCta": "Browse Schedule"
     },
     "partner": {
-      "title": "Thank You for Your Interest",
-      "body": "Our partnerships team will review your message and be in touch soon.",
-      "cta": "Back to Home"
+      "meta": { "title": "Partnership Interest Received" },
+      "eyebrow": "RECEIVED",
+      "title": "Thanks for\nyour interest",
+      "subtitle": "Our partnerships team will review your message",
+      "body": "We believe in the power of partnerships to make change. Our partnerships team at TEDx will reach out within 48 hours to discuss details.",
+      "stat1": "Email Confirmed",
+      "stat2": "Partnerships Team",
+      "stat3": "Contact within 48h",
+      "cta": "Back to Home",
+      "secondaryCta": "Browse Schedule"
     },
     "tickets": {
-      "title": "You're Registered!",
-      "body": "We'll send event details to your email. See you there!",
-      "cta": "View Schedule"
+      "meta": { "title": "Booking Confirmed" },
+      "eyebrow": "SUCCESS",
+      "title": "You're\nRegistered!",
+      "subtitle": "Your ticket is on the way",
+      "body": "We'll send your ticket details to your email. See you on event day!",
+      "stat1": "Email Confirmed",
+      "stat2": "Ticket Booked",
+      "stat3": "Get Ready!",
+      "cta": "View Venue Details",
+      "secondaryCta": "Browse Schedule"
     },
     "default": {
-      "title": "Thank You",
-      "body": "We've received your submission.",
-      "cta": "Back to Home"
+      "meta": { "title": "Thank You" },
+      "eyebrow": "RECEIVED",
+      "title": "We've\nReceived It",
+      "subtitle": "Thanks for reaching out",
+      "body": "Your response has been successfully recorded. Thank you for your time and participation.",
+      "stat1": "Under Review",
+      "stat2": "Team at Work",
+      "stat3": "We'll Reach Out",
+      "cta": "Back to Home",
+      "secondaryCta": "Browse Schedule"
     }
   },
   "page": {
@@ -329,14 +382,30 @@
         "description": "The full event-day timeline for TEDxAlFalah Youth — talks, breaks, and activations."
       },
       "title": "Schedule",
-      "datePlaceholder": "[PLACEHOLDER: event date to be confirmed by client]",
+      "hero": {
+        "badge": "Event Timeline"
+      },
+      "sectionTitle": "Full Lineup",
+      "datePlaceholder": "Saturday, November 15, 2026",
       "timesNote": "Times are approximate and may shift slightly on event day.",
       "empty": "Full schedule coming soon.",
+      "ticketsLabel": "Get Your Ticket",
       "typeLabels": {
         "talk": "Talk",
         "break": "Break",
         "activation": "Activation",
         "registration": "Registration"
+      },
+      "filterLabels": {
+        "all": "All",
+        "talk": "Talks",
+        "break": "Breaks",
+        "activation": "Activations"
+      },
+      "periodLabels": {
+        "morning": "Morning Sessions",
+        "afternoon": "Afternoon Sessions",
+        "evening": "Closing"
       }
     },
  "apply": {
@@ -345,7 +414,7 @@
         "description": "Apply to speak at TEDxAlFalah Youth as a young speaker (10-18) or an expert in child and youth development."
       },
       "theme": {
-        "title": "Tomorrow, Now: Young Voices, Real Ideas. The future starts sooner than we think.",
+        "title": "Young voices. Real ideas. The future starts earlier than we think.",
         "body": "In the UAE, young people innovate, create, perform, compete, and ask bold questions. TEDxYouth is a platform for their ideas and stories — real experiences that inspire youth and remind adults of the power of young voices.",
         "subtitle": "TEDxYouth — A platform for their ideas and stories"
       },
@@ -578,6 +647,10 @@
       }
     },
 "sponsors": {
+  "meta": {
+    "title": "Sponsors & Partners",
+    "description": "The organizations and partners supporting TEDxAlFalah Youth."
+  },
   "hero": {
     "badge": "Our Partners",
     "titleLine1": "Our Partners in",
@@ -587,7 +660,8 @@
   "tiers": {
     "platinum": { "name": "Platinum" },
     "gold": { "name": "Gold" },
-    "silver": { "name": "Silver" }
+    "silver": { "name": "Silver" },
+    "supporter": { "name": "Supporter" }
   },
   "stats": {
     "partners": "Partners",
@@ -659,6 +733,23 @@
       "title": "Your booking is confirmed!",
       "body": "Ticket details will be sent to your email. See you on event day!",
       "cta": "View Schedule"
+    },
+    "success": {
+      "meta": {
+        "title": "Booking Confirmed"
+      },
+      "eyebrow": "SUCCESS",
+      "title": "Your booking is confirmed!",
+      "body": "Ticket details will be sent to your email. See you on event day!",
+      "cta": "View Venue Details"
+    },
+    "cancel": {
+      "meta": {
+        "title": "Payment Cancelled"
+      },
+      "title": "Payment Cancelled",
+      "body": "Your payment was not completed. No charges have been made.",
+      "cta": "Try Again"
     }
   },
  "faq": {

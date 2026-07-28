@@ -112,103 +112,202 @@ export default function FooterContent({
   const secondHalfLinks = quickLinks.slice(midPoint);
 
   return (
-    <footer className="relative w-full overflow-hidden" dir={isRTL ? "rtl" : "ltr"}>
+    <footer id="global-footer" className="relative w-full overflow-hidden" dir={isRTL ? "rtl" : "ltr"}>
       {/* ═══════════════════════════════════════════════════════════════
           CTA BANNER — خلفية TEDx محسّنة
           ═══════════════════════════════════════════════════════════════ */}
-      <div className="relative py-16 sm:py-20 md:py-28 px-4 overflow-hidden">
-        {/* 1. الخلفية الأساسية — أسود عميق TEDx */}
-        <div className="absolute inset-0 bg-[#050505]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-[#0a0a0a] to-zinc-900" />
+<div className="relative py-16 sm:py-20 md:py-28 container-padding overflow-hidden">
+  {/* ═══════════════════════════════════════════════════════════════
+      ✅ خلفية TEDx — هوية قوية وجذابة
+      ═══════════════════════════════════════════════════════════════ */}
 
-        {/* 2. نمط شبكة TEDx */}
-        <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage: `linear-gradient(rgba(230,43,30,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(230,43,30,0.6) 1px, transparent 1px)`,
-            backgroundSize: "48px 48px",
-          }}
-        />
+  {/* 1. الخلفية الأساسية — أسود عميق TEDx */}
+  <div className="absolute inset-0 bg-black" />
+  <div className="absolute inset-0 bg-gradient-to-b from-black via-[#0a0a0a] to-zinc-950" />
 
-        {/* 3. توهج مركزي علوي */}
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#e62b1e]/[0.09] rounded-full blur-[120px] pointer-events-none" />
+  {/* 2. نمط شبكة TEDx */}
+  <div
+    className="absolute inset-0 opacity-[0.04] pointer-events-none"
+    style={{
+      backgroundImage: `linear-gradient(rgba(230,43,30,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(230,43,30,0.6) 1px, transparent 1px)`,
+      backgroundSize: "48px 48px",
+    }}
+  />
 
-        {/* 4. توهج جانبي أيسر */}
-        <div className="absolute top-[20%] left-[-5%] w-[300px] h-[300px] bg-[#e62b1e]/[0.05] rounded-full blur-[100px] pointer-events-none" />
+  {/* 3. ✅ كلمة TEDx كبيرة شفافة — هوية قوية */}
+  <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+    <span
+      className="text-[20rem] sm:text-[25rem] md:text-[30rem] lg:text-[35rem] font-black leading-none tracking-tighter"
+      style={{
+        color: "rgba(255,255,255,0.02)",
+       textShadow: "0 0 120px rgba(230,43,30,0.08)"
+      }}
+    >
+      TEDx
+    </span>
+  </div>
 
-        {/* 5. توهج سفلي يميني */}
-        <div className="absolute bottom-[-10%] right-[10%] w-[400px] h-[300px] bg-[#e62b1e]/[0.06] rounded-full blur-[100px] pointer-events-none" />
+  {/* 4. ✅ حرف X ضخم منفصل — زخرفة إضافية */}
+  <div className="absolute bottom-[-5%] right-[-5%] pointer-events-none select-none overflow-hidden">
+    <span
+      className="text-[15rem] sm:text-[20rem] md:text-[25rem] font-black leading-none"
+      style={{
+        color: "rgba(230,43,30,0.03)",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+      }}
+    >
+      X
+    </span>
+  </div>
 
-        {/* 6. تأثير Vignette لعمق إضافي */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] pointer-events-none" />
+  {/* 5. دوائر حمراء كبيرة شفافة — شعار TEDx */}
+  <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] rounded-full border border-[#e62b1e]/10 pointer-events-none" />
+  <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] rounded-full bg-[#e62b1e]/[0.03] blur-[60px] pointer-events-none" />
 
-        {/* 7. خط TEDx سفلي متحرك */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/40 to-transparent" />
+  <div className="absolute bottom-[15%] right-[8%] w-[250px] h-[250px] rounded-full border border-[#e62b1e]/8 pointer-events-none" />
+  <div className="absolute bottom-[15%] right-[8%] w-[250px] h-[250px] rounded-full bg-[#e62b1e]/[0.02] blur-[50px] pointer-events-none" />
 
-        <div className="container-padding relative z-10 max-w-7xl mx-auto text-center">
-          <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#e62b1e] mb-6">
-              <span className="w-8 h-px bg-[#e62b1e]" />
-              {ctaLabel}
-              <span className="w-8 h-px bg-[#e62b1e]" />
-            </span>
-          </motion.div>
+  <div className="absolute top-[40%] right-[15%] w-[120px] h-[120px] rounded-full border border-[#e62b1e]/6 pointer-events-none" />
 
-          <ScrollReveal delay={0.05}>
-            <div className="flex justify-center mb-6">
-              <TrackingEyes size={50} className="mx-auto" />
-            </div>
-          </ScrollReveal>
+  {/* 6. نقاط حمراء ساطعة — أفكار TEDx */}
+  <div
+    className="absolute inset-0 pointer-events-none opacity-[0.2]"
+    style={{
+      backgroundImage: `radial-gradient(circle, rgba(230,43,30,0.5) 1.5px, transparent 1.5px)`,
+      backgroundSize: "56px 56px",
+    }}
+  />
 
-          <motion.h2
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6"
-          >
-            {joinUs}
-          </motion.h2>
-          <motion.p
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-zinc-400 text-base sm:text-lg max-w-xl mx-auto mb-10 leading-relaxed px-4"
-          >
-            {ctaDescription}
-          </motion.p>
+  {/* 7. خطوط مائلة حمراء خفيفة — طاقة وحركة */}
+  <div
+    className="absolute inset-0 pointer-events-none opacity-[0.03]"
+    style={{
+      backgroundImage: `
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 80px,
+          rgba(230,43,30,0.4) 80px,
+          rgba(230,43,30,0.4) 81px
+        )
+      `,
+    }}
+  />
 
-          <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto sm:max-w-none"
-          >
-            <AnimatedSlidingButton
-              href="/apply"
-              variant="primary"
-              className="w-full sm:w-auto min-w-[160px] shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)]"
-            >
-              {applyButton}
-            </AnimatedSlidingButton>
+  {/* 8. خطوط مائلة معاكسة */}
+  <div
+    className="absolute inset-0 pointer-events-none opacity-[0.02]"
+    style={{
+      backgroundImage: `
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 120px,
+          rgba(230,43,30,0.3) 120px,
+          rgba(230,43,30,0.3) 121px
+        )
+      `,
+    }}
+  />
 
-            <AnimatedSlidingButton
-              href="/tickets"
-              variant="primary"
-              className="w-full sm:w-auto min-w-[160px] bg-black text-white border-black hover:bg-black/90 hover:border-black/90 shadow-sm"
-            >
-              {ticketsButton}
-            </AnimatedSlidingButton>
-          </motion.div>
-        </div>
+  {/* 9. شرائح حمراء مائلة — ديناميكية */}
+  <div className="absolute top-[18%] left-[-10%] w-[50%] h-[1px] bg-gradient-to-r from-transparent via-[#e62b1e]/20 to-transparent rotate-[-8deg] pointer-events-none" />
+  <div className="absolute bottom-[22%] right-[-10%] w-[45%] h-[1px] bg-gradient-to-r from-transparent via-[#e62b1e]/15 to-transparent rotate-[6deg] pointer-events-none" />
+
+  {/* 10. مربعات ومثلثات حمراء — زخرفة هندسية */}
+  <div className="absolute top-[22%] right-[18%] w-5 h-5 bg-[#e62b1e]/10 rotate-45 pointer-events-none" />
+  <div className="absolute bottom-[28%] left-[12%] w-3 h-3 bg-[#e62b1e]/8 rotate-12 pointer-events-none" />
+  <div className="absolute top-[48%] left-[6%] w-6 h-6 bg-[#e62b1e]/6 rotate-[30deg] pointer-events-none" />
+  <div className="absolute bottom-[42%] right-[14%] w-4 h-4 bg-[#e62b1e]/9 rotate-[-15deg] pointer-events-none" />
+  <div className="absolute top-[8%] right-[35%] w-2 h-2 rounded-full bg-[#e62b1e]/15 pointer-events-none" />
+  <div className="absolute bottom-[8%] left-[30%] w-2.5 h-2.5 rounded-full bg-[#e62b1e]/12 pointer-events-none" />
+
+  {/* ═══════════════════════════════════════════════════════════════
+      التوهجات الموجودة (محفوظة)
+      ═══════════════════════════════════════════════════════════════ */}
+
+  {/* توهج مركزي علوي */}
+  <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#e62b1e]/[0.09] rounded-full blur-[120px] pointer-events-none" />
+
+  {/* توهج جانبي أيسر */}
+  <div className="absolute top-[20%] left-[-5%] w-[300px] h-[300px] bg-[#e62b1e]/[0.05] rounded-full blur-[100px] pointer-events-none" />
+
+  {/* توهج سفلي يميني */}
+  <div className="absolute bottom-[-10%] right-[10%] w-[400px] h-[300px] bg-[#e62b1e]/[0.06] rounded-full blur-[100px] pointer-events-none" />
+
+  {/* تأثير Vignette */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] pointer-events-none" />
+
+  {/* خط TEDx سفلي */}
+  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/40 to-transparent" />
+
+  {/* ═══════════════════════════════════════════════════════════════
+      المحتوى — فوق كل شيء
+      ═══════════════════════════════════════════════════════════════ */}
+  <div className="container-padding relative z-10 max-w-7xl mx-auto text-center">
+    <motion.div
+      initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+    >
+      <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#e62b1e] mb-6">
+        <span className="w-8 h-px bg-[#e62b1e]" />
+        {ctaLabel}
+        <span className="w-8 h-px bg-[#e62b1e]" />
+      </span>
+    </motion.div>
+
+    <ScrollReveal delay={0.05}>
+      <div className="flex justify-center mb-6">
+        <TrackingEyes size={50} className="mx-auto" />
       </div>
+    </ScrollReveal>
+
+    <motion.h2
+      initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7, delay: 0.1 }}
+      className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6"
+    >
+      {joinUs}
+    </motion.h2>
+    <motion.p
+      initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+      className="text-zinc-300 text-base sm:text-lg max-w-xl mx-auto mb-10 leading-relaxed px-4"
+    >
+      {ctaDescription}
+    </motion.p>
+
+    <motion.div
+      initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.3 }}
+      className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto sm:max-w-none"
+    >
+      <AnimatedSlidingButton
+        href="/apply"
+        variant="primary"
+        className="w-full sm:w-auto min-w-[160px] shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)]"
+      >
+        {applyButton}
+      </AnimatedSlidingButton>
+
+      <AnimatedSlidingButton
+        href="/tickets"
+        variant="primary"
+        className="w-full sm:w-auto min-w-[160px] bg-black text-white border-black hover:bg-black/90 hover:border-black/90 shadow-sm"
+      >
+        {ticketsButton}
+      </AnimatedSlidingButton>
+    </motion.div>
+  </div>
+</div>
 
       {/* ═══════════════════════════════════════════════════════════════
           MAIN FOOTER
@@ -385,7 +484,7 @@ export default function FooterContent({
   {/* ═══════════════════════════════════════════════════════════════
     BOTTOM BAR — بنفس هوية TEDx الداكنة
     ═══════════════════════════════════════════════════════════════ */}
-<div className="relative bg-[#050505] border-t border-zinc-800/60 overflow-hidden">
+<div className="relative bg-black border-t border-zinc-800/60 overflow-hidden">
   {/* نمط شبكة TEDx خفيف */}
   <div
     className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -395,8 +494,11 @@ export default function FooterContent({
     }}
   />
   
-  {/* توهج أحمر علوي خفيف */}
-  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[60px] bg-[#e62b1e]/[0.06] rounded-full blur-[60px] pointer-events-none" />
+  {/* توهج أحمر علوي خفيف — متسق مع باقي الأقسام */}
+  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[80px] bg-tedx-red/10 rounded-full blur-[80px] pointer-events-none" />
+
+  {/* توهج أحمر سفلي خفيف */}
+  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[300px] h-[60px] bg-tedx-red/8 rounded-full blur-[60px] pointer-events-none" />
 
   {/* خط TEDx علوي */}
   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/30 to-transparent" />

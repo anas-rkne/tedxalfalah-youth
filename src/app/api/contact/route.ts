@@ -3,6 +3,7 @@ import { z } from "zod";
 import { escapeHtml } from "@/lib/sanitize";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
+import { validateOrigin } from "@/lib/cors";
 
 const contactSchema = z.object({
   name: z.string().min(1),
@@ -19,6 +20,9 @@ const contactSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const originError = validateOrigin(request);
+  if (originError) return originError;
+
   // 1) Rate limiting — يمنع الإغراق الآلي قبل أي معالجة أخرى
   const { allowed } = await checkRateLimit(request, "contact");
   if (!allowed) {

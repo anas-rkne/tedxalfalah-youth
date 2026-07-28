@@ -12,8 +12,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t("meta.title") };
 }
 
-export default async function TicketCancelPage() {
-  const t = await getTranslations("page.tickets.cancel");
+export default async function TicketCancelPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "page.tickets.cancel" });
   return (
     <section className="min-h-[60vh] flex items-center justify-center section-padding">
       <SectionContainer className="max-w-lg text-center">

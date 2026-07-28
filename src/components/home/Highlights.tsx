@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import HighlightsContent from "./HighlightsContent";
 
-export default async function Highlights() {
-  const t = await getTranslations("home.highlights");
-  const tCommon = await getTranslations("common"); // لأزرار مثل "قدم الآن"
+export default async function Highlights({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "home.highlights" });
+  const tCommon = await getTranslations({ locale, namespace: "common" });
 
   const STATS = [
     { label: t("statsSpeakers"), targetValue: 12, suffix: "+" },

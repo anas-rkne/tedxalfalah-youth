@@ -210,6 +210,7 @@ const EventInfo = memo(function EventInfo({
 export default function HeroDynamicContent({
   eventName,
   tagline,
+  subtitle,
   dateText,
   venueText,
   scrollLabel,
@@ -217,9 +218,11 @@ export default function HeroDynamicContent({
   ticketsLabel,
   badgeLabel,
   eventYear,
+  countdownHeadline,
 }: {
   eventName: string;
   tagline: string;
+  subtitle: string;
   dateText: string;
   venueText: string;
   scrollLabel: string;
@@ -227,12 +230,13 @@ export default function HeroDynamicContent({
   ticketsLabel: string;
   badgeLabel: string;
   eventYear: string;
+  countdownHeadline: string;
 }) {
   return (
-    <BackgroundBeamsWithCollision className="section-padding ">
+    <BackgroundBeamsWithCollision className="min-h-full">
       <div
         dir="ltr"
-        className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14 w-full max-w-7xl mx-auto px-4 relative h-full"
+        className="flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-4 xl:gap-6 w-full max-w-7xl mx-auto px-4"
       >
         <AnimatedCharacter
                     src="/images/طفلة 1.svg"
@@ -244,29 +248,39 @@ export default function HeroDynamicContent({
 
         <div
           dir="auto"
-          className="relative z-10 px-2 sm:px-4 flex flex-col items-center gap-5 md:gap-7 justify-center w-full h-full"
+          className="relative z-10 px-2 sm:px-4 flex flex-col items-center gap-8 md:gap-10 w-full"
         >
           <FadeUp delay={0.1}>
             <EventBadge label={badgeLabel} year={eventYear} />
           </FadeUp>
 
-          <FadeUp delay={0.25} className="w-full">
-            <HeroTypewriterTitle title={tagline} />
-          </FadeUp>
+          <div className="flex flex-col items-center gap-2 w-full">
+            <FadeUp delay={0.2} className="w-full">
+              <HeroTypewriterTitle title={tagline} />
+            </FadeUp>
+            <FadeUp delay={0.25}>
+              <p className="text-lg md:text-xl text-zinc-500 text-center max-w-2xl leading-relaxed">
+                {subtitle}
+              </p>
+            </FadeUp>
+          </div>
 
-          <FadeUp delay={0.35} className="w-full">
-            <DecorativeDivider />
-          </FadeUp>
+          <div className="flex flex-col items-center gap-2">
+            <FadeUp delay={0.4}>
+              <EventInfo
+                eventName={eventName}
+                dateText={dateText}
+                venueText={venueText}
+              />
+            </FadeUp>
+            <FadeUp delay={0.5}>
+              <p className="text-sm md:text-base text-zinc-500 text-center max-w-md leading-relaxed">
+                {countdownHeadline}
+              </p>
+            </FadeUp>
+          </div>
 
-          <FadeUp delay={0.45}>
-            <EventInfo
-              eventName={eventName}
-              dateText={dateText}
-              venueText={venueText}
-            />
-          </FadeUp>
-
-          <FadeUp delay={0.55}>
+          <FadeUp delay={0.6}>
             <Countdown targetDate={EVENT_DATE} />
           </FadeUp>
 

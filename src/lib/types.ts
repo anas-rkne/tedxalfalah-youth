@@ -59,7 +59,13 @@ export interface Session {
   description?: string;
 }
 
-export type SponsorTier = "Platinum" | "Gold" | "Silver" | "Community";
+export interface EventInfo {
+  title?: string;
+  date?: string; // "2026-11-15"
+  venue?: string;
+}
+
+export type SponsorTier = "Platinum" | "Gold" | "Silver" | "Community" | "Supporter";
 
 export interface Sponsor {
   id: string;

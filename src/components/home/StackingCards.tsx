@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Eye, Target, Sparkles, Users } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 
 interface CardData {
   id: number;
@@ -215,18 +216,18 @@ export default function StackingCards() {
                     transition={{ delay: 0.3, duration: 0.5, ease: easeOut }}
                     className="mt-8 flex flex-wrap gap-4"
                   >
-                    <a
-                      href="/ar/apply"
+                    <Link
+                      href="/apply"
                       className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#E62B1E] rounded-full font-semibold text-sm hover:bg-zinc-100 transition-colors"
                     >
                       {isRTL ? "تقديم كمتحدث" : "Apply as Speaker"}
-                    </a>
-                    <a
-                      href="/ar/contact"
+                    </Link>
+                    <Link
+                      href="/contact"
                       className="inline-flex items-center gap-2 px-6 py-3 border border-white/30 text-white rounded-full font-semibold text-sm hover:bg-white/10 transition-colors"
                     >
                       {isRTL ? "تواصل معنا" : "Contact Us"}
-                    </a>
+                    </Link>
                   </motion.div>
                 )}
               </div>

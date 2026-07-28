@@ -49,6 +49,12 @@ export default defineType({
       title: "LinkedIn URL",
       type: "url",
     }),
+    defineField({
+      name: "isPublished",
+      title: "Published",
+      type: "boolean",
+      initialValue: false,
+    }),
   ],
   preview: {
     select: { title: "name", subtitle: "role", media: "photo" },
