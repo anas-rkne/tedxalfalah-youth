@@ -30,10 +30,10 @@ const PulseDot = memo(function PulseDot({ delay = 0 }: { delay?: number }) {
   return (
     <span className="relative inline-flex h-2.5 w-2.5 shrink-0">
       <span
-        className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-30"
+        className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tedx-red opacity-30"
         style={{ animationDelay: `${delay}s` }}
       />
-      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#e62b1e]" />
+      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-tedx-red" />
     </span>
   );
 });
@@ -49,33 +49,19 @@ const EventBadge = memo(function EventBadge({
     <motion.div
       {...ANIMATION_CONFIG.fadeScale}
       transition={{ ...ANIMATION_CONFIG.fadeScale.transition, delay: 0.1 }}
-      className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#e62b1e]/10 border border-[#e62b1e]/20"
+      className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-tedx-red/10 border border-tedx-red/20"
     >
       <PulseDot />
-      <span className="text-xs md:text-sm font-bold tracking-[0.15em] uppercase text-[#e62b1e]">
+      <span className="text-xs md:text-sm font-bold tracking-[0.15em] uppercase text-tedx-red">
         {label}
       </span>
-      <span className="w-px h-3 bg-[#e62b1e]/20" />
-      <span className="text-[10px] font-semibold text-[#e62b1e]/60">{year}</span>
+      <span className="w-px h-3 bg-tedx-red/20" />
+      <span className="text-[10px] font-semibold text-tedx-red/60">{year}</span>
     </motion.div>
   );
 });
 
-const DecorativeDivider = memo(function DecorativeDivider() {
-  return (
-    <div className="flex items-center gap-3 w-full max-w-[200px] mx-auto">
-      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-zinc-200" />
-      <div className="flex items-center gap-1">
-        <div className="w-1 h-1 rounded-full bg-[#e62b1e]/20" />
-        <div className="w-1.5 h-1.5 rounded-full bg-[#e62b1e]/40" />
-        <div className="w-1 h-1 rounded-full bg-[#e62b1e]/20" />
-      </div>
-      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-zinc-200" />
-    </div>
-  );
-});
-
-/* ─── AnimatedCharacter (بدون ظل، مع 5 فقاعات) ─── */
+/* ─── AnimatedCharacter ─── */
 function AnimatedCharacter({
   src,
   alt,
@@ -121,7 +107,7 @@ function AnimatedCharacter({
       initial={{ opacity: 0, x: direction === "left" ? -40 : 40 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}
-      className="hidden lg:flex flex-col items-center flex-shrink-0 w-56 lg:w-64 xl:w-72 relative"
+      className="hidden lg:flex flex-col items-center flex-shrink-0 w-48 lg:w-56 xl:w-64 relative"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -148,32 +134,32 @@ function AnimatedCharacter({
           priority={direction === "left"}
           loading={direction === "left" ? "eager" : "lazy"}
         />
-
+        
         {/* 5 فقاعات حمراء */}
         {!shouldReduceMotion && (
           <>
             <motion.div
-              className="absolute top-1/4 -left-4 w-2 h-2 rounded-full bg-[#e62b1e] z-20"
+              className="absolute top-1/4 -left-4 w-2 h-2 rounded-full bg-tedx-red z-20"
               animate={{ y: [0, -20, 0], opacity: [0, 0.6, 0], scale: [0.5, 1, 0.5] }}
               transition={{ duration: 3, repeat: Infinity, delay: delay + 0.5, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
-              className="absolute top-1/3 -right-4 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
+              className="absolute top-1/3 -right-4 w-1.5 h-1.5 rounded-full bg-tedx-red z-20"
               animate={{ y: [0, -15, 0], opacity: [0, 0.5, 0], scale: [0.5, 1.2, 0.5] }}
               transition={{ duration: 2.5, repeat: Infinity, delay: delay + 1.2, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
-              className="absolute bottom-1/3 left-1/4 w-1 h-1 rounded-full bg-[#e62b1e] z-20"
+              className="absolute bottom-1/3 left-1/4 w-1 h-1 rounded-full bg-tedx-red z-20"
               animate={{ y: [0, -25, 0], x: [0, 10, 0], opacity: [0, 0.4, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, delay: delay + 0.8, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
-              className="absolute top-1/2 -right-6 w-2 h-2 rounded-full bg-[#e62b1e]/80 z-20"
+              className="absolute top-1/2 -right-6 w-2 h-2 rounded-full bg-tedx-red/80 z-20"
               animate={{ y: [0, -18, 0], x: [0, -8, 0], opacity: [0, 0.7, 0], scale: [0.5, 1.3, 0.5] }}
               transition={{ duration: 3.2, repeat: Infinity, delay: delay + 1.8, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
-              className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
+              className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full bg-tedx-red z-20"
               animate={{ y: [0, -22, 0], x: [0, -5, 0], opacity: [0, 0.5, 0], scale: [0.6, 1.1, 0.6] }}
               transition={{ duration: 3.8, repeat: Infinity, delay: delay + 2.2, ease: [0.23, 1, 0.32, 1] }}
             />
@@ -194,13 +180,13 @@ const EventInfo = memo(function EventInfo({
   venueText: string;
 }) {
   return (
-    <div className="text-base md:text-lg text-zinc-400 max-w-2xl text-center flex flex-col gap-2.5 leading-relaxed">
-      <p className="text-[#e62b1e] font-bold text-lg md:text-xl tracking-tight">
+    <div className="flex flex-col items-center gap-0.5 text-zinc-400 text-sm md:text-base text-center">
+      <p className="text-tedx-red font-bold text-lg md:text-xl tracking-tight">
         {eventName}
       </p>
-      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-zinc-400 text-sm md:text-base">
+      <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
         <span>{dateText}</span>
-        <span className="hidden sm:inline text-zinc-200">•</span>
+        <span className="hidden sm:inline text-zinc-300">•</span>
         <span>{venueText}</span>
       </div>
     </div>
@@ -233,28 +219,28 @@ export default function HeroDynamicContent({
   countdownHeadline: string;
 }) {
   return (
-    <BackgroundBeamsWithCollision className="min-h-full">
+    <BackgroundBeamsWithCollision className="min-h-full overflow-hidden">
       <div
         dir="ltr"
-        className="flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-4 xl:gap-6 w-full max-w-7xl mx-auto px-4"
+        className="flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-4 xl:gap-6 w-full max-w-7xl mx-auto px-4 overflow-hidden"
       >
         <AnimatedCharacter
-                    src="/images/طفلة 1.svg"
-
+          src="/images/طفلة 1.svg"
           alt="صورة توضيحية — فتى يشير لليسار"
           direction="left"
           delay={0.15}
         />
 
+        {/* العمود المركزي */}
         <div
           dir="auto"
-          className="relative z-10 px-2 sm:px-4 flex flex-col items-center gap-8 md:gap-10 w-full"
+          className="relative z-10 px-2 sm:px-4 flex flex-col items-center w-full pt-20 lg:pt-12 gap-6 md:gap-8"
         >
-          <FadeUp delay={0.1}>
-            <EventBadge label={badgeLabel} year={eventYear} />
-          </FadeUp>
-
-          <div className="flex flex-col items-center gap-2 w-full">
+          {/* 🔥 الكتلة العليا: تم زيادة المسافة بين الشارة والعنوان إلى gap-4 md:gap-6 */}
+          <div className="flex flex-col items-center gap-4 md:gap-6 w-full">
+            <FadeUp delay={0.1}>
+              <EventBadge label={badgeLabel} year={eventYear} />
+            </FadeUp>
             <FadeUp delay={0.2} className="w-full">
               <HeroTypewriterTitle title={tagline} />
             </FadeUp>
@@ -265,7 +251,8 @@ export default function HeroDynamicContent({
             </FadeUp>
           </div>
 
-          <div className="flex flex-col items-center gap-2">
+          {/* الكتلة النصية: EventInfo + العبارة */}
+          <div className="flex flex-col items-center gap-2 w-full">
             <FadeUp delay={0.4}>
               <EventInfo
                 eventName={eventName}
@@ -273,17 +260,19 @@ export default function HeroDynamicContent({
                 venueText={venueText}
               />
             </FadeUp>
-            <FadeUp delay={0.5}>
+            <FadeUp delay={0.45}>
               <p className="text-sm md:text-base text-zinc-500 text-center max-w-md leading-relaxed">
                 {countdownHeadline}
               </p>
             </FadeUp>
           </div>
 
+          {/* العد التنازلي */}
           <FadeUp delay={0.6}>
             <Countdown targetDate={EVENT_DATE} />
           </FadeUp>
 
+          {/* الأزرار */}
           <FadeUp delay={0.7}>
             <ActionButtons applyLabel={applyLabel} ticketsLabel={ticketsLabel} />
           </FadeUp>
