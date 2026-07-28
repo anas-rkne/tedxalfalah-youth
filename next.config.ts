@@ -18,9 +18,8 @@ const securityHeaders = [
     value: "max-age=63072000; includeSubDomains; preload",
   },
   {
-    // يسمح فقط بالمصادر الضرورية فعلياً بالمشروع: الموقع نفسه، خط Google
-    // Fonts، سكربت وواجهة Cloudflare Turnstile، وiframe خرائط Google.
-    // في وضع التطوير يضيف unsafe-eval لأن React يحتاجه لـ debugging.
+    // يسمح فقط بالمصادر الضرورية فعلياً بالمشروع.
+    // 🔥 تم إضافة نطاقات Sanity API للسماح بجلب البيانات.
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
@@ -29,7 +28,8 @@ const securityHeaders = [
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: https://cdn.sanity.io https://www.google-analytics.com https://www.googletagmanager.com",
       "frame-src https://challenges.cloudflare.com https://www.google.com",
-      "connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com",
+      // 🔥 تم إضافة نطاق Sanity API الخاص بمشروعك لضمان عدم حظر الطلبات
+      "connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://5pbek4rg.api.sanity.io https://*.sanity.io",
     ].join("; "),
   },
 ];
