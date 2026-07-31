@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import FaqAccordion, { FaqItem } from "@/components/shared/FaqAccordion";
 import TextReveal from "@/components/ui/TextReveal";
@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function FaqPage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "page.faq" });
 
   const GENERAL_FAQ_ITEMS: FaqItem[] = Array.from({ length: 9 }, (_, i) => ({

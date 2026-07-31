@@ -7,6 +7,7 @@ import TextReveal from "@/components/ui/TextReveal";
 
 export const metadata: Metadata = {
   title: "Page Not Found",
+  description: "The page you're looking for does not exist.",
 };
 
 export default async function NotFound() {

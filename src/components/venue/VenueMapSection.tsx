@@ -9,12 +9,14 @@ interface VenueMapSectionProps {
   title: string;
   mapTitle: string;
   directions: string;
+  mapSrc?: string;
 }
 
 const VenueMapSection = memo(function VenueMapSection({
   title,
   mapTitle,
   directions,
+  mapSrc,
 }: VenueMapSectionProps) {
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
@@ -40,7 +42,7 @@ const VenueMapSection = memo(function VenueMapSection({
           <div className="absolute inset-0 rounded-[20px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)] pointer-events-none z-10" />
           <iframe
             title={mapTitle}
-            src="https://www.google.com/maps?q=Dubai&output=embed"
+            src={mapSrc || "https://www.google.com/maps?q=Dubai&output=embed"}
             width="100%"
             height="100%"
             className="aspect-video w-full"

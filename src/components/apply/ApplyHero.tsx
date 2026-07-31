@@ -8,6 +8,7 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import TextType from "@/components/TextType";
 import SafeImage from "@/components/ui/SafeImage";
 
@@ -19,8 +20,9 @@ interface ApplyHeroProps {
   imageAlt?: string;
 }
 
-/* ═══════════ مؤشر التمرير (بدون تغيير) ═══════════ */
+/* ═══════════ مؤشر التمرير ═══════════ */
 function ScrollIndicator() {
+  const t = useTranslations("common");
   return (
     <motion.div
       className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer z-20"
@@ -31,7 +33,7 @@ function ScrollIndicator() {
       }}
     >
       <span className="text-[11px] font-medium text-white/30 tracking-[0.15em] uppercase">
-        Scroll
+        {t("ui.scroll")}
       </span>
       <div className="w-px h-8 bg-gradient-to-b from-white/30 to-transparent" />
       <ChevronDown size={14} className="text-white/30" />
@@ -43,7 +45,7 @@ const ApplyHero = memo(function ApplyHero({
   title,
   subtitle,
   body,
-  imageUrl = "/images/youth-speaker.jpg",
+  imageUrl = "/images/youth-speaker-2.jpg",
   imageAlt = "Apply to speak",
 }: ApplyHeroProps) {
   const shouldReduceMotion = useReducedMotion();
@@ -129,7 +131,7 @@ const ApplyHero = memo(function ApplyHero({
             loop={false}
             showCursor
             cursorCharacter="|"
-            cursorClassName="text-[#e62b1e]"
+            cursorClassName="text-tedx-red"
             cursorBlinkDuration={0.6}
             hideCursorWhileTyping={false}
             initialDelay={300}

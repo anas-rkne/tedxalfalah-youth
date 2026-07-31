@@ -86,7 +86,7 @@ export async function POST(request: Request) {
   } else {
     // بيئة تطوير: لا يوجد مفتاح Resend بعد، فقط نسجّل الطلب بدون البيانات
     // الكاملة (حتى بيئة التطوير لا يجب أن تُسرّب بيانات شخصية بالسجلات)
-    console.log("[DEV] Contact form submission received (RESEND_API_KEY not set). Subject:", subject);
+    if (process.env.NODE_ENV === "development") console.log("[DEV] Contact form submission received (RESEND_API_KEY not set). Subject:", subject);
   }
 
   return NextResponse.json({ success: true });

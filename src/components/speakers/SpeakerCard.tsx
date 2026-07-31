@@ -9,7 +9,7 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Speaker } from "@/lib/types";
 import SafeImage from "@/components/ui/SafeImage";
 
@@ -25,8 +25,8 @@ const StatusBadge = memo(function StatusBadge({ label }: { label: string }) {
   return (
     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/25 backdrop-blur-xl border border-white/[0.08]">
       <span className="relative flex h-[6px] w-[6px]">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-50" />
-        <span className="relative inline-flex rounded-full h-[6px] w-[6px] bg-[#e62b1e]" />
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tedx-red opacity-50" />
+        <span className="relative inline-flex rounded-full h-[6px] w-[6px] bg-tedx-red" />
       </span>
       <span className="text-[11px] font-semibold text-white/90 tracking-wide">
         {label}
@@ -42,6 +42,7 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
   const shouldReduceMotion = useReducedMotion();
   const locale = useLocale();
   const isArabic = locale === "ar";
+  const t = useTranslations("page.speakers");
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -81,7 +82,10 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
     <motion.div
       ref={cardRef}
       id={`speaker-${speaker.id}`}
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
       initial={shouldReduceMotion ? {} : { opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -98,7 +102,7 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
     >
       {/* Outer Glow */}
       <div
-        className={`absolute -inset-1.5 rounded-[22px] bg-gradient-to-b from-[#e62b1e]/10 via-[#e62b1e]/5 to-transparent blur-2xl transition-opacity duration-700 ${
+        className={`absolute -inset-1.5 rounded-[22px] bg-gradient-to-b from-tedx-red/10 via-tedx-red/5 to-transparent blur-2xl transition-opacity duration-700 ${
           isHovered ? "opacity-100" : "opacity-0"
         }`}
       />
@@ -124,7 +128,7 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
           {speaker.imageUrl ? (
             <SafeImage
               src={speaker.imageUrl}
-              alt={`صورة ${speaker.name}`}
+              alt={t("speakerImageAlt", { name: speaker.name })}
               fill
               unoptimized
               className="object-cover transition-all duration-700 ease-out group-hover:scale-[1.05]"
@@ -132,7 +136,7 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900 text-5xl font-bold text-white/50">
-              {speaker.name?.charAt(0) || "?"}
+              {speaker.name?.charAt(0) || ""}
             </div>
           )}
 
@@ -158,7 +162,7 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
               isHovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3"
             }`}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 text-white transition-all duration-300 group-hover:bg-[#e62b1e] group-hover:border-[#e62b1e] group-hover:shadow-[0_0_20px_rgba(230,43,30,0.4)]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 text-white transition-all duration-300 group-hover:bg-tedx-red group-hover:border-tedx-red group-hover:shadow-[0_0_20px_rgba(230,43,30,0.4)]">
               <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:rotate-45" />
             </div>
           </div>
@@ -185,7 +189,7 @@ const SpeakerCard = memo(function SpeakerCard({ speaker, onClick }: SpeakerCardP
         {/* TEDx Accent Line */}
         <div className="relative h-[2px] w-full overflow-hidden bg-zinc-800/40">
           <motion.div
-            className="h-full bg-gradient-to-r from-transparent via-[#e62b1e] to-transparent"
+            className="h-full bg-gradient-to-r from-transparent via-tedx-red to-transparent"
             initial={{ scaleX: 0, opacity: 0 }}
             whileInView={{ scaleX: 1, opacity: 1 }}
             viewport={{ once: true }}

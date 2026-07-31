@@ -9,6 +9,7 @@ import { useRTL } from "@/hooks/useRTL";
 interface ActivationCardProps {
   activation: Activation;
   index: number;
+  descriptionFallback?: string;
 }
 
 /* ═══════════ LocationIcon (ثابتة) ═══════════ */
@@ -24,6 +25,7 @@ function LocationIcon() {
 const ActivationCard = memo(function ActivationCard({
   activation,
   index,
+  descriptionFallback,
 }: ActivationCardProps) {
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
@@ -59,7 +61,7 @@ const ActivationCard = memo(function ActivationCard({
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-muted-foreground">
-              {activation.name?.charAt(0) || "?"}
+              {activation.name?.charAt(0) || ""}
             </div>
           )}
 
@@ -86,13 +88,13 @@ const ActivationCard = memo(function ActivationCard({
             {activation.name}
           </h2>
 
-          <span className={`inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#e62b1e] tracking-[0.02em] mb-4 px-3 py-1 bg-[#e62b1e]/[0.05] border border-[#e62b1e]/[0.08] rounded-full ${isRTL ? "font-arabic" : ""}`}>
+          <span className={`inline-flex items-center gap-1.5 text-[13px] font-semibold text-tedx-red tracking-[0.02em] mb-4 px-3 py-1 bg-tedx-red/[0.05] border border-tedx-red/[0.08] rounded-full ${isRTL ? "font-arabic" : ""}`}>
             <LocationIcon />
             {activation.locationInVenue}
           </span>
 
           <p className={`text-[15px] text-zinc-600 leading-[1.8] ${isRTL ? "font-arabic" : ""}`}>
-            {activation.description}
+            {activation.description?.includes("[PLACEHOLDER") ? descriptionFallback : activation.description}
           </p>
         </div>
       </motion.div>

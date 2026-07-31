@@ -1,0 +1,51 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0e"/>
+      <stop offset="100%" stop-color="#1a1a24"/>
+    </linearGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="50%" stop-color="#e62b1e"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Red accent line top -->
+  <rect x="0" y="0" width="1200" height="3" fill="url(#line)"/>
+
+  <!-- Red accent line bottom -->
+  <rect x="0" y="627" width="1200" height="3" fill="url(#line)"/>
+
+  <!-- Large X abstract shape (TEDx style) -->
+  <g transform="translate(600, 315)" opacity="0.04">
+    <line x1="-400" y1="-400" x2="400" y2="400" stroke="#e62b1e" stroke-width="80" stroke-linecap="round"/>
+    <line x1="400" y1="-400" x2="-400" y2="400" stroke="#e62b1e" stroke-width="80" stroke-linecap="round"/>
+  </g>
+
+  <!-- TEDxAlFalah Youth text -->
+  <text x="600" y="230" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="800" fill="#ffffff" letter-spacing="-1">
+    TEDxAlFalah
+  </text>
+
+  <!-- Red dot -->
+  <circle cx="600" cy="280" r="6" fill="#e62b1e"/>
+
+  <!-- Youth -->
+  <text x="600" y="325" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="#e62b1e" letter-spacing="4">
+    YOUTH
+  </text>
+
+  <!-- Tagline -->
+  <text x="600" y="390" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400" fill="#888" letter-spacing="6">
+    TOMORROW, NOW.
+  </text>
+
+  <!-- Bottom text -->
+  <text x="600" y="540" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="300" fill="#555" letter-spacing="2">
+    An independently organized TEDx event
+  </text>
+</svg>

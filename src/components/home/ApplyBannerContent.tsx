@@ -169,27 +169,27 @@ const ApplySideImage = memo(function ApplySideImage({
         {!shouldReduceMotion && (
           <>
             <motion.div
-              className="absolute top-1/4 -left-4 w-2 h-2 rounded-full bg-[#e62b1e] z-20"
+              className="absolute top-1/4 -left-4 w-2 h-2 rounded-full bg-tedx-red z-20"
               animate={{ y: [0, -20, 0], opacity: [0, 0.6, 0], scale: [0.5, 1, 0.5] }}
               transition={{ duration: 3, repeat: Infinity, delay: delay + 0.5, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
-              className="absolute top-1/3 -right-4 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
+              className="absolute top-1/3 -right-4 w-1.5 h-1.5 rounded-full bg-tedx-red z-20"
               animate={{ y: [0, -15, 0], opacity: [0, 0.5, 0], scale: [0.5, 1.2, 0.5] }}
               transition={{ duration: 2.5, repeat: Infinity, delay: delay + 1.2, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
-              className="absolute bottom-1/3 left-1/4 w-1 h-1 rounded-full bg-[#e62b1e] z-20"
+              className="absolute bottom-1/3 left-1/4 w-1 h-1 rounded-full bg-tedx-red z-20"
               animate={{ y: [0, -25, 0], x: [0, 10, 0], opacity: [0, 0.4, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, delay: delay + 0.8, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
-              className="absolute top-1/2 -right-6 w-2 h-2 rounded-full bg-[#e62b1e]/80 z-20"
+              className="absolute top-1/2 -right-6 w-2 h-2 rounded-full bg-tedx-red/80 z-20"
               animate={{ y: [0, -18, 0], x: [0, -8, 0], opacity: [0, 0.7, 0], scale: [0.5, 1.3, 0.5] }}
               transition={{ duration: 3.2, repeat: Infinity, delay: delay + 1.8, ease: [0.23, 1, 0.32, 1] }}
             />
             <motion.div
-              className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full bg-[#e62b1e] z-20"
+              className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full bg-tedx-red z-20"
               animate={{ y: [0, -22, 0], x: [0, -5, 0], opacity: [0, 0.5, 0], scale: [0.6, 1.1, 0.6] }}
               transition={{ duration: 3.8, repeat: Infinity, delay: delay + 2.2, ease: [0.23, 1, 0.32, 1] }}
             />
@@ -341,41 +341,41 @@ export default function ApplyBannerContent({
               <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
                 <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: `linear-gradient(rgba(230,43,30,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(230,43,30,0.3) 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-32 h-32 rounded-full bg-[#e62b1e]/20 animate-ping" style={{ animationDuration: '3s' }} />
-                  <div className="absolute w-20 h-20 rounded-full bg-[#e62b1e]/30 animate-pulse" style={{ animationDuration: '2s' }} />
+                  <div className="w-32 h-32 rounded-full bg-tedx-red/20 animate-ping" style={{ animationDuration: '3s' }} />
+                  <div className="absolute w-20 h-20 rounded-full bg-tedx-red/30 animate-pulse" style={{ animationDuration: '2s' }} />
                 </div>
               </div>
               <div className="absolute inset-0">
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <div className="relative">
-                    <div className="w-48 h-48 md:w-64 md:h-64 rounded-full border-2 border-[#e62b1e]/30 flex items-center justify-center">
-                      <div className="w-36 h-36 md:w-48 md:h-48 rounded-full border border-[#e62b1e]/20 flex items-center justify-center">
-                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-[#e62b1e] to-red-700 flex items-center justify-center shadow-[0_0_60px_rgba(230,43,30,0.4)] group-hover:shadow-[0_0_80px_rgba(230,43,30,0.6)] transition-shadow duration-500">
+                    <div className="w-48 h-48 md:w-64 md:h-64 rounded-full border-2 border-tedx-red/30 flex items-center justify-center">
+                      <div className="w-36 h-36 md:w-48 md:h-48 rounded-full border border-tedx-red/20 flex items-center justify-center">
+                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-tedx-red to-red-700 flex items-center justify-center shadow-[0_0_60px_rgba(230,43,30,0.4)] group-hover:shadow-[0_0_80px_rgba(230,43,30,0.6)] transition-shadow duration-500">
                           <Mic className="w-10 h-10 md:w-14 md:h-14 text-white" />
                         </div>
                       </div>
                     </div>
                     {[0, 1, 2, 3, 4, 5].map((i) => (
-                      <motion.div key={i} className="absolute w-2 h-2 rounded-full bg-[#e62b1e]" style={{ top: '50%', left: '50%' }} animate={{ x: Math.cos((i * 60 * Math.PI) / 180) * 120, y: Math.sin((i * 60 * Math.PI) / 180) * 120, opacity: [0.3, 1, 0.3], scale: [1, 1.5, 1] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.3, ease: "easeInOut" }} />
+                      <motion.div key={i} className="absolute w-2 h-2 rounded-full bg-tedx-red" style={{ top: '50%', left: '50%' }} animate={{ x: Math.cos((i * 60 * Math.PI) / 180) * 120, y: Math.sin((i * 60 * Math.PI) / 180) * 120, opacity: [0.3, 1, 0.3], scale: [1, 1.5, 1] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.3, ease: "easeInOut" }} />
                     ))}
                   </div>
                 </div>
               </div>
               <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
                 <div className="relative rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-5 md:p-6 overflow-hidden group-hover:bg-white/10 transition-all duration-500">
-                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#e62b1e]/20 rounded-full blur-2xl group-hover:bg-[#e62b1e]/30 transition-colors duration-500" />
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-tedx-red/20 rounded-full blur-2xl group-hover:bg-tedx-red/30 transition-colors duration-500" />
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#e62b1e]" /></span>
-                      <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#e62b1e]">{stageBadgeLabel}</span>
+                      <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tedx-red opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-tedx-red" /></span>
+                      <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-tedx-red">{stageBadgeLabel}</span>
                     </div>
                     <h3 className="text-lg md:text-xl font-bold text-white mb-1 tracking-[-0.02em]">{stageTitle}</h3>
                     <p className="text-sm text-zinc-300 leading-relaxed">{stageDescription}</p>
                   </div>
                 </div>
               </div>
-              <div className="absolute top-5 right-5 md:top-6 md:right-6"><div className="px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10"><span className="text-[10px] font-black tracking-[0.15em] text-white">TED<span className="text-[#e62b1e]">x</span></span></div></div>
-              <motion.div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#e62b1e] to-transparent" animate={{ opacity: [0, 1, 0], x: ['-100%', '100%'] }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} />
+              <div className="absolute top-5 right-5 md:top-6 md:right-6"><div className="px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10"><span className="text-[10px] font-black tracking-[0.15em] text-white">TED<span className="text-tedx-red">x</span></span></div></div>
+              <motion.div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-tedx-red to-transparent" animate={{ opacity: [0, 1, 0], x: ['-100%', '100%'] }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} />
             </motion.div>
 
             <motion.div

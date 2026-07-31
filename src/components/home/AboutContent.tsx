@@ -202,7 +202,7 @@ export default function AboutContent({
         >
           {/* الكرة الأرضية (ثابتة يسار) */}
           <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, x: -40 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 40 : -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -218,7 +218,7 @@ export default function AboutContent({
 
           {/* النص التعريفي (dir="auto" لاستجابة الاتجاه للغة) */}
           <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, x: 40 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? -40 : 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}

@@ -1,168 +1,223 @@
-/**
- * ============================================================================
- * DATA ACCESS LAYER — نقطة الدخول الوحيدة لكل بيانات Sanity بالمشروع
- * ============================================================================
- * كل صفحة/مكوّن بالمشروع يستورد من هذا الملف فقط، وليس من sanity.ts أو
- * mock-data.ts مباشرة.
- *
- * السلوك:
- * - إذا كانت متغيرات البيئة NEXT_PUBLIC_SANITY_PROJECT_ID موجودة (بملف .env.local
- *   أو بإعدادات Vercel) → تُستخدم بيانات Sanity الحقيقية عبر استعلامات GROQ.
- * - إذا لم تكن موجودة → يعمل الموقع تلقائياً ببيانات تجريبية (mock) بدون أي
- *   كسر أو صفحة بيضاء، وهذا يسمح بتطوير واختبار الموقع محلياً قبل ربط الـ CMS.
- *
- * بمجرد إضافة مفاتيح Sanity الحقيقية بملف .env.local (أو Vercel)، سيتحول
- * الموقع تلقائياً لعرض البيانات الحقيقية دون أي تعديل كود إضافي.
- * ============================================================================
- */
+import { sanityClient, isSanityConfigured, urlFor } from "./sanity";
+import { Speaker, TeamMember, Activation, Sponsor, Session, EventInfo, GalleryImage } from "./types";
 
-import { sanityClient, isSanityConfigured } from "./sanity";
-import {
-  getSpeakers as getMockSpeakers,
-  getTeamMembers as getMockTeamMembers,
-  getActivations as getMockActivations,
-  getSponsors as getMockSponsors,
-  getSessions as getMockSessions,
-  getEventInfo as getMockEventInfo,
-} from "./mock-data";
-import { Speaker, TeamMember, Activation, Sponsor, Session, EventInfo } from "./types";
+async function fetchSanity<T>(groq: string): Promise<T | null> {
+  if (!isSanityConfigured || !sanityClient) return null;
+  try {
+    return await sanityClient.fetch<T>(groq);
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[Sanity] Fetch failed:", error);
+    }
+    return null;
+  }
+}
 
 export async function getSpeakers(): Promise<Speaker[]> {
-  if (isSanityConfigured && sanityClient) {
-    try {
-      const raw = await sanityClient.fetch<Record<string, unknown>[]>(
-        `*[_type == "speaker" && (!defined(isPublished) || isPublished == true)] | order(wave asc) {
-          "id": _id,
-          name,
-          "imageUrl": photo.asset->url + "?w=400&q=80",
-          shortDescriptor,
-          talkTitle,
-          themeConnection,
-          bio,
-          socialLinks,
-          wave,
-          isPublished
-        }`
-      );
-      return raw.map((s) => ({
-        ...s,
-        imageUrl: (s.imageUrl as string) && !(s.imageUrl as string).startsWith("null") ? (s.imageUrl as string) : null,
-      })) as unknown as Speaker[];
-    } catch (e) {
-      console.warn("Sanity fetch failed for speakers, falling back to mock:", e);
-    }
-  }
-  return getMockSpeakers();
+  type Raw = {
+    id: string;
+    name: string;
+    photo: { _ref: string } | null;
+    shortDescriptor: string | null;
+    talkTitle: string | null;
+    themeConnection: string | null;
+    bio: string | null;
+    socialLinks: { instagram?: string; linkedin?: string; x?: string } | null;
+    wave: number;
+    isPublished: boolean;
+  };
+
+  const raw = await fetchSanity<Raw[]>(
+    `*[_type == "speaker" && (!defined(isPublished) || isPublished == true)] | order(wave asc) {
+      "id": _id,
+      name,
+      photo,
+      shortDescriptor,
+      talkTitle,
+      themeConnection,
+      bio,
+      socialLinks,
+      wave,
+      isPublished
+    }`
+  );
+  if (!raw) return [];
+
+  return raw.map((s) => ({
+    id: s.id,
+    name: s.name,
+    imageUrl: s.photo ? urlFor(s.photo)?.width(400).quality(80).url() ?? null : null,
+    shortDescriptor: s.shortDescriptor ?? "",
+    talkTitle: s.talkTitle ?? "",
+    themeConnection: s.themeConnection ?? "",
+    bio: s.bio ?? "",
+    socialLinks: s.socialLinks ?? {},
+    wave: s.wave,
+    isPublished: s.isPublished,
+  }));
 }
 
 export async function getTeamMembers(): Promise<TeamMember[]> {
-  if (isSanityConfigured && sanityClient) {
-    try {
-      const raw = await sanityClient.fetch<Record<string, unknown>[]>(
-        `*[_type == "teamMember" && (!defined(isPublished) || isPublished == true)] | order(name asc) {
-          "id": _id,
-          name,
-          "imageUrl": photo.asset->url + "?w=400&q=80",
-          role,
-          department,
-          quote,
-          linkedinUrl
-        }`
-      );
-      return raw.map((m) => ({
-        ...m,
-        imageUrl: (m.imageUrl as string) && !(m.imageUrl as string).startsWith("null") ? (m.imageUrl as string) : null,
-      })) as unknown as TeamMember[];
-    } catch (e) {
-      console.warn("Sanity fetch failed for team members, falling back to mock:", e);
-    }
-  }
-  return getMockTeamMembers();
+  type Raw = {
+    id: string;
+    name: string;
+    photo: { _ref: string } | null;
+    role: string;
+    department: TeamMember["department"];
+    quote: string | null;
+    linkedinUrl: string | null;
+    isPublished: boolean;
+  };
+
+  const raw = await fetchSanity<Raw[]>(
+    `*[_type == "teamMember" && (!defined(isPublished) || isPublished == true)] | order(name asc) {
+      "id": _id,
+      name,
+      photo,
+      role,
+      department,
+      quote,
+      linkedinUrl,
+      isPublished
+    }`
+  );
+  if (!raw) return [];
+
+  return raw.map((m) => ({
+    id: m.id,
+    name: m.name,
+    imageUrl: m.photo ? urlFor(m.photo)?.width(400).quality(80).url() ?? null : null,
+    role: m.role,
+    department: m.department,
+    quote: m.quote ?? undefined,
+    linkedinUrl: m.linkedinUrl ?? undefined,
+  }));
 }
 
 export async function getActivations(): Promise<Activation[]> {
-  if (isSanityConfigured && sanityClient) {
-    try {
-      const raw = await sanityClient.fetch<Record<string, unknown>[]>(
-        `*[_type == "activation" && (!defined(isPublished) || isPublished == true)] | order(order asc) {
-          "id": _id,
-          name,
-          "imageUrl": image.asset->url + "?w=600&q=80",
-          description,
-          locationInVenue,
-          order
-        }`
-      );
-      return raw.map((a) => ({
-        ...a,
-        imageUrl: (a.imageUrl as string) && !(a.imageUrl as string).startsWith("null") ? (a.imageUrl as string) : null,
-      })) as unknown as Activation[];
-    } catch (e) {
-      console.warn("Sanity fetch failed for activations, falling back to mock:", e);
-    }
-  }
-  return getMockActivations();
+  type Raw = {
+    id: string;
+    name: string;
+    image: { _ref: string } | null;
+    description: string;
+    locationInVenue: string | null;
+    order: number;
+    isPublished: boolean;
+  };
+
+  const raw = await fetchSanity<Raw[]>(
+    `*[_type == "activation" && (!defined(isPublished) || isPublished == true)] | order(order asc) {
+      "id": _id,
+      name,
+      image,
+      description,
+      locationInVenue,
+      order,
+      isPublished
+    }`
+  );
+  if (!raw) return [];
+
+  return raw.map((a) => ({
+    id: a.id,
+    name: a.name,
+    imageUrl: a.image ? urlFor(a.image)?.width(600).quality(80).url() ?? null : null,
+    description: a.description,
+    locationInVenue: a.locationInVenue ?? "",
+    order: a.order,
+  }));
 }
 
 export async function getSponsors(): Promise<Sponsor[]> {
-  if (isSanityConfigured && sanityClient) {
-    try {
-      const raw = await sanityClient.fetch<Record<string, unknown>[]>(
-        `*[_type == "sponsor" && (!defined(isPublished) || isPublished == true)] | order(name asc) {
-          "id": _id,
-          name,
-          "logoUrl": logo.asset->url + "?w=200&q=80",
-          tier,
-          websiteUrl
-        }`
-      );
-      return raw.map((s) => ({
-        ...s,
-        logoUrl: (s.logoUrl as string) && !(s.logoUrl as string).startsWith("null") ? (s.logoUrl as string) : null,
-      })) as unknown as Sponsor[];
-    } catch (e) {
-      console.warn("Sanity fetch failed for sponsors, falling back to mock:", e);
-    }
-  }
-  return getMockSponsors();
+  type Raw = {
+    id: string;
+    name: string;
+    logo: { _ref: string } | null;
+    tier: Sponsor["tier"];
+    websiteUrl: string | null;
+    isPublished: boolean;
+  };
+
+  const raw = await fetchSanity<Raw[]>(
+    `*[_type == "sponsor" && (!defined(isPublished) || isPublished == true)] | order(name asc) {
+      "id": _id,
+      name,
+      logo,
+      tier,
+      websiteUrl,
+      isPublished
+    }`
+  );
+  if (!raw) return [];
+
+  return raw.map((s) => ({
+    id: s.id,
+    name: s.name,
+    logoUrl: s.logo ? urlFor(s.logo)?.width(200).quality(80).url() ?? null : null,
+    tier: s.tier,
+    websiteUrl: s.websiteUrl ?? undefined,
+  }));
 }
 
 export async function getSessions(): Promise<Session[]> {
-  if (isSanityConfigured && sanityClient) {
-    try {
-      return await sanityClient.fetch(
-        `*[_type == "session" && (!defined(isPublished) || isPublished == true)] | order(startTime asc) {
-          "id": _id,
-          title,
-          type,
-          startTime,
-          endTime,
-          "speakerName": speaker->name,
-          "speakerId": speaker->_id,
-          location,
-          description
-        }`
-      );
-    } catch (e) {
-      console.warn("Sanity fetch failed for sessions, falling back to mock:", e);
-    }
-  }
-  return getMockSessions();
+  const data = await fetchSanity<Session[]>(
+    `*[_type == "session" && (!defined(isPublished) || isPublished == true)] | order(startTime asc) {
+      "id": _id,
+      title,
+      type,
+      startTime,
+      endTime,
+      "speakerName": speaker->name,
+      "speakerId": speaker->_id,
+      location,
+      description
+    }`
+  );
+  return data ?? [];
 }
 
 export async function getEventInfo(): Promise<EventInfo | null> {
-  if (isSanityConfigured && sanityClient) {
-    try {
-      return await sanityClient.fetch(
-        `*[_type == "eventInfo"][0] {
-          title,
-          date,
-          venue
-        }`
-      );
-    } catch (e) {
-      console.warn("Sanity fetch failed for event info, falling back to mock:", e);
-    }
-  }
-  return getMockEventInfo();
+  return fetchSanity<EventInfo>(
+    `*[_type == "eventInfo"][0] {
+      title,
+      date,
+      venue
+    }`
+  );
+}
+
+export async function getGalleryImages(): Promise<GalleryImage[]> {
+  type Raw = {
+    id: string;
+    image: { _ref: string } | null;
+    alt: string | null;
+    caption: string | null;
+    category: GalleryImage["category"];
+    width: number;
+    height: number;
+    isPublished: boolean;
+  };
+
+  const raw = await fetchSanity<Raw[]>(
+    `*[_type == "galleryImage" && (!defined(isPublished) || isPublished == true)] | order(order asc) {
+      "id": _id,
+      image,
+      alt,
+      caption,
+      category,
+      "width": image.asset->metadata.dimensions.width,
+      "height": image.asset->metadata.dimensions.height
+    }`
+  );
+  if (!raw) return [];
+
+  return raw.map((g) => ({
+    id: g.id,
+    src: g.image ? urlFor(g.image)?.width(1200).quality(80).url() ?? null : null,
+    alt: g.alt ?? "",
+    caption: g.caption ?? undefined,
+    category: g.category,
+    width: g.width,
+    height: g.height,
+  }));
 }

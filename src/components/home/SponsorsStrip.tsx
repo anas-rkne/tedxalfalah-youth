@@ -18,13 +18,15 @@ export default async function SponsorsStrip({ locale }: { locale: string }) {
       stat1Label={t("stat1Label")}
       stat2Number="100%"
       stat2Label={t("stat2Label")}
-      stat3Number="2026"
+      stat3Number={t("stat3Number")}
       stat3Label={t("stat3Label")}
       
       // نصوص قسم CTA
       ctaHeading={t("ctaHeading")}
       ctaDescription={t("ctaDescription")}
       ctaLabel={t("ctaLabel")}
+
+      emptyLabel={t("empty")}
     />
   );
 }

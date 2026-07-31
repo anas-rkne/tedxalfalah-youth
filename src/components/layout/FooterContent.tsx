@@ -2,7 +2,8 @@
 
 import { Link } from "@/i18n/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import TrackingEyes from "@/components/ui/TrackingEyes";
 import { InstagramIcon, LinkedinIcon, XIcon } from "@/components/ui/SocialIcons";
@@ -10,31 +11,13 @@ import { Mail, ArrowUpRight, MapPin, Phone, ExternalLink } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 
-interface SocialLink {
-  platform: "instagram" | "linkedin" | "x";
-  url: string;
-}
+const SOCIAL_LINKS = [
+  { platform: "instagram" as const, url: "https://www.instagram.com/tedxalfalahyouth" },
+  { platform: "linkedin" as const, url: "https://www.linkedin.com/company/tedxalfalahyouth" },
+  { platform: "x" as const, url: "https://x.com/tedxalfalahyouth" },
+];
 
-interface FooterContentProps {
-  ctaLabel: string;
-  joinUs: string;
-  ctaDescription: string;
-  applyButton: string;
-  ticketsButton: string;
-  brandDescription: string;
-  emailAddress: string;
-  quickLinksHeading: string;
-  moreHeading: string;
-  quickLinks: Array<{ label: string; href: string }>;
-  copyright: string;
-  termsLink: string;
-  backToTop: string;
-  licenseHeading: string;
-  venueAddress: string;
-  phoneNumber?: string;
-  socialLinks?: SocialLink[];
-  licenseNotice?: string;
-}
+const EMAIL = "marhaba@tedxalfalahyouth.com";
 
 function SocialLinkItem({ platform, url }: { platform: string; url: string }) {
   const icons = {
@@ -53,9 +36,9 @@ function SocialLinkItem({ platform, url }: { platform: string; url: string }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={labels[platform as keyof typeof labels]}
-      className="group flex items-center justify-center w-10 h-10 rounded-full border border-zinc-200 hover:border-[#e62b1e] hover:bg-[#e62b1e]/5 transition-all duration-300 active:scale-95"
+      className="group flex items-center justify-center w-10 h-10 rounded-full border border-zinc-200 hover:border-tedx-red hover:bg-tedx-red/5 transition-all duration-300 active:scale-95"
     >
-      <span className="text-zinc-400 group-hover:text-[#e62b1e] transition-colors duration-300">
+      <span className="text-zinc-400 group-hover:text-tedx-red transition-colors duration-300">
         {icons[platform as keyof typeof icons]}
       </span>
     </a>
@@ -67,9 +50,9 @@ function QuickLinkItem({ label, href }: { label: string; href: string }) {
     <li>
       <Link
         href={href}
-        className="group inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-[#e62b1e] transition-colors duration-200 py-1"
+        className="group inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-tedx-red transition-colors duration-200 py-1"
       >
-        <span className="w-0 h-px bg-[#e62b1e] group-hover:w-3 transition-all duration-300" />
+        <span className="w-0 h-px bg-tedx-red group-hover:w-3 transition-all duration-300" />
         {label}
         <ArrowUpRight
           size={12}
@@ -82,28 +65,26 @@ function QuickLinkItem({ label, href }: { label: string; href: string }) {
 
 
 
-export default function FooterContent({
-  ctaLabel,
-  joinUs,
-  ctaDescription,
-  applyButton,
-  ticketsButton,
-  brandDescription,
-  emailAddress,
-  quickLinksHeading,
-  moreHeading,
-  quickLinks,
-  copyright,
-  termsLink,
-  backToTop,
-  licenseHeading,
-  venueAddress,
-  phoneNumber,
-  socialLinks,
-  licenseNotice,
-}: FooterContentProps) {
+export default function FooterContent() {
+  const t = useTranslations("footer");
+  const tCommon = useTranslations("common.nav");
   const { isRTL } = useRTL();
   const shouldReduceMotion = useReducedMotion();
+
+  const quickLinks = useMemo(() => [
+    { label: tCommon("home"), href: "/" },
+    { label: tCommon("speakers"), href: "/speakers" },
+    { label: tCommon("team"), href: "/team" },
+    { label: tCommon("venue"), href: "/venue" },
+    { label: tCommon("activations"), href: "/activations" },
+    { label: tCommon("schedule"), href: "/schedule" },
+    { label: tCommon("apply"), href: "/apply" },
+    { label: tCommon("sponsors"), href: "/sponsors" },
+    { label: tCommon("tickets"), href: "/tickets" },
+    { label: tCommon("faq"), href: "/faq" },
+    { label: tCommon("gallery"), href: "/gallery" },
+    { label: tCommon("prepare"), href: "/prepare" },
+  ], [tCommon]);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -161,13 +142,13 @@ export default function FooterContent({
   </div>
 
   {/* 5. دوائر حمراء كبيرة شفافة — شعار TEDx */}
-  <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] rounded-full border border-[#e62b1e]/10 pointer-events-none" />
-  <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] rounded-full bg-[#e62b1e]/[0.03] blur-[60px] pointer-events-none" />
+  <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] rounded-full border border-tedx-red/10 pointer-events-none" />
+  <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] rounded-full bg-tedx-red/[0.03] blur-[60px] pointer-events-none" />
 
-  <div className="absolute bottom-[15%] right-[8%] w-[250px] h-[250px] rounded-full border border-[#e62b1e]/8 pointer-events-none" />
-  <div className="absolute bottom-[15%] right-[8%] w-[250px] h-[250px] rounded-full bg-[#e62b1e]/[0.02] blur-[50px] pointer-events-none" />
+  <div className="absolute bottom-[15%] right-[8%] w-[250px] h-[250px] rounded-full border border-tedx-red/8 pointer-events-none" />
+  <div className="absolute bottom-[15%] right-[8%] w-[250px] h-[250px] rounded-full bg-tedx-red/[0.02] blur-[50px] pointer-events-none" />
 
-  <div className="absolute top-[40%] right-[15%] w-[120px] h-[120px] rounded-full border border-[#e62b1e]/6 pointer-events-none" />
+  <div className="absolute top-[40%] right-[15%] w-[120px] h-[120px] rounded-full border border-tedx-red/6 pointer-events-none" />
 
   {/* 6. نقاط حمراء ساطعة — أفكار TEDx */}
   <div
@@ -211,35 +192,35 @@ export default function FooterContent({
   />
 
   {/* 9. شرائح حمراء مائلة — ديناميكية */}
-  <div className="absolute top-[18%] left-[-10%] w-[50%] h-[1px] bg-gradient-to-r from-transparent via-[#e62b1e]/20 to-transparent rotate-[-8deg] pointer-events-none" />
-  <div className="absolute bottom-[22%] right-[-10%] w-[45%] h-[1px] bg-gradient-to-r from-transparent via-[#e62b1e]/15 to-transparent rotate-[6deg] pointer-events-none" />
+  <div className="absolute top-[18%] left-[-10%] w-[50%] h-[1px] bg-gradient-to-r from-transparent via-tedx-red/20 to-transparent rotate-[-8deg] pointer-events-none" />
+  <div className="absolute bottom-[22%] right-[-10%] w-[45%] h-[1px] bg-gradient-to-r from-transparent via-tedx-red/15 to-transparent rotate-[6deg] pointer-events-none" />
 
   {/* 10. مربعات ومثلثات حمراء — زخرفة هندسية */}
-  <div className="absolute top-[22%] right-[18%] w-5 h-5 bg-[#e62b1e]/10 rotate-45 pointer-events-none" />
-  <div className="absolute bottom-[28%] left-[12%] w-3 h-3 bg-[#e62b1e]/8 rotate-12 pointer-events-none" />
-  <div className="absolute top-[48%] left-[6%] w-6 h-6 bg-[#e62b1e]/6 rotate-[30deg] pointer-events-none" />
-  <div className="absolute bottom-[42%] right-[14%] w-4 h-4 bg-[#e62b1e]/9 rotate-[-15deg] pointer-events-none" />
-  <div className="absolute top-[8%] right-[35%] w-2 h-2 rounded-full bg-[#e62b1e]/15 pointer-events-none" />
-  <div className="absolute bottom-[8%] left-[30%] w-2.5 h-2.5 rounded-full bg-[#e62b1e]/12 pointer-events-none" />
+  <div className="absolute top-[22%] right-[18%] w-5 h-5 bg-tedx-red/10 rotate-45 pointer-events-none" />
+  <div className="absolute bottom-[28%] left-[12%] w-3 h-3 bg-tedx-red/8 rotate-12 pointer-events-none" />
+  <div className="absolute top-[48%] left-[6%] w-6 h-6 bg-tedx-red/6 rotate-[30deg] pointer-events-none" />
+  <div className="absolute bottom-[42%] right-[14%] w-4 h-4 bg-tedx-red/9 rotate-[-15deg] pointer-events-none" />
+  <div className="absolute top-[8%] right-[35%] w-2 h-2 rounded-full bg-tedx-red/15 pointer-events-none" />
+  <div className="absolute bottom-[8%] left-[30%] w-2.5 h-2.5 rounded-full bg-tedx-red/12 pointer-events-none" />
 
   {/* ═══════════════════════════════════════════════════════════════
       التوهجات الموجودة (محفوظة)
       ═══════════════════════════════════════════════════════════════ */}
 
   {/* توهج مركزي علوي */}
-  <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#e62b1e]/[0.09] rounded-full blur-[120px] pointer-events-none" />
+  <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-tedx-red/[0.09] rounded-full blur-[120px] pointer-events-none" />
 
   {/* توهج جانبي أيسر */}
-  <div className="absolute top-[20%] left-[-5%] w-[300px] h-[300px] bg-[#e62b1e]/[0.05] rounded-full blur-[100px] pointer-events-none" />
+  <div className="absolute top-[20%] left-[-5%] w-[300px] h-[300px] bg-tedx-red/[0.05] rounded-full blur-[100px] pointer-events-none" />
 
   {/* توهج سفلي يميني */}
-  <div className="absolute bottom-[-10%] right-[10%] w-[400px] h-[300px] bg-[#e62b1e]/[0.06] rounded-full blur-[100px] pointer-events-none" />
+  <div className="absolute bottom-[-10%] right-[10%] w-[400px] h-[300px] bg-tedx-red/[0.06] rounded-full blur-[100px] pointer-events-none" />
 
   {/* تأثير Vignette */}
   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] pointer-events-none" />
 
   {/* خط TEDx سفلي */}
-  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/40 to-transparent" />
+  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tedx-red/40 to-transparent" />
 
   {/* ═══════════════════════════════════════════════════════════════
       المحتوى — فوق كل شيء
@@ -251,10 +232,10 @@ export default function FooterContent({
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
     >
-      <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#e62b1e] mb-6">
-        <span className="w-8 h-px bg-[#e62b1e]" />
-        {ctaLabel}
-        <span className="w-8 h-px bg-[#e62b1e]" />
+      <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-tedx-red mb-6">
+        <span className="w-8 h-px bg-tedx-red" />
+        {t("ctaLabel")}
+        <span className="w-8 h-px bg-tedx-red" />
       </span>
     </motion.div>
 
@@ -271,7 +252,7 @@ export default function FooterContent({
       transition={{ duration: 0.7, delay: 0.1 }}
       className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6"
     >
-      {joinUs}
+      {t("joinUs")}
     </motion.h2>
     <motion.p
       initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
@@ -280,7 +261,7 @@ export default function FooterContent({
       transition={{ duration: 0.6, delay: 0.2 }}
       className="text-zinc-300 text-base sm:text-lg max-w-xl mx-auto mb-10 leading-relaxed px-4"
     >
-      {ctaDescription}
+      {t("ctaDescription")}
     </motion.p>
 
     <motion.div
@@ -295,7 +276,7 @@ export default function FooterContent({
         variant="primary"
         className="w-full sm:w-auto min-w-[160px] shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)]"
       >
-        {applyButton}
+        {t("applyButton")}
       </AnimatedSlidingButton>
 
       <AnimatedSlidingButton
@@ -303,7 +284,7 @@ export default function FooterContent({
         variant="primary"
         className="w-full sm:w-auto min-w-[160px] bg-black text-white border-black hover:bg-black/90 hover:border-black/90 shadow-sm"
       >
-        {ticketsButton}
+        {t("ticketsButton")}
       </AnimatedSlidingButton>
     </motion.div>
   </div>
@@ -340,55 +321,53 @@ export default function FooterContent({
                     <span className="text-lg font-bold text-zinc-500 tracking-tight">
                       AlFalah
                     </span>
-                    <span className="text-lg font-bold text-[#e62b1e] tracking-tight">
+                    <span className="text-lg font-bold text-tedx-red tracking-tight">
                       Youth
                     </span>
                   </div>
                   <p className="text-sm text-zinc-400 leading-relaxed mb-6 max-w-sm">
-                    {brandDescription}
+                    {t("brandDescription")}
                   </p>
                   <div className="space-y-3 mb-6">
                     <a
-                      href={`mailto:${emailAddress}`}
-                      className="flex items-center gap-3 text-sm text-zinc-400 hover:text-[#e62b1e] transition-colors group"
+                      href={`mailto:${EMAIL}`}
+                      className="flex items-center gap-3 text-sm text-zinc-400 hover:text-tedx-red transition-colors group"
                     >
                       <Mail
                         size={15}
-                        className="text-[#e62b1e] group-hover:scale-110 transition-transform"
+                        className="text-tedx-red group-hover:scale-110 transition-transform"
                       />
-                      <span>{emailAddress}</span>
+                      <span>{EMAIL}</span>
                     </a>
-                    {phoneNumber && (
+                    {t("phoneNumber") && (
                       <a
-                        href={`tel:${phoneNumber}`}
-                        className="flex items-center gap-3 text-sm text-zinc-400 hover:text-[#e62b1e] transition-colors group"
+                        href={`tel:${t("phoneNumber")}`}
+                        className="flex items-center gap-3 text-sm text-zinc-400 hover:text-tedx-red transition-colors group"
                       >
                         <Phone
                           size={15}
-                          className="text-[#e62b1e] group-hover:scale-110 transition-transform"
+                          className="text-tedx-red group-hover:scale-110 transition-transform"
                         />
-                        <span>{phoneNumber}</span>
+                        <span>{t("phoneNumber")}</span>
                       </a>
                     )}
                     <div className="flex items-start gap-3 text-sm text-zinc-400">
                       <MapPin
                         size={15}
-                        className="text-[#e62b1e] mt-0.5 shrink-0"
+                        className="text-tedx-red mt-0.5 shrink-0"
                       />
-                      <span>{venueAddress}</span>
+                      <span>{t("venueAddress")}</span>
                     </div>
                   </div>
-                  {socialLinks && socialLinks.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      {socialLinks.map((social) => (
-                        <SocialLinkItem
-                          key={social.platform}
-                          platform={social.platform}
-                          url={social.url}
-                        />
-                      ))}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {SOCIAL_LINKS.map((social) => (
+                      <SocialLinkItem
+                        key={social.platform}
+                        platform={social.platform}
+                        url={social.url}
+                      />
+                    ))}
+                  </div>
                 </motion.div>
               </div>
 
@@ -401,7 +380,7 @@ export default function FooterContent({
                   transition={{ duration: 0.6, delay: 0.1 }}
                 >
                   <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400 mb-5">
-                    {quickLinksHeading}
+                    {t("quickLinksHeading")}
                   </h3>
                   <ul className="space-y-1">
                     {firstHalfLinks.map((link) => (
@@ -424,7 +403,7 @@ export default function FooterContent({
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
                   <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400 mb-5">
-                    {moreHeading}
+                    {t("moreHeading")}
                   </h3>
                   <ul className="space-y-1">
                     {secondHalfLinks.map((link) => (
@@ -447,27 +426,27 @@ export default function FooterContent({
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
                   <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-400 mb-5">
-                    {licenseHeading}
+                    {t("licenseHeading")}
                   </h3>
                   <div className="bg-white rounded-2xl border border-zinc-100 p-5 shadow-sm">
                     <div className="flex items-baseline gap-1 mb-3">
                       <span className="text-lg font-black text-zinc-900">
                         TEDx
                       </span>
-                      <span className="text-sm font-bold text-[#e62b1e]">
+                      <span className="text-sm font-bold text-tedx-red">
                         AlFalah
                       </span>
                     </div>
                     <p className="text-xs text-zinc-400 leading-relaxed mb-3">
-                      {licenseNotice}
+                      {t("licenseNotice")}
                     </p>
                     <a
                       href="https://www.ted.com/about/programs-initiatives/tedx-program"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs text-[#e62b1e] hover:underline font-medium"
+                      className="inline-flex items-center gap-1 text-xs text-tedx-red hover:underline font-medium"
                     >
-                      {isRTL ? "تعرّف على برنامج TEDx" : "Learn about TEDx"}
+                      {t("learnAboutTEDx")}
                       <ExternalLink size={10} />
                     </a>
                   </div>
@@ -501,7 +480,7 @@ export default function FooterContent({
   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[300px] h-[60px] bg-tedx-red/8 rounded-full blur-[60px] pointer-events-none" />
 
   {/* خط TEDx علوي */}
-  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/30 to-transparent" />
+  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tedx-red/30 to-transparent" />
 
   <div className="container-padding py-5 relative z-10">
     <div className="max-w-7xl mx-auto">
@@ -509,13 +488,13 @@ export default function FooterContent({
         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1 text-xs text-zinc-500">
           <span className="text-zinc-400">© {new Date().getFullYear()} TEDxAlFalah Youth</span>
           <span className="hidden sm:inline text-zinc-700">·</span>
-          <span className="text-zinc-500">{copyright}</span>
+          <span className="text-zinc-500">{t("copyright")}</span>
           <span className="hidden sm:inline text-zinc-700">·</span>
           <Link
             href="/terms"
-            className="text-zinc-400 hover:text-[#e62b1e] transition-colors underline underline-offset-2 decoration-zinc-700 hover:decoration-[#e62b1e]"
+            className="text-zinc-400 hover:text-tedx-red transition-colors underline underline-offset-2 decoration-zinc-700 hover:decoration-tedx-red"
           >
-            {termsLink}
+            {t("termsLink")}
           </Link>
         </div>
         <button
@@ -523,9 +502,9 @@ export default function FooterContent({
           className="group flex items-center gap-2 text-xs text-zinc-500 hover:text-white transition-colors"
         >
           <span className="uppercase tracking-widest hidden sm:inline">
-            {backToTop}
+            {t("backToTop")}
           </span>
-          <div className="w-8 h-8 rounded-full border border-zinc-700 group-hover:border-[#e62b1e] group-hover:bg-[#e62b1e]/10 group-hover:shadow-[0_0_15px_rgba(230,43,30,0.2)] flex items-center justify-center transition-all duration-300">
+          <div className="w-8 h-8 rounded-full border border-zinc-700 group-hover:border-tedx-red group-hover:bg-tedx-red/10 group-hover:shadow-[0_0_15px_rgba(230,43,30,0.2)] flex items-center justify-center transition-all duration-300">
             <ArrowUpRight
               size={14}
               className={`${isRTL ? "rotate-[-135deg]" : "rotate-[-45deg]"} group-hover:rotate-0 transition-transform duration-300`}

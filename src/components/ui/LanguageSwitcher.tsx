@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
@@ -12,14 +12,14 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
   const params = useParams();
   const shouldReduceMotion = useReducedMotion();
+  const t = useTranslations("common");
 
   const nextLocale = locale === "en" ? "ar" : "en";
 
   const switchTo = useCallback(() => {
-    const { locale: _, ...paramsWithoutLocale } = params;
+    const { locale: _, ...paramsWithoutLocale } = params as Record<string, string>;
     router.replace(
-      // @ts-expect-error - التوافق مع أنواع next-intl
-      { pathname, params: paramsWithoutLocale },
+      { pathname, params: paramsWithoutLocale } as any,
       { locale: nextLocale }
     );
   }, [router, pathname, params, nextLocale]);
@@ -32,7 +32,7 @@ export default function LanguageSwitcher() {
       style={{ direction: "ltr" }}   // ✅ النص يبقى من اليسار حتى في الوضع العربي
       whileTap={shouldReduceMotion ? {} : { scale: 0.92 }}
       whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
-      aria-label={`Switch to ${nextLocale === "en" ? "English" : "Arabic"}`}
+      aria-label={t(nextLocale === "en" ? "ui.switchToEnglish" : "ui.switchToArabic")}
     >
       {nextLocale.toUpperCase()}
     </motion.button>

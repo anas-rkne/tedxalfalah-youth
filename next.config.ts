@@ -27,7 +27,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: https://cdn.sanity.io https://www.google-analytics.com https://www.googletagmanager.com",
-      "frame-src https://challenges.cloudflare.com https://www.google.com",
+      "frame-src https://challenges.cloudflare.com https://www.google.com/maps",
       // 🔥 تم إضافة نطاق Sanity API الخاص بمشروعك لضمان عدم حظر الطلبات
       "connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://5pbek4rg.api.sanity.io https://*.sanity.io",
     ].join("; "),
@@ -37,8 +37,6 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "i.pravatar.cc" },
-      { protocol: "https", hostname: "placehold.co" },
       { protocol: "https", hostname: "cdn.sanity.io" },
     ],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

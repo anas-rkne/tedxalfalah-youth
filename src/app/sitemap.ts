@@ -1,8 +1,7 @@
 import { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 
-// TODO: replace with the real domain once connected (tedxalfalahyouth.com)
-const BASE_URL = "https://www.tedxalfalahyouth.com";
+const BASE_URL = process.env.BASE_URL || "https://www.tedxalfalahyouth.com";
 
 const ROUTES = [
   "",
@@ -14,8 +13,14 @@ const ROUTES = [
   "/apply",
   "/sponsors",
   "/tickets",
+  "/tickets/success",
+  "/tickets/cancel",
+  "/gallery",
   "/faq",
   "/terms",
+  "/prepare",
+  "/contact",
+  "/thank-you",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

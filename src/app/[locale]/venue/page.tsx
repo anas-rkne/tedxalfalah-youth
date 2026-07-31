@@ -1,5 +1,5 @@
 // src/app/[locale]/venue/page.tsx
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import VenueMapSection from "@/components/venue/VenueMapSection";
@@ -7,6 +7,7 @@ import VenueGallerySection from "@/components/venue/VenueGallerySection";
 import SectionBadge from "@/components/ui/SectionBadge";
 import { Metadata } from "next";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
+import { getGalleryImages } from "@/lib/data";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -18,8 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function VenuePage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const isArabic = locale === "ar";
   const t = await getTranslations({ locale, namespace: "page.venue" });
+  const galleryImages = await getGalleryImages();
 
   return (
     <div className="bg-background">
@@ -54,6 +57,7 @@ export default async function VenuePage({ params }: Props) {
         title={t("gettingThere.title")}
         mapTitle={t("gettingThere.mapTitle")}
         directions={t("gettingThere.directions")}
+        mapSrc={process.env.NEXT_PUBLIC_VENUE_MAP_URL}
       />
 
       {/* ═══════ Accessibility ═══════ */}
@@ -71,7 +75,7 @@ export default async function VenuePage({ params }: Props) {
       </ScrollReveal>
 
       {/* ═══════ Gallery ═══════ */}
-      <VenueGallerySection count={6} />
+      <VenueGallerySection images={galleryImages} />
     </div>
   );
 }

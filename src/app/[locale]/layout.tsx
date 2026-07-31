@@ -2,19 +2,24 @@ import type { Metadata } from "next";
 import { Inter, Noto_Kufi_Arabic } from "next/font/google";
 import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/FooterWrapper";
+import FooterContent from "@/components/layout/FooterContent";
 import CustomCursorWrapper from "@/components/ui/CustomCursorWrapper";
 import Analytics from "@/components/Analytics";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import SonnerProvider from "@/components/SonnerProvider";
 import ReadingProgress from "@/components/ui/ReadingProgress";
 import ScrollIndicator from "@/components/ui/ScrollIndicator";
 import { routing } from "@/i18n/routing";
 import PageTransition from "@/components/ui/PageTransition";
 import { ClientProvider } from "@/components/ClientProvider";
 import JsonLd from "@/components/JsonLd";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import { organizationSchema } from "@/lib/json-ld";
+
+const baseUrl = process.env.BASE_URL || "https://www.tedxalfalahyouth.com";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,37 +36,67 @@ const notoKufiArabic = Noto_Kufi_Arabic({
   weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://www.tedxalfalahyouth.com"),
-  title: {
-    default: "TEDxAlFalah Youth | Tomorrow, Now.",
-    template: "%s | TEDxAlFalah Youth",
-  },
-  description:
-    "Young voices. Real ideas. The future starts earlier than we think. An independently organized TEDx event.",
-  icons: {
-    icon: [
-      { url: "/my-favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-      { url: "/my-favicon/favicon.svg", type: "image/svg+xml" },
-    ],
-    shortcut: "/my-favicon/favicon.ico",
-    apple: [
-      { url: "/my-favicon/apple-touch-icon.png", sizes: "180x180" },
-    ],
-  },
-  appleWebApp: {
-    title: "TEDxAlFalah Youth",
-  },
-  manifest: "/my-favicon/site.webmanifest",
-  openGraph: {
-    title: "TEDxAlFalah Youth | Tomorrow, Now.",
-    description:
-      "Young voices. Real ideas. The future starts earlier than we think.",
-    url: "https://www.tedxalfalahyouth.com",
-    siteName: "TEDxAlFalah Youth",
-    type: "website",
-  },
-};
+type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const { getTranslations } = await import("next-intl/server");
+  const t = await getTranslations({ locale, namespace: "home.meta" });
+  const siteTitle = "TEDxAlFalah Youth | Tomorrow, Now.";
+  const siteDesc =
+    "Young voices. Real ideas. The future starts earlier than we think. An independently organized TEDx event.";
+  return {
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: siteTitle,
+      template: `%s | TEDxAlFalah Youth`,
+    },
+    description: siteDesc,
+    icons: {
+      icon: [
+        { url: "/my-favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+        { url: "/my-favicon/favicon.svg", type: "image/svg+xml" },
+      ],
+      shortcut: "/my-favicon/favicon.ico",
+      apple: [
+        { url: "/my-favicon/apple-touch-icon.png", sizes: "180x180" },
+      ],
+    },
+    appleWebApp: {
+      title: "TEDxAlFalah Youth",
+      statusBarStyle: "black-translucent",
+      capable: true,
+    },
+    manifest: "/my-favicon/site.webmanifest",
+    alternates: {
+      languages: {
+        en: `${baseUrl}/en`,
+        ar: `${baseUrl}/ar`,
+      },
+    },
+    openGraph: {
+      title: siteTitle,
+      description: siteDesc,
+      url: baseUrl,
+      siteName: "TEDxAlFalah Youth",
+      locale: locale === "ar" ? "ar_AE" : "en_US",
+      type: "website",
+      images: [
+        {
+          url: `${baseUrl}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: siteTitle,
+      description: siteDesc,
+      images: [`${baseUrl}/og-image.jpg`],
+    },
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -100,11 +135,14 @@ export default async function RootLayout({
         {/* الآن نمرر locale إلى ClientProvider */}
         <ClientProvider locale={locale}>
           <Analytics />
+          <ServiceWorkerRegister />
+          <BreadcrumbJsonLd />
           <a
             href="#main-content"
+            lang={locale}
             className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-red-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none"
           >
-            Skip to content
+            {locale === "ar" ? "تخطى إلى المحتوى" : "Skip to content"}
           </a>
           <ReadingProgress />
           <CustomCursorWrapper />
@@ -113,7 +151,9 @@ export default async function RootLayout({
             <PageTransition>{children}</PageTransition>
           </main>
           <ScrollIndicator />
-<Footer />        </ClientProvider>
+<FooterContent />
+          <SonnerProvider />
+        </ClientProvider>
       </body>
     </html>
   );

@@ -14,6 +14,9 @@
     "multiRegionConfig": {
       "sfo": {
         "numReplicas": 1
+      },
+      "fra": {
+        "numReplicas": 1
       }
     },
     "restartPolicyType": "ON_FAILURE",

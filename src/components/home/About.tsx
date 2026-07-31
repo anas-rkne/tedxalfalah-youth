@@ -11,15 +11,14 @@ export default async function About({ locale }: { locale: string }) {
       body={t("body")}
       licenseNote={t("licenseNote")}
       // ✅ تمرير النصوص الإضافية التي كانت مكتوبة يدوياً في السابق
-      badgeLabel={t("badge") || "About The Event"} 
+      badgeLabel={t("badge")}
       valuesLabels={{
-        platform: t("valuesPlatform") || "منصة عالمية",
-        community: t("valuesCommunity") || "مجتمع شبابي",
-        ideas: t("valuesIdeas") || "أفكار ملهمة",
+        platform: t("valuesPlatform"),
+        community: t("valuesCommunity"),
+        ideas: t("valuesIdeas"),
       }}
-      // ✅ تمرير نصوص الأزرار والـ CTA (يمكنك استخدام مفتاح خاص بها في about، أو مشاركتها)
-      ctaHeading={t("ctaHeading") || "كن جزءاً من الحركة"}
-      ctaDescription={t("ctaDescription") || "انضم إلينا واكتشف كيف يمكنك المساهمة في صنع مستقبل مليء بالأفكار الملهمة."}
+      ctaHeading={t("ctaHeading")}
+      ctaDescription={t("ctaDescription")}
       applyLabel={tHero("applyLabel")} // استخدم نفس مفتاح الترجمة الموجود في الهيرو
       ticketsLabel={tHero("ticketsLabel")} // استخدم نفس مفتاح الترجمة الموجود في الهيرو
     />

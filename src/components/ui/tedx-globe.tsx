@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
 // استيراد المكون World بشكل ديناميكي مع ssr: false

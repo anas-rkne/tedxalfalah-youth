@@ -12,10 +12,12 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { Mail, Send } from "lucide-react";
-
+import { useTranslations } from "next-intl";
+import { Mail, Send, Loader2, Check } from "lucide-react";
+ 
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import Input from "@/components/ui/Input";
+import { toast } from "sonner";
 import SectionBadge from "@/components/ui/SectionBadge";
 import { useRTL } from "@/hooks/useRTL";
 import SafeImage from "@/components/ui/SafeImage";
@@ -57,27 +59,34 @@ const SUBJECT_VALUES = [
    ═══════════════════════════════════════════ */
 const SubmitButton = memo(function SubmitButton({
   loading,
+  showCheck,
   children,
   submittingLabel,
 }: {
   loading: boolean;
+  showCheck: boolean;
   children: React.ReactNode;
   submittingLabel: string;
 }) {
   return (
     <motion.button
       type="submit"
-      disabled={loading}
+      disabled={loading || showCheck}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className="group relative w-full flex items-center justify-center gap-2.5 px-8 py-4 bg-tedx-red text-white font-bold text-base rounded-2xl hover:bg-tedx-red/90 transition-all duration-300 shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)] hover:shadow-[0_16px_48px_-12px_rgba(230,43,30,0.6)] disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
     >
       <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-      {loading ? (
-        <>
-          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+      {showCheck ? (
+        <span className="flex items-center gap-2 relative z-10">
+          <Check className="w-5 h-5" />
+          <span>{children}</span>
+        </span>
+      ) : loading ? (
+        <span className="flex items-center gap-2 relative z-10">
+          <Loader2 className="w-5 h-5 animate-spin" />
           <span>{submittingLabel}</span>
-        </>
+        </span>
       ) : (
         <>
           <span className="relative z-10">{children}</span>
@@ -247,6 +256,7 @@ export default function ContactForm({
   const { isRTL } = useRTL();
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "error">("idle");
+  const [showSuccess, setShowSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
 
   const contactSchema = useMemo(
@@ -262,6 +272,8 @@ export default function ContactForm({
 
   type ContactFormValues = z.infer<typeof contactSchema>;
 
+  const tCommon = useTranslations("common");
+
   const {
     register,
     handleSubmit,
@@ -274,19 +286,36 @@ export default function ContactForm({
   const onSubmit = useCallback(
     async (data: ContactFormValues) => {
       setStatus("idle");
+      setShowSuccess(false);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
       try {
         const res = await fetch("/api/contact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...data, turnstileToken }),
+          signal: controller.signal,
         });
-        if (!res.ok) throw new Error("Request failed");
-        router.push("/thank-you?type=contact");
-      } catch {
+        clearTimeout(timeout);
+        if (!res.ok) {
+          if (res.status === 429) throw new Error("rate_limit");
+          if (res.status >= 500) throw new Error("server_error");
+          throw new Error("request_failed");
+        }
+        setShowSuccess(true);
+        setTimeout(() => router.push("/thank-you?type=contact"), 1200);
+      } catch (e: any) {
+        clearTimeout(timeout);
+        setShowSuccess(false);
+        const msg = e?.message;
+        if (msg === "rate_limit") toast.error(tCommon("ui.tooManyRequests"));
+        else if (msg === "server_error") toast.error(tCommon("ui.serverError"));
+        else if (e?.name === "AbortError") toast.error(tCommon("ui.connectionTimedOut"));
+        else toast.error(errorGeneric);
         setStatus("error");
       }
     },
-    [turnstileToken, router]
+    [turnstileToken, router, errorGeneric, tCommon]
   );
 
   const handleTurnstileVerify = useCallback((token: string) => {
@@ -332,7 +361,7 @@ export default function ContactForm({
             </div>
           </motion.div>
 
-          <motion.h2
+          <motion.h1
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -340,7 +369,7 @@ export default function ContactForm({
             className="heading-h1 tracking-[-0.03em] leading-[1.1] mt-6 heading-margin"
           >
             {heading}
-          </motion.h2>
+          </motion.h1>
 
           <motion.div
             initial={{ scaleX: 0 }}
@@ -482,7 +511,7 @@ export default function ContactForm({
 
                 <TurnstileWidget onVerify={handleTurnstileVerify} />
 
-                <SubmitButton loading={isSubmitting} submittingLabel={submittingLabel}>
+                <SubmitButton loading={isSubmitting} showCheck={showSuccess} submittingLabel={submittingLabel}>
                   {submitLabel}
                 </SubmitButton>
               </form>

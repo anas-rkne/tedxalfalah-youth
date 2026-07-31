@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   motion,
   useReducedMotion,
@@ -23,6 +23,8 @@ import {
   Award,
   Mail,
   FileText,
+  Image,
+  ClipboardList,
 } from "lucide-react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
@@ -48,7 +50,7 @@ export default function Header() {
   }, [isMenuOpen]);
 
 
-const ALL_LINKS = [
+const ALL_LINKS = useMemo(() => [
   { label: t("home"), href: "/", icon: Home },
   { label: t("speakers"), href: "/speakers", icon: Users },
   { label: t("team"), href: "/team", icon: Users2 },
@@ -59,8 +61,10 @@ const ALL_LINKS = [
   { label: t("sponsors"), href: "/sponsors", icon: Award },
   { label: t("tickets"), href: "/tickets", icon: Ticket },
   { label: t("contact"), href: "/contact", icon: Mail },
+  { label: t("gallery"), href: "/gallery", icon: Image },
+  { label: t("prepare"), href: "/prepare", icon: ClipboardList },
   { label: t("terms"), href: "/terms", icon: FileText },
-];
+], [t]);
   const isArabic = isRTL; // isRTL يكون true عندما تكون اللغة عربية
 
 const mainLinksCount = isArabic ? 5 : 6; 
@@ -172,7 +176,7 @@ const moreLinks = ALL_LINKS.slice(mainLinksCount);
           <button
             ref={toggleRef}
             className="relative z-10 p-2 rounded-xl hover:bg-muted/80 transition-colors"
-            aria-label={isMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
+            aria-label={isMenuOpen ? tCommon("ui.closeMenu") : tCommon("ui.openMenu")}
             aria-controls="mobile-menu"
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((prev) => !prev)}

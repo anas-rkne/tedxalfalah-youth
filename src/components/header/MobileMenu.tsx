@@ -63,7 +63,7 @@ const MobileMenu = memo(function MobileMenu({
           transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
           role="dialog"
           aria-modal="true"
-          aria-label="قائمة التنقل"
+          aria-label={isRTL ? "قائمة التنقل" : "Navigation Menu"}
         >
           <div
             className={`h-1 bg-gradient-to-${

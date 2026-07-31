@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { 
@@ -42,7 +42,7 @@ const SECTION_ICONS: Record<string, React.ReactNode> = {
 function SectionNumber({ number }: { number: number }) {
   return (
     <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-red-50 to-rose-100 border border-red-100 flex items-center justify-center">
-      <span className="text-sm font-bold text-[#e62b1e]">{number}</span>
+      <span className="text-sm font-bold text-tedx-red">{number}</span>
     </div>
   );
 }
@@ -69,7 +69,7 @@ function TermsSection({
         <SectionNumber number={index + 1} />
         <div className="flex-1 min-w-0 pt-1.5">
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-[#e62b1e] group-hover:bg-[#e62b1e] group-hover:text-white transition-colors duration-300">
+            <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-tedx-red group-hover:bg-tedx-red group-hover:text-white transition-colors duration-300">
               {icon}
             </div>
             <h2 className="text-lg sm:text-xl font-bold text-zinc-900 tracking-[-0.01em]">
@@ -80,7 +80,7 @@ function TermsSection({
       </div>
 
       {/* Section Content */}
-      <div className="ml-14 flex flex-col gap-4">
+      <div className="ms-14 flex flex-col gap-4">
         {paragraphs.map((paragraph: string, i: number) => {
           const isBoldHeading = paragraph.startsWith("**") && paragraph.endsWith("**");
           const isBullet = paragraph.startsWith("•") || paragraph.startsWith("-");
@@ -97,7 +97,7 @@ function TermsSection({
           if (isBullet) {
             return (
               <div key={i} className="flex items-start gap-3">
-                <CheckCircle2 className="w-4 h-4 text-[#e62b1e] mt-0.5 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-tedx-red mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-zinc-500 leading-[1.8]">
                   {paragraph.replace(/^[•\-]\s*/, "")}
                 </p>
@@ -140,7 +140,7 @@ function TableOfContents({
   return (
     <div className="p-6 rounded-2xl bg-[#fafafa] border border-black/[0.06] mb-12">
       <h3 className="text-sm font-bold text-zinc-900 mb-4 flex items-center gap-2">
-        <FileText className="w-4 h-4 text-[#e62b1e]" />
+        <FileText className="w-4 h-4 text-tedx-red" />
         {t("toc.title")}
       </h3>
       <nav className="flex flex-col gap-2">
@@ -148,9 +148,9 @@ function TableOfContents({
           <a
             key={sectionKey}
             href={`#${sectionKey}`}
-            className="group flex items-center gap-3 text-sm text-zinc-500 hover:text-[#e62b1e] transition-colors py-1.5 px-3 rounded-lg hover:bg-red-50/50"
+            className="group flex items-center gap-3 text-sm text-zinc-500 hover:text-tedx-red transition-colors py-1.5 px-3 rounded-lg hover:bg-red-50/50"
           >
-            <span className="w-6 h-6 rounded-md bg-white border border-black/[0.06] flex items-center justify-center text-[10px] font-bold text-zinc-400 group-hover:text-[#e62b1e] group-hover:border-[#e62b1e]/20 transition-colors">
+            <span className="w-6 h-6 rounded-md bg-white border border-black/[0.06] flex items-center justify-center text-[10px] font-bold text-zinc-400 group-hover:text-tedx-red group-hover:border-tedx-red/20 transition-colors">
               {index + 1}
             </span>
             <span className="flex-1 truncate">{t(`sections.${sectionKey}.title`)}</span>
@@ -167,6 +167,7 @@ function TableOfContents({
    ═══════════════════════════════════════════════════════════════ */
 export default async function TermsPage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "page.terms" });
 
   const SECTION_NAMES = [
@@ -192,7 +193,7 @@ export default async function TermsPage({ params }: Props) {
         <div className="relative max-w-3xl mx-auto">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-xs text-zinc-400 mb-6">
-            <Link href="/" className="hover:text-[#e62b1e] transition-colors">
+            <Link href="/" className="hover:text-tedx-red transition-colors">
               {t("breadcrumb.home")}
             </Link>
             <span>/</span>
@@ -200,7 +201,7 @@ export default async function TermsPage({ params }: Props) {
           </div>
 
           {/* Badge */}
-          <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] uppercase text-[#e62b1e] mb-5 px-4 py-2 bg-red-50 border border-red-100 rounded-full">
+          <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] uppercase text-tedx-red mb-5 px-4 py-2 bg-red-50 border border-red-100 rounded-full">
             <Shield className="w-3.5 h-3.5" />
             {t("meta.title")}
           </span>
@@ -241,14 +242,14 @@ export default async function TermsPage({ params }: Props) {
 
           {/* Bottom CTA */}
           <div className="mt-12 p-8 rounded-2xl bg-gradient-to-br from-[#fafafa] to-white border border-black/[0.06] text-center">
-            <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-[#e62b1e] mx-auto mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-tedx-red mx-auto mb-4">
               <Mail className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-bold text-zinc-900 mb-2">{t("cta.title")}</h3>
             <p className="text-sm text-zinc-500 mb-5">{t("cta.description")}</p>
             <Link
               href={t("cta.link")}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#e62b1e] to-red-600 text-white text-sm font-bold rounded-xl
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-tedx-red to-red-600 text-white text-sm font-bold rounded-xl
                 hover:from-red-700 hover:to-red-800 transition-all duration-300
                 shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)] hover:shadow-[0_12px_40px_-12px_rgba(230,43,30,0.5)]
                 hover:scale-[1.02] active:scale-[0.98]"

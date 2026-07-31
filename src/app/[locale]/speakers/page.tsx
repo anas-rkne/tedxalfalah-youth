@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import SpeakersGrid from "@/components/speakers/SpeakersGrid";
 import { getSpeakers } from "@/lib/data";
@@ -19,12 +19,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SpeakersPage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const speakers = await getSpeakers();
   const t = await getTranslations({ locale, namespace: "page.speakers" });
   const isArabic = locale === "ar";
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden relative">
+    <div className="min-h-screen bg-background text-foreground selection:bg-tedx-red selection:text-white pb-32 overflow-hidden relative">
       {speakers.map((s) => (
         <JsonLd
           key={s.id}
@@ -61,7 +62,7 @@ export default async function SpeakersPage({ params }: Props) {
           </div>
 
           {speakers.length > 0 ? (
-            <SpeakersGrid speakers={speakers} />
+            <SpeakersGrid speakers={speakers} bioFallback={t("bioFallback")} />
           ) : (
             <p className="text-center text-muted-foreground py-16">
               {t("empty")}

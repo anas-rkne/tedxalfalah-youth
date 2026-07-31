@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useRTL } from "@/hooks/useRTL";
 
 interface Section {
@@ -26,6 +27,7 @@ const sections: Section[] = [
 export default function ScrollIndicator() {
   const pathname = usePathname();
   const { isRTL } = useRTL();
+  const t = useTranslations("common");
   const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -137,7 +139,7 @@ export default function ScrollIndicator() {
             top: "50%",
             transform: "translateY(-50%)",
           }}
-          aria-label="Section navigation"
+          aria-label={t("ui.sectionNavigation")}
         >
           <div className="absolute w-px h-full bg-zinc-200/60" />
 
@@ -172,7 +174,7 @@ export default function ScrollIndicator() {
                 <button
                   onClick={() => scrollToSection(section.id)}
                   className="relative z-10 group"
-                  aria-label={`Go to ${isRTL ? section.labelAr : section.label}`}
+                  aria-label={t("ui.goToSection", { section: isRTL ? section.labelAr : section.label })}
                   aria-current={isActive ? "true" : undefined}
                   title={isRTL ? section.labelAr : section.label}
                 >
@@ -190,7 +192,7 @@ export default function ScrollIndicator() {
                   <motion.div
                     className={`rounded-full transition-colors duration-300 ${
                       isActive
-                        ? "bg-[#E62B1E]"
+                        ? "bg-tedx-red"
                         : "bg-zinc-300 group-hover:bg-zinc-400"
                     }`}
                     animate={{

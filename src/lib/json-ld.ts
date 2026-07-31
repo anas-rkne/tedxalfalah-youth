@@ -1,4 +1,4 @@
-const BASE_URL = "https://www.tedxalfalahyouth.com";
+const BASE_URL = process.env.BASE_URL || "https://www.tedxalfalahyouth.com";
 
 export function organizationSchema() {
   return {
@@ -67,10 +67,42 @@ export function eventSchema(eventInfo: {
   return schema;
 }
 
+export function webSiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "TEDxAlFalah Youth",
+    url: BASE_URL,
+    description:
+      "Young voices. Real ideas. The future starts earlier than we think.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${BASE_URL}/?s={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+export function breadcrumbListSchema(items: { name: string; url: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
 export function personSchema(person: {
   name: string;
   description?: string;
-  image?: string;
+  image?: string | null;
 }) {
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",

@@ -11,9 +11,10 @@ import SafeImage from "@/components/ui/SafeImage";
 interface SpeakerModalProps {
   speaker: Speaker | null;
   onClose: () => void;
+  bioFallback?: string;
 }
 
-const SpeakerModal = memo(function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
+const SpeakerModal = memo(function SpeakerModal({ speaker, onClose, bioFallback }: SpeakerModalProps) {
   const shouldReduceMotion = useReducedMotion();
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -113,7 +114,7 @@ const SpeakerModal = memo(function SpeakerModal({ speaker, onClose }: SpeakerMod
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-muted-foreground">
-                  {speaker.name?.charAt(0) || "?"}
+                  {speaker.name?.charAt(0) || ""}
                 </div>
               )}
             </div>
@@ -136,7 +137,7 @@ const SpeakerModal = memo(function SpeakerModal({ speaker, onClose }: SpeakerMod
                 {speaker.themeConnection}
               </p>
               <p className={`text-muted-foreground leading-relaxed mb-6 ${isArabic ? "font-arabic" : "font-sans"}`}>
-                {speaker.bio}
+                {speaker.bio?.includes("[PLACEHOLDER") ? bioFallback : speaker.bio}
               </p>
 
               <div className="flex gap-4 text-muted-foreground">

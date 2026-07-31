@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, memo } from "react";
+import { memo } from "react";
 import { TeamMember } from "@/lib/types";
 import SafeImage from "@/components/ui/SafeImage";
 
@@ -15,8 +15,6 @@ const TeamMemberCard = memo(function TeamMemberCard({
   index,
   isArabic,
 }: TeamMemberCardProps) {
-  const [imageError, setImageError] = useState(false);
-
   if (!member) return null;
 
   const imageSrc = member.imageUrl;
@@ -37,7 +35,7 @@ const TeamMemberCard = memo(function TeamMemberCard({
         </div>
 
         {/* الصورة (SafeImage) */}
-        {imageSrc && !imageError && (
+        {imageSrc && (
           <>
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/40 to-transparent z-10 opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
             <SafeImage
@@ -46,7 +44,6 @@ const TeamMemberCard = memo(function TeamMemberCard({
               fill
               unoptimized
               className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 z-0"
-              onError={() => setImageError(true)}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           </>

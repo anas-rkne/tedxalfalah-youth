@@ -1,5 +1,5 @@
 // src/app/[locale]/team/page.tsx
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { getTeamMembers } from "@/lib/data";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
@@ -20,13 +20,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TeamPage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const isArabic = locale === "ar";
 
   const members = await getTeamMembers();
   const t = await getTranslations({ locale, namespace: "page.team" });
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden relative">
+    <div className="min-h-screen bg-background text-foreground selection:bg-tedx-red selection:text-white pb-32 overflow-hidden relative">
       {members.map((m) => (
         <JsonLd
           key={m.id}
@@ -64,6 +65,9 @@ export default async function TeamPage({ params }: Props) {
       {/* ═══════════ TEAM GRID ═══════════ */}
       <section className="px-6 md:px-12 lg:px-24 pb-20 relative z-10 bg-background">
         <div className="max-w-[1400px] mx-auto">
+          {members.length === 0 ? (
+            <p className="text-center text-muted-foreground py-16">{t("empty")}</p>
+          ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
             {members.map((member: any, index: number) => (
               <TeamMemberCard
@@ -74,6 +78,7 @@ export default async function TeamPage({ params }: Props) {
               />
             ))}
           </div>
+          )}
         </div>
       </section>
 

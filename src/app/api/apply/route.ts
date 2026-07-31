@@ -31,6 +31,29 @@ const applicationSchema = z.object({
   organizationAndRole: z.string().optional(),
   areaOfWorkWithYouth: z.string().optional(),
   turnstileToken: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.track === "young-speaker") {
+    if (!data.schoolName) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["schoolName"], message: "School name is required for young speakers" });
+    }
+    if (!data.guardianName) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["guardianName"], message: "Guardian name is required for young speakers" });
+    }
+    if (!data.guardianContact) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["guardianContact"], message: "Guardian contact is required for young speakers" });
+    }
+    if (!data.parentalConsent) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["parentalConsent"], message: "Parental consent is required for young speakers" });
+    }
+  }
+  if (data.track === "expert") {
+    if (!data.organizationAndRole) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["organizationAndRole"], message: "Organization and role is required for expert track" });
+    }
+    if (!data.areaOfWorkWithYouth) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["areaOfWorkWithYouth"], message: "Area of work with youth is required for expert track" });
+    }
+  }
 });
 
 type ApplicationData = z.infer<typeof applicationSchema>;
@@ -48,9 +71,10 @@ async function saveToGoogleSheet(data: ApplicationData) {
   const { GoogleSpreadsheet } = await import("google-spreadsheet");
   const { JWT } = await import("google-auth-library");
 
+  const { sanitizePrivateKey } = await import("@/lib/sanitize");
   const serviceAccountAuth = new JWT({
     email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    key: sanitizePrivateKey(process.env.GOOGLE_PRIVATE_KEY),
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
 
@@ -158,9 +182,10 @@ export async function POST(request: Request) {
   } else {
     // بيئة تطوير: لا نسجّل بيانات الطلب الكاملة بالسجل (حتى محلياً) لأنها
     // تحتوي بيانات شخصية حساسة لقُصَّر — فقط نؤكد استلام الطلب.
-    console.log(
-      `[DEV] Application received for track "${data.track}" (Google Sheets not configured)`
-    );
+    if (process.env.NODE_ENV === "development")
+      console.log(
+        `[DEV] Application received for track "${data.track}" (Google Sheets not configured)`
+      );
   }
 
   if (process.env.RESEND_API_KEY) {
@@ -172,7 +197,7 @@ export async function POST(request: Request) {
       console.error("Confirmation email failed:", error);
     }
   } else {
-    console.log("[DEV] Confirmation email would be sent (RESEND_API_KEY not set)");
+    if (process.env.NODE_ENV === "development") console.log("[DEV] Confirmation email would be sent (RESEND_API_KEY not set)");
   }
 
   return NextResponse.json({ success: true });

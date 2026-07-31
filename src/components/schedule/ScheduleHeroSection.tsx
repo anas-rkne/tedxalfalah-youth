@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, memo } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import SectionBadge from "@/components/ui/SectionBadge";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 
@@ -20,8 +20,8 @@ const DefaultBackground = memo(function DefaultBackground({
   imageScale,
 }: {
   shouldReduceMotion: boolean | null;
-  imageY: any;
-  imageScale: any;
+  imageY: MotionValue<number>;
+  imageScale: MotionValue<number>;
 }) {
   return (
     <motion.div style={{ y: imageY, scale: imageScale }} className="absolute inset-0 z-0">
@@ -40,14 +40,14 @@ const DefaultBackground = memo(function DefaultBackground({
           WebkitMaskImage: "radial-gradient(circle at center, black 20%, transparent 70%)",
         }}
       />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] max-w-[800px] h-[500px] bg-[#e62b1e]/[0.08] rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] max-w-[800px] h-[500px] bg-tedx-red/[0.08] rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-[25%] start-[10%] hidden lg:flex flex-col items-center opacity-40">
-        <div className="w-2.5 h-2.5 rounded-full bg-[#e62b1e] animate-pulse shadow-[0_0_15px_#e62b1e]" />
-        <div className="w-px h-32 bg-gradient-to-b from-[#e62b1e] to-transparent" />
+        <div className="w-2.5 h-2.5 rounded-full bg-tedx-red animate-pulse shadow-[0_0_15px_#e62b1e]" />
+        <div className="w-px h-32 bg-gradient-to-b from-tedx-red to-transparent" />
       </div>
       <div className="absolute bottom-[25%] end-[10%] hidden lg:flex flex-col items-center opacity-40">
-        <div className="w-px h-32 bg-gradient-to-t from-[#e62b1e] to-transparent" />
-        <div className="w-2.5 h-2.5 rounded-full bg-[#e62b1e] animate-pulse shadow-[0_0_15px_#e62b1e]" />
+        <div className="w-px h-32 bg-gradient-to-t from-tedx-red to-transparent" />
+        <div className="w-2.5 h-2.5 rounded-full bg-tedx-red animate-pulse shadow-[0_0_15px_#e62b1e]" />
       </div>
     </motion.div>
   );
@@ -77,7 +77,7 @@ const ScheduleHeroSection = memo(function ScheduleHeroSection({
 
       <div className="max-w-[1000px] mx-auto px-5 sm:px-6 md:px-10 relative z-10 w-full flex flex-col items-center text-center">
         <div className="hero-fade-up mb-6 sm:mb-8" style={{ animationDelay: "0.1s" }}>
-          <SectionBadge className="bg-[#e62b1e]/10 border-[#e62b1e]/20 text-[#e62b1e] px-5 py-2 backdrop-blur-md">
+          <SectionBadge className="bg-tedx-red/10 border-tedx-red/20 text-tedx-red px-5 py-2 backdrop-blur-md">
             {badgeLabel}
           </SectionBadge>
         </div>
@@ -94,8 +94,8 @@ const ScheduleHeroSection = memo(function ScheduleHeroSection({
         <div className="flex items-center justify-center gap-4 w-full hero-fade-up py-8 md:py-10" style={{ animationDelay: "0.3s" }}>
           <div className="h-px w-20 sm:w-32 md:w-48 bg-gradient-to-r from-transparent to-zinc-600 rounded-full" />
           <div className="relative flex items-center justify-center shrink-0">
-            <span className="absolute inline-flex h-3 w-3 rounded-full bg-[#e62b1e]/40 animate-ping" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#e62b1e]" />
+            <span className="absolute inline-flex h-3 w-3 rounded-full bg-tedx-red/40 animate-ping" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-tedx-red" />
           </div>
           <div className="h-px w-20 sm:w-32 md:w-48 bg-gradient-to-l from-transparent to-zinc-600 rounded-full" />
         </div>

@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import { Link, useRouter } from "@/i18n/navigation";
+import { toast } from "sonner";
 
 /* ─── القيم الثابتة ─── */
 const HOW_HEARD_VALUES = [
@@ -67,7 +68,7 @@ const FormSection = memo(function FormSection({
   return (
     <div className="bg-white border border-black/[0.06] rounded-[20px] p-7 mb-5 hover:border-black/[0.1] hover:shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
       <h3 className={`text-sm font-bold text-zinc-900 mb-5 pb-3 border-b border-black/[0.06] flex items-center gap-2 ${isArabic ? 'font-arabic' : ''}`}>
-        <span className="w-6 h-6 rounded-lg bg-[#e62b1e]/10 text-[#e62b1e] text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+        <span className="w-6 h-6 rounded-lg bg-tedx-red/10 text-tedx-red text-[11px] font-bold flex items-center justify-center flex-shrink-0">
           {num}
         </span>
         {title}
@@ -94,11 +95,10 @@ const Field = memo(function Field({
 }) {
   return (
     <div className={`mb-4 ${className}`}>
-      <label className={`block text-[13px] font-semibold text-zinc-600 mb-1.5 ${isArabic ? 'font-arabic' : ''}`}>{label}</label>
-      {children}
+      <label className={`block text-[13px] font-semibold text-zinc-600 mb-1.5 ${isArabic ? 'font-arabic' : ''}`}>{label}{children}</label>
       {hint && <div className="flex justify-between items-center mt-1">{hint}</div>}
       {error && (
-        <p className="text-xs text-[#e62b1e] mt-1 flex items-center gap-1">
+        <p className="text-xs text-tedx-red mt-1 flex items-center gap-1">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           {error}
         </p>
@@ -109,10 +109,12 @@ const Field = memo(function Field({
 
 export default function ApplicationForm() {
   const t = useTranslations("page.apply.form");
+  const tCommon = useTranslations("common");
   const locale = useLocale();
   const isArabic = locale === "ar";
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "error">("idle");
+  const [showSuccess, setShowSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
 
   /* ─── سكيما التطبيق (memoized) ─── */
@@ -136,7 +138,7 @@ export default function ApplicationForm() {
             .min(1, t("errors.thisFieldRequired"))
             .refine((val) => wordCount(val) <= 150, t("errors.maxWords", { count: 150 })),
           themeConnection: z.enum(THEME_OPTIONS),
-          videoLink: z.string().url(t("errors.invalidUrl")),
+          videoLink: z.string().url(t("errors.invalidUrl")).or(z.literal("")).optional(),
           howHeardAboutUs: z.enum(HOW_HEARD_VALUES),
           consentToTerms: z.literal(true, {
             errorMap: () => ({ message: t("errors.consentRequired") }),
@@ -198,28 +200,45 @@ export default function ApplicationForm() {
 
   async function onSubmit(data: ApplicationFormValues) {
     setStatus("idle");
+    setShowSuccess(false);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
     try {
       const res = await fetch("/api/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, turnstileToken }),
+        signal: controller.signal,
       });
-      if (!res.ok) throw new Error("Request failed");
-      router.push("/thank-you?type=apply");
-    } catch {
+      clearTimeout(timeout);
+      if (!res.ok) {
+        if (res.status === 429) throw new Error("rate_limit");
+        if (res.status >= 500) throw new Error("server_error");
+        throw new Error("request_failed");
+      }
+      setShowSuccess(true);
+      setTimeout(() => router.push("/thank-you?type=apply"), 1200);
+    } catch (e: any) {
+      clearTimeout(timeout);
+      setShowSuccess(false);
+      const msg = e?.message;
+      if (msg === "rate_limit") toast.error(tCommon("ui.tooManyRequests"));
+      else if (msg === "server_error") toast.error(tCommon("ui.serverError"));
+      else if (e?.name === "AbortError") toast.error(tCommon("ui.connectionTimedOut"));
+      else toast.error(t("errorGeneric"));
       setStatus("error");
     }
   }
 
   const inputClasses =
-    "w-full border-[1.5px] border-black/[0.08] rounded-xl px-4 py-3 text-sm text-zinc-900 bg-[#fafafa] placeholder:text-zinc-400 transition-all duration-250 ease-out outline-none hover:border-black/[0.15] hover:bg-white focus:border-[#e62b1e] focus:bg-white focus:shadow-[0_0_0_3px_rgba(230,43,30,0.08)]";
+    "w-full border-[1.5px] border-black/[0.08] rounded-xl px-4 py-3 text-sm text-zinc-900 bg-[#fafafa] placeholder:text-zinc-400 transition-all duration-250 ease-out outline-none hover:border-black/[0.15] hover:bg-white focus:border-tedx-red focus:bg-white focus:shadow-[0_0_0_3px_rgba(230,43,30,0.08)]";
   const textareaClasses = inputClasses + " resize-y min-h-[100px]";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-[680px] mx-auto flex flex-col gap-0" noValidate>
       {/* العنوان */}
       <div className="text-center mb-10">
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-[#e62b1e] mb-3 px-3.5 py-1.5 bg-[#e62b1e]/10 border border-[#e62b1e]/20 rounded-full">
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-tedx-red mb-3 px-3.5 py-1.5 bg-tedx-red/10 border border-tedx-red/20 rounded-full">
           {t("badge")}
         </span>
         <h2 className={`font-bold text-2xl text-zinc-900 tracking-[-0.02em] ${isArabic ? 'font-arabic' : ''}`}>
@@ -233,18 +252,18 @@ export default function ApplicationForm() {
           {/* متحدث شاب */}
           <label className={`relative flex-1 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             track === "young-speaker"
-              ? "border-[#e62b1e] bg-white shadow-[0_4px_20px_-4px_rgba(230,43,30,0.1)]"
-              : "border-black/[0.06] bg-[#fafafa] hover:border-[#e62b1e]/20 hover:bg-white"
+              ? "border-tedx-red bg-white shadow-[0_4px_20px_-4px_rgba(230,43,30,0.1)]"
+              : "border-black/[0.06] bg-[#fafafa] hover:border-tedx-red/20 hover:bg-white"
           }`}>
             <input type="radio" value="young-speaker" className="absolute opacity-0" {...register("track")} onChange={() => setValue("track", "young-speaker")} />
             <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center mb-2.5 transition-all duration-300 ${
-              track === "young-speaker" ? "bg-[#e62b1e]/10 text-[#e62b1e]" : "bg-zinc-100 text-zinc-400"
+              track === "young-speaker" ? "bg-tedx-red/10 text-tedx-red" : "bg-zinc-100 text-zinc-400"
             }`}>
               <LocationIcon />
             </div>
             <div className={`text-[15px] font-bold text-zinc-900 mb-1 ${isArabic ? 'font-arabic' : ''}`}>{t("youngSpeakerLabel")}</div>
             <div className={`text-[13px] text-zinc-500 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>{t("youngSpeakerDesc")}</div>
-            <div className="mt-3 text-[11px] font-semibold text-[#e62b1e] px-2 py-1 bg-[#e62b1e]/10 border border-[#e62b1e]/20 rounded-full inline-block">
+            <div className="mt-3 text-[11px] font-semibold text-tedx-red px-2 py-1 bg-tedx-red/10 border border-tedx-red/20 rounded-full inline-block">
               {t("youngAgeRange")}
             </div>
           </label>
@@ -252,18 +271,18 @@ export default function ApplicationForm() {
           {/* خبير */}
           <label className={`relative flex-1 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             track === "expert"
-              ? "border-[#e62b1e] bg-white shadow-[0_4px_20px_-4px_rgba(230,43,30,0.1)]"
-              : "border-black/[0.06] bg-[#fafafa] hover:border-[#e62b1e]/20 hover:bg-white"
+              ? "border-tedx-red bg-white shadow-[0_4px_20px_-4px_rgba(230,43,30,0.1)]"
+              : "border-black/[0.06] bg-[#fafafa] hover:border-tedx-red/20 hover:bg-white"
           }`}>
             <input type="radio" value="expert" className="absolute opacity-0" {...register("track")} onChange={() => setValue("track", "expert")} />
             <div className={`w-9 h-9 rounded-[10px] flex items-center justify-center mb-2.5 transition-all duration-300 ${
-              track === "expert" ? "bg-[#e62b1e]/10 text-[#e62b1e]" : "bg-zinc-100 text-zinc-400"
+              track === "expert" ? "bg-tedx-red/10 text-tedx-red" : "bg-zinc-100 text-zinc-400"
             }`}>
               <PenIcon />
             </div>
             <div className={`text-[15px] font-bold text-zinc-900 mb-1 ${isArabic ? 'font-arabic' : ''}`}>{t("expertLabel")}</div>
             <div className={`text-[13px] text-zinc-500 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>{t("expertDesc")}</div>
-            <div className="mt-3 text-[11px] font-semibold text-[#e62b1e] px-2 py-1 bg-[#e62b1e]/10 border border-[#e62b1e]/20 rounded-full inline-block">
+            <div className="mt-3 text-[11px] font-semibold text-tedx-red px-2 py-1 bg-tedx-red/10 border border-tedx-red/20 rounded-full inline-block">
               {t("expertAgeRange")}
             </div>
           </label>
@@ -309,7 +328,7 @@ export default function ApplicationForm() {
           <textarea {...register("whyItMatters")} rows={3} className={textareaClasses} placeholder={t("whyItMattersPlaceholder")} />
         </Field>
         <Field label={t("themeConnection")} error={errors.themeConnection?.message} isArabic={isArabic}>
-          <select {...register("themeConnection")} className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] pr-10`}>
+          <select {...register("themeConnection")} className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] ${isArabic ? 'bg-[left_16px_center] pl-10' : 'pr-10'}`}>
             {THEME_OPTIONS.map((option) => (
               <option key={option} value={option}>{t(`themeConnectionOptions.${option}`)}</option>
             ))}
@@ -319,7 +338,7 @@ export default function ApplicationForm() {
           <input {...register("videoLink")} className={inputClasses} placeholder={t("videoLinkPlaceholder")} />
         </Field>
         <Field label={t("howHeard")} isArabic={isArabic}>
-          <select {...register("howHeardAboutUs")} className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] pr-10`}>
+          <select {...register("howHeardAboutUs")} className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] ${isArabic ? 'bg-[left_16px_center] pl-10' : 'pr-10'}`}>
             <option value="Social Media">{t("howHeardOptions.socialMedia")}</option>
             <option value="Friend/Family">{t("howHeardOptions.friendFamily")}</option>
             <option value="School">{t("howHeardOptions.school")}</option>
@@ -344,11 +363,11 @@ export default function ApplicationForm() {
             </Field>
           </div>
           <label className="flex items-start gap-2.5 cursor-pointer p-3 -m-3 rounded-xl hover:bg-black/[0.02] transition-colors">
-            <input type="checkbox" {...register("parentalConsent")} className="w-[18px] h-[18px] border-2 border-black/15 rounded-[5px] mt-0.5 flex-shrink-0 accent-[#e62b1e] cursor-pointer" />
+            <input type="checkbox" {...register("parentalConsent")} className="w-[18px] h-[18px] border-2 border-black/15 rounded-[5px] mt-0.5 flex-shrink-0 accent-tedx-red cursor-pointer" />
             <span className={`text-[13px] text-zinc-600 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>{t("parentalConsentLabel")}</span>
           </label>
           {errors.parentalConsent && (
-            <p className="text-xs text-[#e62b1e] mt-1 flex items-center gap-1">
+            <p className="text-xs text-tedx-red mt-1 flex items-center gap-1">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               {errors.parentalConsent.message}
             </p>
@@ -370,14 +389,14 @@ export default function ApplicationForm() {
       {/* الموافقة على الشروط */}
       <div className="bg-white border border-black/[0.06] rounded-[20px] p-7 mb-5 hover:border-black/[0.1] transition-colors duration-300">
         <label className="flex items-start gap-2.5 cursor-pointer">
-          <input type="checkbox" {...register("consentToTerms")} className="w-[18px] h-[18px] border-2 border-black/15 rounded-[5px] mt-0.5 flex-shrink-0 accent-[#e62b1e] cursor-pointer" />
+          <input type="checkbox" {...register("consentToTerms")} className="w-[18px] h-[18px] border-2 border-black/15 rounded-[5px] mt-0.5 flex-shrink-0 accent-tedx-red cursor-pointer" />
           <span className={`text-[13px] text-zinc-600 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
             {t("agreeToTerms")}{" "}
-            <Link href="/terms" className="text-[#e62b1e] font-semibold hover:underline">{t("termsLink")}</Link>
+            <Link href="/terms" className="text-tedx-red font-semibold hover:underline">{t("termsLink")}</Link>
           </span>
         </label>
         {errors.consentToTerms && (
-          <p className="text-xs text-[#e62b1e] mt-2 flex items-center gap-1">
+          <p className="text-xs text-tedx-red mt-2 flex items-center gap-1">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             {errors.consentToTerms.message}
           </p>
@@ -386,7 +405,7 @@ export default function ApplicationForm() {
 
       {/* خطأ عام */}
       {status === "error" && (
-        <div className="p-4 rounded-xl bg-[#e62b1e]/10 border border-[#e62b1e]/20 text-[#e62b1e] text-sm font-medium text-center mb-4">
+        <div className="p-4 rounded-xl bg-tedx-red/10 border border-tedx-red/20 text-tedx-red text-sm font-medium text-center mb-4">
           {t("errorGeneric")}
         </div>
       )}
@@ -395,7 +414,7 @@ export default function ApplicationForm() {
       <TurnstileWidget onVerify={setTurnstileToken} />
 
       {/* زر الإرسال */}
-      <Button variant="primary" size="lg" className="w-full mt-2" loading={isSubmitting}>
+      <Button variant="primary" size="lg" className="w-full mt-2" loading={isSubmitting && !showSuccess} showCheck={showSuccess} loadingText={t("submitting")}>
         {t("submit")}
       </Button>
     </form>

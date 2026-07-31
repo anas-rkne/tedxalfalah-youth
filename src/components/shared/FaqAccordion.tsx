@@ -44,7 +44,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
               aria-controls={panelId}
             >
               <span className={`text-sm font-semibold transition-colors duration-200 ${
-                isOpen ? "text-[#e62b1e]" : "text-zinc-800"
+                isOpen ? "text-tedx-red" : "text-zinc-800"
               }`}>
                 {item.question}
               </span>
@@ -52,7 +52,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
                 animate={shouldReduceMotion ? {} : { rotate: isOpen ? 180 : 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
-                  isOpen ? "bg-red-50 text-[#e62b1e]" : "bg-zinc-100 text-zinc-400"
+                  isOpen ? "bg-red-50 text-tedx-red" : "bg-zinc-100 text-zinc-400"
                 }`}
               >
                 <ChevronDown size={14} strokeWidth={2.5} />

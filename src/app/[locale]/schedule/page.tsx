@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { getSessions, getEventInfo } from "@/lib/data";
 import ScheduleHeroSection from "@/components/schedule/ScheduleHeroSection";
@@ -32,10 +32,11 @@ function formatDate(dateStr: string | undefined, locale: string): string | null 
 
 export default async function SchedulePage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const [sessions, eventInfo] = await Promise.all([getSessions(), getEventInfo()]);
   const t = await getTranslations({ locale, namespace: "page.schedule" });
   const isArabic = locale === "ar";
-  const eventDate = formatDate(eventInfo?.date, locale) || t("datePlaceholder");
+  const eventDate = formatDate(eventInfo?.date, locale);
 
   const typeLabels = {
     talk: t("typeLabels.talk"),
@@ -58,12 +59,12 @@ export default async function SchedulePage({ params }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden relative">
+    <div className="min-h-screen bg-background text-foreground selection:bg-tedx-red selection:text-white pb-32 overflow-hidden relative">
       {/* 🔥 تم إزالة font-sans */}
       <ScheduleHeroSection
         badgeLabel={t("hero.badge")}
         title={t("title")}
-        eventDate={eventDate}
+        eventDate={eventDate ?? ""}
         description={t("timesNote")}
         isArabic={isArabic}
         ticketsLabel={t("ticketsLabel")}
@@ -85,6 +86,7 @@ export default async function SchedulePage({ params }: Props) {
             typeLabels={typeLabels}
             filterLabels={filterLabels}
             periodLabels={periodLabels}
+            emptyLabel={t("empty")}
           />
         </div>
       </section>

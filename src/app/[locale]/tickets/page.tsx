@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Metadata } from "next";
 import {
@@ -42,8 +42,8 @@ function InfoCard({
   href?: string;
 }) {
   const content = (
-    <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-black/[0.06] hover:border-[#e62b1e]/20 hover:shadow-[0_8px_30px_-12px_rgba(230,43,30,0.1)] transition-all duration-300 group">
-      <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-[#e62b1e] flex-shrink-0 group-hover:bg-[#e62b1e] group-hover:text-white transition-colors duration-300">
+    <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-black/[0.06] hover:border-tedx-red/20 hover:shadow-[0_8px_30px_-12px_rgba(230,43,30,0.1)] transition-all duration-300 group">
+      <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-tedx-red flex-shrink-0 group-hover:bg-tedx-red group-hover:text-white transition-colors duration-300">
         {icon}
       </div>
       <div className="min-w-0">
@@ -53,7 +53,7 @@ function InfoCard({
         <div className="text-sm font-semibold text-zinc-900 truncate">{value}</div>
       </div>
       {href && (
-        <ArrowUpRight className="w-4 h-4 text-zinc-300 group-hover:text-[#e62b1e] transition-colors ml-auto flex-shrink-0" />
+        <ArrowUpRight className="w-4 h-4 text-zinc-300 group-hover:text-tedx-red transition-colors ml-auto flex-shrink-0" />
       )}
     </div>
   );
@@ -74,8 +74,8 @@ function InfoCard({
    ═══════════════════════════════════════════════════════════════ */
 function BringItem({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="flex flex-col items-center text-center p-5 rounded-2xl bg-white border border-black/[0.06] hover:border-[#e62b1e]/20 hover:shadow-[0_8px_30px_-12px_rgba(230,43,30,0.1)] transition-all duration-300 group">
-      <div className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center text-[#e62b1e] mb-3 group-hover:bg-[#e62b1e] group-hover:text-white transition-colors duration-300">
+    <div className="flex flex-col items-center text-center p-5 rounded-2xl bg-white border border-black/[0.06] hover:border-tedx-red/20 hover:shadow-[0_8px_30px_-12px_rgba(230,43,30,0.1)] transition-all duration-300 group">
+      <div className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center text-tedx-red mb-3 group-hover:bg-tedx-red group-hover:text-white transition-colors duration-300">
         {icon}
       </div>
       <span className="text-sm font-medium text-zinc-700 leading-snug">{label}</span>
@@ -111,12 +111,12 @@ function TicketCard({ t }: { t: any }) {
   return (
     <div className="relative group/card max-w-md mx-auto">
       {/* Glow Effect Behind */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-[#e62b1e] via-orange-500 to-[#e62b1e] rounded-[32px] blur opacity-15 group-hover/card:opacity-30 transition duration-700" />
+      <div className="absolute -inset-1 bg-gradient-to-r from-tedx-red via-orange-500 to-tedx-red rounded-[32px] blur opacity-15 group-hover/card:opacity-30 transition duration-700" />
 
       {/* Main Card */}
       <div className="relative bg-white rounded-[28px] overflow-hidden shadow-[0_25px_80px_-20px_rgba(0,0,0,0.12)] border border-black/[0.04]">
         {/* ═══════ Top Section: Red Header ═══════ */}
-        <div className="relative bg-gradient-to-br from-[#e62b1e] to-red-700 px-7 sm:px-8 pt-7 pb-10 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-tedx-red to-red-700 px-7 sm:px-8 pt-7 pb-10 overflow-hidden">
           {/* Dot Pattern Overlay */}
           <div
             className="absolute inset-0 opacity-[0.08]"
@@ -177,28 +177,28 @@ function TicketCard({ t }: { t: any }) {
           {/* Info Grid */}
           <div className="grid grid-cols-2 gap-2.5 mb-6">
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-50 border border-black/[0.04]">
-              <Calendar className="w-4 h-4 text-[#e62b1e] flex-shrink-0" />
+              <Calendar className="w-4 h-4 text-tedx-red flex-shrink-0" />
               <div className="min-w-0">
                 <div className="text-[10px] text-zinc-400 font-medium">{t("info.dateLabel")}</div>
                 <div className="text-xs text-zinc-700 font-semibold truncate">{t("info.dateValue")}</div>
               </div>
             </div>
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-50 border border-black/[0.04]">
-              <Clock className="w-4 h-4 text-[#e62b1e] flex-shrink-0" />
+              <Clock className="w-4 h-4 text-tedx-red flex-shrink-0" />
               <div className="min-w-0">
                 <div className="text-[10px] text-zinc-400 font-medium">{t("info.timeLabel")}</div>
                 <div className="text-xs text-zinc-700 font-semibold truncate">{t("info.timeValue")}</div>
               </div>
             </div>
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-50 border border-black/[0.04]">
-              <MapPin className="w-4 h-4 text-[#e62b1e] flex-shrink-0" />
+              <MapPin className="w-4 h-4 text-tedx-red flex-shrink-0" />
               <div className="min-w-0">
                 <div className="text-[10px] text-zinc-400 font-medium">{t("info.venueLabel")}</div>
                 <div className="text-xs text-zinc-700 font-semibold truncate">{t("info.venueValue")}</div>
               </div>
             </div>
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-50 border border-black/[0.04]">
-              <Users className="w-4 h-4 text-[#e62b1e] flex-shrink-0" />
+              <Users className="w-4 h-4 text-tedx-red flex-shrink-0" />
               <div className="min-w-0">
                 <div className="text-[10px] text-zinc-400 font-medium">{t("info.venueLabel") /* reusing for seats */}</div>
                 <div className="text-xs text-zinc-700 font-semibold truncate">{t("ticket.seats")}</div>
@@ -208,10 +208,10 @@ function TicketCard({ t }: { t: any }) {
 
           {/* CTA Button — Platinumlist Link */}
           <a
-            href="https://platinumlist.net/event/tedx-youth-alfalah"
+            href={process.env.NEXT_PUBLIC_PLATINUMLIST_URL || "https://platinumlist.net/event/tedx-youth-alfalah"}
             target="_blank"
             rel="noopener noreferrer"
-            className="group/btn flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-[#e62b1e] to-red-600 text-white font-bold rounded-xl
+            className="group/btn flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-tedx-red to-red-600 text-white font-bold rounded-xl
               hover:from-red-700 hover:to-red-800 transition-all duration-300
               shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)] hover:shadow-[0_12px_40px_-12px_rgba(230,43,30,0.6)]
               hover:scale-[1.02] active:scale-[0.98]"
@@ -238,6 +238,8 @@ function TicketCard({ t }: { t: any }) {
    ═══════════════════════════════════════════════════════════════ */
 export default async function TicketsPage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
+  const isArabic = locale === "ar";
   const t = await getTranslations({ locale, namespace: "page.tickets" });
 
   const bringItems = t.raw("bring.items") as string[];
@@ -251,7 +253,7 @@ export default async function TicketsPage({ params }: Props) {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" dir={isArabic ? "rtl" : "ltr"}>
       {/* ═══════════════════════════════════════════════════════════════
           1. HERO
           ═══════════════════════════════════════════════════════════════ */}
@@ -263,7 +265,7 @@ export default async function TicketsPage({ params }: Props) {
         </div>
 
         <div className="relative max-w-3xl mx-auto text-center">
-          <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] uppercase text-[#e62b1e] mb-5 px-4 py-2 bg-red-50 border border-red-100 rounded-full">
+          <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] uppercase text-tedx-red mb-5 px-4 py-2 bg-red-50 border border-red-100 rounded-full">
             <Ticket className="w-3.5 h-3.5" />
             {t("hero.badge")}
           </span>
@@ -352,7 +354,7 @@ export default async function TicketsPage({ params }: Props) {
       <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#fafafa]">
         <div className="max-w-2xl mx-auto text-center">
           <div className="p-8 rounded-2xl bg-white border border-black/[0.06] shadow-[0_4px_20px_-8px_rgba(0,0,0,0.04)]">
-            <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-[#e62b1e] mx-auto mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-tedx-red mx-auto mb-4">
               <CreditCard className="w-6 h-6" />
             </div>
             <h2 className="text-xl font-bold text-zinc-900 mb-4">
@@ -363,7 +365,7 @@ export default async function TicketsPage({ params }: Props) {
             </p>
             <Link
               href="/terms"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#e62b1e] hover:text-red-700 transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-tedx-red hover:text-red-700 transition-colors"
             >
               {t("refund.termsLink")}
               <ArrowUpRight className="w-3.5 h-3.5" />

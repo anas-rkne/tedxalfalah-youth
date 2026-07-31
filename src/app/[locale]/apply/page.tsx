@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import FadeInView from "@/components/ui/FadeInView";
 import ApplicationForm from "@/components/apply/ApplicationForm";
@@ -23,6 +23,7 @@ const APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00";
 
 export default async function ApplyPage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "page.apply" });
   const isClosed = new Date() > new Date(APPLICATION_DEADLINE);
 

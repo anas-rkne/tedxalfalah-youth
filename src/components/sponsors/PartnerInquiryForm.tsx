@@ -9,11 +9,14 @@ import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import Input from "@/components/ui/Input";
 import { useRouter } from "@/i18n/navigation";
+import { toast } from "sonner";
 
 export default function PartnerInquiryForm() {
   const t = useTranslations("page.sponsors.form");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "error">("idle");
+  const [showSuccess, setShowSuccess] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
 
   const partnerSchema = useMemo(
@@ -38,15 +41,32 @@ export default function PartnerInquiryForm() {
 
   async function onSubmit(data: PartnerFormValues) {
     setStatus("idle");
+    setShowSuccess(false);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
     try {
       const res = await fetch("/api/partner-inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, turnstileToken }),
+        signal: controller.signal,
       });
-      if (!res.ok) throw new Error("Request failed");
-      router.push("/thank-you?type=partner");
-    } catch {
+      clearTimeout(timeout);
+      if (!res.ok) {
+        if (res.status === 429) throw new Error("rate_limit");
+        if (res.status >= 500) throw new Error("server_error");
+        throw new Error("request_failed");
+      }
+      setShowSuccess(true);
+      setTimeout(() => router.push("/thank-you?type=partner"), 1200);
+    } catch (e: any) {
+      clearTimeout(timeout);
+      setShowSuccess(false);
+      const msg = e?.message;
+      if (msg === "rate_limit") toast.error(tCommon("ui.tooManyRequests"));
+      else if (msg === "server_error") toast.error(tCommon("ui.serverError"));
+      else if (e?.name === "AbortError") toast.error(tCommon("ui.connectionTimedOut"));
+      else toast.error(t("errorGeneric"));
       setStatus("error");
     }
   }
@@ -102,7 +122,7 @@ export default function PartnerInquiryForm() {
 
       <TurnstileWidget onVerify={setTurnstileToken} />
 
-      <Button variant="primary" size="md" loading={isSubmitting}>
+      <Button variant="primary" size="md" loading={isSubmitting && !showSuccess} showCheck={showSuccess} loadingText={t("submit")}>
         {t("submit")}
       </Button>
     </form>

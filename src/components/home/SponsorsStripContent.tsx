@@ -11,8 +11,9 @@ import DarkCTASection from "@/components/shared/DarkCTASection";
 export interface Sponsor {
   id: string;
   name: string;
-  logoUrl: string;
-  tier?: "Platinum" | "Gold" | "Silver" | "Community" | "Supporter";
+  logoUrl: string | null;
+  tier: string;
+  websiteUrl?: string;
 }
 
 interface SponsorsStripContentProps {
@@ -29,6 +30,7 @@ interface SponsorsStripContentProps {
   ctaHeading: string;
   ctaDescription: string;
   ctaLabel: string;
+  emptyLabel?: string;
 }
 
 /* ═══════════════════════════════════════════
@@ -90,7 +92,7 @@ const AnimatedStatItem = memo(function AnimatedStatItem({
         whileInView={{ scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: delay + 0.2, type: "spring", stiffness: 200 }}
-        className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-[#e62b1e]/10 flex items-center justify-center text-[#e62b1e] group-hover:bg-[#e62b1e] group-hover:text-white transition-all duration-500"
+        className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-tedx-red/10 flex items-center justify-center text-tedx-red group-hover:bg-tedx-red group-hover:text-white transition-all duration-500"
       >
         {icon}
       </motion.div>
@@ -99,7 +101,7 @@ const AnimatedStatItem = memo(function AnimatedStatItem({
         <span className="text-4xl md:text-5xl lg:text-6xl font-black text-zinc-900 tracking-[-0.04em] tabular-nums">
           {count}{suffix}
         </span>
-        <div className="absolute inset-0 -z-10 blur-3xl bg-[#e62b1e]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 -z-10 blur-3xl bg-tedx-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
 
       <p className="text-sm md:text-base text-zinc-400 mt-3 font-medium tracking-wide uppercase">
@@ -111,7 +113,7 @@ const AnimatedStatItem = memo(function AnimatedStatItem({
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: delay + 0.4, ease: [0.23, 1, 0.32, 1] }}
-        className="mt-4 h-0.5 w-12 mx-auto bg-gradient-to-r from-transparent via-[#e62b1e]/40 to-transparent origin-center"
+        className="mt-4 h-0.5 w-12 mx-auto bg-gradient-to-r from-transparent via-tedx-red/40 to-transparent origin-center"
       />
     </motion.div>
   );
@@ -182,7 +184,7 @@ const SponsorMarquee = memo(function SponsorMarquee({ sponsors }: { sponsors: Sp
               />
             ) : (
               <span className="text-lg font-bold text-muted-foreground">
-                {sponsor.name?.charAt(0) || "?"}
+                {sponsor.name?.charAt(0) || ""}
               </span>
             )}
           </div>
@@ -209,6 +211,7 @@ export default function SponsorsStripContent({
   ctaHeading,
   ctaDescription,
   ctaLabel,
+  emptyLabel,
 }: SponsorsStripContentProps) {
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
@@ -223,7 +226,7 @@ export default function SponsorsStripContent({
           className="text-center"
         >
           <Handshake className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground text-lg font-light">No sponsors yet.</p>
+          <p className="text-muted-foreground text-lg font-light">{emptyLabel}</p>
         </motion.div>
       </section>
     );
@@ -235,7 +238,7 @@ export default function SponsorsStripContent({
       <div className="relative pb-12 md:pb-16">
         {/* خلفية متوهجة (مطابقة لجميع الأقسام) */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#e62b1e]/5 blur-3xl" />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-tedx-red/5 blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-orange-500/5 blur-3xl" />
         </div>
 
@@ -269,7 +272,7 @@ export default function SponsorsStripContent({
             className="flex items-center justify-center gap-3 origin-center"
           >
             <div className="h-px w-10 bg-zinc-200" />
-            <div className="h-1 w-14 bg-gradient-to-r from-[#e62b1e] to-red-400 rounded-full" />
+            <div className="h-1 w-14 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" />
             <div className="h-px w-10 bg-zinc-200" />
           </motion.div>
 
@@ -311,7 +314,7 @@ export default function SponsorsStripContent({
                   backgroundSize: "24px 24px",
                 }}
               />
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-[#e62b1e]/[0.03] blur-3xl rounded-full" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-tedx-red/[0.03] blur-3xl rounded-full" />
 
               <div className="relative grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-zinc-100">
                 <AnimatedStatItem
@@ -342,10 +345,10 @@ export default function SponsorsStripContent({
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1.2, delay: 0.6, ease: [0.23, 1, 0.32, 1] }}
-                className="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/30 to-transparent origin-center"
+                className="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-tedx-red/30 to-transparent origin-center"
               />
             </div>
-            <div className="absolute -inset-4 -z-10 rounded-[40px] bg-gradient-to-b from-[#e62b1e]/[0.02] to-transparent blur-2xl" />
+            <div className="absolute -inset-4 -z-10 rounded-[40px] bg-gradient-to-b from-tedx-red/[0.02] to-transparent blur-2xl" />
           </motion.div>
         </div>
       </div>

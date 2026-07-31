@@ -11,6 +11,7 @@ interface ButtonBaseProps {
   size?: ButtonSize;
   className?: string;
   loading?: boolean;
+  loadingText?: string;
   showCheck?: boolean;
 }
 
@@ -46,6 +47,7 @@ export default function Button({
   className = "",
   href,
   loading = false,
+  loadingText,
   showCheck = false,
   ...rest
 }: ButtonProps) {
@@ -58,7 +60,7 @@ export default function Button({
   const content = loading ? (
     <span className="flex items-center gap-2">
       <Loader2 className="h-4 w-4 animate-spin" />
-      <span>{children}</span>
+      <span>{loadingText || children}</span>
     </span>
   ) : showCheck ? (
     <span className="flex items-center gap-2">

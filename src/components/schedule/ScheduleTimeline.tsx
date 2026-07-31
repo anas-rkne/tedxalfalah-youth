@@ -118,7 +118,7 @@ const ScheduleTimeline = memo(function ScheduleTimeline({
 
           <div className="relative">
             {/* Vertical timeline line */}
-            <div className="absolute left-[18px] sm:left-[26px] top-0 bottom-0 w-px bg-gradient-to-b from-tedx-red/30 via-tedx-red/20 to-transparent hidden sm:block" />
+            <div className="absolute start-[18px] sm:start-[26px] top-0 bottom-0 w-px bg-gradient-to-b from-tedx-red/30 via-tedx-red/20 to-transparent hidden sm:block" />
 
             <div className="flex flex-col gap-5">
               {group.sessions.map((session, idx) => {

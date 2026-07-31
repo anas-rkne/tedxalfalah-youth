@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { getSponsors } from "@/lib/data";
 import SponsorsPageClient from "./SponsorsPageClient";
@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SponsorsPage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "page.sponsors" });
   const sponsors = await getSponsors();
   const isArabic = locale === "ar";

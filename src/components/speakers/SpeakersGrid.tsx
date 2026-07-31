@@ -8,6 +8,7 @@ import SpeakerModal from "./SpeakerModal";
 
 interface SpeakersGridProps {
   speakers: Speaker[];
+  bioFallback?: string;
 }
 
 // ثوابت خارج المكون – لا تُعاد إنشاؤها أبداً
@@ -43,7 +44,7 @@ const childVariants: Variants = {
   },
 };
 
-const SpeakersGrid = memo(function SpeakersGrid({ speakers }: SpeakersGridProps) {
+const SpeakersGrid = memo(function SpeakersGrid({ speakers, bioFallback }: SpeakersGridProps) {
   const shouldReduceMotion = useReducedMotion();
   const [activeSpeaker, setActiveSpeaker] = useState<Speaker | null>(null);
 
@@ -68,6 +69,7 @@ const SpeakersGrid = memo(function SpeakersGrid({ speakers }: SpeakersGridProps)
           <SpeakerModal
             speaker={activeSpeaker}
             onClose={() => setActiveSpeaker(null)}
+            bioFallback={bioFallback}
           />
         )}
       </>
@@ -101,6 +103,7 @@ const SpeakersGrid = memo(function SpeakersGrid({ speakers }: SpeakersGridProps)
         <SpeakerModal
           speaker={activeSpeaker}
           onClose={() => setActiveSpeaker(null)}
+          bioFallback={bioFallback}
         />
       )}
     </>

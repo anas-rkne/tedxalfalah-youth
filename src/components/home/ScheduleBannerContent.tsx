@@ -19,8 +19,8 @@ const SectionBadge = memo(function SectionBadge({
   children: React.ReactNode;
 }) {
   return (
-    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#e62b1e]/10 border border-[#e62b1e]/20 text-[#e62b1e] text-xs font-bold uppercase tracking-[0.2em]">
-      <span className="w-1.5 h-1.5 rounded-full bg-[#e62b1e] animate-pulse" />
+    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tedx-red/10 border border-tedx-red/20 text-tedx-red text-xs font-bold uppercase tracking-[0.2em]">
+      <span className="w-1.5 h-1.5 rounded-full bg-tedx-red animate-pulse" />
       {children}
     </span>
   );
@@ -80,10 +80,10 @@ export default function ScheduleBannerContent({
         <div className="absolute bottom-[25%] left-[10%] w-[150px] h-[150px] rounded-full bg-tedx-red/5 blur-[60px] pointer-events-none" />
 
         {/* 5. مربعات حمراء صغيرة */}
-        <div className="absolute top-[20%] right-[25%] w-3 h-3 bg-[#e62b1e]/15 rotate-45 pointer-events-none" />
-        <div className="absolute bottom-[30%] left-[20%] w-2 h-2 bg-[#e62b1e]/20 rotate-12 pointer-events-none" />
-        <div className="absolute top-[50%] left-[8%] w-4 h-4 bg-[#e62b1e]/10 rotate-[25deg] pointer-events-none" />
-        <div className="absolute bottom-[40%] right-[12%] w-3 h-3 bg-[#e62b1e]/12 rotate-[-10deg] pointer-events-none" />
+        <div className="absolute top-[20%] right-[25%] w-3 h-3 bg-tedx-red/15 rotate-45 pointer-events-none" />
+        <div className="absolute bottom-[30%] left-[20%] w-2 h-2 bg-tedx-red/20 rotate-12 pointer-events-none" />
+        <div className="absolute top-[50%] left-[8%] w-4 h-4 bg-tedx-red/10 rotate-[25deg] pointer-events-none" />
+        <div className="absolute bottom-[40%] right-[12%] w-3 h-3 bg-tedx-red/12 rotate-[-10deg] pointer-events-none" />
 
         {/* 6. خطوط مائلة حمراء خفيفة */}
         <div
@@ -102,10 +102,10 @@ export default function ScheduleBannerContent({
         />
 
         {/* 7. خط علوي TEDx */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/30 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tedx-red/30 to-transparent" />
 
         {/* 8. خط سفلي TEDx */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/20 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-tedx-red/20 to-transparent" />
 
         {/* ═══════════════════════════════════════════
            المحتوى — في المنتصف فقط
@@ -143,7 +143,7 @@ export default function ScheduleBannerContent({
           >
             <Link
               href="/schedule"
-              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-[#e62b1e] text-white font-bold rounded-2xl
+              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-tedx-red text-white font-bold rounded-2xl
                 overflow-hidden transition-all duration-300
                 shadow-[0_8px_32px_-8px_rgba(230,43,30,0.5)]
                 hover:shadow-[0_16px_48px_-12px_rgba(230,43,30,0.6)]

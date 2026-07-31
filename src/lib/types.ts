@@ -1,11 +1,10 @@
 export interface Speaker {
   id: string;
   name: string;
-  imageUrl: string;
+  imageUrl: string | null;
   shortDescriptor: string;
   talkTitle: string;
   themeConnection: string;
-  
   bio: string;
   socialLinks: {
     instagram?: string;
@@ -14,8 +13,6 @@ export interface Speaker {
   };
   wave: number;
   isPublished: boolean;
-
-  
 }
 
 export type TeamDepartment =
@@ -29,20 +26,22 @@ export type TeamDepartment =
 export interface TeamMember {
   id: string;
   name: string;
-  imageUrl: string;
+  imageUrl: string | null;
   role: string;
   department: TeamDepartment;
   quote?: string;
   linkedinUrl?: string;
+  isPublished?: boolean;
 }
 
 export interface Activation {
   id: string;
   name: string;
-  imageUrl: string;
+  imageUrl: string | null;
   description: string;
   locationInVenue: string;
   order: number;
+  isPublished?: boolean;
 }
 
 export type SessionType = "talk" | "break" | "activation" | "registration";
@@ -51,18 +50,30 @@ export interface Session {
   id: string;
   title: string;
   type: SessionType;
-  startTime: string; // "09:00"
-  endTime: string; // "09:20"
-  speakerName?: string; // اسم المتحدث إن كانت الجلسة talk
-  speakerId?: string; // لربطها اختيارياً بصفحة المتحدث
+  startTime: string;
+  endTime: string;
+  speakerName?: string;
+  speakerId?: string;
   location?: string;
   description?: string;
+  isPublished?: boolean;
 }
 
 export interface EventInfo {
   title?: string;
-  date?: string; // "2026-11-15"
+  date?: string;
   venue?: string;
+}
+
+export interface GalleryImage {
+  id: string;
+  src: string | null;
+  alt: string;
+  caption?: string;
+  category: "venue" | "speakers" | "behind";
+  width: number;
+  height: number;
+  isPublished?: boolean;
 }
 
 export type SponsorTier = "Platinum" | "Gold" | "Silver" | "Community" | "Supporter";
@@ -70,7 +81,8 @@ export type SponsorTier = "Platinum" | "Gold" | "Silver" | "Community" | "Suppor
 export interface Sponsor {
   id: string;
   name: string;
-  logoUrl: string;
+  logoUrl: string | null;
   tier: SponsorTier;
   websiteUrl?: string;
+  isPublished?: boolean;
 }

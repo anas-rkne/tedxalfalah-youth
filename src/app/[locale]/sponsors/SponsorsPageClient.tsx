@@ -5,6 +5,8 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { Sponsor } from "@/lib/types";
 import SafeImage from "@/components/ui/SafeImage";
+import Modal from "@/components/ui/Modal";
+import PartnerInquiryForm from "@/components/sponsors/PartnerInquiryForm";
 
 /* ═══════════════════════════════════════════════════════════════
    مكون بطاقة شعار – يدعم العربية والألوان الموحدة
@@ -27,17 +29,17 @@ function SponsorCard({
     Platinum: {
       size: "col-span-2 row-span-2",
       height: "h-48 sm:h-56",
-      badgeClass: "bg-[#e62b1e]/10 text-[#e62b1e] border-[#e62b1e]/20",
+      badgeClass: "bg-tedx-red/10 text-tedx-red border-tedx-red/20",
     },
     Gold: {
       size: "col-span-1 row-span-1",
       height: "h-32 sm:h-36",
-      badgeClass: "bg-[#e62b1e]/5 text-[#e62b1e] border-[#e62b1e]/10",
+      badgeClass: "bg-tedx-red/5 text-tedx-red border-tedx-red/10",
     },
     Silver: {
       size: "col-span-1 row-span-1",
       height: "h-32 sm:h-36",
-      badgeClass: "bg-[#e62b1e]/5 text-[#e62b1e]/80 border-[#e62b1e]/10",
+      badgeClass: "bg-tedx-red/5 text-tedx-red/80 border-tedx-red/10",
     },
     Supporter: {
       size: "col-span-1 row-span-1",
@@ -71,7 +73,7 @@ function SponsorCard({
             flex flex-col items-center justify-center gap-3
             transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
             overflow-hidden
-            hover:border-[#e62b1e]/20 
+            hover:border-tedx-red/20 
             hover:shadow-[0_12px_40px_-12px_rgba(230,43,30,0.15)]
             hover:-translate-y-1`}
         >
@@ -150,6 +152,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
   const locale = useLocale();
   const isArabic = locale === "ar";
 
+  const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -207,11 +210,11 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="inline-flex items-center gap-2.5 text-[11px] font-semibold tracking-[0.12em] uppercase text-[#e62b1e] mb-6 px-5 py-2.5 bg-red-50/80 border border-red-100/60 rounded-full backdrop-blur-sm"
+            className="inline-flex items-center gap-2.5 text-[11px] font-semibold tracking-[0.12em] uppercase text-tedx-red mb-6 px-5 py-2.5 bg-red-50/80 border border-red-100/60 rounded-full backdrop-blur-sm"
           >
             <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-40" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#e62b1e]" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tedx-red opacity-40" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-tedx-red" />
             </span>
             {t("hero.badge")}
           </motion.div>
@@ -224,7 +227,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
           >
             {t("hero.titleLine1")}{" "}
             <span className="relative inline-block">
-              <span className="text-[#e62b1e]">{t("hero.titleHighlight")}</span>
+              <span className="text-tedx-red">{t("hero.titleHighlight")}</span>
               <span
                 className="absolute -bottom-2 left-0 right-0 h-[3px] rounded-full"
                 style={{ background: "linear-gradient(90deg, transparent, rgba(230,43,30,0.4), transparent)" }}
@@ -249,7 +252,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
-                <span className="text-[11px] font-semibold tracking-[0.12em] uppercase text-[#e62b1e] px-4 py-1.5 bg-[#e62b1e]/10 border border-[#e62b1e]/20 rounded-full">
+                <span className="text-[11px] font-semibold tracking-[0.12em] uppercase text-tedx-red px-4 py-1.5 bg-tedx-red/10 border border-tedx-red/20 rounded-full">
                   {t("tiers.platinum.name")}
                 </span>
                 <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
@@ -273,7 +276,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
-                <span className="text-[11px] font-semibold tracking-[0.12em] uppercase text-[#e62b1e] px-4 py-1.5 bg-[#e62b1e]/5 border border-[#e62b1e]/10 rounded-full">
+                <span className="text-[11px] font-semibold tracking-[0.12em] uppercase text-tedx-red px-4 py-1.5 bg-tedx-red/5 border border-tedx-red/10 rounded-full">
                   {t("tiers.gold.name")}
                 </span>
                 <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
@@ -297,7 +300,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
-                <span className="text-[11px] font-semibold tracking-[0.12em] uppercase text-[#e62b1e]/80 px-4 py-1.5 bg-[#e62b1e]/5 border border-[#e62b1e]/10 rounded-full">
+                <span className="text-[11px] font-semibold tracking-[0.12em] uppercase text-tedx-red/80 px-4 py-1.5 bg-tedx-red/5 border border-tedx-red/10 rounded-full">
                   {t("tiers.silver.name")}
                 </span>
                 <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent)" }} />
@@ -360,7 +363,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
       backgroundSize: "32px 32px",
     }}
   />
-  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[#e62b1e]/[0.06] rounded-full blur-[100px] pointer-events-none z-0" />
+  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-tedx-red/[0.06] rounded-full blur-[100px] pointer-events-none z-0" />
 
   <div className="max-w-5xl mx-auto relative z-10">
     
@@ -371,13 +374,13 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#e62b1e]/10 border border-[#e62b1e]/20 mb-5"
+        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-tedx-red/10 border border-tedx-red/20 mb-5"
       >
         <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e62b1e] opacity-60" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e62b1e]" />
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tedx-red opacity-60" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-tedx-red" />
         </span>
-        <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#e62b1e]">
+        <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-tedx-red">
           {isArabic ? "الأرقام تتحدث" : "By The Numbers"}
         </span>
       </motion.div>
@@ -423,7 +426,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
           className="group relative text-center px-6 py-8 md:py-10"
         >
           {/* أيقونة */}
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-[#e62b1e] mb-5 group-hover:bg-[#e62b1e] group-hover:text-white group-hover:border-[#e62b1e] transition-all duration-500">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-tedx-red mb-5 group-hover:bg-tedx-red group-hover:text-white group-hover:border-tedx-red transition-all duration-500">
             {stat.icon}
           </div>
 
@@ -433,7 +436,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
               {stat.num}
             </span>
             {/* توهج خلفي للرقم */}
-            <div className="absolute inset-0 -z-10 blur-3xl bg-[#e62b1e]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 -z-10 blur-3xl bg-tedx-red/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </div>
 
           {/* التسمية */}
@@ -447,7 +450,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-5 h-[2px] w-10 mx-auto bg-gradient-to-r from-transparent via-[#e62b1e]/50 to-transparent origin-center"
+            className="mt-5 h-[2px] w-10 mx-auto bg-gradient-to-r from-transparent via-tedx-red/50 to-transparent origin-center"
           />
         </motion.div>
       ))}
@@ -459,7 +462,7 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
       whileInView={{ scaleX: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 1.2, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="mt-12 md:mt-16 h-px bg-gradient-to-r from-transparent via-[#e62b1e]/30 to-transparent origin-center"
+      className="mt-12 md:mt-16 h-px bg-gradient-to-r from-transparent via-tedx-red/30 to-transparent origin-center"
     />
   </div>
 </motion.div>
@@ -477,13 +480,13 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
       className="p-10 md:p-14 rounded-[32px] bg-gradient-to-br from-zinc-900 to-zinc-800 text-white relative overflow-hidden text-center"
     >
       {/* توهجات حمراء خلفية */}
-      <div className="absolute top-0 right-0 w-72 h-72 bg-[#e62b1e]/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#e62b1e]/5 rounded-full blur-2xl" />
+      <div className="absolute top-0 right-0 w-72 h-72 bg-tedx-red/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-tedx-red/5 rounded-full blur-2xl" />
 
       <div className="relative z-10">
         <h2 className={`text-3xl sm:text-4xl font-bold mb-4 text-white ${isArabic ? "font-arabic" : ""}`}>
           {t("cta.heading")}{" "}
-          <span className="text-[#e62b1e]">{t("cta.headingHighlight")}</span>
+          <span className="text-tedx-red">{t("cta.headingHighlight")}</span>
         </h2>
 
         <p className={`text-zinc-400 max-w-lg mx-auto mb-8 leading-relaxed text-lg ${isArabic ? "font-arabic" : ""}`}>
@@ -491,10 +494,10 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
         </p>
 
         <div className="flex justify-center">
-          <a
-            href={`mailto:${t("cta.email")}`}
-            className="group inline-flex items-center gap-3 px-10 py-4 bg-[#e62b1e] text-white font-semibold rounded-full 
-              hover:bg-red-700 transition-all duration-300 
+          <button
+            onClick={() => setIsPartnerModalOpen(true)}
+            className="group inline-flex items-center gap-3 px-10 py-4 bg-tedx-red text-white font-semibold rounded-full 
+              hover:bg-red-700 transition-all duration-300 cursor-pointer
               shadow-[0_8px_30px_-12px_rgba(230,43,30,0.4)] hover:shadow-[0_12px_40px_-12px_rgba(230,43,30,0.6)]
               hover:scale-[1.02] active:scale-[0.98]"
           >
@@ -511,12 +514,20 @@ export default function SponsorsPageClient({ sponsors }: SponsorsPageClientProps
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
             </svg>
-          </a>
+          </button>
         </div>
       </div>
     </motion.div>
   </div>
 </section>
+      {/* Modal الشراكة */}
+      <Modal
+        isOpen={isPartnerModalOpen}
+        onClose={() => setIsPartnerModalOpen(false)}
+        title={t("cta.heading") + " " + t("cta.headingHighlight")}
+      >
+        <PartnerInquiryForm />
+      </Modal>
     </div>
   );
 }

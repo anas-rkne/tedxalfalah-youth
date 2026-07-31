@@ -45,7 +45,7 @@ const PaperPlaneCursor: FC<{ hovering: boolean }> = ({ hovering }) => {
             animate={{ scale: 1.5, opacity: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6, repeat: Infinity, ease: "easeOut" }}
-            className="absolute inset-0 rounded-full bg-[#e62b1e]/20"
+            className="absolute inset-0 rounded-full bg-tedx-red/20"
           />
         )}
       </AnimatePresence>
@@ -75,7 +75,7 @@ const PaperPlaneCursor: FC<{ hovering: boolean }> = ({ hovering }) => {
           opacity: hovering ? 1 : 0,
         }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        className="absolute -bottom-1 -right-1 w-2 h-2 rounded-full bg-[#e62b1e]"
+        className="absolute -bottom-1 -right-1 w-2 h-2 rounded-full bg-tedx-red"
       />
     </motion.div>
   )
@@ -94,7 +94,7 @@ const PulseDotCursor: FC<{ hovering: boolean }> = ({ hovering }) => {
             animate={{ scale: 2.5, opacity: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, repeat: Infinity, ease: "easeOut" }}
-            className="absolute inset-0 rounded-full bg-[#e62b1e]/30"
+            className="absolute inset-0 rounded-full bg-tedx-red/30"
           />
         )}
       </AnimatePresence>
@@ -104,7 +104,7 @@ const PulseDotCursor: FC<{ hovering: boolean }> = ({ hovering }) => {
           height: hovering ? 16 : 8,
         }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        className="rounded-full bg-[#e62b1e]"
+        className="rounded-full bg-tedx-red"
       />
       <motion.div
         animate={{
@@ -130,7 +130,7 @@ const BlendCircleCursor: FC<{ hovering: boolean }> = ({ hovering }) => {
           height: hovering ? 48 : 24,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="rounded-full bg-white border-2 border-[#e62b1e]"
+        className="rounded-full bg-white border-2 border-tedx-red"
         style={{ mixBlendMode: "difference" }}
       />
       <motion.div
@@ -139,7 +139,7 @@ const BlendCircleCursor: FC<{ hovering: boolean }> = ({ hovering }) => {
           opacity: hovering ? 0.5 : 1,
         }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        className="absolute w-1.5 h-1.5 rounded-full bg-[#e62b1e]"
+        className="absolute w-1.5 h-1.5 rounded-full bg-tedx-red"
       />
     </div>
   )
@@ -187,7 +187,7 @@ const BubbleTrailCursor: FC<{
             animate={{ scale: 0, opacity: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
-            className="absolute rounded-full bg-[#e62b1e]/20 pointer-events-none"
+            className="absolute rounded-full bg-tedx-red/20 pointer-events-none"
             style={{
               width: bubble.size,
               height: bubble.size,
@@ -206,7 +206,7 @@ const BubbleTrailCursor: FC<{
             : "0 0 10px rgba(230,43,30,0.2)",
         }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        className="rounded-full bg-[#e62b1e]"
+        className="rounded-full bg-tedx-red"
       />
     </>
   )
@@ -426,7 +426,7 @@ export function SmoothCursor({
         translateY: "-50%",
         rotate: rotation,
         scale: scale,
-        zIndex: 100,
+        zIndex: 9999,
         pointerEvents: "none",
         willChange: "transform",
         opacity: isVisible ? 1 : 0,

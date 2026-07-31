@@ -22,9 +22,10 @@ export default function HeroTypewriterTitle({ title }: HeroTypewriterTitleProps)
   const content = (
     <h1 className={`${headingClass} flex flex-wrap lg:flex-nowrap justify-center items-center gap-x-2 md:gap-x-3 w-full`}>
       {words.map((word, index) => {
-        const isNow = word.replace(/[.,!?;]$/, '') === "Now";
+        const highlightKey = locale === "ar" ? "الآن" : "Now";
+        const isHighlight = word.replace(/[.,!?;]$/, '') === highlightKey;
         return (
-          <span key={index} className={`inline-block ${isNow ? "text-[#e62b1e]" : ""}`}>
+          <span key={index} className={`inline-block ${isHighlight ? "text-tedx-red" : ""}`}>
             {word}
           </span>
         );

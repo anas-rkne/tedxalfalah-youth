@@ -1,12 +1,13 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { Check, ArrowLeft, Home, Calendar, Mail, Users } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 
 interface ThankYouContentProps {
   headerSubtitle: string;
+  brandLabel: string;
   stepper1: string;
   stepper2: string;
   stepper3: string;
@@ -93,6 +94,7 @@ function Stepper({ s1, s2, s3 }: { s1: string; s2: string; s3: string }) {
 
 export default function ThankYouContent({
   headerSubtitle,
+  brandLabel,
   stepper1,
   stepper2,
   stepper3,
@@ -130,9 +132,9 @@ export default function ThankYouContent({
       {/* Header */}
       <header className="h-[100px] px-6 lg:px-[60px] flex items-center justify-between border-b border-white/10 z-10 shrink-0">
         <div className="text-[28px] font-black tracking-[-1px]" dir="ltr">
-          TED<span className="text-tedx-red">x</span> Event
+          TED<span className="text-tedx-red">x</span> {brandLabel}
         </div>
-        <div className="text-[14px] opacity-60 text-right">
+        <div className="text-[14px] opacity-60 text-end">
           {headerSubtitle}
         </div>
       </header>
@@ -177,7 +179,7 @@ export default function ThankYouContent({
               href={ctaHref}
               className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-tedx-red text-white font-bold text-base border border-tedx-red transition-all duration-300 hover:bg-tedx-red/90 hover:border-tedx-red/90 focus:outline-none focus:ring-2 focus:ring-tedx-red focus:ring-offset-2"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className={`w-5 h-5 ${isRTL ? "rotate-180" : ""}`} />
               {cta}
             </Link>
             <Link

@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       const { Resend } = await import("resend");
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
-        from: "TEDxAlFalah Youth <partner@tedxalfalahyouth.com>",
+        from: "TEDxAlFalah Youth Partnerships <marhaba@tedxalfalahyouth.com>",
         to: "partner@tedxalfalahyouth.com",
         replyTo: email,
         subject: `New partnership inquiry from ${escapeHtml(organization)}`,
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to send" }, { status: 500 });
     }
   } else {
-    console.log("[DEV] Partner inquiry received (RESEND_API_KEY not set) from organization:", organization);
+    if (process.env.NODE_ENV === "development") console.log("[DEV] Partner inquiry received (RESEND_API_KEY not set) from organization:", organization);
   }
 
   return NextResponse.json({ success: true });

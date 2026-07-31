@@ -16,6 +16,7 @@ interface SchedulePageClientProps {
     afternoon: string;
     evening: string;
   };
+  emptyLabel?: string;
 }
 
 const SchedulePageClient = memo(function SchedulePageClient({
@@ -23,6 +24,7 @@ const SchedulePageClient = memo(function SchedulePageClient({
   typeLabels,
   filterLabels,
   periodLabels,
+  emptyLabel,
 }: SchedulePageClientProps) {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
 
@@ -39,7 +41,7 @@ const SchedulePageClient = memo(function SchedulePageClient({
       {sessions.length === 0 ? (
         <div className="text-center py-20">
           <div className="text-6xl mb-6 opacity-20">📅</div>
-          <p className="text-muted-foreground text-lg font-light">Full schedule coming soon.</p>
+          <p className="text-muted-foreground text-lg font-light">{emptyLabel}</p>
         </div>
       ) : (
         <>

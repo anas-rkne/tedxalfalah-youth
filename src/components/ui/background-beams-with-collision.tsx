@@ -10,7 +10,7 @@ const LeftCornerIcon = () => (
     fill="none"
     stroke="currentColor"
     strokeWidth="1.5"
-    className="w-64 h-64 text-[#e62b1e]/[0.05] absolute -left-8 -top-8 pointer-events-none"
+    className="w-64 h-64 text-tedx-red/[0.05] absolute -left-8 -top-8 pointer-events-none"
     aria-hidden="true"
   >
     <path d="M20 12V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6" />
@@ -27,7 +27,7 @@ const RightCornerIcon = () => (
     fill="none"
     stroke="currentColor"
     strokeWidth="1.5"
-    className="w-64 h-64 text-[#e62b1e]/[0.05] absolute -right-8 -top-8 pointer-events-none"
+    className="w-64 h-64 text-tedx-red/[0.05] absolute -right-8 -top-8 pointer-events-none"
     aria-hidden="true"
   >
     <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />

@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import ActivationCard from "@/components/activations/ActivationCard";
 import ScrollReveal from "@/components/ui/ScrollReveal";
@@ -20,12 +20,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ActivationsPage({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const activations = await getActivations();
   const t = await getTranslations({ locale, namespace: "page.activations" });
   const isArabic = locale === "ar";
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-[#e62b1e] selection:text-white pb-32 overflow-hidden relative">
+    <div className="min-h-screen bg-background text-foreground selection:bg-tedx-red selection:text-white pb-32 overflow-hidden relative">
       {/* ═══════════ HERO (مشترك) ═══════════ */}
       <DarkHeroSection
         badgeLabel={t("hero.badge")}
@@ -68,6 +69,7 @@ export default async function ActivationsPage({ params }: Props) {
                   key={activation.id}
                   activation={activation}
                   index={index}
+                  descriptionFallback={t("descriptionFallback")}
                 />
               ))}
             </div>
