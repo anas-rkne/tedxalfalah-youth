@@ -88,34 +88,10 @@ export default async function ApplyPage({ params }: Props) {
               </div>
             </FadeInView>
           </div>
-
-          <FadeInView delay={0.3}>
-            <div className="text-center max-w-lg mx-auto mt-10">
-              <p className="text-[15px] text-muted-foreground leading-[1.8] mb-3">{t("whoCanApply.connector")}</p>
-              <p className="font-bold text-xl text-foreground tracking-[-0.01em]">{t("whoCanApply.everyoneWelcome")}</p>
-            </div>
-          </FadeInView>
         </div>
       </section>
 
-      {/* 3. Review Process */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-background">
-        <div className="max-w-3xl mx-auto text-center">
-          <FadeInView>
-            <SectionHeader label="Review Process" title={t("reviewProcess.title")} />
-            <p className="text-[15px] text-muted-foreground leading-[1.8] max-w-xl mx-auto">{t("reviewProcess.body")}</p>
-            <div className="grid grid-cols-3 gap-4 mt-10">
-              {t.raw("reviewProcess.items").map((item: { label: string; desc: string }, i: number) => (
-                <div key={i} className="p-5 rounded-2xl bg-card border border-border hover:border-tedx-red/30 hover:shadow-[0_4px_20px_-8px_rgba(0,0,0,0.06)] transition-all duration-300">
-                  <div className="text-lg text-tedx-red mb-3">{i === 0 ? "✦" : i === 1 ? "◆" : "✦"}</div>
-                  <div className="text-sm font-bold text-foreground">{item.label}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
-                </div>
-              ))}
-            </div>
-          </FadeInView>
-        </div>
-      </section>
+
 
       {/* 4. Application Form */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30">
