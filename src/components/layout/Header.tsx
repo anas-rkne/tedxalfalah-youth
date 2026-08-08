@@ -15,16 +15,8 @@ import {
   Home,
   Users,
   Users2,
-  MapPin,
-  Mic,
-  CalendarDays,
   Ticket,
   Handshake,
-  Award,
-  Mail,
-  FileText,
-  Image,
-  ClipboardList,
 } from "lucide-react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
@@ -54,16 +46,8 @@ const ALL_LINKS = useMemo(() => [
   { label: t("home"), href: "/", icon: Home },
   { label: t("speakers"), href: "/speakers", icon: Users },
   { label: t("team"), href: "/team", icon: Users2 },
-  { label: t("venue"), href: "/venue", icon: MapPin },
-  { label: t("activations"), href: "/activations", icon: Mic },
-  { label: t("schedule"), href: "/schedule", icon: CalendarDays },
   { label: t("apply"), href: "/apply", icon: Handshake },
-  { label: t("sponsors"), href: "/sponsors", icon: Award },
   { label: t("tickets"), href: "/tickets", icon: Ticket },
-  { label: t("contact"), href: "/contact", icon: Mail },
-  { label: t("gallery"), href: "/gallery", icon: Image },
-  { label: t("prepare"), href: "/prepare", icon: ClipboardList },
-  { label: t("terms"), href: "/terms", icon: FileText },
 ], [t]);
   const isArabic = isRTL; // isRTL يكون true عندما تكون اللغة عربية
 
@@ -151,15 +135,17 @@ const moreLinks = ALL_LINKS.slice(mainLinksCount);
             />
           ))}
 
-          <MoreDropdown
-            moreLinks={moreLinks}
-            isRTL={isRTL}
-            isMoreOpen={isMoreOpen}
-            setIsMoreOpen={setIsMoreOpen}
-            shouldReduceMotion={shouldReduceMotion}
-            pathname={pathname}
-            tCommon={{ more: tCommon("more") }}
-          />
+          {moreLinks.length > 0 && (
+            <MoreDropdown
+              moreLinks={moreLinks}
+              isRTL={isRTL}
+              isMoreOpen={isMoreOpen}
+              setIsMoreOpen={setIsMoreOpen}
+              shouldReduceMotion={shouldReduceMotion}
+              pathname={pathname}
+              tCommon={{ more: tCommon("more") }}
+            />
+          )}
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">

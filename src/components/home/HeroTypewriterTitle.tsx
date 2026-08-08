@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLocale } from "next-intl";
 
@@ -14,24 +13,9 @@ export default function HeroTypewriterTitle({ title }: HeroTypewriterTitleProps)
 
   const fontClass = locale === "ar" ? "font-arabic" : "font-sans";
 
-  // تحسين العرض عبر استخدام whitespace-nowrap مع أحجام خطوط متوازنة
-  const headingClass = `text-5xl sm:text-6xl md:text-7xl lg:text-[4.5rem] xl:text-[5.5rem] font-bold tracking-tight leading-[1.1] whitespace-nowrap lg:whitespace-normal ${fontClass} text-black dark:text-white`;
+  const headingClass = `w-full max-w-5xl mx-auto text-center text-4xl sm:text-5xl md:text-6xl lg:text-[4rem] xl:text-[4.5rem] font-bold tracking-tight leading-[1.1] text-balance ${fontClass} text-black dark:text-white`;
 
-  const words = useMemo(() => title.split(" "), [title]);
-
-  const content = (
-    <h1 className={`${headingClass} flex flex-wrap lg:flex-nowrap justify-center items-center gap-x-2 md:gap-x-3 w-full`}>
-      {words.map((word, index) => {
-        const highlightKey = locale === "ar" ? "الآن" : "Now";
-        const isHighlight = word.replace(/[.,!?;]$/, '') === highlightKey;
-        return (
-          <span key={index} className={`inline-block ${isHighlight ? "text-tedx-red" : ""}`}>
-            {word}
-          </span>
-        );
-      })}
-    </h1>
-  );
+  const content = <h1 className={headingClass}>{title}</h1>;
 
   if (shouldReduceMotion) {
     return content;

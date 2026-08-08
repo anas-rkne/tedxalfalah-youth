@@ -11,15 +11,10 @@ const ROUTES = [
   "/activations",
   "/schedule",
   "/apply",
-  "/sponsors",
   "/tickets",
   "/tickets/success",
   "/tickets/cancel",
-  "/gallery",
   "/faq",
-  "/terms",
-  "/prepare",
-  "/contact",
   "/thank-you",
 ];
 

@@ -4,8 +4,10 @@ import FadeInView from "@/components/ui/FadeInView";
 import ApplicationForm from "@/components/apply/ApplicationForm";
 import ApplyFAQ from "@/components/apply/ApplyFAQ";
 import ApplyHero from "@/components/apply/ApplyHero";
+import ApplyTimeline from "@/components/apply/ApplyTimeline";
 import SectionBadge from "@/components/ui/SectionBadge";
 import SectionHeader from "@/components/shared/SectionHeader";
+import { APPLICATION_DEADLINE } from "@/lib/constants";
 import { Metadata } from "next";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -18,8 +20,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: t("meta.description"),
   };
 }
-
-const APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00";
 
 export default async function ApplyPage({ params }: Props) {
   const { locale } = await params;
@@ -159,7 +159,25 @@ export default async function ApplyPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 6. FAQ */}
+      {/* 6. Journey Stages */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-background">
+        <div className="max-w-5xl mx-auto">
+          <ApplyTimeline
+            label={t("applyTimeline.label")}
+            title={t("applyTimeline.title")}
+            subtitle={t("applyTimeline.subtitle")}
+            videoLabel={t("applyTimeline.videoLabel")}
+            steps={[
+              { title: t("applyTimeline.step1.title"), description: t("applyTimeline.step1.description") },
+              { title: t("applyTimeline.step2.title"), description: t("applyTimeline.step2.description") },
+              { title: t("applyTimeline.step3.title"), description: t("applyTimeline.step3.description") },
+              { title: t("applyTimeline.step4.title"), description: t("applyTimeline.step4.description") },
+            ]}
+          />
+        </div>
+      </section>
+
+      {/* 7. FAQ */}
       <section id="faq" className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30">
         <div className="max-w-3xl mx-auto">
           <FadeInView>

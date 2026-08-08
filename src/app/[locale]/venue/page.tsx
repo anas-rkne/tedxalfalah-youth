@@ -1,3 +1,4 @@
+// هذه الصفحة مخفية حالياً بناءً على طلب العميل. يمكن إعادتها لاحقاً.
 // src/app/[locale]/venue/page.tsx
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
@@ -45,7 +46,7 @@ export default async function VenuePage({ params }: Props) {
             <SectionBadge>{t("narrativeLabel")}</SectionBadge>
           </div>
           <h1 className="heading-h1 tracking-[-0.03em] heading-margin">{t("heroTitle")}</h1>
-          <div className="flex justify-center"><div className="h-1 w-20 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" /></div>
+          <div className="flex justify-center"><div className="h-1 w-20 bg-tedx-red rounded-full" /></div>
           <p dir={isArabic ? "rtl" : "ltr"} className="text-center text-muted-foreground max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto mt-6 text-lg md:text-xl leading-relaxed">
             {t("narrative")}
           </p>

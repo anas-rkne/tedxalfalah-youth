@@ -1,14 +1,18 @@
 "use client";
 
 import { memo, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
-import { TedxGlobe } from "@/components/ui/tedx-globe";
-import { Users, Lightbulb, Globe } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
-import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 import SectionBadge from "@/components/ui/SectionBadge";
 import FadeUp from "@/components/shared/FadeUp";
-import DarkCTASection from "@/components/shared/DarkCTASection";
+
+// الخريطة التفاعلية تُحمَّل من جهة العميل فقط (ssr: false) لأن Leaflet يعتمد على واجهة المتصفح (window)
+const LeafletMap = dynamic(
+  () => import("@/components/ui/LeafletMap").then((mod) => mod.default),
+  { ssr: false }
+);
 
 
 interface AboutContentProps {
@@ -16,6 +20,8 @@ interface AboutContentProps {
   body: string;
   licenseNote: string;
   badgeLabel: string;
+  mapAlt: string;
+  venueName?: string | null;
   valuesLabels: {
     platform: string;
     community: string;
@@ -59,31 +65,6 @@ const AnimatedWord = memo(function AnimatedWord({
     >
       {word}
     </motion.span>
-  );
-});
-
-const MiniValue = memo(function MiniValue({
-  icon,
-  text,
-  delay,
-}: {
-  icon: React.ReactNode;
-  text: string;
-  delay: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay }}
-      className="flex items-center gap-2 px-3 py-2 rounded-full bg-background border border-border shadow-sm"
-    >
-      <div className="w-6 h-6 rounded-md bg-tedx-red/10 flex items-center justify-center text-tedx-red">
-        {icon}
-      </div>
-      <span className="text-xs font-semibold text-muted-foreground">{text}</span>
-    </motion.div>
   );
 });
 
@@ -142,6 +123,8 @@ export default function AboutContent({
   body,
   licenseNote,
   badgeLabel,
+  mapAlt,
+  venueName,
   valuesLabels,
   ctaHeading,
   ctaDescription,
@@ -193,32 +176,16 @@ export default function AboutContent({
         </motion.div>
       </div>
 
-      {/* ─── CONTENT ─── */}
+{/* ─── CONTENT ─── */}
       <div className="container-padding max-w-7xl mx-auto mt-10 md:mt-16">
-        {/* dir="ltr" يثبت ترتيب: الكرة يسار، النص يمين */}
+        {/* dir="ltr" يثبت الترتيب البصري: النص يسار، الخريطة يمين، في كل اللغات */}
         <div
           dir="ltr"
           className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20"
         >
-          {/* الكرة الأرضية (ثابتة يسار) */}
-          <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 40 : -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative w-full max-w-md lg:max-w-lg flex-shrink-0"
-          >
-            <div className="relative aspect-square rounded-[32px] bg-gradient-to-br from-zinc-50/50 to-zinc-100/50 border border-border overflow-hidden flex items-center justify-center">
-              <TedxGlobe />
-              <div className="absolute top-4 right-4 text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase">
-                TEDx
-              </div>
-            </div>
-          </motion.div>
-
           {/* النص التعريفي (dir="auto" لاستجابة الاتجاه للغة) */}
           <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? -40 : 40 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -232,15 +199,9 @@ export default function AboutContent({
 
               <FormattedParagraph
                 text={body}
-                className="text-lg md:text-xl text-muted-foreground leading-[1.9] font-light"
+                className="text-base md:text-lg text-muted-foreground leading-[1.9] font-light"
                 isRTL={isRTL}
               />
-
-              <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-border">
-                <MiniValue icon={<Globe className="w-3 h-3" />} text={valuesLabels.platform} delay={0.4} />
-                <MiniValue icon={<Users className="w-3 h-3" />} text={valuesLabels.community} delay={0.5} />
-                <MiniValue icon={<Lightbulb className="w-3 h-3" />} text={valuesLabels.ideas} delay={0.6} />
-              </div>
             </div>
 
             <div className="mt-6 p-5 rounded-2xl bg-card border border-border">
@@ -252,17 +213,26 @@ export default function AboutContent({
               </p>
             </div>
           </motion.div>
+
+          {/* خريطة دبي التفاعلية (Leaflet — تحريك وتكبير) على الجانب الأيمن من النص في كل اللغات
+              عبر flex-1 + md:order-last؛ تُمرَّر إحداثيات المكان الافتراضية (متحف المستقبل) واسم المكان من Sanity إن وُجد */}
+          <motion.div
+            initial={shouldReduceMotion ? {} : { opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex-1 md:order-last flex justify-center w-full"
+          >
+            <div className="relative w-full max-w-md lg:max-w-lg" aria-label={mapAlt}>
+              <LeafletMap
+                center={[25.212, 55.282]}
+                zoom={15}
+                venueName={venueName}
+              />
+            </div>
+          </motion.div>
         </div>
       </div>
-
-      {/* ─── CTA ─── */}
-  <DarkCTASection
-  heading={ctaHeading}
-  description={ctaDescription}
-  primaryButton={{ href: "/tickets", label: ticketsLabel }}
-  secondaryButton={{ href: "/apply", label: applyLabel }}
-  className="mt-16 md:mt-24"
-/>
     </section>
   );
 }

@@ -7,12 +7,12 @@ import ScrollSection from "@/components/ui/ScrollSection";
 import Hero from "@/components/home/Hero";
 import About from "@/components/home/About";
 import Theme from "@/components/home/Theme";
-import SpeakersPreview from "@/components/home/SpeakersPreview";
 import Highlights from "@/components/home/Highlights";
+import SpeakersPreview from "@/components/home/SpeakersPreview";
 import ScheduleBanner from "@/components/home/ScheduleBanner";
 import ApplyBanner from "@/components/home/ApplyBanner";
 import SponsorsStrip from "@/components/home/SponsorsStrip";
-import ContactForm from "@/components/home/ContactFormWrapper";
+import ContactBox from "@/components/contact/ContactBoxWrapper";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -47,6 +47,14 @@ export default async function Home({ params }: Props) {
         <Hero locale={locale} />
       </ScrollSection>
 
+      <ScrollSection variant="default" id="sponsors" className="bg-white">
+        <SponsorsStrip locale={locale} />
+      </ScrollSection>
+
+      <ScrollSection variant="default" id="contact" className="bg-white">
+        <ContactBox locale={locale} />
+      </ScrollSection>
+
       <ScrollSection variant="default" id="about" className="bg-white">
         <About locale={locale} />
       </ScrollSection>
@@ -55,12 +63,12 @@ export default async function Home({ params }: Props) {
         <Theme locale={locale} />
       </ScrollSection>
 
-      <ScrollSection variant="stagger" id="speakers" className="bg-white">
-        <SpeakersPreview locale={locale} />
+      <ScrollSection variant="default" id="highlights" className="bg-white">
+        <Highlights locale={locale} />
       </ScrollSection>
 
-      <ScrollSection variant="grid" id="highlights" className="bg-white">
-        <Highlights locale={locale} />
+      <ScrollSection variant="stagger" id="speakers" className="bg-white">
+        <SpeakersPreview locale={locale} />
       </ScrollSection>
 
       <ScrollSection variant="default" id="schedule" className="bg-white">
@@ -70,14 +78,6 @@ export default async function Home({ params }: Props) {
 
       <ScrollSection variant="default" id="apply" className="bg-white">
         <ApplyBanner locale={locale} />
-      </ScrollSection>
-
-      <ScrollSection variant="stagger" id="sponsors" className="bg-white">
-        <SponsorsStrip locale={locale} />
-      </ScrollSection>
-
-      <ScrollSection variant="default" id="contact" className="bg-white">
-        <ContactForm locale={locale} />
       </ScrollSection>
     </>
   );

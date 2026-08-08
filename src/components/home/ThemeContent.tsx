@@ -11,9 +11,7 @@ import {
 import { Users, Ticket, Calendar } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import SectionBadge from "@/components/ui/SectionBadge";
-import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 import SafeImage from "@/components/ui/SafeImage";
-import DarkCTASection from "@/components/shared/DarkCTASection";
 
 
 interface ThemeContentProps {
@@ -23,18 +21,6 @@ interface ThemeContentProps {
   statSpeakersLabel: string;
   statSeatsLabel: string;
   statDayLabel: string;
-  beliefsHeading: string;
-  valuesHeading: string;
-  value1Title: string;
-  value1Desc: string;
-  value2Title: string;
-  value2Desc: string;
-  value3Title: string;
-  value3Desc: string;
-  ctaHeading: string;
-  ctaDescription: string;
-  applyLabel: string;
-  ticketsLabel: string;
   leftImageSrc?: string;
   rightImageSrc?: string;
 }
@@ -102,37 +88,7 @@ const StatItem = memo(function StatItem({
   );
 });
 
-const ValueCard = memo(function ValueCard({
-  number,
-  title,
-  description,
-  delay,
-}: {
-  number: string;
-  title: string;
-  description: string;
-  delay: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay }}
-      className="group relative p-6 rounded-2xl bg-card border border-border 
-        hover:border-tedx-red/20 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)]
-        transition-all duration-500"
-    >
-      <div className="text-4xl font-bold text-tedx-red/10 group-hover:text-tedx-red/20 transition-colors duration-500 mb-3">
-        {number}
-      </div>
-      <h3 className="text-sm font-bold text-foreground mb-2">{title}</h3>
-      <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
-    </motion.div>
-  );
-});
-
-/* ═══════════════════════════════════════════
+/* ═════════════════════════════════════════
    صورة جانبية – SafeImage + اتجاه ثابت
    ═══════════════════════════════════════════ */
 const ThemeSideImage = memo(function ThemeSideImage({
@@ -250,18 +206,6 @@ export default function ThemeContent({
   statSpeakersLabel,
   statSeatsLabel,
   statDayLabel,
-  beliefsHeading,
-  valuesHeading,
-  value1Title,
-  value1Desc,
-  value2Title,
-  value2Desc,
-  value3Title,
-  value3Desc,
-  ctaHeading,
-  ctaDescription,
-  applyLabel,
-  ticketsLabel,
   leftImageSrc,
   rightImageSrc,
 }: ThemeContentProps) {
@@ -391,37 +335,6 @@ export default function ThemeContent({
           )}
         </div>
       </div>
-
-      {/* ═══════════ VALUES SECTION ═══════════ */}
-      <div className="section-padding relative bg-muted/30">
-        <div className="container-padding max-w-6xl mx-auto">
-          <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <span className="text-xs font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-3 block">
-              {beliefsHeading}
-            </span>
-            <h2 className="heading-h2 tracking-[-0.02em]">{valuesHeading}</h2>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <ValueCard number="01" title={value1Title} description={value1Desc} delay={0.1} />
-            <ValueCard number="02" title={value2Title} description={value2Desc} delay={0.2} />
-            <ValueCard number="03" title={value3Title} description={value3Desc} delay={0.3} />
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════════ CTA SECTION (سيُستخرج لاحقاً لتجنب التكرار) ═══════════ */}
-   <DarkCTASection
-  heading={ctaHeading}
-  description={ctaDescription}
-  primaryButton={{ href: "/tickets", label: ticketsLabel }}
-  secondaryButton={{ href: "/apply", label: applyLabel }}
-/>
     </section>
   );
 }

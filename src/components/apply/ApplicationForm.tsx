@@ -7,7 +7,7 @@ import { z } from "zod";
 import { useTranslations, useLocale } from "next-intl";
 import Button from "@/components/ui/Button";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 
 /* ─── القيم الثابتة ─── */
@@ -391,8 +391,7 @@ export default function ApplicationForm() {
         <label className="flex items-start gap-2.5 cursor-pointer">
           <input type="checkbox" {...register("consentToTerms")} className="w-[18px] h-[18px] border-2 border-black/15 rounded-[5px] mt-0.5 flex-shrink-0 accent-tedx-red cursor-pointer" />
           <span className={`text-[13px] text-zinc-600 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
-            {t("agreeToTerms")}{" "}
-            <Link href="/terms" className="text-tedx-red font-semibold hover:underline">{t("termsLink")}</Link>
+            {t("agreeToTerms")}
           </span>
         </label>
         {errors.consentToTerms && (

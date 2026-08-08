@@ -1,53 +1,20 @@
 import { getTranslations } from "next-intl/server";
+import { getSessions } from "@/lib/data";
 import HighlightsContent from "./HighlightsContent";
 
 export default async function Highlights({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "home.highlights" });
-  const tCommon = await getTranslations({ locale, namespace: "common" });
+  const sessions = await getSessions();
+  const isScheduleReady = sessions.length > 0;
 
-  const STATS = [
-    { label: t("statsSpeakers"), targetValue: 12, suffix: "+" },
-    { label: t("statsAttendees"), targetValue: 400, suffix: "+" },
-    { label: t("statsActivations"), targetValue: 5, suffix: "+" },
-  ];
+  if (!isScheduleReady) return null;
 
   return (
     <HighlightsContent
-      // النصوص الرئيسية
+      isScheduleReady={isScheduleReady}
       mainHeading={t("mainHeading")}
       mainSubtitle={t("mainSubtitle")}
-      
-      // نصوص البطاقة الأولى (المكان)
-      venueTitle={t("venueTitle")}
-      venueTeaser={t("venueTeaser")}
-      venueBadgeText={t("venueBadgeText")}
-      venueLinkText={t("venueLinkText")}
-      
-      // نصوص البطاقة الثانية (الفعاليات)
-      activationsTitle={t("activationsTitle")}
-      activationsTeaser={t("activationsTeaser")}
-      activationsBadgeText={t("activationsBadgeText")}
-      activationsLinkText={t("activationsLinkText")}
-      
-      // نصوص بطاقة الإحصائيات
-      statsBadgeText={t("statsBadgeText")}
-      statsTitle={t("statsTitle")}
-      statsDescription={t("statsDescription")}
-      
-      // نصوص بطاقة التاريخ
-      dateBadgeText={t("dateBadgeText")}
-      dateNumber={t("dateNumber")}
-      dateMonthYear={t("dateMonthYear")}
-      dateDescription={t("dateDescription")}
-      
-      // نصوص بطاقة "كن متحدثاً"
-      speakerBadgeText={t("speakerBadgeText")}
-      speakerTitle={t("speakerTitle")}
-      speakerDescription={t("speakerDescription")}
-      speakerCta={tCommon("applyNow")} // استخدام ترجمة شائعة أو إضافة مفتاح جديد
-      
-      // البيانات الإحصائية
-      stats={STATS}
+      agendaButton={t("agendaButton")}
     />
   );
 }

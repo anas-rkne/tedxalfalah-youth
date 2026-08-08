@@ -13,12 +13,7 @@ const PATH_LABELS: Record<string, string> = {
   "/activations": "activations",
   "/schedule": "schedule",
   "/apply": "apply",
-  "/sponsors": "sponsors",
   "/tickets": "tickets",
-  "/contact": "contact",
-  "/gallery": "gallery",
-  "/prepare": "prepare",
-  "/terms": "terms",
   "/faq": "faq",
   "/thank-you": "thank-you",
 };

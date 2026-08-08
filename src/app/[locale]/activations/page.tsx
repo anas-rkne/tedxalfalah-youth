@@ -1,3 +1,4 @@
+// هذه الصفحة مخفية حالياً بناءً على طلب العميل. يمكن إعادتها لاحقاً.
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionContainer from "@/components/ui/SectionContainer";
 import ActivationCard from "@/components/activations/ActivationCard";

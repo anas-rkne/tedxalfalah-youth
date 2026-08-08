@@ -1,23 +1,17 @@
 import { getTranslations } from "next-intl/server";
-import ContactForm from "./ContactForm";
+import ContactBox from "./ContactBox";
 
-export default async function ContactFormWrapper({ locale }: { locale: string }) {
-  const t = await getTranslations({ locale, namespace: "home.contactForm" });
+export default async function ContactBoxWrapper({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "home.contactBox" });
 
   return (
-    <ContactForm
+    <ContactBox
       heading={t("heading")}
       badgeLabel={t("badge")}
       intro={t("intro")}
       emailLabel="marhaba@tedxalfalahyouth.com"
       namePlaceholder={t("namePlaceholder")}
       emailPlaceholder={t("emailPlaceholder")}
-      subjectLabel={t("subjectLabel")}
-      subjectGeneral={t("subjectGeneral")}
-      subjectSpeaking={t("subjectSpeaking")}
-      subjectSponsorship={t("subjectSponsorship")}
-      subjectVolunteering={t("subjectVolunteering")}
-      subjectMedia={t("subjectMedia")}
       messagePlaceholder={t("messagePlaceholder")}
       submitLabel={t("submit")}
       submittingLabel={t("submitting")}
@@ -25,8 +19,6 @@ export default async function ContactFormWrapper({ locale }: { locale: string })
       nameRequired={t("nameRequired")}
       emailInvalid={t("emailInvalid")}
       messageMinLength={t("messageMinLength")}
-      leftImageSrc="/images/طفل 2.svg"
-      rightImageSrc="/images/طفلة 2.svg"
     />
   );
 }

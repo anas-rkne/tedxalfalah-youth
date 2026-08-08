@@ -2,7 +2,9 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { getTeamMembers } from "@/lib/data";
+import type { TeamMember } from "@/lib/types";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
+import SectionBadge from "@/components/ui/SectionBadge";
 import TeamMemberCard from "@/components/team/TeamMemberCard";
 import JsonLd from "@/components/JsonLd";
 import { personSchema } from "@/lib/json-ld";
@@ -44,7 +46,6 @@ export default async function TeamPage({ params }: Props) {
         mainTitle={t("hero.mainTitle")}
         highlightTitle={t("hero.highlightTitle")}
         description={t("meta.description")}
-        discoverLabel={t("hero.discoverLabel")}
         isArabic={isArabic}
       />
 
@@ -52,12 +53,18 @@ export default async function TeamPage({ params }: Props) {
       <section className="section-padding bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h1 className="heading-h1 font-arabic text-center mb-4">
+            <div className="flex justify-center mb-4">
+              <SectionBadge>{t("hero.badge")}</SectionBadge>
+            </div>
+            <h1 className={`heading-h1 tracking-[-0.03em] heading-margin text-center ${isArabic ? "font-arabic" : ""}`}>
               {t("title")}
             </h1>
             <div className="flex justify-center heading-margin">
               <div className="h-1 w-20 bg-tedx-red rounded-full" />
             </div>
+            <p className="text-center text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
+              {t("meta.description")}
+            </p>
           </div>
         </div>
       </section>
@@ -68,8 +75,8 @@ export default async function TeamPage({ params }: Props) {
           {members.length === 0 ? (
             <p className="text-center text-muted-foreground py-16">{t("empty")}</p>
           ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-            {members.map((member: any, index: number) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 xl:gap-8">
+            {members.map((member: TeamMember, index: number) => (
               <TeamMemberCard
                 key={member.id || index}
                 member={member}

@@ -1,14 +1,17 @@
 import { getTranslations } from "next-intl/server";
 import ApplyBannerContent from "./ApplyBannerContent";
+import { APPLICATION_DEADLINE } from "@/lib/constants";
 
 const APPLICATION_DEADLINE_LABEL = process.env.NEXT_PUBLIC_APPLICATION_DEADLINE || "September 30, 2026";
 
 export default async function ApplyBanner({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "home.applyBanner" });
-  const tCommon = await getTranslations({ locale, namespace: "common" });
+  const isClosed = new Date() > new Date(APPLICATION_DEADLINE);
 
   return (
     <ApplyBannerContent
+      isClosed={isClosed}
+      closedCta={t("closedCta")}
       // ✅ نصوص الشارة والعنوان الرئيسي
       badgeLabel={t("badgeLabel")}
       text={t("text", { date: APPLICATION_DEADLINE_LABEL })}

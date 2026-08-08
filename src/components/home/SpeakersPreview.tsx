@@ -6,6 +6,8 @@ export default async function SpeakersPreview({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "home.speakersPreview" });
   const allSpeakers = await getSpeakers();
 
+  if (allSpeakers.length === 0) return null;
+
 const speakers = allSpeakers.slice(0, 4).map((s) => ({
   id: s.id,
   name: s.name,
@@ -17,8 +19,8 @@ const speakers = allSpeakers.slice(0, 4).map((s) => ({
 
   return (
     <SpeakersStage
-      heading={t("heading")}
-      subtitle={t("subtitle")}
+      heading={t("newHeading")}
+      subtitle={t("newSubtitle")}
       badgeLabel={t("badgeLabel")}
       speakers={speakers}
       seeAllLabel={t("seeAll")}

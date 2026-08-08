@@ -9,10 +9,8 @@ const TYPE_PATH_MAP: Record<string, string[]> = {
   speaker: ["/[locale]", "/[locale]/speakers"],
   teamMember: ["/[locale]/team"],
   activation: ["/[locale]/activations"],
-  sponsor: ["/[locale]/sponsors"],
   session: ["/[locale]/schedule"],
   eventInfo: ["/[locale]", "/[locale]/speakers", "/[locale]/schedule"],
-  galleryImage: ["/[locale]/gallery", "/[locale]/venue"],
 };
 
 function verifySecret(request: Request): boolean {

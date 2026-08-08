@@ -8,14 +8,8 @@
       "activations": "Activations",
       "schedule": "Schedule",
       "apply": "Apply",
-      "sponsors": "Sponsors",
       "tickets": "Tickets",
-      "faq": "FAQ",
-         "contact": "Contact",
-      "gallery": "Gallery",
-      "prepare": "Visitor Guide",
-    "terms": "Terms"
-      
+      "faq": "FAQ"
     },
     "applyNow": "Apply Now",
     "more": "More",
@@ -47,7 +41,6 @@
     "quickLinksHeading": "Quick Links",
     "brandHeading": "TEDxAlFalah Youth",
     "licenseNotice": "This independent TEDx event is operated under license from TED.",
-    "termsLink": "Terms and Conditions",
     "copyright": "All rights reserved.",
     "joinUs": "Join Us!",
     "ctaLabel": "Ideas worth spreading",
@@ -69,22 +62,25 @@
     },
     "hero": {
       "eventName": "TEDxAlFalah Youth",
-      "tagline": "Tomorrow, Now.",
-      "subtitle": "Young voices. Real ideas. The future starts earlier than we think.",
-      "date": "November 15, 2026",
-      "venue": "Dubai, United Arab Emirates",
+      "tagline": "Tomorrow is shaped by what we do today.",
+      "date": "December 18, 2026",
+      "venue": "Abu Dhabi, United Arab Emirates",
       "scrollLabel": "Explore",
       "applyLabel": "Apply Now",
       "ticketsLabel": "Get Tickets",
+      "saveSeatLabel": "Save My Seat",
       "badgeLabel": "TEDx Youth Event",
       "eventYear": "2026",
-      "countdownHeadline": "Stick Around the Neighbourhood. Big ideas are coming to the neighbourhood."
+      "intro": "Nearly half of the UAE's population is under the age of 35. In a nation that believes its greatest asset is its people, creating spaces where ideas are shared across generations has never been more important. TEDxAlFalah Youth is one of those spaces.",
+      "saveTheDateLabel": "Save the Date:"
     },
     "about": {
       "heading": "About the Event",
       "body": "TEDxAlFalah Youth is an independently organized TED event, designed especially for young men and women in the United Arab Emirates. This event aims to inspire young minds by providing them with a platform to share their ideas, stories, and passions. We believe that the voice of youth is the voice of the future, and that great ideas start with small steps. This event serves youth of all ages and backgrounds, fostering creativity, critical thinking, and collaboration.",
       "licenseNote": "This independent TEDx event is operated under license from TED.",
       "badge": "About The Event",
+      "mapAlt": "Map of the United Arab Emirates",
+      "mapLabel": "Interactive map of the United Arab Emirates — Abu Dhabi, Dubai, Sharjah and Fujairah",
       "valuesPlatform": "Global Platform",
       "valuesCommunity": "Youth Community",
       "valuesIdeas": "Inspiring Ideas",
@@ -97,49 +93,14 @@
       "badgeLabel": "Our Theme",
       "statSpeakers": "Speakers",
       "statSeats": "Seats",
-      "statDay": "Inspiring Day",
-      "beliefsHeading": "What We Believe",
-      "valuesHeading": "Our TEDx Values",
-      "value1Title": "Ideas Deserve a Stage",
-      "value1Desc": "Every idea, no matter how small, deserves to be heard and shared with the world.",
-      "value2Title": "Youth are the Future",
-      "value2Desc": "We believe in the power of youth and their ability to create real change.",
-      "value3Title": "Diversity Fuels Creativity",
-      "value3Desc": "Different backgrounds and experiences create deeper ideas and stronger impact.",
-      "ctaHeading": "Be Part of the Event",
-      "ctaDescription": "Join us on a journey to explore inspiring ideas and create unforgettable memories."
+      "statDay": "Inspiring Day"
     },
     "speakersPreview": {
-      "heading": "Meet the Speakers",
       "seeAll": "See All Speakers",
       "badgeLabel": "Speakers",
-      "subtitle": "Discover the voices behind TEDxAlFalah Youth.",
-      "bioFallback": "An inspiring speaker joining us to share their journey and ideas."
-    },
-    "highlights": {
-      "venueTitle": "Museum of the Future, Dubai",
-      "venueTeaser": "This venue is more than a stage—it's an inspiration! We chose Dubai because it brings the world together in one place. Amidst its innovative streets and a swirl of ideas, you can find the inspiration to plan a future that empowers you and our youth. The opportunities are right in front of you, waiting to be seized!",
-      "activationsTitle": "Community Activations",
-      "activationsTeaser": "The experience here goes far beyond just talks—it's a feeling that fills you up! Between every session, you'll feel the energy of the crowd, shared laughter, and exchanges of ideas that shift perspectives. Genuine connections are made here, and you can turn your curiosity into the spark of your next big journey. This event makes you feel like you're part of something truly monumental.",
-      "statsSpeakers": "Speakers",
-      "statsAttendees": "Attendees",
-      "statsActivations": "Activations",
-      "mainHeading": "Highlights",
-      "mainSubtitle": "Have questions, ideas, or just want to say hello? We'd love to hear from you. Discover the venue, activations, and the numbers that make this event unique.",
-      "venueBadgeText": "Venue",
-      "venueLinkText": "Explore the Venue",
-      "activationsBadgeText": "Activations",
-      "activationsLinkText": "Discover Activations",
-      "statsBadgeText": "Impact",
-      "statsTitle": "An Event as Big as Our Ambition",
-      "statsDescription": "We bring together young minds and expertise to create a real impact in the community. Everyone chooses to be part of this.",
-      "dateBadgeText": "Date",
-      "dateNumber": "15",
-      "dateMonthYear": "November 2026",
-      "dateDescription": "One day full of inspiring ideas and impactful conversations.",
-      "speakerBadgeText": "Speaker",
-      "speakerTitle": "Got an idea worth sharing?",
-      "speakerDescription": "Apply now to speak at TEDx and share your story with the world. We're looking for ideas that change the future."
+      "bioFallback": "An inspiring speaker joining us to share their journey and ideas.",
+      "newHeading": "Meet Tomorrow",
+      "newSubtitle": "Our Speakers Line Up"
     },
     "applyBanner": {
       "text": "Applications are open — deadline {date}",
@@ -166,13 +127,19 @@
       "placeholderSubtitle": "Your Story, Our Stage.",
       "stageBadgeLabel": "Coming Soon",
       "stageTitle": "The Stage Awaits Your Voice",
-      "stageDescription": "Join 12+ young speakers who will change how we see the future."
+      "stageDescription": "Join 12+ young speakers who will change how we see the future.",
+      "closedCta": "Get Tickets"
     },
     "scheduleBanner": {
       "badge": "Schedule",
       "title": "Explore the Full Schedule",
       "description": "Plan your day with talks, breaks, and activations — every moment designed to inspire.",
       "cta": "View Full Schedule"
+    },
+    "highlights": {
+      "mainHeading": "Highlights",
+      "mainSubtitle": "A preview of what awaits you — sector definitions, activations, date, and more.",
+      "agendaButton": "See the Agenda"
     },
     "sponsorsStrip": {
       "heading": "Our Partners",
@@ -187,19 +154,12 @@
       "ctaLabel": "Contact Us",
       "empty": "No sponsors yet."
     },
-    "contactForm": {
+    "contactBox": {
       "heading": "Contact Us",
       "badge": "Get in Touch",
       "intro": "Our team is here to answer your inquiries or receive your ideas for participation. Just fill out the form and we'll get back to you soon.",
-      "emailLabel": "marhaba@tedxalfalahyouth.com",
       "namePlaceholder": "Full name",
       "emailPlaceholder": "Email",
-      "subjectLabel": "Subject",
-      "subjectGeneral": "General",
-      "subjectSpeaking": "Speaking",
-      "subjectSponsorship": "Sponsorship",
-      "subjectVolunteering": "Volunteering",
-      "subjectMedia": "Media",
       "messagePlaceholder": "Your message",
       "submit": "Send Message",
       "submitting": "Sending...",
@@ -245,7 +205,10 @@
       "footerContact": "Contact: marhaba@tedxalfalahyouth.com"
     },
     "contact": {
-      "meta": { "title": "Message Sent", "description": "Your message has been received. Our team will review it and get back to you soon." },
+      "meta": {
+        "title": "Message Sent",
+        "description": "Your message has been received. Our team will review it and get back to you soon."
+      },
       "eyebrow": "SENT",
       "title": "Thanks for\nreaching out",
       "subtitle": "We'll get back to you soon",
@@ -257,7 +220,10 @@
       "secondaryCta": "Browse Schedule"
     },
     "apply": {
-      "meta": { "title": "Application Received", "description": "Thank you for applying to TEDxAlFalah Youth. We have received your application and will review it soon." },
+      "meta": {
+        "title": "Application Received",
+        "description": "Thank you for applying to TEDxAlFalah Youth. We have received your application and will review it soon."
+      },
       "eyebrow": "RECEIVED",
       "title": "Application\nReceived",
       "subtitle": "A confirmation email is on its way",
@@ -269,7 +235,10 @@
       "secondaryCta": "Browse Schedule"
     },
     "partner": {
-      "meta": { "title": "Partnership Interest Received", "description": "Thank you for your partnership interest. Our partnerships team will review your message and reach out soon." },
+      "meta": {
+        "title": "Partnership Interest Received",
+        "description": "Thank you for your partnership interest. Our partnerships team will review your message and reach out soon."
+      },
       "eyebrow": "RECEIVED",
       "title": "Thanks for\nyour interest",
       "subtitle": "Our partnerships team will review your message",
@@ -281,7 +250,10 @@
       "secondaryCta": "Browse Schedule"
     },
     "tickets": {
-      "meta": { "title": "Booking Confirmed", "description": "Your booking for TEDxAlFalah Youth has been confirmed. Check your email for ticket details." },
+      "meta": {
+        "title": "Booking Confirmed",
+        "description": "Your booking for TEDxAlFalah Youth has been confirmed. Check your email for ticket details."
+      },
       "eyebrow": "SUCCESS",
       "title": "You're\nRegistered!",
       "subtitle": "Your ticket is on the way",
@@ -293,7 +265,10 @@
       "secondaryCta": "Browse Schedule"
     },
     "default": {
-      "meta": { "title": "Thank You", "description": "Thank you for reaching out to TEDxAlFalah Youth. Your response has been recorded." },
+      "meta": {
+        "title": "Thank You",
+        "description": "Thank you for reaching out to TEDxAlFalah Youth. Your response has been recorded."
+      },
       "eyebrow": "RECEIVED",
       "title": "We've\nReceived It",
       "subtitle": "Thanks for reaching out",
@@ -311,12 +286,12 @@
         "title": "Speakers",
         "description": "Meet the young speakers and adult experts taking the stage at TEDxAlFalah Youth."
       },
-       "hero": {
-    "badge": "TEDxSpeakers 2026",
-    "mainTitle": "THE VOICES",
-    "highlightTitle": "OF TOMORROW.",
-    "brandSub": "AlFalah Youth"
-  },
+      "hero": {
+        "badge": "TEDxSpeakers 2026",
+        "mainTitle": "THE VOICES",
+        "highlightTitle": "OF TOMORROW.",
+        "brandSub": "AlFalah Youth"
+      },
       "title": "Meet the Speakers",
       "subtitle": "Speakers are announced in waves as our lineup is confirmed. Check back for updates.",
       "empty": "Speakers coming soon.",
@@ -339,36 +314,35 @@
         "Volunteers": "Volunteers",
         "ctaContactText": "Contact Us"
       },
-        "hero": {
-    "badge": "TEDxTeam 2026",
-    "mainTitle": "THE ARCHITECTS",
-    "highlightTitle": "OF IDEAS.",
-    "discoverLabel": "Discover Lineup"
-  },
-  "footer": {
-    "totalMembers": "Total Members",
-    "activeYears": "Active Years",
-    "sessions": "Sessions",
-    "followJourney": "Follow the Journey"
-  },
-  "quotes": {
-    "ideas": "IDEAS WORTH SPREADING",
-    "step": "WE MAKE CHANGE STEP BY STEP",
-    "inspiration": "INSPIRATION COMMUNITY"
-  },
-  "marquee": {
-    "text1": "IDEAS WORTH SPREADING",
-    "text2": "INSPIRATION COMMUNITY",
-    "text3": "CHANGE MAKERS"
-  }
+      "hero": {
+        "badge": "TEDxTeam 2026",
+        "mainTitle": "THE ARCHITECTS",
+        "highlightTitle": "OF IDEAS."
+      },
+      "footer": {
+        "totalMembers": "Total Members",
+        "activeYears": "Active Years",
+        "sessions": "Sessions",
+        "followJourney": "Follow the Journey"
+      },
+      "quotes": {
+        "ideas": "IDEAS WORTH SPREADING",
+        "step": "WE MAKE CHANGE STEP BY STEP",
+        "inspiration": "INSPIRATION COMMUNITY"
+      },
+      "marquee": {
+        "text1": "IDEAS WORTH SPREADING",
+        "text2": "INSPIRATION COMMUNITY",
+        "text3": "CHANGE MAKERS"
+      }
     },
     "venue": {
-        "hero": {
-    "badgeLabel": "TEDxVenue 2026",
-    "line1": "THE VENUE",
-    "line2": "OF INNOVATION.",
-    "description": "A home for bold ideas and human connection."
-  },
+      "hero": {
+        "badgeLabel": "TEDxVenue 2026",
+        "line1": "THE VENUE",
+        "line2": "OF INNOVATION.",
+        "description": "A home for bold ideas and human connection."
+      },
       "meta": {
         "title": "Venue",
         "description": "Discover the TEDxAlFalahYouth venue"
@@ -391,114 +365,22 @@
         "alt": "Gallery image {number}"
       }
     },
-    "gallery": {
+    "activations": {
       "meta": {
-        "title": "Gallery",
-        "description": "Explore moments from TEDxAlFalah Youth"
+        "title": "Activations | TEDx",
+        "description": "Experience beyond the talks."
       },
       "hero": {
-        "badge": "Gallery",
-        "title": "Capturing the Moment",
-        "highlight": "Moments That Matter"
+        "badge": "TEDx Activations 2026",
+        "mainTitle": "THE ACTIVATIONS",
+        "highlightTitle": "THAT INSPIRE.",
+        "discoverLabel": "Discover"
       },
-      "filters": {
-        "all": "All",
-        "venue": "Venue",
-        "speakers": "Speakers",
-        "behind": "Behind the Scenes"
-      },
-      "lightbox": {
-        "close": "Close",
-        "of": "of"
-      },
-      "empty": "Gallery images coming soon."
+      "title": "The Activations",
+      "subtitle": "Interactive experiences that spark conversation.",
+      "empty": "No activations yet. Stay tuned!",
+      "descriptionFallback": "Description coming soon."
     },
-    "prepare": {
-      "meta": {
-        "title": "Prepare for Your Visit",
-        "description": "Everything you need to know before attending TEDxAlFalah Youth."
-      },
-      "hero": {
-        "badge": "Attendee Guide",
-        "title": "Prepare for",
-        "highlight": "Your Visit",
-        "description": "Get ready for an inspiring day of ideas. Here's everything you need to know before you arrive."
-      },
-      "timeAndPlace": {
-        "badge": "01. Time & Place",
-        "title": "When & Where",
-        "dateLabel": "Date",
-        "dateValue": "Saturday, November 15, 2026",
-        "timeLabel": "Time",
-        "timeValue": "10:00 AM – 5:00 PM",
-        "venueLabel": "Venue",
-        "venueValue": "Museum of the Future, Dubai",
-        "address": "Sheikh Zayed Road, Dubai, UAE",
-        "mapTitle": "Find Us on the Map"
-      },
-      "whatToBring": {
-        "badge": "02. Essentials",
-        "title": "What to Bring",
-        "items": [
-          { "id": 1, "icon": "ticket", "title": "Your Ticket", "desc": "Digital or printed. We'll scan it at the entrance." },
-          { "id": 2, "icon": "id", "title": "Valid ID", "desc": "Passport or Emirates ID for verification." },
-          { "id": 3, "icon": "charger", "title": "Phone Charger", "desc": "Keep your devices powered throughout the day." },
-          { "id": 4, "icon": "clothes", "title": "Comfortable Layers", "desc": "The venue is well air-conditioned, so bring a light layer." }
-        ]
-      },
-      "dressCode": {
-        "badge": "03. Dress Code",
-        "title": "Smart Casual",
-        "body": "We recommend smart casual attire — stylish yet comfortable. You'll be sitting, walking, and networking throughout the day, so dress to impress without sacrificing comfort.",
-        "tipTitle": "Pro Tip",
-        "tipBody": "Comfortable shoes are a must! You'll be on your feet between sessions exploring activations."
-      },
-      "transportation": {
-        "badge": "04. Getting There",
-        "title": "Getting to the Venue",
-        "parkingNote": "Free parking is available near the venue entrance. Spaces are limited, so we recommend arriving early.",
-        "transitNote": "The venue is easily accessible via Dubai Metro (Red Line) — get off at Emirates Towers station."
-      },
-      "security": {
-        "badge": "05. House Rules",
-        "title": "Keeping Everyone Safe",
-        "body": "For the safety of all attendees, the following items are not permitted inside the venue:",
-        "prohibitedItems": [
-          "Unauthorized professional recording equipment",
-          "Large luggage or suitcases",
-          "Sharp objects or weapons",
-          "Outside food and beverages"
-        ]
-      },
-      "photography": {
-        "badge": "06. Photography",
-        "title": "Capturing the Experience",
-        "body": "You are welcome to take personal photos and share them on social media using our event hashtag. Professional video recording of the talks is not permitted.",
-        "hashtag": "#TEDxIdeas2026"
-      },
-      "care": {
-        "badge": "07. Care & Well-being",
-        "title": "We've Got You Covered",
-        "body": "A first-aid station will be available on-site throughout the event. If you need assistance, any volunteer or staff member can guide you to the care area.",
-        "note": "If you have specific accessibility requirements, please contact us in advance."
-      }
-    },
-"activations": {
-  "meta": {
-    "title": "Activations | TEDx",
-    "description": "Experience beyond the talks."
-  },
-  "hero": {
-    "badge": "TEDx Activations 2026",
-    "mainTitle": "THE ACTIVATIONS",
-    "highlightTitle": "THAT INSPIRE.",
-    "discoverLabel": "Discover"
-  },
-  "title": "The Activations",
-  "subtitle": "Interactive experiences that spark conversation.",
-  "empty": "No activations yet. Stay tuned!",
-  "descriptionFallback": "Description coming soon."
-},
     "schedule": {
       "meta": {
         "title": "Schedule",
@@ -531,7 +413,7 @@
         "evening": "Closing"
       }
     },
- "apply": {
+    "apply": {
       "meta": {
         "title": "Apply Now",
         "description": "Apply to speak at TEDxAlFalah Youth as a young speaker (10-18) or an expert in child and youth development."
@@ -586,6 +468,28 @@
         "body": "If you were not selected, it simply means spots were limited. We believe your story deserves to be shared. We strongly encourage you to attend the event and explore other platforms to share your story."
       },
       "faqTitle": "FAQ",
+      "applyTimeline": {
+        "label": "Your Journey",
+        "title": "Your Application Journey",
+        "subtitle": "Four stages, one story worth sharing. Your idea comes to life and reaches others.",
+        "videoLabel": "Video to be uploaded",
+        "step1": {
+          "title": "THE SPARK",
+          "description": "Where every idea begins. Share the moment that inspired your idea."
+        },
+        "step2": {
+          "title": "THE LEAP",
+          "description": "Choosing to take the first step. Share how you turned an idea into action."
+        },
+        "step3": {
+          "title": "THE RIPPLE",
+          "description": "When one idea reaches others. Share how your idea made a difference."
+        },
+        "step4": {
+          "title": "BEYOND",
+          "description": "Imagining what comes next. Share your vision for the future."
+        }
+      },
       "timeline": {
         "title": "Your Application Journey",
         "expectLabel": "What we expect from you:",
@@ -658,28 +562,28 @@
           }
         ]
       },
-"faqItems": {
-  "item1": {
-    "question": "Who is eligible to apply as a young speaker?",
-    "answer": "The young speaker track is open to anyone aged 10 to 18, regardless of nationality or background. We're looking for young people with an original idea, an inspiring personal story, or a unique vision worth sharing on the TEDx stage. No prior public speaking experience is required—just passion and a willingness to grow."
-  },
-  "item2": {
-    "question": "Who is eligible to apply as an expert?",
-    "answer": "The expert track is for adults (18+) who work in fields related to children and youth, such as education, mental health, technology, social innovation, and the arts. We welcome experts with a powerful story or groundbreaking research that can inspire the next generation."
-  },
-  "item3": {
-    "question": "What language should the talk be in?",
-    "answer": "Talks can be delivered in either Arabic or English. If the talk is in a language not understood by the entire audience, we may provide on-screen subtitles to ensure the idea reaches everyone. What matters most is the clarity of the message and its ability to inspire."
-  },
-  "item4": {
-    "question": "Will I receive coaching support?",
-    "answer": "Yes, all selected speakers receive a tailored coaching program that includes multiple one-on-one and group sessions with professional speaking coaches and content developers. We'll help you transform your idea into a compelling TEDx talk, from structure to body language and stage rehearsal."
-  },
-  "item5": {
-    "question": "What is the time commitment if I am selected?",
-    "answer": "Selected speakers should expect to dedicate about 4–6 hours per week over 6–8 weeks before the event. This includes coaching sessions, content writing, and rehearsals. The week before the event, hours increase slightly for final on-stage rehearsals. On event day, you'll need to be present from morning until the event concludes in the evening."
-  }
-},
+      "faqItems": {
+        "item1": {
+          "question": "Who is eligible to apply as a young speaker?",
+          "answer": "The young speaker track is open to anyone aged 10 to 18, regardless of nationality or background. We're looking for young people with an original idea, an inspiring personal story, or a unique vision worth sharing on the TEDx stage. No prior public speaking experience is required—just passion and a willingness to grow."
+        },
+        "item2": {
+          "question": "Who is eligible to apply as an expert?",
+          "answer": "The expert track is for adults (18+) who work in fields related to children and youth, such as education, mental health, technology, social innovation, and the arts. We welcome experts with a powerful story or groundbreaking research that can inspire the next generation."
+        },
+        "item3": {
+          "question": "What language should the talk be in?",
+          "answer": "Talks can be delivered in either Arabic or English. If the talk is in a language not understood by the entire audience, we may provide on-screen subtitles to ensure the idea reaches everyone. What matters most is the clarity of the message and its ability to inspire."
+        },
+        "item4": {
+          "question": "Will I receive coaching support?",
+          "answer": "Yes, all selected speakers receive a tailored coaching program that includes multiple one-on-one and group sessions with professional speaking coaches and content developers. We'll help you transform your idea into a compelling TEDx talk, from structure to body language and stage rehearsal."
+        },
+        "item5": {
+          "question": "What is the time commitment if I am selected?",
+          "answer": "Selected speakers should expect to dedicate about 4–6 hours per week over 6–8 weeks before the event. This includes coaching sessions, content writing, and rehearsals. The week before the event, hours increase slightly for final on-stage rehearsals. On event day, you'll need to be present from morning until the event concludes in the evening."
+        }
+      },
       "form": {
         "badge": "Speaker Application",
         "trackLabel": "I am applying as:",
@@ -715,7 +619,6 @@
         "organizationAndRole": "Organization & Role",
         "areaOfWork": "Area of Work with Youth",
         "agreeToTerms": "I agree to",
-        "termsLink": "Terms & Conditions",
         "submit": "Submit Application",
         "submitting": "Submitting...",
         "errorGeneric": "Something went wrong. Please try again.",
@@ -769,137 +672,82 @@
         "areaOfWorkPlaceholder": "Describe your work with youth..."
       }
     },
-"sponsors": {
-  "meta": {
-    "title": "Sponsors & Partners",
-    "description": "The organizations and partners supporting TEDxAlFalah Youth."
-  },
-  "empty": "Our partners are coming soon.",
-  "hero": {
-    "badge": "Our Partners",
-    "titleLine1": "Our Partners in",
-    "titleHighlight": "Success",
-    "description": "Proud to collaborate with industry leaders who share our vision of the future"
-  },
-  "tiers": {
-    "platinum": { "name": "Platinum" },
-    "gold": { "name": "Gold" },
-    "silver": { "name": "Silver" },
-    "supporter": { "name": "Supporter" }
-  },
-  "stats": {
-    "partners": "Partners",
-    "countries": "Countries",
-    "years": "Years"
-  },
-  "cta": {
-    "badge": "Join Us",
-    "heading": "Want to become a",
-    "headingHighlight": "Partner",
-    "description": "Join our list of partners and be part of an event that inspires the next generation",
-    "button": "Contact Us"
-  },
-  "form": {
-    "namePlaceholder": "Full Name",
-    "organizationPlaceholder": "Organization & Job Title",
-    "emailPlaceholder": "Email",
-    "phonePlaceholder": "Phone",
-    "messagePlaceholder": "Your message (at least 10 characters)",
-    "submit": "Send Request",
-    "errorGeneric": "Something went wrong. Please try again.",
-    "errors": {
-      "nameRequired": "Name is required",
-      "organizationRequired": "Organization is required",
-      "emailInvalid": "Enter a valid email address",
-      "phoneRequired": "Phone is required",
-      "messageMinLength": "Message must be at least 10 characters"
-    }
-  }
-},
-"tickets": {
-    "meta": {
-      "title": "Tickets",
-      "description": "Get your ticket to TEDxAlFalah Youth — General Admission 200 AED."
-    },
-    "hero": {
-      "badge": "Tickets Available Now",
-      "title": "Get Your Ticket",
-      "description": "Join us at TEDxAlFalah Youth for an inspiring experience of talks, interaction, and creativity."
-    },
-    "ticket": {
-      "available": "Available Now",
-      "type": "General Admission",
-      "description": "Full-day access to all talks, side activations, and breaks.",
-      "price": "200",
-      "currency": "AED",
-      "seats": "200 seats available",
-      "cta": "Book Now via Platinumlist",
-      "note": "You will be redirected to Platinumlist to complete your purchase securely.",
-      "brandName": "TEDx",
-      "brandSub": "AlFalah Youth",
-      "barcodeText": "TEDX-2026"
-    },
-    "info": {
-      "badge": "Event Details",
-      "title": "Event Day Information",
-      "dateLabel": "Date",
-      "dateValue": "Saturday, 15 November 2026",
-      "timeLabel": "Time",
-      "timeValue": "9:00 AM – 5:00 PM",
-      "venueLabel": "Venue",
-      "venueValue": "Museum of the Future, Dubai",
-      "venueLink": "View Venue Details",
-      "ageLabel": "Age Guidelines",
-      "ageValue": "Open to all ages; recommended for 13+",
-      "seatsLabel": "Seats"
-    },
-    "bring": {
-      "title": "What to Bring",
-      "items": [
-        "Valid ID (Passport or Emirates ID)",
-        "Digital or Printed Ticket",
-        "Comfortable Clothes",
-        "Phone Charger"
-      ]
-    },
-    "refund": {
-      "title": "Refund Policy",
-      "body": "Ticket refund requests can be made via email before the event date. Refunds are not guaranteed after the event starts.",
-      "termsLink": "Terms & Conditions",
-      "termsNote": "Read the full details."
-    },
-    "thankYou": {
-      "title": "Your booking is confirmed!",
-      "body": "Ticket details will be sent to your email. See you on event day!",
-      "cta": "View Schedule"
-    },
-    "success": {
+    "tickets": {
       "meta": {
-        "title": "Booking Confirmed",
-        "description": "Your booking for TEDxAlFalah Youth has been confirmed. Check your email for ticket details."
+        "title": "Tickets",
+        "description": "Get your ticket to TEDxAlFalah Youth — General Admission 200 AED."
       },
-      "eyebrow": "SUCCESS",
-      "title": "Your booking is confirmed!",
-      "body": "Ticket details will be sent to your email. See you on event day!",
-      "cta": "View Venue Details"
-    },
-    "cancel": {
-      "meta": {
+      "hero": {
+        "badge": "Tickets Available Now",
+        "title": "Get Your Ticket",
+        "description": "Join us at TEDxAlFalah Youth for an inspiring experience of talks, interaction, and creativity."
+      },
+      "ticket": {
+        "available": "Available Now",
+        "type": "General Admission",
+        "description": "Full-day access to all talks, side activations, and breaks.",
+        "price": "200",
+        "currency": "AED",
+        "seats": "200 seats available",
+        "cta": "Book Now via Platinumlist",
+        "note": "You will be redirected to Platinumlist to complete your purchase securely.",
+        "brandName": "TEDx",
+        "brandSub": "AlFalah Youth",
+        "barcodeText": "TEDX-2026"
+      },
+      "info": {
+        "badge": "Event Details",
+        "title": "Event Day Information",
+        "dateLabel": "Date",
+        "dateValue": "Saturday, 15 November 2026",
+        "timeLabel": "Time",
+        "timeValue": "9:00 AM – 5:00 PM",
+        "venueLabel": "Venue",
+        "venueValue": "Museum of the Future, Dubai",
+        "venueLink": "View Venue Details",
+        "ageLabel": "Age Guidelines",
+        "ageValue": "Open to all ages; recommended for 13+",
+        "seatsLabel": "Seats"
+      },
+      "bring": {
+        "title": "What to Bring",
+        "items": [
+          "Valid ID (Passport or Emirates ID)",
+          "Digital or Printed Ticket",
+          "Comfortable Clothes",
+          "Phone Charger"
+        ]
+      },
+      "refund": {
+        "title": "Refund Policy",
+        "body": "Ticket refund requests can be made via email before the event date. Refunds are not guaranteed after the event starts."
+      },
+      "thankYou": {
+        "title": "Your booking is confirmed!",
+        "body": "Ticket details will be sent to your email. See you on event day!",
+        "cta": "View Schedule"
+      },
+      "success": {
+        "meta": {
+          "title": "Booking Confirmed",
+          "description": "Your booking for TEDxAlFalah Youth has been confirmed. Check your email for ticket details."
+        },
+        "eyebrow": "SUCCESS",
+        "title": "Your booking is confirmed!",
+        "body": "Ticket details will be sent to your email. See you on event day!",
+        "cta": "View Venue Details"
+      },
+      "cancel": {
+        "meta": {
+          "title": "Payment Cancelled",
+          "description": "Your payment for TEDxAlFalah Youth was not completed. No charges have been made."
+        },
         "title": "Payment Cancelled",
-        "description": "Your payment for TEDxAlFalah Youth was not completed. No charges have been made."
-      },
-      "title": "Payment Cancelled",
-      "body": "Your payment was not completed. No charges have been made.",
-      "cta": "Try Again"
-    }
-  },
-  "contact": {
-    "meta": {
-      "title": "Contact Us",
-      "description": "Contact TEDxAlFalah Youth — send us a message and our team will get back to you soon."
-    }
-  },
- "faq": {
+        "body": "Your payment was not completed. No charges have been made.",
+        "cta": "Try Again"
+      }
+    },
+    "faq": {
       "meta": {
         "title": "FAQ",
         "description": "Frequently asked questions about attending TEDxAlFalah Youth."
@@ -946,90 +794,6 @@
           "answer": "Get in touch through the contact form on our homepage, or email us directly at marhaba@tedxalfalahyouth.com. We'll be happy to help."
         }
       }
-    },
-     "terms": {
-      "meta": {
-        "title": "Terms & Conditions",
-        "description": "Terms & Conditions and Privacy Policy for TEDxAlFalah Youth."
-      },
-      "title": "Terms & Conditions and Privacy Policy",
-      "lastUpdated": "Last updated: October 1, 2026 · Effective for TEDxAlFalah Youth",
-      "breadcrumb": {
-        "home": "Home"
-      },
-      "toc": {
-        "title": "Table of Contents"
-      },
-      "sections": {
-        "section1": {
-          "title": "1. Application Terms",
-          "content": [
-            "By submitting an application to speak at TEDxAlFalah Youth, you confirm that all provided information is accurate and true to the best of your knowledge.",
-            "Applications submitted under the young speaker track (ages 10–14) require explicit guardian consent, given via the checkbox in the application form. The organizing team may contact the guardian directly to verify this consent before proceeding.",
-            "By submitting your talk idea, summary, and any attached video, you grant TEDxAlFalah Youth a non-exclusive license to review, discuss internally, and — if selected — develop it with you for the event. You retain ownership of your ideas and original content.",
-            "All selection decisions made by the review committee are final. As stated on the application page, not being selected reflects limited slots, not a judgment on your story's worth.",
-            "TEDxAlFalah Youth reserves the right to adjust the application timeline, including extending or closing the application window before the announced date; any changes will be communicated via this website."
-          ]
-        },
-        "section2": {
-          "title": "2. Ticket Terms",
-          "content": [
-            "Tickets are issued in the buyer's name and are non-transferable unless arranged with the organizing team in advance.",
-            "Refund requests must be submitted via email to marhaba@tedxalfalahyouth.com no later than 7 days before the event date. Refunds are not guaranteed after this period.",
-            "TEDxAlFalah Youth reserves the right to deny entry or cancel a ticket in cases of security concerns, capacity limits, or violation of these terms.",
-            "If the event is postponed or canceled, ticket holders will be notified via the email provided at purchase/registration, and options for refund or compensation will be communicated at that time."
-          ]
-        },
-        "section3": {
-          "title": "3. Photography & Recording Consent",
-          "content": [
-            "Photography, video, and audio recording will take place throughout TEDxAlFalah Youth for archival, promotional, and TED license compliance purposes.",
-            "By attending the event or submitting an application to speak, you (or your guardian for applicants under 18) consent to being photographed and/or recorded and to the use of such media on the TEDxAlFalah Youth website, social media platforms, and TED global platforms under the terms of the TEDx license.",
-            "If you do not wish to be photographed or recorded, please inform a member of the event team upon arrival to make appropriate arrangements where possible; however, complete exclusion from all recorded areas (such as the main hall during talks) may not always be feasible.",
-            "Speaker talks are recorded and may be publicly published (including on YouTube via the TEDx program) after the event, in accordance with standard TEDx license requirements."
-          ]
-        },
-        "section4": {
-          "title": "4. Privacy Policy",
-          "content": [
-            "This section explains the personal data TEDxAlFalah Youth collects via this website, why we collect it, how it is stored, and the rights you have over it. We give special care to data concerning children (ages 10–14) submitted through the young speaker application track.",
-            "**What We Collect.** Depending on the form you use, we may collect: full name, age, email, phone number, city, school name (young speaker track only), guardian name and contact details (young speaker track only), organization and role (expert track only), talk idea details, and any message you send us via the contact or partnership form. For ticket purchases, payment is processed directly by Stripe — we do not receive or store your full card details.",
-            "**Why We Collect It.** We use this information solely to: evaluate speaker applications, communicate with applicants and their guardians about the selection process, process ticket registrations and send event-day information, respond to inquiries, and coordinate with potential partners/sponsors.",
-            "**Children's Data.** For applicants under 18, we collect guardian contact details specifically so consent can be verified and so the organizing team communicates with the guardian throughout the process, not the child alone. We do not use children's data for any purpose beyond event organization, nor do we share it with third parties for marketing purposes.",
-            "**Where Your Data Is Stored.** Application and registration data is stored in Google Sheets, accessible only to members of the TEDxAlFalah Youth organizing and review team. Public content on this site (speakers, team, sponsors, schedule) is managed via Sanity, a third-party content management platform. Email communication is sent via Resend. Ticket payments, when applicable, are processed by Stripe. Each of these providers has its own privacy and security practices as independent data processors.",
-            "**Retention Period.** We retain application data for 12 months after the event for record-keeping and future edition planning, after which it is deleted upon request or as part of routine data hygiene. You can request early deletion at any time (see 'Your Rights' below).",
-            "**Your Rights.** You (or the guardian for a minor's data) can request access to, correction of, or deletion of personal data we hold about you by emailing marhaba@tedxalfalahyouth.com. We will respond within a reasonable timeframe and in accordance with applicable UAE data protection law.",
-            "**Security.** We restrict access to application data to authorized organizing team members only and rely on the security practices of our external providers (Google, Sanity, Resend, Stripe) for data in transit and at rest.",
-            "**Cookies.** This site does not use tracking or advertising cookies.",
-            "**Contact.** Questions about this privacy policy or your data can be directed to marhaba@tedxalfalahyouth.com."
-          ]
-        },
-        "section5": {
-          "title": "5. TEDx License Acknowledgment",
-          "content": [
-            "TEDxAlFalah Youth is independently organized and operated under a free license from TED, in line with the TEDx program's mission of discovering and spreading great ideas within local communities.",
-            "This event is not officially affiliated with, sponsored by, or organized by TED or TEDx staff beyond the standard TEDx license terms. All content, speaker selection, and event operations are the sole responsibility of the independent TEDxAlFalah Youth organizing team.",
-            "Speaker talks may be submitted to TED for potential inclusion on the official TEDx YouTube channel, in accordance with standard TEDx content guidelines, at the discretion of the TEDx program."
-          ]
-        },
-        "section6": {
-          "title": "6. Liability & General Terms",
-          "content": [
-            "TEDxAlFalah Youth, its organizers, and volunteers make reasonable efforts to ensure a safe and well-run event but do not accept liability for personal injury, loss, or property damage during the event, except where required by applicable law.",
-            "Attendees and applicants participate at their own risk. Parents of young speaker applicants remain responsible for their children's care while under their own supervision before and after any scheduled coaching sessions, rehearsals, or the event day, unless explicitly arranged with the organizing team.",
-            "These terms are governed by the laws of the United Arab Emirates. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the competent courts in Dubai.",
-            "TEDxAlFalah Youth reserves the right to update these terms and conditions and privacy policy from time to time. The latest version will always be available on this page, with the effective date below."
-          ]
-        }
-      },
-      "cta": {
-        "title": "Have a Question?",
-        "description": "If you have any questions about these terms, our team is ready to help.",
-        "button": "Contact Us",
-        "link": "/"
-      }
     }
-
-
-  
-}}
+  }
+}

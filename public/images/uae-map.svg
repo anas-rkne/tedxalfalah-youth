@@ -1,0 +1,55 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#e4e4e7" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f4f5"/>
+      <stop offset="1" stop-color="#e4e4e7"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" rx="24" fill="url(#sea)"/>
+  <rect width="400" height="300" rx="24" fill="url(#grid)" opacity="0.6"/>
+
+  <g stroke="#a1a1aa" stroke-width="2" stroke-linecap="round" opacity="0.5">
+    <line x1="62" y1="18" x2="78" y2="34"/>
+    <line x1="78" y1="18" x2="94" y2="34"/>
+    <line x1="70" y1="10" x2="70" y2="26" fill="#71717a" stroke="#71717a" stroke-width="3"/>
+    <text x="70" y="8" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#71717a">N</text>
+  </g>
+
+  <g>
+    <path d="M 90 130
+      C 120 118 160 108 200 108
+      C 240 108 280 120 310 138
+      C 325 148 340 140 352 126
+      C 362 116 372 118 372 130
+      C 372 140 364 148 352 152
+      C 338 158 326 166 320 180
+      C 312 198 300 210 285 214
+      C 268 218 250 212 238 202
+      C 226 192 212 190 198 196
+      C 180 204 160 210 138 208
+      C 110 205 88 190 82 168
+      C 80 155 84 140 90 130 Z"
+      fill="#ffffff" stroke="#d4d4d8" stroke-width="2.5" stroke-linejoin="round"/>
+  </g>
+
+  <path d="M 112 192 C 118 168 150 152 182 148 C 216 144 252 150 324 176"
+        stroke="#e62b1e" stroke-width="3" stroke-dasharray="7 7" fill="none" stroke-linecap="round" opacity="0.85"/>
+
+  <g>
+    <circle cx="112" cy="176" r="7" fill="#e62b1e" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="112" y="158" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#18181b">Abu Dhabi</text>
+
+    <circle cx="182" cy="148" r="7" fill="#e62b1e" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="182" y="124" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#18181b">Dubai</text>
+
+    <circle cx="216" cy="146" r="7" fill="#e62b1e" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="216" y="120" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#18181b">Sharjah</text>
+
+    <circle cx="324" cy="176" r="7" fill="#e62b1e" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="324" y="200" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#18181b">Fujairah</text>
+  </g>
+</svg>

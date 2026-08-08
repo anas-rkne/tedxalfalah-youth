@@ -75,15 +75,9 @@ export default function FooterContent() {
     { label: tCommon("home"), href: "/" },
     { label: tCommon("speakers"), href: "/speakers" },
     { label: tCommon("team"), href: "/team" },
-    { label: tCommon("venue"), href: "/venue" },
-    { label: tCommon("activations"), href: "/activations" },
-    { label: tCommon("schedule"), href: "/schedule" },
     { label: tCommon("apply"), href: "/apply" },
-    { label: tCommon("sponsors"), href: "/sponsors" },
     { label: tCommon("tickets"), href: "/tickets" },
     { label: tCommon("faq"), href: "/faq" },
-    { label: tCommon("gallery"), href: "/gallery" },
-    { label: tCommon("prepare"), href: "/prepare" },
   ], [tCommon]);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
@@ -489,13 +483,6 @@ export default function FooterContent() {
           <span className="text-zinc-400">© {new Date().getFullYear()} TEDxAlFalah Youth</span>
           <span className="hidden sm:inline text-zinc-700">·</span>
           <span className="text-zinc-500">{t("copyright")}</span>
-          <span className="hidden sm:inline text-zinc-700">·</span>
-          <Link
-            href="/terms"
-            className="text-zinc-400 hover:text-tedx-red transition-colors underline underline-offset-2 decoration-zinc-700 hover:decoration-tedx-red"
-          >
-            {t("termsLink")}
-          </Link>
         </div>
         <button
           onClick={scrollToTop}

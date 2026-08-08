@@ -8,6 +8,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import { Calendar } from "lucide-react";
 import SafeImage from "@/components/ui/SafeImage";
 import HeroTypewriterTitle from "@/components/home/HeroTypewriterTitle";
 import Countdown from "@/components/shared/Countdown";
@@ -16,7 +17,7 @@ import ScrollIndicator from "@/components/ui/ScrollIndicator";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import FadeUp from "@/components/shared/FadeUp";
 
-const EVENT_DATE = "2026-11-15T09:00:00+04:00";
+const EVENT_DATE = "2026-12-18T09:00:00+04:00";
 
 const ANIMATION_CONFIG = {
   fadeScale: {
@@ -134,7 +135,7 @@ function AnimatedCharacter({
           priority={direction === "left"}
           loading={direction === "left" ? "eager" : "lazy"}
         />
-        
+
         {/* 5 فقاعات حمراء */}
         {!shouldReduceMotion && (
           <>
@@ -170,53 +171,49 @@ function AnimatedCharacter({
   );
 }
 
-const EventInfo = memo(function EventInfo({
-  eventName,
+/* ─── SaveTheDate ─── */
+const SaveTheDate = memo(function SaveTheDate({
+  saveTheDateLabel,
   dateText,
   venueText,
 }: {
-  eventName: string;
+  saveTheDateLabel: string;
   dateText: string;
   venueText: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 text-zinc-400 text-sm md:text-base text-center">
-      <p className="text-tedx-red font-bold text-lg md:text-xl tracking-tight">
-        {eventName}
-      </p>
-      <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
-        <span>{dateText}</span>
-        <span className="hidden sm:inline text-zinc-300">•</span>
-        <span>{venueText}</span>
-      </div>
+    <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-sm md:text-base">
+      <span className="inline-flex items-center gap-1.5 text-tedx-red font-bold uppercase tracking-[0.15em] text-xs md:text-sm">
+        <Calendar className="w-4 h-4" />
+        {saveTheDateLabel}
+      </span>
+      <span className="text-zinc-500 font-semibold">{dateText}</span>
+      <span className="hidden sm:inline text-zinc-300">•</span>
+      <span className="text-zinc-500 font-semibold">{venueText}</span>
     </div>
   );
 });
 
 export default function HeroDynamicContent({
-  eventName,
   tagline,
-  subtitle,
   dateText,
   venueText,
-  scrollLabel,
   applyLabel,
-  ticketsLabel,
+  saveSeatLabel,
   badgeLabel,
   eventYear,
-  countdownHeadline,
+  intro,
+  saveTheDateLabel,
 }: {
-  eventName: string;
   tagline: string;
-  subtitle: string;
   dateText: string;
   venueText: string;
-  scrollLabel: string;
   applyLabel: string;
-  ticketsLabel: string;
+  saveSeatLabel: string;
   badgeLabel: string;
   eventYear: string;
-  countdownHeadline: string;
+  intro: string;
+  saveTheDateLabel: string;
 }) {
   return (
     <BackgroundBeamsWithCollision className="min-h-full overflow-hidden">
@@ -236,7 +233,7 @@ export default function HeroDynamicContent({
           dir="auto"
           className="relative z-10 px-2 sm:px-4 flex flex-col items-center w-full pt-20 lg:pt-12 gap-6 md:gap-8"
         >
-          {/* 🔥 الكتلة العليا: تم زيادة المسافة بين الشارة والعنوان إلى gap-4 md:gap-6 */}
+          {/* 🔥 الكتلة العليا */}
           <div className="flex flex-col items-center gap-4 md:gap-6 w-full">
             <FadeUp delay={0.1}>
               <EventBadge label={badgeLabel} year={eventYear} />
@@ -245,27 +242,20 @@ export default function HeroDynamicContent({
               <HeroTypewriterTitle title={tagline} />
             </FadeUp>
             <FadeUp delay={0.25}>
-              <p className="text-lg md:text-xl text-zinc-500 text-center max-w-2xl leading-relaxed">
-                {subtitle}
+              <p className="text-base md:text-lg text-zinc-500 text-center max-w-2xl leading-relaxed">
+                {intro}
               </p>
             </FadeUp>
           </div>
 
-          {/* الكتلة النصية: EventInfo + العبارة */}
-          <div className="flex flex-col items-center gap-2 w-full">
-            <FadeUp delay={0.4}>
-              <EventInfo
-                eventName={eventName}
-                dateText={dateText}
-                venueText={venueText}
-              />
-            </FadeUp>
-            <FadeUp delay={0.45}>
-              <p className="text-sm md:text-base text-zinc-500 text-center max-w-md leading-relaxed">
-                {countdownHeadline}
-              </p>
-            </FadeUp>
-          </div>
+          {/* Save the Date */}
+          <FadeUp delay={0.4}>
+            <SaveTheDate
+              saveTheDateLabel={saveTheDateLabel}
+              dateText={dateText}
+              venueText={venueText}
+            />
+          </FadeUp>
 
           {/* العد التنازلي */}
           <FadeUp delay={0.6}>
@@ -274,7 +264,7 @@ export default function HeroDynamicContent({
 
           {/* الأزرار */}
           <FadeUp delay={0.7}>
-            <ActionButtons applyLabel={applyLabel} ticketsLabel={ticketsLabel} />
+            <ActionButtons applyLabel={applyLabel} ticketsLabel={saveSeatLabel} />
           </FadeUp>
         </div>
 

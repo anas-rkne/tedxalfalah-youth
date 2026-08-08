@@ -18,6 +18,8 @@ import AnimatedWord from "@/components/shared/AnimatedWord";
 import DarkCTASection from "@/components/shared/DarkCTASection";
 
 interface ApplyBannerContentProps {
+  isClosed: boolean;
+  closedCta: string;
   badgeLabel: string;
   text: string;
   subtitle: string;
@@ -203,6 +205,7 @@ const ApplySideImage = memo(function ApplySideImage({
 /* ═══════════ المكون الرئيسي ═══════════ */
 
 export default function ApplyBannerContent({
+  isClosed, closedCta,
   badgeLabel, text, subtitle, cta,
   stepsHeading, step1Title, step1Desc, step2Title, step2Desc, step3Title, step3Desc,
   whyApplyLabel, whyApplyHeading, reasons,
@@ -293,8 +296,8 @@ export default function ApplyBannerContent({
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
             >
-              <AnimatedSlidingButton href="/apply" variant="primary">
-                {cta}
+              <AnimatedSlidingButton href={isClosed ? "/tickets" : "/apply"} variant="primary">
+                {isClosed ? closedCta : cta}
               </AnimatedSlidingButton>
             </motion.div>
           </div>
@@ -402,7 +405,7 @@ export default function ApplyBannerContent({
       <DarkCTASection
         heading={ctaHeading}
         description={ctaDescription}
-        primaryButton={{ href: "/apply", label: cta }}
+        primaryButton={{ href: isClosed ? "/tickets" : "/apply", label: isClosed ? closedCta : cta }}
         className="bg-muted/30 "
       />
     </section>

@@ -357,7 +357,7 @@ export default function SponsorsStripContent({
       <DarkCTASection
         heading={ctaHeading}
         description={ctaDescription}
-        primaryButton={{ href: "/contact", label: ctaLabel }}
+        primaryButton={{ href: "/#contact", label: ctaLabel }}
   
       />
 

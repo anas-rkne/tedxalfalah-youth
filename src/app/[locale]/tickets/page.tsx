@@ -363,13 +363,6 @@ export default async function TicketsPage({ params }: Props) {
             <p className="text-sm text-zinc-500 leading-relaxed mb-5">
               {t("refund.body")}
             </p>
-            <Link
-              href="/terms"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-tedx-red hover:text-red-700 transition-colors"
-            >
-              {t("refund.termsLink")}
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
           </div>
         </div>
       </section>

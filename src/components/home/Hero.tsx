@@ -6,17 +6,15 @@ export default async function Hero({ locale }: { locale: string }) {
 
   return (
     <HeroDynamicContent
-      eventName={t("eventName")}
       tagline={t("tagline")}
-      subtitle={t("subtitle")}
       dateText={t("date")}
       venueText={t("venue")}
-      scrollLabel={t("scrollLabel")}
       applyLabel={t("applyLabel")}
-      ticketsLabel={t("ticketsLabel")}
+      saveSeatLabel={t("saveSeatLabel")}
       badgeLabel={t("badgeLabel")}
       eventYear={t("eventYear")}
-      countdownHeadline={t("countdownHeadline")}
+      intro={t("intro")}
+      saveTheDateLabel={t("saveTheDateLabel")}
     />
   );
 }

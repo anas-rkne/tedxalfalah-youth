@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import SpeakersGrid from "@/components/speakers/SpeakersGrid";
 import { getSpeakers } from "@/lib/data";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
+import SectionBadge from "@/components/ui/SectionBadge";
 import JsonLd from "@/components/JsonLd";
 import { personSchema } from "@/lib/json-ld";
 
@@ -47,16 +48,19 @@ export default async function SpeakersPage({ params }: Props) {
       />
 
       {/* ═══════════ SPEAKERS GRID ═══════════ */}
-      <section className="py-20 md:py-32 bg-background">
+      <section className="section-padding bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold font-arabic text-center mb-6">
+          <div className="text-center mb-12">
+            <div className="flex justify-center mb-4">
+              <SectionBadge>{t("hero.badge")}</SectionBadge>
+            </div>
+            <h2 className={`heading-h1 tracking-[-0.03em] heading-margin text-center ${isArabic ? "font-arabic" : ""}`}>
               {t("title")}
             </h2>
-            <div className="flex justify-center mb-8">
-              <div className="h-1.5 w-24 bg-tedx-red rounded-full" />
+            <div className="flex justify-center heading-margin">
+              <div className="h-1 w-20 bg-tedx-red rounded-full" />
             </div>
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto text-base md:text-xl leading-relaxed">
+            <p className="text-center text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
               {t("subtitle")}
             </p>
           </div>
