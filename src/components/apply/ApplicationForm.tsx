@@ -20,14 +20,10 @@ const HOW_HEARD_VALUES = [
 ] as const;
 
 const THEME_OPTIONS = [
-  "identity",
-  "future skills",
-  "wellbeing",
-  "creativity",
-  "community",
-  "stems",
-  "ai",
-  "life skills",
+  "spark",
+  "leap",
+  "ripple",
+  "beyond",
 ] as const;
 
 function wordCount(text: string) {
@@ -190,7 +186,7 @@ export default function ApplicationForm() {
     defaultValues: {
       track: "young-speaker",
       howHeardAboutUs: "Social Media",
-      themeConnection: "identity",
+      themeConnection: "spark",
     },
   });
 

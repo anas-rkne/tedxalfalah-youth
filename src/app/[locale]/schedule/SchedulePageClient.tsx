@@ -17,6 +17,7 @@ interface SchedulePageClientProps {
     evening: string;
   };
   emptyLabel?: string;
+  showSpeakers: boolean;
 }
 
 const SchedulePageClient = memo(function SchedulePageClient({
@@ -25,6 +26,7 @@ const SchedulePageClient = memo(function SchedulePageClient({
   filterLabels,
   periodLabels,
   emptyLabel,
+  showSpeakers,
 }: SchedulePageClientProps) {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
 
@@ -50,6 +52,7 @@ const SchedulePageClient = memo(function SchedulePageClient({
             typeLabels={typeLabels}
             activeFilter={activeFilter}
             periodLabels={periodLabels}
+            showSpeakers={showSpeakers}
           />
 
           <ScrollReveal>

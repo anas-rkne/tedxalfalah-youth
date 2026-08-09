@@ -7,7 +7,6 @@ import { breadcrumbListSchema } from "@/lib/json-ld";
 
 const PATH_LABELS: Record<string, string> = {
   "/": "home",
-  "/speakers": "speakers",
   "/team": "team",
   "/venue": "venue",
   "/activations": "activations",

@@ -181,7 +181,8 @@ export async function getEventInfo(): Promise<EventInfo | null> {
     `*[_type == "eventInfo"][0] {
       title,
       date,
-      venue
+      venue,
+      showSpeakers
     }`
   );
 }

@@ -1,12 +1,15 @@
 import { getTranslations } from "next-intl/server";
-import { getSpeakers } from "@/lib/data";
+import { getSpeakers, getEventInfo } from "@/lib/data";
 import SpeakersStage from "./SpeakersStage";
 
 export default async function SpeakersPreview({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "home.speakersPreview" });
-  const allSpeakers = await getSpeakers();
+  const [eventInfo, allSpeakers] = await Promise.all([
+    getEventInfo(),
+    getSpeakers(),
+  ]);
 
-  if (allSpeakers.length === 0) return null;
+  if (!eventInfo?.showSpeakers || allSpeakers.length === 0) return null;
 
 const speakers = allSpeakers.slice(0, 4).map((s) => ({
   id: s.id,

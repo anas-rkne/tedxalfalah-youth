@@ -316,8 +316,8 @@
       },
       "hero": {
         "badge": "TEDxTeam 2026",
-        "mainTitle": "THE ARCHITECTS",
-        "highlightTitle": "OF IDEAS."
+        "taglineMain": "Tomorrow is shaped by",
+        "taglineHighlight": "what we do today."
       },
       "footer": {
         "totalMembers": "Total Members",
@@ -654,14 +654,10 @@
         "whyItMattersPlaceholder": "What impact will it make?",
         "videoLinkPlaceholder": "https://... (60–90 sec)",
         "themeConnectionOptions": {
-          "identity": "Identity & Belonging",
-          "future skills": "Future Skills",
-          "wellbeing": "Wellbeing & Mental Health",
-          "creativity": "Creativity & Innovation",
-          "community": "Community & Connection",
-          "stems": "Science, Tech, Engineering & Math (STEMs)",
-          "ai": "Artificial Intelligence",
-          "life skills": "Life Skills"
+          "spark": "THE SPARK: Where every idea begins. Share the moment that inspired your idea.",
+          "leap": "THE LEAP: Choosing to take the first step. Share how you turned an idea into action.",
+          "ripple": "THE RIPPLE: When one idea reaches others. Share how your idea made a difference.",
+          "beyond": "BEYOND: Imagining what comes next. Share your vision for the future."
         },
         "schoolNamePlaceholder": "School Name",
         "guardianNamePlaceholder": "Guardian's Full Name",

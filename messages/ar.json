@@ -316,8 +316,8 @@
       },
       "hero": {
         "badge": "فريق TEDx 2026",
-        "mainTitle": "مهندسو",
-        "highlightTitle": "الأفكار."
+        "taglineMain": "المستقبل يصنعه",
+        "taglineHighlight": "ما نفعله اليوم."
       },
       "footer": {
         "totalMembers": "إجمالي الأعضاء",
@@ -654,14 +654,10 @@
         "whyItMattersPlaceholder": "ما الأثر الذي ستتركه؟",
         "videoLinkPlaceholder": "https://... (60–90 ثانية)",
         "themeConnectionOptions": {
-          "identity": "الهوية والانتماء",
-          "future skills": "مهارات المستقبل",
-          "wellbeing": "الرفاهية والصحة النفسية",
-          "creativity": "الإبداع والابتكار",
-          "community": "المجتمع والتواصل",
-          "stems": "العلوم والتقنية والهندسة والرياضيات (STEMs)",
-          "ai": "الذكاء الاصطناعي",
-          "life skills": "مهارات الحياة"
+          "spark": "الشرارة: حيث تبدأ كل فكرة. شاركنا اللحظة التي ألهمت فكرتك.",
+          "leap": "القفزة: اختيار اتخاذ الخطوة الأولى. شاركنا كيف حوّلت فكرتك إلى فعل.",
+          "ripple": "التموّج: عندما تصل فكرتك إلى الآخرين. شاركنا كيف أحدثت فكرتك فرقًا.",
+          "beyond": "ما بعد ذلك: تخيّل ما هو قادم. شاركنا رؤيتك للمستقبل."
         },
         "schoolNamePlaceholder": "اسم المدرسة",
         "guardianNamePlaceholder": "اسم ولي الأمر",

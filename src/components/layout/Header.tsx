@@ -13,7 +13,6 @@ import {
   Menu,
   X,
   Home,
-  Users,
   Users2,
   Ticket,
   Handshake,
@@ -44,7 +43,6 @@ export default function Header() {
 
 const ALL_LINKS = useMemo(() => [
   { label: t("home"), href: "/", icon: Home },
-  { label: t("speakers"), href: "/speakers", icon: Users },
   { label: t("team"), href: "/team", icon: Users2 },
   { label: t("apply"), href: "/apply", icon: Handshake },
   { label: t("tickets"), href: "/tickets", icon: Ticket },

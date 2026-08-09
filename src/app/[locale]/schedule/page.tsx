@@ -88,6 +88,7 @@ export default async function SchedulePage({ params }: Props) {
             filterLabels={filterLabels}
             periodLabels={periodLabels}
             emptyLabel={t("empty")}
+            showSpeakers={Boolean(eventInfo?.showSpeakers)}
           />
         </div>
       </section>

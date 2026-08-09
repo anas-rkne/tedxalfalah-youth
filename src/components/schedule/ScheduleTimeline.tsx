@@ -16,6 +16,7 @@ interface ScheduleTimelineProps {
     afternoon: string;
     evening: string;
   };
+  showSpeakers: boolean;
 }
 
 function getPeriod(startTime: string): "morning" | "afternoon" | "evening" {
@@ -45,6 +46,7 @@ const ScheduleTimeline = memo(function ScheduleTimeline({
   typeLabels,
   activeFilter,
   periodLabels,
+  showSpeakers,
 }: ScheduleTimelineProps) {
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
@@ -153,6 +155,7 @@ const ScheduleTimeline = memo(function ScheduleTimeline({
                         session={session}
                         typeLabels={typeLabels}
                         index={idx}
+                        showSpeakers={showSpeakers}
                       />
                     </div>
                   </div>

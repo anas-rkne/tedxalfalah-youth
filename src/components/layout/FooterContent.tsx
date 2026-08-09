@@ -73,7 +73,6 @@ export default function FooterContent() {
 
   const quickLinks = useMemo(() => [
     { label: tCommon("home"), href: "/" },
-    { label: tCommon("speakers"), href: "/speakers" },
     { label: tCommon("team"), href: "/team" },
     { label: tCommon("apply"), href: "/apply" },
     { label: tCommon("tickets"), href: "/tickets" },

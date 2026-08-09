@@ -24,6 +24,14 @@ export default defineType({
       title: "Venue",
       type: "string",
     }),
+    defineField({
+      name: "showSpeakers",
+      title: "Show Speakers Section",
+      description:
+        "Turn ON to make the Speakers section and page visible once the lineup is ready.",
+      type: "boolean",
+      initialValue: false,
+    }),
   ],
   preview: {
     select: { title: "title", subtitle: "date" },

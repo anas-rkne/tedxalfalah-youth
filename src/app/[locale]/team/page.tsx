@@ -43,8 +43,8 @@ export default async function TeamPage({ params }: Props) {
       {/* ═══════════ HERO ═══════════ */}
       <DarkHeroSection
         badgeLabel={t("hero.badge")}
-        mainTitle={t("hero.mainTitle")}
-        highlightTitle={t("hero.highlightTitle")}
+        mainTitle={t("hero.taglineMain")}
+        highlightTitle={t("hero.taglineHighlight")}
         description={t("meta.description")}
         isArabic={isArabic}
       />

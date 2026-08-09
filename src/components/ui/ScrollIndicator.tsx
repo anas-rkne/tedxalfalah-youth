@@ -16,7 +16,6 @@ const sections: Section[] = [
   { id: "hero", label: "Home", labelAr: "الرئيسية" },
   { id: "about", label: "About", labelAr: "عنّا" },
   { id: "theme", label: "Theme", labelAr: "الموضوع" },
-  { id: "speakers", label: "Speakers", labelAr: "المتحدثون" },
   { id: "highlights", label: "Highlights", labelAr: "الأبرز" },
   { id: "schedule", label: "Schedule", labelAr: "الجدول" },
   { id: "apply", label: "Apply", labelAr: "تقديم" },

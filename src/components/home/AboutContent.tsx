@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
 import { Lightbulb } from "lucide-react";
@@ -8,12 +8,21 @@ import { useRTL } from "@/hooks/useRTL";
 import SectionBadge from "@/components/ui/SectionBadge";
 import FadeUp from "@/components/shared/FadeUp";
 
+// استيراد CSS الخاص بـ Leaflet (ضروري لظهور الخريطة والأزرار)
+import "leaflet/dist/leaflet.css";
+
 // الخريطة التفاعلية تُحمَّل من جهة العميل فقط (ssr: false) لأن Leaflet يعتمد على واجهة المتصفح (window)
 const LeafletMap = dynamic(
   () => import("@/components/ui/LeafletMap").then((mod) => mod.default),
-  { ssr: false }
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full min-h-[300px] md:min-h-[400px] bg-muted/20 animate-pulse rounded-xl flex items-center justify-center text-muted-foreground text-sm">
+        جاري تحميل الخريطة...
+      </div>
+    )
+  }
 );
-
 
 interface AboutContentProps {
   heading: string;
@@ -21,7 +30,6 @@ interface AboutContentProps {
   licenseNote: string;
   badgeLabel: string;
   mapAlt: string;
-  venueName?: string | null;
   valuesLabels: {
     platform: string;
     community: string;
@@ -124,7 +132,6 @@ export default function AboutContent({
   licenseNote,
   badgeLabel,
   mapAlt,
-  venueName,
   valuesLabels,
   ctaHeading,
   ctaDescription,
@@ -133,6 +140,22 @@ export default function AboutContent({
 }: AboutContentProps) {
   const { isRTL } = useRTL();
   const shouldReduceMotion = useReducedMotion();
+
+  // تصحيح مسارات أيقونات Marker الخاصة بـ Leaflet في بيئة Next.js
+  useEffect(() => {
+    // يتم تنفيذ هذا الكود فقط في المتصفح (العميل)
+    if (typeof window !== "undefined") {
+      import("leaflet").then((L) => {
+        // حذف المسار المخزن مؤقتاً للأيقونة الافتراضية وإعادة تعيينه
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+          iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+          shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        });
+      });
+    }
+  }, []);
 
   const titleWords = useMemo(() => heading.split(" "), [heading]);
   const highlightWords = ["TED", "TEDx"];
@@ -176,7 +199,7 @@ export default function AboutContent({
         </motion.div>
       </div>
 
-{/* ─── CONTENT ─── */}
+      {/* ─── CONTENT ─── */}
       <div className="container-padding max-w-7xl mx-auto mt-10 md:mt-16">
         {/* dir="ltr" يثبت الترتيب البصري: النص يسار، الخريطة يمين، في كل اللغات */}
         <div
@@ -215,7 +238,7 @@ export default function AboutContent({
           </motion.div>
 
           {/* خريطة دبي التفاعلية (Leaflet — تحريك وتكبير) على الجانب الأيمن من النص في كل اللغات
-              عبر flex-1 + md:order-last؛ تُمرَّر إحداثيات المكان الافتراضية (متحف المستقبل) واسم المكان من Sanity إن وُجد */}
+              تم إضافة ارتفاع ثابت للحاوية لضمان ظهور الخريطة */}
           <motion.div
             initial={shouldReduceMotion ? {} : { opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -223,11 +246,13 @@ export default function AboutContent({
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex-1 md:order-last flex justify-center w-full"
           >
-            <div className="relative w-full max-w-md lg:max-w-lg" aria-label={mapAlt}>
+            <div 
+              className="relative w-full max-w-md lg:max-w-lg h-[300px] md:h-[400px] rounded-xl overflow-hidden shadow-lg" 
+              aria-label={mapAlt}
+            >
               <LeafletMap
-                center={[25.212, 55.282]}
+                center={[25.212, 55.282]} // إحداثيات متحف المستقبل في دبي
                 zoom={15}
-                venueName={venueName}
               />
             </div>
           </motion.div>

@@ -41,9 +41,10 @@ interface ScheduleItemProps {
   session: Session;
   typeLabels: Record<string, string>;
   index: number;
+  showSpeakers: boolean;
 }
 
-const ScheduleItem = memo(function ScheduleItem({ session, typeLabels, index }: ScheduleItemProps) {
+const ScheduleItem = memo(function ScheduleItem({ session, typeLabels, index, showSpeakers }: ScheduleItemProps) {
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
   const config = TYPE_CONFIG[session.type];
@@ -98,7 +99,7 @@ const ScheduleItem = memo(function ScheduleItem({ session, typeLabels, index }: 
           </h3>
           {session.speakerName && (
             <p className={`text-sm text-tedx-red mt-1 ${isRTL ? "font-arabic" : ""}`}>
-              {session.speakerId ? (
+              {session.speakerId && showSpeakers ? (
                 <Link
                   href={`/speakers#${session.speakerId}`}
                   className="hover:underline inline-flex items-center gap-1"

@@ -63,6 +63,7 @@ export interface EventInfo {
   title?: string;
   date?: string;
   venue?: string;
+  showSpeakers?: boolean;
 }
 
 export interface GalleryImage {

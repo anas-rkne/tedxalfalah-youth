@@ -27,8 +27,8 @@ export default async function NotFound() {
           <Button href="/" variant="primary" size="md">
             {t("backHome")}
           </Button>
-          <Button href="/speakers" variant="outline" size="md">
-            {t("meetSpeakers")}
+          <Button href="/tickets" variant="outline" size="md">
+            {tNav("tickets")}
           </Button>
         </div>
 

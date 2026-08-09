@@ -67,9 +67,11 @@ export default async function Home({ params }: Props) {
         <Highlights locale={locale} />
       </ScrollSection>
 
-      <ScrollSection variant="stagger" id="speakers" className="bg-white">
-        <SpeakersPreview locale={locale} />
-      </ScrollSection>
+      {eventInfo?.showSpeakers && (
+        <ScrollSection variant="stagger" id="speakers" className="bg-white">
+          <SpeakersPreview locale={locale} />
+        </ScrollSection>
+      )}
 
       <ScrollSection variant="default" id="schedule" className="bg-white">
         <ScheduleBanner locale={locale}  />
