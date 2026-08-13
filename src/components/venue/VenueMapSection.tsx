@@ -40,6 +40,10 @@ const VenueMapSection = memo(function VenueMapSection({
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <div className="absolute inset-0 rounded-[20px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)] pointer-events-none z-10" />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-slate-900/20 pointer-events-none z-10"
+          />
           <iframe
             title={mapTitle}
             src={mapSrc || "https://www.google.com/maps?q=24.4356691,54.7326539&z=15&output=embed"}

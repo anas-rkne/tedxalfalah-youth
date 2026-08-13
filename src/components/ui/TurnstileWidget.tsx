@@ -14,6 +14,7 @@ declare global {
         }
       ) => string;
       reset: (widgetId?: string) => void;
+      remove: (widgetId: string) => void;
     };
   }
 }
@@ -51,11 +52,21 @@ export default function TurnstileWidget({ onVerify }: TurnstileWidgetProps) {
       const script = document.createElement("script");
       script.id = scriptId;
       script.src =
-        "https://challenges.cloudflare.com/turnstile/v0/api.js";
+        "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
       script.async = true;
       script.onload = renderWidget;
       document.body.appendChild(script);
     }
+    return () => {
+      if (widgetIdRef.current && window.turnstile) {
+        try {
+          window.turnstile.remove(widgetIdRef.current);
+        } catch {
+          // تجاهل — الودجت قد يكون أُزيل بالفعل مع DOM
+        }
+        widgetIdRef.current = undefined;
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -60,14 +60,14 @@
 
 ### 2.3 إعدادات النشر: `output: 'standalone'` (مفعّل إلزاميًا)
 
-**الوضع الحالي**: `output: "standalone"` **مفعّل بالفعل** في `next.config.ts` (أعلى كتلة `images`). بعد `npm run build` ينتج مجلد `.next/standalone/` — تحقق منه قبل النشر:
+**الوضع الحالي**: `output: "standalone"` **مفعّل بالفعل** في `next.config.ts` (أعلى كتلة `images`). بعد `npm run build` ينتج مجلد `.next/standalone/` — و**سكربت `postbuild` في `package.json` ينسخ تلقائيًا** `public` → `.next/standalone/public` و`.next/static` → `.next/standalone/.next/static` (متطلب Next الرسمي للـ standalone — بدونها تتعطل كل الأصول: sw.js → 404 والموقع يقف عند "Loading..."). تحقق منه قبل النشر:
 
-1. أعد البناء محليًا: `npm run build` ثم تأكد من وجود `.next/standalone/` و`.next/standalone/server.js`.
+1. أعد البناء محليًا: `npm run build` (يعمل النسخ تلقائيًا بعد البناء — تحقق من رسالة `postbuild` في نهاية الإخراج) ثم تأكد من وجود `.next/standalone/server.js` و`.next/standalone/public/sw.js`.
 2. في Hostinger غيّر Start Command إلى:
    ```
    node .next/standalone/server.js
    ```
-   **وشرط مسبق**: بعد البناء يجب نسخ `.next/static` إلى `.next/standalone/.next/static` و`public` إلى `.next/standalone/public` (متطلب Next الرسمي لـ standalone — بدونها تعطل الصور/الأصول). إن كانت خطوة النسخ تُنفَّذ تلقائيًا في Web App عبر أمر بناء مخصص أضفها للأمر: `npm run build && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public`.
+   **والخطوة 2 لا تتطلب أوامر نسخ يدوية إضافية** — `postbuild` يتشغّل تلقائيًا مع `npm run build`.
 
 ### 2.4 متغيرات البيئة في Hostinger
 

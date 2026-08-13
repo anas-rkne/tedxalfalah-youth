@@ -25,6 +25,11 @@ export default async function VenuePage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: "page.venue" });
   const galleryImages = await getGalleryImages();
 
+  // خريطة موحّدة بالإنجليزية (قرار 2026-08-13: أسماء الشوارع وغيرها باللغة الإنجليزية في كل اللغات)
+  const venueEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
+    "Nabd AlFalah Abu Dhabi"
+  )}&hl=en&z=16&output=embed`;
+
   return (
     <div className="bg-background">
       {/* ═══════ Hero ═══════ */}
@@ -58,7 +63,7 @@ export default async function VenuePage({ params }: Props) {
         title={t("gettingThere.title")}
         mapTitle={t("gettingThere.mapTitle")}
         directions={t("gettingThere.directions")}
-        mapSrc={process.env.NEXT_PUBLIC_VENUE_MAP_URL}
+        mapSrc={venueEmbed}
       />
 
       {/* ═══════ Accessibility ═══════ */}

@@ -30,6 +30,7 @@ interface AboutContentProps {
   licenseNote: string;
   badgeLabel: string;
   mapAlt: string;
+  venueLabel: string;
   valuesLabels: {
     platform: string;
     community: string;
@@ -132,6 +133,7 @@ export default function AboutContent({
   licenseNote,
   badgeLabel,
   mapAlt,
+  venueLabel,
   valuesLabels,
   ctaHeading,
   ctaDescription,
@@ -253,6 +255,7 @@ export default function AboutContent({
               <LeafletMap
                 center={[24.4356691, 54.7326539]} // إحداثيات نبض الفلاح في أبوظبي
                 zoom={16}
+                venueLabel={venueLabel}
               />
             </div>
           </motion.div>

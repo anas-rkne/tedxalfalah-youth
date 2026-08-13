@@ -256,7 +256,7 @@ const FlipClock = ({
       {...props}
     >
       <span dir="ltr" className="sr-only absolute">
-        {`${time.hours}:${time.minutes}:${time.seconds}`}
+        {`${hoursStr}:${minutesStr}:${secondsStr}`}
       </span>
 
       {/* حاوية الأب: اتجاهها LTR للحفاظ على ترتيب الأرقام */}

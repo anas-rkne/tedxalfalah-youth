@@ -133,7 +133,74 @@
 
 ---
 
-## ملاحظة التسجيل القادم
+## [v1.0.0-cms] — 2026-08-13 · جلسة Sanity مع العميل
+
+دخول بحساب المالك (`tedxalfalahyouth@gmail.com` عبر Google 2SV) وتفعيل إدارة المحتوى أول مرة على منصات Sanity الحية.
+
+### Added
+- **نشر Studio**: `https://tedxalfalahyouth.sanity.studio` (الأنواع السبعة — شملت `order` في speaker و`showSpeakers`/`showSponsors`).
+- **Webhook "TEDxAlFalah Production"** (ID `IHLe79lih3XyTr82`): أحداث create/update/delete + فلتر الأنواع السبعة → `https://tedxalfalahyouth.com/api/revalidate?secret=…` — أنشئ برمجيًا عبر `sanity exec --with-user-token` (لأن `sanity hook create` بهذا الإصدار يفتح اللوحة فقط).
+- **بذر المحتوى الأول**: `eventInfo-main` (Weaving Tomorrow · `date 2026-12-19` · venue "نبض الفلاح — درب الفلاح، الفلاح، أبو ظبي، الإمارات" · `showSpeakers`/`showSponsors` ON) + `speaker-demo-ahmed`/`speaker-demo-sara` (wave 1، order 0/1، منشوران دون صور — placeholder آمن).
+
+### Changed
+- `NEXT_PUBLIC_VENUE_MAP_URL` في `.env.local` ← `https://maps.app.goo.gl/3CngUphEsitFhBGo7?g_st=ic` (رابط المكان الرسمي — NO_BOM مؤكد).
+- **الخرائط ثنائية اللغة**: popup خريطة الرئيسية (LeafletMap) يقرأ `home.about.venuePopupLabel` الجديد (EN "Nabd AlFalah — Abu Dhabi" / AR "نبض الفلاح — أبوظبي") بـ `dir="auto"` بدل النص العربي الثابت · خريطة صفحة Venue (iframe) تُبنى حسب اللغة (`hl=en`/`hl=ar` + استعلام المكان بلغتها) جاهزة لأول إظهار للصفحة.
+
+### Security
+- حذف التوكن المؤقت `Studio Deploy` (`siPsRhDxip7CUo`) — **المشروع الآن بلا API tokens** (الاستوديو عبر جلسة CLI للمالك؛ الويب يقرأ قراءة عامة).
+
+### Fixed (ملاحظات تشغيلية)
+- `sanity documents query` بهذا الإصدار يعيد `[]` (خلل في تحليل الوسائط) — التحقق عبر curl/`sanity exec` (موثق في `docs/12` §6).
+- **خطأ "Map container is already initialized"** في Dev (سباق StrictMode): تحريك حارس `mapInstanceRef` بعد `await import("leaflet")` + `remove()` لأي خريطة سابقة في `LeafletMap.tsx` (لم يعد الخطأ يظهر — تحقق إنتاجي على standalone).
+- **توحيد مصادر التاريخ**: العداد ونص تاريخ الهيرو يقرآن `eventInfo.date` من Sanity (`Hero` يستقبل `eventDate` ← `countdownTarget=${date}T09:00:00+04:00`، والنص عبر `toLocaleDateString` ar-AE/en-US) مع بقاء ثوابت `messages` و`EVENT_DATE` كـ fallback فقط.
+- **تحذير «Ignored message from wrong origin» من Turnstile في Dev**: تحذير تشخيصي غير ضار من سكربت Cloudflare (يستمع لرسائل `window` فتصلبه رسائل الـ dev المحلية فيطبعها ويتجاهلها — لا أثر على التحقق ولا يظهر في الإنتاج) — تحصين إضافي في `TurnstileWidget.tsx`: `?render=explicit` + `turnstile.remove(widgetId)` عند unmount لقتل iframe متبقٍ أثناء تنقلات SPA.
+- **خريطة إنجليزية دائمًا (قرار العميل 2026-08-13)**: كانت بلاطات CARTO تعرض أسماءً عربية حتى بالإنجليزية (تجريبيًا: `?lang=` متجاهل تمامًا — بايتات متطابقة). الآن بلا تفرع لغوي: `LeafletMap.tsx` = قاعدة **Esri World_Imagery** (قمر صناعي واقعي، مجاني بلا مفتاح) + تسميات **Esri World_Transportation** (إنجليزية) للغتين · صفحة Venue: iframe غوغل واحد `hl=en` (أُلغي فرع `isArabic`) · CSP `img-src`: أُضيف `https://server.arcgisonline.com` وأُزيل `https://*.basemaps.cartocdn.com` (غير مستخدم) · العلامة النابضة والبوب أب (ثنائي اللغة — نص موقع) بلا تغيير.
+- **إخفاء قسم السبونسر**: السبب — بذر `eventInfo-main` اليوم بـ `showSponsors: true` مع صفر رعاة فأظهر «حالة فارغة» (40vh). الحل: `showSponsors: false` في Sanity (patch مباشر عبر `@sanity/client` بتوكن جلسة CLI) + تحصين `SponsorsStripContent.tsx` — لا يُعرض القسم أصلًا عند غياب رعاة (`return null`؛ أُزيلت أيقونة Handshake وprop `emptyLabel`).
+
+---
+
+## [v1.0.0-cleanup] — 2026-08-13 · تنظيف البيانات التجريبية وتحكّم العميل (قرارات جلسة العميل)
+
+تنفيذ قرارات العميل (2026-08-13): صفحات المتحدثين والفريق **تفتح دائمًا** بحالة «قريبًا» (بلا 404)، والأعلام الثلاثة تتحكم **بقسم الرئيسية فقط**.
+
+### Added
+- **قسم «فريق المنظمة» بالرئيسية**: حقل `showTeam` في `eventInfo` (`studio/schemaTypes/eventInfo.ts`) + مكوّن `TeamPreview` (`src/components/home/TeamPreview.tsx` — 8 أعضاء كحد أقصى + زر "Meet the Team") + ترجمة `home.teamPreview` (en/ar) + النوع وGROQ (`src/lib/types.ts` / `data.ts`) — **نشر Studio محدّث**.
+- **طبقة تعتيم داكنة** فوق الخريطتين لرفع تباين القراءة: `LeafletMap.tsx` (div `z-[450] bg-slate-900/20 pointer-events-none` — تحت العلامة والبوب أب، فوق البلاطات) + `VenueMapSection.tsx`.
+
+### Changed
+- **إلغاء نشر المتحدثين التجريبيين** `speaker-demo-ahmed`/`speaker-demo-sara` (`isPublished: false` — بلا حذف؛ البيانات باقية في Sanity) → عدّاد المتحدثين المنشورين = 0 والموقع نظيف.
+- **دلالة الأعلام الثلاثة محدّدة**: `showSpeakers`/`showSponsors`/`showTeam` تتحكم **بقسم الرئيسية فقط**؛ صفحات `/speakers` و`/team` مفتوحة دائمًا وتعرض حالة الفراغ المصممة (أُزيلت بوابة `notFound()` من الصفحتين نهائيًا — قرار العميل الصريح). أوصاف الحقول في الـ schema نُقّحت («Homepage section»).
+- `showSpeakers: false` في `eventInfo-main` (patch مباشر عبر `@sanity/client` بتوكن جلسة CLI — بلا سكربت مؤقت متبقٍ) → قسم المتحدثين بالرئيسية مخفي حتى يفعّله العميل.
+- تحديث الوثائق: `docs/01` · `docs/02` §6.5 · `docs/04` §2.7/§4.1/§8 · `docs/07` · `docs/09` §2 · `docs/12` §4.2/§6.
+
+### Fixed (نتائج الفحص الشامل قبل النشر — `docs/11` §1.8)
+- **56/56 فحصًا فعليًا ناجحًا** على خادم standalone (منفذ 3001): كل المسارات 200 (en/ar) + الروبوتات/Sitemap/الترويسات (CSP/X-Frame/HSTS) + واجهات API + حالات الفراغ.
+- **Turnstile**: النموذج يُبنى client-side (الحزمة `0ybt9bfy7l393.js` تحوي `render=explicit` + site key؛ `0_3tc6k_y0mrj.js` تحوي حقول النموذج) — غيابه من SSR متوقع وليس خللًا.
+- **`/api/contact`**: مؤكد `{"success":true}` بجسم صالح (`subject` من القائمة المسموحة + `message` ≥10 — رسالة "Invalid form data" الدقيقة تُثبت عمل zod) · **`/en/apply`**: مفتوح (الموعد الافتراضي 2026-09-30T23:59:59+04:00 — أمامه 6 أسابيع).
+
+---
+
+## [v1.0.0-e2e] — 2026-08-13 · اختبار المتصفح الآلي الشامل (Playwright)
+
+إغلاق فجوة «الفحص من المتصفح» التي لم تُغطَّ بالفحص الخادمي — بناءً على طلب العميل المباشر.
+
+### Added
+- **مجموعة Playwright كاملة** (`@playwright/test` + `playwright.config.ts` + `e2e/*.spec.ts` — **25 اختبارًا** على مشروعين desktop/mobile عبر `channel: "msedge"` (يستخدم Edge المثبت — بلا تنزيل متصفحات، لأن CDN غير مستقر في بيئة التشغيل): تنقل وعدّاد يعدّ + RTL ومبدّل اللغة، حالات فراغ كل الصفحات، فلترة الجدول، أكورديون FAQ، **فورمات من طرف لطرف** (Contact وApply → صفحتا الشكر)، خرائط (Leaflet علامة/بوب أب + تعتيم + iframe venue `hl=en`)، PWA (تسجيل + تحكم + **عمل بعد قطع الشبكة**)، وقائمة الجوال.
+- **نتيجة: 25/25 ناجحة مرتين متتاليتين (2026-08-13)** — التوثيق والتفاصيل في `docs/11` §1.9.
+
+### Fixed
+- **اكتشاف واصلاح 403 "Forbidden: origin not allowed" في المتصفح**: `ALLOWED_API_ORIGINS` الافتراضية في `src/lib/cors.ts` أُضيف إليها `http://localhost:3001` (منفذ خادم الاختبار) — وأُكد أن origin دخيل (`evil.example.com`) يبقى 403.
+- **إصلاح وصول (a11y) حقيقي**: نص العداد لقارئ الشاشة (`flip-clock.tsx` sr-only) كان غير مبطن بالأصفار ("13:4:53") → الآن "13:04:53".
+- `.gitignore`: أنماط `test-results/` و`playwright-report/` و`blob-report/` و`playwright/.cache/`.
+- وثائق: `docs/03` (ALLOWED_API_ORIGINS + 3001) · `docs/06` (القائمة الثابتة المحدّثة) · `docs/11` §1.9 (نتائج المتصفح الكاملة).
+
+### ملاحظات فحصية (سلوك متوقع، لا أخطاء)
+- Turnstile محليًا: خطأ `110200` (لا اتصال بـ challenges.cloudflare.com في بيئة الاختبار — fail-open بلا سر؛ في الإنتاج يُتحقق فعلًا).
+- Sanity لحظيًا: هشاشة نشر → JSON-LD يعود لـ fallback ("Abu Dhabi, United Arab Emirates") — Fail-Open مصمم.
+- قائمة الجوال تعرض 4 عناصر فقط (Home/Team/Apply/Tickets) — تصميم مقصود.
+- GA4 يُطلق على standalone محليًا لأن `NODE_ENV=production` — كما صُمم.
+
+---
 
 | بعد | التحديث المتوقع |
 | :--- | :--- |

@@ -25,8 +25,6 @@ export default async function SponsorsStrip({ locale }: { locale: string }) {
       ctaHeading={t("ctaHeading")}
       ctaDescription={t("ctaDescription")}
       ctaLabel={t("ctaLabel")}
-
-      emptyLabel={t("empty")}
     />
   );
 }

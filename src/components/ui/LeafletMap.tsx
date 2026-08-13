@@ -10,7 +10,7 @@ interface LeafletMapProps {
   venueLabel?: string;
 }
 
-const VENUE_LABEL = "نبض الفلاح — أبوظبي";
+const VENUE_LABEL = "";
 
 export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -20,23 +20,35 @@ export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps
     if (typeof window === "undefined") return;
     if (!mapRef.current) return;
 
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove();
-      mapInstanceRef.current = null;
-    }
-
     const initMap = async () => {
       const L = (await import("leaflet")).default;
+      const container = mapRef.current;
+      if (!container) return;
 
-      const map = L.map(mapRef.current!).setView(center, zoom);
+      // الحماية من سباق StrictMode: الحذف بعد اكتمال الاستيراد وقبل إنشاء الخريطة مباشرة
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
 
+      const map = L.map(container).setView(center, zoom);
+
+      // القاعدة: قمر صناعي Esri (مجاني بلا مفتاح API)
       L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/">CARTO</a>',
-          subdomains: "abcd",
           maxZoom: 19,
+          attribution:
+            "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+        }
+      ).addTo(map);
+
+      // التسميات: شوارع وأسماء إنجليزية (Esri) — موحّدة باللغتين
+      L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}",
+        {
+          maxZoom: 19,
+          attribution: "&copy; Esri",
         }
       ).addTo(map);
 
@@ -53,12 +65,14 @@ export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps
         iconAnchor: [12, 12],
       });
 
+      const popupLabel = venueLabel || VENUE_LABEL;
+
       L.marker(center, { icon: venueIcon })
         .addTo(map)
         .bindPopup(
           `<div class="text-center font-medium">
              <span class="block text-[#E62B1E] font-bold">TEDxAlFalah Youth</span>
-             <span class="text-xs opacity-70">${venueLabel || VENUE_LABEL}</span>
+             ${popupLabel ? `<span class="text-xs opacity-70" dir="auto">${popupLabel}</span>` : ""}
            </div>`,
           { closeButton: false }
         );
@@ -76,5 +90,14 @@ export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps
     };
   }, [center, zoom, venueLabel]);
 
-  return <div ref={mapRef} className="w-full h-full" />;
+  return (
+    <div className="relative w-full h-full">
+      <div ref={mapRef} className="w-full h-full" />
+      {/* طبقة تعتيم شفافة فوق البلاطات — تحت العلامة والبوب أب */}
+      <div
+        aria-hidden
+        className="absolute inset-0 z-[450] pointer-events-none bg-slate-900/20"
+      />
+    </div>
+  );
 }

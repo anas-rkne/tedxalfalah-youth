@@ -146,6 +146,53 @@ curl -X POST http://localhost:3000/api/apply \
 Invoke-RestMethod -Uri http://localhost:3000/api/contact -Method Post -ContentType "application/json" -Body '{"name":"Test","email":"a@b.com","subject":"General","message":"Test message ten chars.","turnstileToken":"dummy-token"}'
 ```
 
+### 1.8 الفحص الشامل قبل النشر — النتائج (2026-08-13)
+
+تشغيل على خادم standalone (منفذ 3001): **56/56 فحصًا ناجحًا** — سكربت كامل في `%TEMP%\opencode\test-all.ps1`.
+
+| الفئة | النتائج |
+| :--- | :--- |
+| المسارات (en/ar) | 14 صفحة × لغتين = **200** — منها `/speakers` و`/team` بحالة «قريبًا» المصممة (لا 404 — قرار العميل) |
+| مسارات خاطئة | `/en/nonexistent` و`/ar/nonexistent` = **404** (صفحة NotFound ثنائية اللغة) |
+| الرئيسية | بلا أقسام متحدثين/رعاة/فريق (الأعلام OFF)، لا أثر لأسماء أحمد/سارة، JSON-LD `startDate 2026-12-19` + مكان `نبض الفلاح` |
+| الخرائط | venue iframe `hl=en` · `LeafletMap` بعتيم `bg-slate-900/20` (طبقة CSS ظاهرة في الـ SSR) |
+| SEO | `robots.txt` يسمح + يشير لـ sitemap · `sitemap.xml` فيه كل المسارات + alternates |
+| الترويسات | CSP (Sanity/esri/Cloudflare/GTM…) · `X-Frame-Options` · `Strict-Transport-Security` · `nosniff` · `Referrer-Policy` · `Permissions-Policy` — الكل بحضورها |
+| API | `{}` → 400 · JSON مكسور → 400 (رسالة "Invalid JSON body" دقيقة) · GET → 405 · `revalidate` بلا سر → 200 محليًا (يشترط `SANITY_WEBHOOK_SECRET` في الإنتاج) |
+| Contact فعلي | بجسم صالح (`subject` من القائمة + `message` ≥10) → **`{"success":true}`** · بجسم ناقص → رسالة `Invalid form data` بحقولها الدقيقة (إثبات عمل zod) |
+| Apply | مفتوح (الموعد الافتراضي 2026-09-30) · Turnstile + النموذج **يُبنى client-side** — تحقق من الحزم: `0ybt9bfy7l393.js` يحوي `render=explicit` + site key، و`0_3tc6k_y0mrj.js` يحوي `fullName` (غيابهما من الـ SSR **سلوك متوقع** لا خلل) |
+
+**ملاحظات تشغيلية**: سكربتات PowerShell لا تستخدم `curl -o NUL` (خطأ "filename or extension is too long") — استخدم `-o $tmp -w "%{http_code}"` · إعادة `npm run build` مع خادم standalone يعمل = `EBUSY` على `.next\standalone` — أوقف الخادم أولًا.
+
+### 1.9 اختبار المتصفح الآلي (Playwright) — النتائج (2026-08-13)
+
+مجموعة **25 اختبارًا** في `e2e/` (Playwright + `channel: "msedge"` — يستخدم Edge المثبت بلا تنزيل متصفحات) تعمل على خادم standalone منفذ 3001 (`playwright.config.ts` يضبط `webServer` مع `reuseExistingServer: true`):
+
+```bash
+npx playwright test          # كامل (desktop + mobile)
+npx playwright test e2e/forms.spec.ts   # ملف واحد
+```
+
+| الفئة | الاختبارات |
+| :--- | :--- |
+| navigation | الهيرو + العدّاد يعدّ كل ثانية (نص `.sr-only` مبطن الأصفار) + غياب البيانات التجريبية + JSON-LD (Event/startDate) + 404 → 404 + **10 مسارات × لغتين = 200** + مبدّل اللغة (en→ar `dir=rtl`) |
+| pages | حالات فراغ المتحدثين/الفريق/الفعاليات/الجدول (لغتين) + تبويبات فلتر الجدول (4، `aria-selected` يتغير) + تحقق فورم Apply (رسائل zod) + تبديل المسار (شاب↔خبير — حقول شرطية) + أكورديون FAQ |
+| forms (من طرف لطرف) | **Contact كامل** → `thank-you?type=contact` "Your message has been received" · **Apply كامل** (شاب) → `thank-you?type=apply` "Thank you for applying to join us" |
+| map | خريطة الرئيسية (Leaflet يظهر + علامة + بوب أب "TEDxAlFalah Youth" × "Nabd AlFalah") + الطبقة الداكنة فوق البلاطات (`z-index ≥450`, `pointer-events: none`) + iframe venue (`google.com/maps` + `hl=en`) + تعتيم venue |
+| pwa | `sw.js` يخدم (200 + content-type js) + يتسجّل ويتحكم + **الموقع يعمل بعد قطع الشبكة** (كاش nav أو `offline.html`) |
+| mobile | قائمة الجوال تفتح (`aria-expanded`) وتنقل (Team) + الرئيسية والعداد على منفذ 390px + RTL |
+
+**النتيجة النهائية: 25/25 ناجحة (مرتان متتاليتان — 2026-08-13).**
+
+**نتائج فحصية مهمة من الجلسة**:
+
+1. **اكتشاف 403 "origin not allowed"**: المتصفح يرسل `Origin: http://localhost:3001` والقائمة الثابتة في `cors.ts` لم تكن تشمل 3001 → أُضيف (`src/lib/cors.ts` أسطر 3–8) — **تأكيد أمني: origin دخيل يبقى 403** (مُختبَر). في الإنتاج لا حاجة (الموقع والـ API نفس الأصل).
+2. **Turnstile محليًا يعطي خطأ 110200** (لا اتصال بـ challenges.cloudflare.com في بيئة الاختبار) — متوقع؛ قارئ القرصنة fail-open بلا سر — **في الإنتاج يُتحقق فعلًا** (جلسة مفاتيح العميل).
+3. **إصلاح وصول (a11y) حقيقي**: نص العداد لقارئ الشاشة كان غير مبطن "13:4:53" → صار "13:04:53" (`flip-clock.tsx` — يستخدم المتغيرات المبطنة).
+4. قائمة الجوال تعرض 4 عناصر فقط (Home/Team/Apply/Tickets) — **تصميم مقصود** وليس بندًا ناقصًا (الاختبار يعتمد على Team).
+5. هشاشة خارجية ملاحظة: جلب Sanity قد يفشل لحظيًا (فشل نشر) → JSON-LD يستخدم fallback "Abu Dhabi, United Arab Emirates" — Fail-Open مصمم، يُعاد المحاولة تلقائيًا.
+6. GA4 يُطلق حتى محليًا على standalone (`NODE_ENV=production`) — كما صُمم (Production-only).
+
 ---
 
 ## 2. مصفوفة اختبار البريد الكامل (Test Matrix)

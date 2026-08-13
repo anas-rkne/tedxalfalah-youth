@@ -26,17 +26,25 @@ export default defineType({
     }),
     defineField({
       name: "showSpeakers",
-      title: "Show Speakers Section",
+      title: "Show Speakers Section (Homepage)",
       description:
-        "Turn ON to make the Speakers section and page visible once the lineup is ready.",
+        "Turn ON to show the Speakers section on the homepage. The Speakers page always opens and shows a 'coming soon' message until speakers are published.",
       type: "boolean",
       initialValue: false,
     }),
     defineField({
       name: "showSponsors",
-      title: "Show Sponsors Section",
+      title: "Show Sponsors Section (Homepage)",
       description:
-        "Turn ON to make the Sponsors section visible once partners are confirmed.",
+        "Turn ON to show the Sponsors section on the homepage once partners are confirmed.",
+      type: "boolean",
+      initialValue: false,
+    }),
+    defineField({
+      name: "showTeam",
+      title: "Show Team Section (Homepage)",
+      description:
+        "Turn ON to show the Team section on the homepage. The Team page always opens and shows a 'coming soon' message until members are published.",
       type: "boolean",
       initialValue: false,
     }),

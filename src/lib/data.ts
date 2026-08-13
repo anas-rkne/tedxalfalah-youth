@@ -186,7 +186,8 @@ export async function getEventInfo(): Promise<EventInfo | null> {
       date,
       venue,
       showSpeakers,
-      showSponsors
+      showSponsors,
+      showTeam
     }`
   );
 }

@@ -198,6 +198,7 @@ export default function HeroDynamicContent({
   tagline,
   dateText,
   venueText,
+  countdownTarget,
   applyLabel,
   saveSeatLabel,
   badgeLabel,
@@ -208,6 +209,7 @@ export default function HeroDynamicContent({
   tagline: string;
   dateText: string;
   venueText: string;
+  countdownTarget?: string;
   applyLabel: string;
   saveSeatLabel: string;
   badgeLabel: string;
@@ -259,7 +261,7 @@ export default function HeroDynamicContent({
 
           {/* العد التنازلي */}
           <FadeUp delay={0.6}>
-            <Countdown targetDate={EVENT_DATE} />
+            <Countdown targetDate={countdownTarget ?? EVENT_DATE} />
           </FadeUp>
 
           {/* الأزرار */}

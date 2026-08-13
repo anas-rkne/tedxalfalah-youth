@@ -1,8 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
 import SpeakersGrid from "@/components/speakers/SpeakersGrid";
-import { getSpeakers, getEventInfo } from "@/lib/data";
+import { getSpeakers } from "@/lib/data";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
 import SectionBadge from "@/components/ui/SectionBadge";
 import JsonLd from "@/components/JsonLd";
@@ -12,8 +11,6 @@ type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const eventInfo = await getEventInfo();
-  if (!eventInfo?.showSpeakers) notFound();
   const t = await getTranslations({ locale, namespace: "page.speakers" });
   return {
     title: t("meta.title"),
@@ -24,11 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SpeakersPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [eventInfo, speakers] = await Promise.all([
-    getEventInfo(),
-    getSpeakers(),
-  ]);
-  if (!eventInfo?.showSpeakers) notFound();
+  const speakers = await getSpeakers();
   const t = await getTranslations({ locale, namespace: "page.speakers" });
   const isArabic = locale === "ar";
 

@@ -244,7 +244,7 @@ TEDx هو برنامج أحداث محلية مستقل **مرخّص من TED** 
 | **RTL** | اتجاه النص من اليمين لليسار — يُفعَّل للعربية عبر `dir="rtl"` في `layout.tsx` وحرف خط Noto Kufi. |
 | **SSG / Static Generation** | توليد الصفحات وقت البناء — مخرجات `next build` صنّفت `/_not-found` و`/robots.txt` و`/sitemap.xml` كمسارات ثابتة (○)، بينما صفحات `[locale]` الـ12 ومسارات API الأربعة ديناميكية (ƒ) تُقدَّم عند الطلب مع كاش وإعادة توليد عبر Webhook. |
 | **CSP** | سياسة أمان المحتوى (`Content-Security-Policy`) في `next.config.ts` — قائمة بيضاء صارمة للمصادر (Sanity API، Cloudflare، GTM، Google Maps...). |
-| **eventInfo** | نوع Sanity (مستند تحكم واحد) بحقول `date`/`venue` و**المفتاحين** `showSpeakers` و`showSponsors` اللذين يتحكمان بظهور الأقسام (غيابه الآن = إخفاء إرادي). |
+| **eventInfo** | نوع Sanity (مستند تحكم واحد) بحقول `date`/`venue` و**المفاتيح الثلاثة** `showSpeakers`/`showSponsors`/`showTeam` التي تتحكم بقسم الرئيسية المقابل فقط — الصفحات المستقلة (`/speakers`، `/team`) تفتح دائمًا بحالة «قريبًا» (غياب الأعلام = إخفاء إرادي). |
 | **Fail-Open** | سياسة عدم الفشل عند غياب المفاتيح: تمرير الطلب مع تحذير في السجل (Turnstile/Rate Limit/Mailer/Sheets/Sanity). |
 | **Mock Data** | **لم يتم العثور على `src/lib/mock-data.ts` في الكود** — البيانات التجريبية عبارة عن وثائق منشورة فعلًا في Sanity (8 وثائق)، والسلوك عند غياب الإعداد هو فراغ آمن. |
 | **Platinumlist** | منصة تذاكر خارجية في الإمارات — وجهة زر الشراء في `/tickets` عبر `NEXT_PUBLIC_PLATINUMLIST_URL`. |

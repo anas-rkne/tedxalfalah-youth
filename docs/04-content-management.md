@@ -105,8 +105,9 @@
 | `title` | string | اختياري (سطر 11) | اسم الحدث (`data.ts:182`) |
 | `date` | date (`YYYY-MM-DD`) | اختياري — مثال 2026-12-19 (سطر 17) | تاريخ الحدث (JSON-LD والترجمات) |
 | `venue` | string | اختياري (سطر 25) | مكان الحدث |
-| `showSpeakers` | boolean | افتراضي `false` (سطر 33) — "شغّله ليظهر قسم المتحدثين وصفحتهم" | **يُظهر/يُخفي**: قسم `SpeakersPreview` بالرئيسية + صفحة `/speakers` (انظر القسم 4) |
+| `showSpeakers` | boolean | افتراضي `false` (سطر 33) — "شغّله ليظهر قسم المتحدثين بالصفحة الرئيسية" | **يُظهر/يُخفي**: قسم `SpeakersPreview` بالرئيسية فقط — صفحة `/speakers` تبقى مفتوحة بحالة «قريبًا» |
 | `showSponsors` | boolean | افتراضي `false` (سطر 41) — "شغّله ليظهر قسم الرعاة" | **يُظهر/يُخفي**: `SponsorsStrip` بالرئيسية |
+| `showTeam` | boolean | افتراضي `false` (سطر 49) — "شغّله ليظهر قسم الفريق بالصفحة الرئيسية" | **يُظهر/يُخفي**: `TeamPreview` بالرئيسية — صفحة `/team` تبقى مفتوحة بحالة «قريبًا» |
 
 > ⚠️ `eventInfo` **وثيقة مفردة** (يُقرأ `[0]` فقط — `data.ts:181`): لا تنشئ أكثر من نسخة.
 
@@ -137,7 +138,7 @@
 
 ### 3.3 مثال عملي (من الصفر إلى الظهور)
 
-> أنشئ متحدثًا باسم **"أحمد"**: الاسم = أحمد، صورة، `wave: 1`، و`isPublished: ON`. النتيجة: يظهر فورًا (مع Webhook) في بطاقة `SpeakerCard` بقسم **"Speakers" بالصفحة الرئيسية** وصفحة **`/speakers`** — أولًا بين المتحدثين (لأن `wave: 1` هو الأصغر). إن أردت إظهار القسم كله من الأساس، فعّل **`showSpeakers`** في وثيقة `eventInfo` (القسم 4).
+> أنشئ متحدثًا باسم **"أحمد"**: الاسم = أحمد، صورة، `wave: 1`، و`isPublished: ON`. النتيجة: يظهر فورًا (مع Webhook) في بطاقة `SpeakerCard` بقسم **"Speakers" بالصفحة الرئيسية** — أولًا بين المتحدثين (لأن `wave: 1` هو الأصغر). إن أردت إظهار قسم الرئيسية كله، فعّل **`showSpeakers`** في وثيقة `eventInfo` (القسم 4). أما صفحة `/speakers` فتعرض الاسم تلقائيًا (مفتوحة دائمًا).
 
 ### 3.4 إخفاء متحدث (Unpublish) أو حذف (Delete)
 
@@ -157,10 +158,11 @@
 
 | مفتاح العرض | المواضع المتأثرة | الكود |
 |---|---|---|
-| `eventInfo.showSpeakers` | قسم الرئيسية + **صفحة `/speakers` كاملة** | `src/app/[locale]/page.tsx` (عرض مشروط) + `src/app/[locale]/speakers/page.tsx:15-16` (عند `false` → **`notFound()`**) |
+| `eventInfo.showSpeakers` | قسم `SpeakersPreview` بالرئيسية فقط | `src/app/[locale]/page.tsx` (عرض مشروط) |
 | `eventInfo.showSponsors` | `SponsorsStrip` بالرئيسية فقط | `src/app/[locale]/page.tsx` (عرض مشروط) |
+| `eventInfo.showTeam` | `TeamPreview` بالرئيسية فقط | `src/app/[locale]/page.tsx` (عرض مشروط) |
 
-كلاهما `initialValue: false` — أي **الوضع الافتراضي = مخفي** عمدًا حتى الإعلان الرسمي.
+الأعلام الثلاثة `initialValue: false` — أي **الوضع الافتراضي = مخفي عمدًا** حتى الإعلان الرسمي. **مهم (قرار العميل 2026-08-13):** الأعلام لا تمسّ الصفحات المستقلة أبدًا — `/speakers` و`/team` **مفتوحتان دائمًا** وتعرضان حالة «قريبًا» المصممة عند الفراغ (لا `notFound()`).
 
 ### 4.2 Fail-Gracefully (لا أخطاء 500 أبدًا)
 
@@ -249,8 +251,9 @@ npx sanity deploy  # 4) نشر — سيعيد الرابط المُختار سا
 
 | تريد أن... | تفعل في Studio |
 |---|---|
-| تظهر متحدثًا | أنشئ `Speaker` + `wave` + **Published ON** + فعّل `showSpeakers` في `eventInfo` |
+| تظهر متحدثًا | أنشئ `Speaker` + `wave` + **Published ON** + فعّل `showSpeakers` في `eventInfo` (لقسم الرئيسية؛ صفحة `/speakers` تظهره تلقائيًا) |
 | يظهر قسم الرعاة | أنشئ `Sponsor`s + فعّل `showSponsors` |
+| يظهر قسم الفريق بالرئيسية | أنشئ `teamMember`s + **Published ON** + فعّل `showTeam` |
 | تحدث الجدول | عدّل/أنشئ `Session`s (أوقات بصيغة HH:MM 24h) |
 | تخفي شيءًا بسرعة | Unpublish (وليس Delete) |
 | تحفظ نسخة من كل شيء | … → Export Dataset |

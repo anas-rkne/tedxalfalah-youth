@@ -13,6 +13,7 @@ export default async function About({ locale }: { locale: string }) {
       // ✅ تمرير النصوص الإضافية التي كانت مكتوبة يدوياً في السابق
       badgeLabel={t("badge")}
       mapAlt={t("mapAlt")}
+      venueLabel={t("venuePopupLabel")}
       valuesLabels={{
         platform: t("valuesPlatform"),
         community: t("valuesCommunity"),

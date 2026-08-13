@@ -66,6 +66,7 @@ export interface EventInfo {
   venue?: string;
   showSpeakers?: boolean;
   showSponsors?: boolean;
+  showTeam?: boolean;
 }
 
 export interface GalleryImage {

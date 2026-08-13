@@ -76,7 +76,7 @@ tedxalfalahyouth-website/
 │   │   ├── [locale]/           ← كل الصفحات تحت معامل اللغة (en/ar)
 │   │   │   ├── layout.tsx      ← الترويسة/التذييل/الخطوط المحلية/dir rtl/SEP الجذر
 │   │   │   ├── page.tsx        ← الرئيسية (أقسام مجمّعة بـ ShowToggle)
-│   │   │   ├── speakers/       ← قائمة المتحدثين (404 إن كان showSpeakers=false)
+│   │   │   ├── speakers/       ← قائمة المتحدثين (مفتوحة دائمًا — «قريبًا» عند الفراغ)
 │   │   │   ├── team/           ← أعضاء الفريق
 │   │   │   ├── activations/    ← الأنشطة في المكان
 │   │   │   ├── schedule/       ← جدول اليوم + فلاتر + SchedulePageClient
@@ -346,11 +346,11 @@ caches.keys().filter(key => key !== CACHE_NAME).map(key => caches.delete(key)) /
 1. **تجاوز الطلبات غير الأصلية (Cross-origin bypass)** — القرار الأهم: كان الـ SW القديم يعترض **كل** طلب `.png` (منها بلاطات خريطة Carto) وعند أي فشل كان **يفبرك استجابة 408** `new Response("", { status: 408 })` فتُقتل الخريطة. الحل المعماري: الموارد الخارجية (البلاطات/CDN/واجهات خارجية) لا تمَر أبدًا عبر الـ SW — تذهب للشبكة مباشرة. الـ SW يبقى مسؤولًا فقط عن أصوله الأصلية + التنقل + صفحة الـ Offline.
 2. **`skipWaiting()` + تنظيف الكاش** — يضمن أن نسخة الـ SW الجديدة (بعد كل نشر) تسيطر فورًا بدل انتظار إغلاق التبويبات، ويحذف كاش `tedx-v1` القديم ليمنع تقديم أصول بالية.
 
-### 6.5 لماذا حقول `showSpeakers` و`showSponsors` في `eventInfo`؟
+### 6.5 لماذا حقول `showSpeakers` و`showSponsors` و`showTeam` في `eventInfo`؟
 
-**الدليل**: `studio/schemaTypes/eventInfo.ts` — حقلان بوليانيان `initialValue: false` مع وصف "Turn ON to make the Speakers section and page visible once the lineup is ready". الاستهلاك في `src/app/[locale]/page.tsx:50,72` (`eventInfo?.showSponsors && <SponsorsStrip/>` و`eventInfo?.showSpeakers && <SpeakersPreview/>`)، وفي `speakers/page.tsx:16` دخول الصفحة مرهون به (`!eventInfo?.showSpeakers → notFound()`).
+**الدليل**: `studio/schemaTypes/eventInfo.ts` — ثلاثة حقول بوليانية `initialValue: false` بعناوين صريحة «(Homepage)» ووصف يفيد أن الصفحات المستقلة تفتح دائمًا بحالة «قريبًا». الاستهلاك في `src/app/[locale]/page.tsx` (عروض مشروطة: `eventInfo?.showSponsors && <SponsorsStrip/>` و`eventInfo?.showSpeakers && <SpeakersPreview/>` و`eventInfo?.showTeam && <TeamPreview/>`). الصفحتان `/speakers` و`/team` **بلا أي بوابة** — تعرضان قوائمهما أو حالة الفراغ المصممة («Speakers coming soon.» / «Meet our team soon.»).
 
-**المنطق العملي**: قبل الإعلان الرسمي عن المتحدثين (وعدم وجود رعاة مؤكدين بعد) يجب أن يكون الموقع "نظيفًا" — من دون **حذف** أي بيانات. المفتاحان يفصلان **وجود المحتوى** (في Sanity دائمًا) عن **ظهوره** (مقفل بالإعلان). والجانب الجميل: غياب مستند `eventInfo` كليًا = `undefined` = نفس نتيجة `false` — فالوضع الافتراضي آمن (مخفي) تلقائيًا دون أي إعداد.
+**المنطق العملي (قرار العميل 2026-08-13)**: قبل الإعلان الرسمي عن المتحدثين (وعدم وجود رعاة/فريق مؤكدين بعد) يجب أن تكون **الرئيسية** "نظيفة" — من دون **حذف** أي بيانات، وبدون 404 على صفحات مستقلة تفيد المستخدمين المهتمين. المفاتيح الثلاثة تفصل **وجود المحتوى** (في Sanity دائمًا) عن **ظهور قسم الرئيسية** (مقفل بالإعلان)، وتفتحان متى شاء فريق المحتوى — كل قسم مستقل عن الآخر. والجانب الجميل: غياب مستند `eventInfo` كليًا = `undefined` = نفس نتيجة `false` — فالوضع الافتراضي آمن (مخفي) تلقائيًا دون أي إعداد.
 
 ### 6.6 لماذا المواعيد والعمر كما هي؟
 

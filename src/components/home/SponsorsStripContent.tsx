@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback, memo } from "react";
 import { motion, useReducedMotion, useAnimationFrame } from "framer-motion";
-import { Handshake, Users, Ticket, Calendar } from "lucide-react";
+import { Users, Ticket, Calendar } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import SectionBadge from "@/components/ui/SectionBadge";
 import SafeImage from "@/components/ui/SafeImage";
@@ -30,7 +30,6 @@ interface SponsorsStripContentProps {
   ctaHeading: string;
   ctaDescription: string;
   ctaLabel: string;
-  emptyLabel?: string;
 }
 
 /* ═══════════════════════════════════════════
@@ -211,25 +210,12 @@ export default function SponsorsStripContent({
   ctaHeading,
   ctaDescription,
   ctaLabel,
-  emptyLabel,
 }: SponsorsStripContentProps) {
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
 
   if (sponsors.length === 0) {
-    return (
-      <section className="section-padding flex min-h-[40vh] items-center justify-center bg-background">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <Handshake className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground text-lg font-light">{emptyLabel}</p>
-        </motion.div>
-      </section>
-    );
+    return null;
   }
 
   return (

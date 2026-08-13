@@ -4,6 +4,7 @@ const ALLOWED_ORIGINS = [
   "https://www.tedxalfalahyouth.com",
   "https://tedxalfalahyouth.com",
   "http://localhost:3000",
+  "http://localhost:3001",
 ];
 
 const origins = process.env.ALLOWED_API_ORIGINS

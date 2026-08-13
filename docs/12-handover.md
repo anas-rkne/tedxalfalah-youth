@@ -122,7 +122,7 @@
 ### 4.2 تحديثات المحتوى (فريق المحتوى — دوري)
 - متحدثون وجلسات وشركاء: عبر Sanity (إجازة دقيقة بعد Publish).
 - النص الترحيبي والتواريخ (مثل موعد الحدث الظاهر): عبر ملفات `messages/` — مطور.
-- بطاقة الفعاليات النشطة: إدارة من Sanity `eventInfo` (`showSpeakers`/`showSponsors`).
+- بطاقة الفعاليات النشطة: إدارة من Sanity `eventInfo` (الأعلام الثلاثة `showSpeakers`/`showSponsors`/`showTeam` — **لقسم الرئيسية فقط**؛ الصفحات المستقلة مفتوحة دائمًا بحالة «قريبًا»).
 
 ### 4.3 الصيانة الدورية
 | المهمة | التكرار | المسؤول |
@@ -149,8 +149,49 @@
 | :-: | :--- | :--- |
 | 1 | إنشاء `CREDENTIALS.md` من القالب المرفوع `CREDENTIALS.template.md` (`copy CREDENTIALS.template.md CREDENTIALS.md`) — دخول Hostinger + WebMail + Sanity + Google + جدول: `SMTP_PASS`، `GOOGLE_PRIVATE_KEY`، `GOOGLE_SERVICE_ACCOUNT_EMAIL`، `GOOGLE_SHEET_ID`، `TURNSTILE_SECRET_KEY`، `UPSTASH_REDIS_REST_URL/TOKEN`، `SANITY_WEBHOOK_SECRET`) | **معلّق — يُنجز قبل التسليم** |
 | 2 | `CREDENTIALS.md` مرفوض في `.gitignore` الآن (نمط `CREDENTIALS*` مع إبقاء القالب) | **تم اليوم** |
-| 3 | تعبئة مفاتيح Google/Cloudflare/Upstash/Sanity في `.env.local` (جلسة العميل بهاتفه — سجل في `docs/03`) | **معلّق — حسابان جاهزان** |
+| 3 | تعبئة مفاتيح Google/Cloudflare/Upstash/Sanity في `.env.local` (جلسة العميل بهاتفه — سجل في `docs/03`) | **تم** — 25 مفتاحًا كلها معبأة؛ جلسة دخول العميل اكتملت 2026-08-13 (تفاصيل §6) |
 | 4 | النشر على Hostinger Node.js (Checklist `docs/08` §4) + قرار GitHub/ZIP | **معلّق — جاهز للتنفيذ** |
+| 5 | نشر Sanity Studio + Webhook + حذف التوكن المؤقت + بذر المحتوى | **تم 2026-08-13** (تفاصيل §6) |
+
+---
+
+## 6. سجل جلسة Sanity مع العميل — 2026-08-13
+
+تنفيذ كامل لإدارة المحتوى بحساب الأدمن (`tedxalfalahyouth@gmail.com` — مسجل الدخول عبر Google 2SV):
+
+| البند | النتيجة |
+| :--- | :--- |
+| الدخول | `sanity login --provider google` بحساب المالك — تحقق `sanity debug` → ID `pNGaQGm69`/administrator |
+| نشر الاستوديو | **https://tedxalfalahyouth.sanity.studio** ✓ (محاولة أولى `ECONNRESET` أثناء الرفع → إعادة ناجحة) — الأنواع السبعة منشورة |
+| حذف التوكن المؤقت | `sanity tokens delete siPsRhDxip7CUo` ("Studio Deploy") — بقي المشروع بلا API tokens |
+| Webhook | `TEDxAlFalah Production` (ID `IHLe79lih3XyTr82`) — `create`/`update`/`delete` + فلتر الأنواع السبعة → `https://tedxalfalahyouth.com/api/revalidate?secret=…` (أُنشئ برمجيًا عبر `sanity exec --with-user-token` لأن `sanity hook create` يفتح اللوحة فقط) |
+| البذر | `eventInfo-main`: **Weaving Tomorrow · 2026-12-19 · نبض الفلاح — درب الفلاح، الفلاح، أبو ظبي، الإمارات** (`showSpeakers`/`showSponsors` ON وقتها — أُطفئا لاحقًا في §6.2) + `speaker-demo-ahmed`/`speaker-demo-sara` (موجة 1، ترتيب 0/1، منشوران بلا صورة — **أُلغي نشرهما في §6.2**) |
+| التحقق المحلي | `/en`: JSON-LD `startDate 2026-12-19` + location يحتوي المكان ✓ · `/en/speakers` و`/ar/speakers`: الاسماهن بالترتيب الصحيح (Ahmed ثم Sara) ✓ · `imageUrl: null` يُعرض بـ placeholder (لا crash) ✓ |
+| رابط الخريطة | `NEXT_PUBLIC_VENUE_MAP_URL` في `.env.local` ← `https://maps.app.goo.gl/3CngUphEsitFhBGo7` (رابط المكان الرسمي — NO_BOM مؤكد) |
+| **الخرائط ثنائية اللغة** | **Leaflet (الرئيسية)**: popup علامة المكان يقرأ `home.about.venuePopupLabel` — EN: "Nabd AlFalah — Abu Dhabi" / AR: "نبض الفلاح — أبوظبي" مع `dir="auto"` (أُزيل النص العربي الثابت) · **صفحة Venue**: iframe embed مبني حسب اللغة `hl=en`/`hl=ar` بجملة استعلام المكان بلغتها — الكود جاهز لأول إظهار للصفحة (لاحظ: الصفحة تعمل حاليًا رغم التعليق أعلاها — تُخفى فعليًا عند الطلب عبر `notFound()` أو إزالة الروابط) |
+| **إصلاح خريطة Dev + العداد** | إصلاح سباق StrictMode (`Map container is already initialized`) بنقل حارس `mapInstanceRef` بعد `await import("leaflet")` + `remove()` · ربط العداد ونص تاريخ الهيرو بـ `eventInfo.date` من Sanity (`Hero` ← `eventDate` → `countdownTarget=${date}T09:00:00+04:00`؛ النص عبر `toLocaleDateString` ar-AE/en-US) مع بقاء الثوابت fallback · تحقق إنتاجي كامل على خادم standalone (أدناه) |
+| **اختبار إنتاجي (standalone)** | تشغيل `node .next/standalone/server.js` (منفذ 3100): **21 مسارًا = 200** (en/ar + كل الصفحات + venue + robots + sitemap) · محتوى: تسميتا الخريطة باللغتين ✓ · target العداد `2026-12-19T09:00:00+04:00` ✓ · تاريخ الهيرو "December 19, 2026" ✓ · ترتيب المتحدثين ✓ · iframe `hl=en` ✓ · sitemap يشمل speakers+venue ✓ · أخطاء API (revalidate/contact بدون بيانات صحيحة) = 400 ✓ — **ملاحظة مهمة**: خادم standalone لا يقرأ `.env.local` تلقائيًا (المتغيرات الخادمية تُحقن من بيئة Hostinger — `docs/08` §2.4) |
+
+**ملاحظات CLI 3.99.0 (للمطور — وفرت وقتًا):**
+1. `sanity documents query` يعيد `[]` دائمًا (خلل تحليل وسائط بهذا الإصدار) — التحقق الفعلي عبر curl مباشر لـ `{project}.api.sanity.io` أو `sanity exec` مع `getCliClient()`.
+2. `sanity hook create` لا ينشئ — يفتح صفحة اللوحة فقط؛ الإنشاء الآلي عبر `POST /hooks` بالمخطط الحديث: `{type:"document", rule:{on:[...], filter}, apiVersion:"vYYYY-MM-DD", …}`.
+3. أمر `whoami` و`auth list` غير موجودين — الهوية عبر `sanity debug` (User block).
+
+---
+
+## 6.2 سجل تنظيف البيانات التجريبية وتحكّم العميل — 2026-08-13
+
+تنفيذ قرارات العميل بعد جلسة البذر (نفس اليوم): الموقع "نظيف" أمام الزوار، والعميل يتحكم بظهور الأقسام، والصفحات المستقلة بلا 404.
+
+| البند | النتيجة |
+| :--- | :--- |
+| إلغاء نشر التجريبيين | `speaker-demo-ahmed`/`speaker-demo-sara` ← `isPublished: false` (بلا حذف — البيانات باقية للاستخدام) عبر سكربت مؤقت `@sanity/client` (توكن جلسة CLI من `~/.config/sanity/config.json`) ثم حُذف السكربت. تحقق بالـ API: عدّاد المنشورين = 0 |
+| إيقاف أقسام الرئيسية | `eventInfo-main` ← `showSpeakers: false` + `showSponsors: false` (بلا سكربت متبقٍ) — يبقى `showTeam` الجديد افتراضي `false` |
+| قسم الفريق بالرئيسية | حقل `showTeam` + `TeamPreview` (`src/components/home/TeamPreview.tsx` — 8 أعضاء كحد أقصى + زر "Meet the Team") + ترجمة `home.teamPreview` (en/ar) + النوع/الاستعلام — **نشر Studio محدّث** (مخطط + وصفه الجديد) |
+| دلالة الأعلام | الثلاثة لـ**قسم الرئيسية فقط** — أُزيلت بوابة `notFound()` من `speakers/page.tsx` و`team/page.tsx` نهائيًا (قرار العميل: الصفحتان مفتوحتان دائمًا وتعرضان «قريبًا» عند الفراغ) — أوصاف الـ schema نُقّحت «(Homepage)» |
+| طبقات الخريطة | تعتيم `bg-slate-900/20` فوق `LeafletMap` (`z-[450]` تحت العلامة/البوب أب) و`VenueMapSection` — لرفع تباين القراءة |
+| الفحص الشامل | خادم standalone (منفذ 3001): **56/56 فحصًا ناجحًا** — تفاصيل `docs/11` §1.3؛ Turnstile يتأكد من حزم JS (`render=explicit` + site key — بناء client-side متوقع) · `/api/contact` مؤكد `{"success":true}` بجسم صالح · `/en/apply` مفتوح (الموعد الافتراضي 2026-09-30) |
+| ملاحظة تشغيلية | إعادة `npm run build` تتطلب إيقاف خادم standalone أولًا (`EBUSY rmdir .next\standalone`) · `curl` في سكربتات PowerShell: لا تستخدم `-o NUL` (خطأ طول اسم الملف) — التقط `-o $tmp -w "%{http_code}"` |
 
 ---
 

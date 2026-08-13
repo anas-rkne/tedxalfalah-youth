@@ -9,6 +9,7 @@ import About from "@/components/home/About";
 import Theme from "@/components/home/Theme";
 import Highlights from "@/components/home/Highlights";
 import SpeakersPreview from "@/components/home/SpeakersPreview";
+import TeamPreview from "@/components/home/TeamPreview";
 import ScheduleBanner from "@/components/home/ScheduleBanner";
 import ApplyBanner from "@/components/home/ApplyBanner";
 import SponsorsStrip from "@/components/home/SponsorsStrip";
@@ -44,7 +45,7 @@ export default async function Home({ params }: Props) {
       <JsonLd data={webSiteSchema()} />
       <JsonLd data={eventSchemaData} />
       <ScrollSection variant="hero" id="hero" className="bg-white min-h-[calc(100vh-5rem)]">
-        <Hero locale={locale} />
+        <Hero locale={locale} eventDate={eventInfo?.date} />
       </ScrollSection>
 
       {eventInfo?.showSponsors && (
@@ -72,6 +73,12 @@ export default async function Home({ params }: Props) {
       {eventInfo?.showSpeakers && (
         <ScrollSection variant="stagger" id="speakers" className="bg-white">
           <SpeakersPreview locale={locale} />
+        </ScrollSection>
+      )}
+
+      {eventInfo?.showTeam && (
+        <ScrollSection variant="stagger" id="team" className="bg-white">
+          <TeamPreview locale={locale} />
         </ScrollSection>
       )}
 

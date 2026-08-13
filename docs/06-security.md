@@ -35,7 +35,7 @@
 
 | الطبقة | الملف والدالة | ماذا تفعل | عند الرفض |
 |---|---|---|---|
-| **1. CORS** | `src/lib/cors.ts` — `validateOrigin(request)` (سطر 13) | يقارن `Origin` الوارد بقائمة `ALLOWED_API_ORIGINS` (أو القائمة الثابتة: `www.tedxalfalahyouth.com`, `tedxalfalahyouth.com`, `localhost:3000` — أسطر 3–7). طلبات بلا Origin تمر (أغلب أدوات الاختبار) | **403** `Forbidden: origin not allowed` (سطر 21) |
+| **1. CORS** | `src/lib/cors.ts` — `validateOrigin(request)` (سطر 13) | يقارن `Origin` الوارد بقائمة `ALLOWED_API_ORIGINS` (أو القائمة الثابتة: `www.tedxalfalahyouth.com`, `tedxalfalahyouth.com`, `localhost:3000`, `localhost:3001` — أسطر 3–8). طلبات بلا Origin تمر (أغلب أدوات الاختبار) | **403** `Forbidden: origin not allowed` (سطر 22) |
 | **2. Rate Limit** | `src/lib/rate-limit.ts` — `checkRateLimit(request, formKey)` (سطر 32) | نافذة منزلقة عبر Upstash: **5 طلبات لكل 10 دقائق لكل `formKey:IP`** (سطر 20) — مفتاح منفصل لكل فورم. يستخرج IP من `x-forwarded-for` ثم `x-real-ip` (أسطر 43–46). القيمتان `5` و`"10 m"` قابلتان للتعديل بسطر واحد | **429** `Too many requests. Please try again later.` |
 | **3. Turnstile** | `src/lib/turnstile.ts` — `verifyTurnstile(token)` (سطر 10) | يرسل الرمز لـ `challenges.cloudflare.com/turnstile/v0/siteverify` (سطر 23-33) ويتحقق أن `data.success === true`. بدون مفتاح: **Fail-Open** مع تحذير (سطر 11-15) | **403** `Verification failed. Please try again.` |
 | **4. Zod** | مخططات الـ routes — `applicationSchema` (`apply/route.ts:14`)، `contactSchema` (`contact/route.ts:9`)، `partnerSchema` (`partner-inquiry/route.ts:9`) | تحقق صارم من الشكل: إيميل صالح، أطوال، قيم enum، منطق `superRefine` الشرطي، حدود الكلمات | **400** + تفاصيل `z.error.flatten()` |
@@ -61,7 +61,7 @@
 
 القيمة الكاملة الحرفية (مع `isDev = NODE_ENV === "development"`):
 ```
-default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://*.basemaps.cartocdn.com https://cdnjs.cloudflare.com; frame-src https://challenges.cloudflare.com https://www.google.com/maps; connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://*.api.sanity.io https://*.sanity.io
+default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://server.arcgisonline.com; frame-src https://challenges.cloudflare.com https://www.google.com/maps; connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://*.api.sanity.io https://*.sanity.io
 ```
 > في بيئة التطوير يُضاف `'unsafe-eval'` لـ `script-src` فقط (سطر 26) — ضروري لـ Turbopack/HMR، ولا يُحمَل للإنتاج.
 
@@ -75,7 +75,7 @@ default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudfl
 | `script-src` | `'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.googletagmanager.com` (+`'unsafe-eval'` في التطوير) | السكربتات: المحلية + Cloudflare (ودجت Turnstile — `TurnstileWidget.tsx` يحمّل `challenges.cloudflare.com/turnstile/v0/api.js`) + Google Tag Manager (التحليلات — `Analytics.tsx`). `unsafe-inline` مطلوب للمكوّنات الديناميكية |
 | `style-src` | `'self' 'unsafe-inline' https://fonts.googleapis.com` | الأنماط المحلية + CSS خطوط Google (بقايا من مرحلة الخطوط القديمة — الخطوط الآن محلية، والإذن باقٍ بلا ضرر) |
 | `font-src` | `'self' https://fonts.gstatic.com` | الخطوط (الإذن باقٍ أيضًا — الخطوط الفعلية `src/app/[locale]/fonts/` محلية) |
-| `img-src` | `'self' data: https://cdn.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://*.basemaps.cartocdn.com https://cdnjs.cloudflare.com` | الصور: Sanity CDN (كل محتوى الموقع) + Carto (بلاطات الخريطة في `/venue` — `LeafletMap`) + Google Analytics (بكسلات التتبع) |
+| `img-src` | `'self' data: https://cdn.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://server.arcgisonline.com` | الصور: Sanity CDN (كل محتوى الموقع) + **Esri (قمر صناعي + تسميات إنجليزية — خريطة "About the Event")** + Google Analytics (بكسلات التتبع) |
 | `frame-src` | `https://challenges.cloudflare.com https://www.google.com/maps` | الأطر: ودجت Turnstile + خريطة Google المضمّنة (`NEXT_PUBLIC_VENUE_MAP_URL`) — **لا شيء آخر يُسمح بدمجه** |
 | `connect-src` | `'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://*.api.sanity.io https://*.sanity.io` | الطلبات: Turnstile (siteverify) + GA + GTM + **Sanity CDN API** — نطاق عام `*.api.sanity.io` (يعمل لكل المشاريع وبالتالي لا يتغير عند تبديل المشروع) |
 

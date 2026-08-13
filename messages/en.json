@@ -81,6 +81,7 @@
       "badge": "About The Event",
       "mapAlt": "Map of the United Arab Emirates",
       "mapLabel": "Interactive map of the United Arab Emirates — Abu Dhabi, Dubai, Sharjah and Fujairah",
+      "venuePopupLabel": "Nabd AlFalah — Abu Dhabi",
       "valuesPlatform": "Global Platform",
       "valuesCommunity": "Youth Community",
       "valuesIdeas": "Inspiring Ideas",
@@ -101,6 +102,12 @@
       "bioFallback": "An inspiring speaker joining us to share their journey and ideas.",
       "newHeading": "Meet Tomorrow",
       "newSubtitle": "Our Speakers Line Up"
+    },
+    "teamPreview": {
+      "seeAll": "Meet the Team",
+      "badgeLabel": "Team",
+      "heading": "The People Behind It All",
+      "subtitle": "Meet the dedicated team making this event happen."
     },
     "applyBanner": {
       "text": "Applications are open — deadline {date}",
