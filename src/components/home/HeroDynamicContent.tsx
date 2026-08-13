@@ -17,7 +17,7 @@ import ScrollIndicator from "@/components/ui/ScrollIndicator";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import FadeUp from "@/components/shared/FadeUp";
 
-const EVENT_DATE = "2026-12-18T09:00:00+04:00";
+const EVENT_DATE = "2026-12-19T09:00:00+04:00";
 
 const ANIMATION_CONFIG = {
   fadeScale: {

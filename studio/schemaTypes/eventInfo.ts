@@ -13,7 +13,7 @@ export default defineType({
     defineField({
       name: "date",
       title: "Event Date",
-      description: "The date of the event (e.g. 2026-11-15)",
+      description: "The date of the event (e.g. 2026-12-19)",
       type: "date",
       options: {
         dateFormat: "YYYY-MM-DD",
@@ -29,6 +29,14 @@ export default defineType({
       title: "Show Speakers Section",
       description:
         "Turn ON to make the Speakers section and page visible once the lineup is ready.",
+      type: "boolean",
+      initialValue: false,
+    }),
+    defineField({
+      name: "showSponsors",
+      title: "Show Sponsors Section",
+      description:
+        "Turn ON to make the Sponsors section visible once partners are confirmed.",
       type: "boolean",
       initialValue: false,
     }),

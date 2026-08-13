@@ -1,156 +1,72 @@
-# TEDxAlFalah Youth — دليل التشغيل والنشر
+# TEDxAlFalah Youth Website
 
-هذا المشروع **مكتمل وظيفياً بالكامل**. كل صفحة، كل فورم، وكل API route تعمل
-الآن فعلياً. الموقع يعمل حالياً ببيانات تجريبية (mock) بحيث يمكنك تشغيله
-وتصفحه فوراً بدون أي إعداد، وكل ما تبقى هو **إضافة مفاتيحك الحقيقية** بملف
-`.env.local` ليتحول تلقائياً لاستخدام بياناتك ويصبح جاهزاً للنشر النهائي.
+**"Tomorrow, Now."** — الموقع الرسمي لحدث TEDxAlFalah Youth: صفحات المتحدثين والفريق والجدول والمكان، نظام تقديم المتحدثين، الفورمات، والتكاملات الكاملة (Sanity، بريد SMTP حقيقي، حماية بوتات، تسجيل في Google Sheets).
+
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.10-black)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-%E2%9C%93-blue)](https://www.typescriptlang.org)
+[![React](https://img.shields.io/badge/React-19.2.4-61dafb)](https://react.dev)
+[![Build Status](https://img.shields.io/badge/Build-Passing-success)]()
+[![SMTP](https://img.shields.io/badge/SMTP-Hostinger-orange)](https://www.hostinger.com)
+[![Deploy](https://img.shields.io/badge/Deploy-Hostinger%20Node-blueviolet)](https://www.hostinger.com)
+[![i18n](https://img.shields.io/badge/i18n-EN%20%2F%20AR-green)]()
 
 ---
 
-## 1. التشغيل المحلي فوراً (بدون أي إعداد)
+## روابط سريعة
+
+| | | | |
+| :--- | :--- | :--- | :--- |
+| 📄 [نظرة عامة](docs/01-overview.md) | 🏗️ [البنية المعمارية](docs/02-architecture.md) | 🛠️ [التثبيت والمتغيرات](docs/03-setup-and-env.md) | 🎨 [إدارة المحتوى](docs/04-content-management.md) |
+| ✉️ [الفورمات والبريد](docs/05-forms-email-system.md) | 🔒 [الأمان والخصوصية](docs/06-security.md) | 📈 [SEO والتحليلات](docs/07-seo-and-analytics.md) | 🚀 [النشر والاستضافة](docs/08-deployment-hosting.md) |
+| 📋 [دليل التشغيل اليومي](docs/09-operations-runbook.md) | 🆘 [استكشاف الأخطاء](docs/10-troubleshooting.md) | ✅ [الاختبارات](docs/11-testing-uat.md) | 🤝 [التسليم](docs/12-handover.md) |
+
+ملاحظات التحديث: [CHANGELOG.md](CHANGELOG.md) · قالب البيئة: [`.env.local.example`](.env.local.example) · دليل الإعداد الكامل: `docs/03-setup-and-env.md`
+
+---
+
+## جدول حالة الخدمات
+
+| الخدمة | الحالة | المفتاح المطلوب | أين يُقرأ في الكود |
+| :--- | :--- | :--- | :--- |
+| **Sanity CMS** | `⏳` (مشروع العميل الجديد `hisn3dku` جاهز وفارغ — نشر الـ Studio ينتظر دخول حساب العميل) | `NEXT_PUBLIC_SANITY_PROJECT_ID` · `SANITY_WEBHOOK_SECRET` | `src/lib/sanity.ts` · `src/app/api/revalidate/route.ts` |
+| **SMTP (Email)** | `✅` **مفعّل ومُختبَر فعليًا** (تحقق SMTP + 5 رسائل حقيقية) | `SMTP_USER` · `SMTP_PASS` | `src/lib/mailer.ts` |
+| **Google Sheets** | `⏳` (في انتظار الـ Service Account والـ private key) | `GOOGLE_PRIVATE_KEY` · `GOOGLE_SERVICE_ACCOUNT_EMAIL` · `GOOGLE_SHEET_ID` | `src/app/api/apply/route.ts` |
+| **Turnstile (Cloudflare)** | `⏳` (في انتظار مفتاحي الموقع والسر — يعمل Fail-Open حاليًا) | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` · `TURNSTILE_SECRET_KEY` | `src/lib/turnstile.ts` |
+| **Upstash Redis** | `⏳` (في انتظار الـ URL/Token — Rate Limiting صامت بدونها) | `UPSTASH_REDIS_REST_URL` · `UPSTASH_REDIS_REST_TOKEN` | `src/lib/rate-limit.ts` |
+| **Webhook إبطال الكاش** | `⏳` (يعمل الرمز — يحتاج نشر الـ Studio وتفعيل السر) | `SANITY_WEBHOOK_SECRET` | `src/app/api/revalidate/route.ts` |
+| **Platinumlist** | `✅` (الرابط مضبوط) | `NEXT_PUBLIC_PLATINUMLIST_URL` | `src/app/[locale]/tickets/page.tsx` |
+| **Google Analytics 4** | `✅` (مفعّل — يُحمَّل في الإنتاج فقط) | `NEXT_PUBLIC_GA_ID` | `src/components/Analytics.tsx` |
+| **Security Headers + CSP** | `✅` (مفعّلة في `next.config.ts`) | — | `next.config.ts` |
+
+> **فلسفة Fail-Open**: الموقع يعمل بالكامل بلا أي مفتاح (بيانات تجريبية + تسجيل بالـ terminal) — كل `⏳` أعلاه تتحول تلقائيًا إلى تشغيل كامل بمجرد إضافة القيمة إلى `.env.local`. أدق مرجع لكل متغير: `docs/03-setup-and-env.md`.
+
+---
+
+## بدء التشغيل السريع (Quick Start)
 
 ```bash
 npm install
 npm run dev
 ```
 
-افتح `http://localhost:3000` — سترى الموقع كاملاً بـ 9 صفحات، يعمل ببيانات
-تجريبية، وكل الفورمات تعمل (تُسجَّل بالـ terminal بدل الإرسال الفعلي حتى
-تضيف المفاتيح أدناه).
+افتح `http://localhost:3000` — الموقع كاملًا (EN/AR، 12 صفحة، كل الفورمات وAPIs) يعمل فورًا بلا إعداد.
 
----
+للربط بالخدمات الحقيقية، انسخ القالب واملأ قيمك:
 
-## 2. الحالة الحالية لكل جزء بالمشروع
-
-| الجزء | الحالة بدون مفاتيح | الحالة بعد إضافة المفاتيح |
-|---|---|---|
-| كل الصفحات التسع | تعمل بالكامل ببيانات تجريبية | تعرض بياناتك الحقيقية من Sanity |
-| فورم Contact | يعمل، يسجّل بالـ terminal | يرسل إيميل فعلي عبر Resend |
-| فورم Apply | يعمل، يسجّل بالـ terminal | يحفظ بـ Google Sheet + يرسل تأكيد |
-| فورم Sponsors (Become a Partner) | يعمل، يسجّل بالـ terminal | يرسل إيميل فعلي |
-| فورم Tickets | يعمل، يسجّل بالـ terminal | يحفظ بـ Google Sheet |
-| Speakers/Team/Activations/Sponsors | بيانات تجريبية جاهزة | بياناتك الحقيقية من Sanity Studio |
-
-**لا توجد أي وظيفة معطّلة أو ناقصة — الفرق فقط بين بيانات تجريبية وبيانات حقيقية.**
-
----
-
-## 3. خطوات الحصول على المفاتيح وتفعيلها (بالترتيب)
-
-### 3.1 — Sanity CMS (لإدارة المتحدثين، الفريق، الفعاليات، الرعاة)
-
-```bash
-cd studio
-npm install
-npx sanity login
-npx sanity init --project-name "TEDxAlFalah Youth" --dataset production
-```
-سيسألك عن ربط مجلد الكود الحالي — اختر "yes" لاستخدام نفس `sanity.config.ts`
-الموجود مسبقاً. بعد الانتهاء، انسخ **Project ID** الذي يظهر لك، وضعه بملف
-`.env.local` بجذر المشروع الرئيسي (وليس بمجلد studio):
-```
-NEXT_PUBLIC_SANITY_PROJECT_ID=xxxxxxxx
-NEXT_PUBLIC_SANITY_DATASET=production
-```
-
-انشر الـ Studio ليصبح متاحاً لك أونلاين لإضافة المحتوى:
-```bash
-npx sanity deploy
-```
-اختر subdomain (مثلاً `tedxalfalahyouth`)، وستحصل على رابط مثل
-`https://tedxalfalahyouth.sanity.studio` — هذا هو الرابط الذي تدخل منه
-لاحقاً لإضافة المتحدثين والفريق والرعاة والفعاليات.
-
-**أعد تشغيل `npm run dev` بالمجلد الرئيسي بعد إضافة المفتاح** — سيتحول
-الموقع تلقائياً لعرض بياناتك الحقيقية (حالياً فارغة حتى تضيف محتوى من
-الـ Studio).
-
-### 3.2 — Google Sheets (لتخزين طلبات Apply والتذاكر)
-
-1. أنشئ Google Sheet جديد باسم "TEDxAlFalah Applications"، وأضف بالصف الأول
-   عناوين الأعمدة التالية بالضبط:
-   ```
-   timestamp, track, fullName, age, email, phone, city, talkIdeaTitle,
-   ideaSummary, whyItMatters, themeConnection, videoLink, howHeardAboutUs,
-   schoolName, guardianName, guardianContact, organizationAndRole,
-   areaOfWorkWithYouth
-   ```
-2. اذهب لـ Google Cloud Console (console.cloud.google.com) →
-   أنشئ مشروعاً جديداً → فعّل **Google Sheets API**.
-3. أنشئ **Service Account** (من IAM & Admin → Service Accounts) → أنشئ
-   مفتاح JSON وحمّله.
-4. من ملف الـ JSON، انسخ `client_email` و`private_key`.
-5. **شارك** الـ Google Sheet مع بريد الـ Service Account (كـ Editor).
-6. أضف بملف `.env.local`:
-   ```
-   GOOGLE_SHEET_ID=              # من رابط الشيت بين /d/ و /edit
-   GOOGLE_SERVICE_ACCOUNT_EMAIL=
-   GOOGLE_PRIVATE_KEY=
-   ```
-   ملاحظة: `GOOGLE_PRIVATE_KEY` يحتوي أسطراً متعددة (`\n`) — انسخه كما هو
-   بين علامتي اقتباس بملف `.env.local`.
-
-كرر نفس الخطوات بشيت منفصل إن أردت تفعيل تسجيل التذاكر (`GOOGLE_TICKETS_SHEET_ID`).
-
-### 3.3 — Resend (لإرسال الإيميلات التلقائية)
-
-1. سجّل مجاناً على resend.com.
-2. من لوحة Resend → Domains → أضف tedxalfalahyouth.com وأضف سجلات DNS
-   التي يعطيك إياها بلوحة تحكم الدومين (يحتاج الدومين أن يكون مفعّلاً أولاً).
-3. من API Keys → أنشئ مفتاحاً جديداً وأضفه بملف `.env.local`:
-   ```
-   RESEND_API_KEY=
-   ```
-
----
-
-## 4. ملف `.env.local` الكامل
-
-انسخ `.env.local.example` إلى `.env.local` واملأ كل القيم:
 ```bash
 cp .env.local.example .env.local
 ```
 
----
-
-## 5. النشر على Vercel
+أوامر التحقق قبل أي نشر (من `docs/11-testing-uat.md`):
 
 ```bash
-git init
-git add .
-git commit -m "Initial commit — TEDxAlFalah Youth website"
-```
-ثم:
-1. أنشئ مستودع فارغ على GitHub وادفع الكود إليه.
-2. من vercel.com → Import Project → اختر المستودع.
-3. **مهم جداً**: أضف كل متغيرات `.env.local` بإعدادات Vercel
-   (Settings → Environment Variables) — الملف المحلي لا يُرفع لـ GitHub
-   ولا يصل لـ Vercel تلقائياً.
-4. Deploy.
-5. بعد الحصول على الدومين الحقيقي من العميل، اربطه من
-   Settings → Domains على Vercel.
-
----
-
-## 6. بنية المشروع
-
-```
-tedxalfalahyouth-website/     ← موقع Next.js (هذا المجلد)
-  src/app/                     ← كل الصفحات التسع + API routes
-  src/components/              ← كل المكونات مقسّمة حسب الصفحة
-  src/lib/data.ts               ← نقطة الدخول الوحيدة للبيانات (Sanity أو mock تلقائياً)
-  src/lib/mock-data.ts          ← بيانات تجريبية (تُستخدم فقط بغياب مفاتيح Sanity)
-  .env.local.example            ← قائمة كل المفاتيح المطلوبة موثّقة
-
-studio/                        ← مشروع Sanity Studio (مستقل تماماً، له
-                                   package.json خاص به)
-  schemaTypes/                  ← تعريف المتحدثين، الفريق، الفعاليات، الرعاة
+npm run lint
+npx tsc --noEmit
+npm run build
 ```
 
 ---
 
-## 7. المحتوى الذي ما زال ينتظر العميل (Placeholders)
+## الاعتمادات (Acknowledgments)
 
-ابحث عن `[PLACEHOLDER` بكل ملفات `src/` لإيجاد كل نص ينتظر محتوى حقيقياً
-(نص About، تواريخ الحدث، سعر التذاكر، النص القانوني الكامل لصفحة Terms،
-إلخ). كل هذه النصوص واضحة ومحددة الموقع، ولا تؤثر على عمل الموقع وظيفياً.
+تم بناء هذا المشروع بجهود فريق TEDxAlFalah Youth، باستخدام التقنيات الحديثة لضمان تجربة تفاعلية وآمنة — Next.js 16، React 19، TypeScript، Tailwind v4، Sanity CMS، next-intl (EN/AR)، Nodemailer عبر SMTP Hostinger، Cloudflare Turnstile، Upstash Redis، وGoogle Sheets.

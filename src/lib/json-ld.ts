@@ -25,8 +25,8 @@ export function eventSchema(eventInfo: {
   performers?: { name: string; url?: string }[];
 }) {
   const name = eventInfo.title || "TEDxAlFalah Youth";
-  const startDate = eventInfo.date || "2026-11-15";
-  const location = eventInfo.venue || "Dubai, United Arab Emirates";
+  const startDate = eventInfo.date || "2026-12-19";
+  const location = eventInfo.venue || "Abu Dhabi, United Arab Emirates";
 
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",

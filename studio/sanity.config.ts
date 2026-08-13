@@ -16,7 +16,7 @@ export default defineConfig({
   name: "default",
   title: "TEDxAlFalah Youth",
 
-  projectId: process.env.SANITY_STUDIO_PROJECT_ID || "5pbek4rg",
+  projectId: process.env.SANITY_STUDIO_PROJECT_ID || "hisn3dku",
   dataset: process.env.SANITY_STUDIO_DATASET || "production",
 
   plugins: [structureTool()],

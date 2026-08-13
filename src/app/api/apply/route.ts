@@ -4,6 +4,7 @@ import { escapeHtml } from "@/lib/sanitize";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { validateOrigin } from "@/lib/cors";
+import { sendMail, isMailerConfigured } from "@/lib/mailer";
 
 function wordCount(text: string) {
   return text.trim().split(/\s+/).filter(Boolean).length;
@@ -108,23 +109,55 @@ async function saveToGoogleSheet(data: ApplicationData) {
 }
 
 async function sendConfirmationEmail(data: ApplicationData) {
-  // يتطلب متغير البيئة RESEND_API_KEY، ويتطلب التحقق من ملكية الدومين
-  // tedxalfalahyouth.com بلوحة Resend.
-  const { Resend } = await import("resend");
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
-  await resend.emails.send({
-    from: "TEDxAlFalah Youth <marhaba@tedxalfalahyouth.com>",
+  // نص حرفي معتمد من العميل — لا يُغيّر.
+  await sendMail({
     to: data.email,
-    subject: "We received your TEDxAlFalah Youth application",
+    subject: "We've Received Your Application | TEDxAlFalah Youth",
     html: `
-      <p>Hi ${escapeHtml(data.fullName)},</p>
-      <p>Thank you for applying to TEDxAlFalah Youth! We've received your
-      application for the talk idea "<strong>${escapeHtml(data.talkIdeaTitle)}</strong>".</p>
-      <p>Our review community will be in touch according to the timeline
-      published on our website. In the meantime, feel free to explore the
-      rest of the site.</p>
-      <p>— The TEDxAlFalah Youth Team</p>
+      <p>Thank you for applying to be part of TEDxAlFalah Youth.</p>
+      <p>We're excited to have received your application and to learn more
+      about you, your ideas, and what you hope to bring to the TEDxAlFalah
+      Youth community. Our team will carefully review all submissions as part
+      of the selection process. If your application is shortlisted, a member
+      of the team will be in touch with you regarding the next steps.</p>
+      <p>Due to the number of applications we receive, we may not be able to
+      respond individually to every submission, but please know that every
+      application will be reviewed.</p>
+      <p>Thank you for taking the time to share your story and ideas with us.</p>
+      <p>TEDxAlFalah Youth<br />Tomorrow, Now.<br />Tomorrow is shaped by what
+      we do today.</p>
+    `,
+  });
+}
+
+// إشعار إداري يصل لصندوق فريق المراجعة (ADMIN_APPLICATIONS_EMAIL)
+// بكل بيانات الطلب، لمراجعة المتقدمين دون الحاجة لفتح Google Sheets.
+async function sendAdminNotification(data: ApplicationData) {
+  const trackLabel =
+    data.track === "young-speaker" ? "Young Speaker" : "Expert Speaker";
+
+  await sendMail({
+    to: process.env.ADMIN_APPLICATIONS_EMAIL || "apply@tedxalfalahyouth.com",
+    subject: `New Application: ${trackLabel} - ${escapeHtml(data.fullName)}`,
+    html: `
+      <p><strong>Track:</strong> ${escapeHtml(trackLabel)}</p>
+      <p><strong>Full name:</strong> ${escapeHtml(data.fullName)}</p>
+      <p><strong>Age:</strong> ${escapeHtml(data.age)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
+      <p><strong>Phone:</strong> ${escapeHtml(data.phone)}</p>
+      <p><strong>City:</strong> ${escapeHtml(data.city)}</p>
+      <p><strong>Talk idea title:</strong> ${escapeHtml(data.talkIdeaTitle)}</p>
+      <p><strong>Idea summary:</strong> ${escapeHtml(data.ideaSummary)}</p>
+      <p><strong>Why it matters:</strong> ${escapeHtml(data.whyItMatters)}</p>
+      <p><strong>Theme connection:</strong> ${escapeHtml(data.themeConnection)}</p>
+      <p><strong>Video link:</strong> ${escapeHtml(data.videoLink || "-")}</p>
+      <p><strong>How they heard about us:</strong> ${escapeHtml(data.howHeardAboutUs)}</p>
+      <p><strong>School name:</strong> ${escapeHtml(data.schoolName || "-")}</p>
+      <p><strong>Guardian name:</strong> ${escapeHtml(data.guardianName || "-")}</p>
+      <p><strong>Guardian contact:</strong> ${escapeHtml(data.guardianContact || "-")}</p>
+      <p><strong>Organization and role:</strong> ${escapeHtml(data.organizationAndRole || "-")}</p>
+      <p><strong>Area of work with youth:</strong> ${escapeHtml(data.areaOfWorkWithYouth || "-")}</p>
+      <p><strong>Submitted at:</strong> ${new Date().toLocaleString()}</p>
     `,
   });
 }
@@ -173,11 +206,9 @@ export async function POST(request: Request) {
     try {
       await saveToGoogleSheet(data);
     } catch (error) {
+      // فشل الـ Sheet لا يُسقط الطلب: الإشعار الإداري عبر الإيميل يبقى
+      // قناة الاستلام الأساسية، ونسجّل الخطأ فقط ليتضح لاحقاً.
       console.error("Google Sheets save failed:", error);
-      return NextResponse.json(
-        { error: "Failed to save application" },
-        { status: 500 }
-      );
     }
   } else {
     // بيئة تطوير: لا نسجّل بيانات الطلب الكاملة بالسجل (حتى محلياً) لأنها
@@ -188,7 +219,7 @@ export async function POST(request: Request) {
       );
   }
 
-  if (process.env.RESEND_API_KEY) {
+  if (isMailerConfigured()) {
     try {
       await sendConfirmationEmail(data);
     } catch (error) {
@@ -196,8 +227,13 @@ export async function POST(request: Request) {
       // نسجّل الخطأ فقط حتى لا يفقد المتقدم تأكيد استلام طلبه.
       console.error("Confirmation email failed:", error);
     }
+    try {
+      await sendAdminNotification(data);
+    } catch (error) {
+      console.error("Admin notification email failed:", error);
+    }
   } else {
-    if (process.env.NODE_ENV === "development") console.log("[DEV] Confirmation email would be sent (RESEND_API_KEY not set)");
+    if (process.env.NODE_ENV === "development") console.log("[DEV] Confirmation email would be sent (SMTP not configured)");
   }
 
   return NextResponse.json({ success: true });

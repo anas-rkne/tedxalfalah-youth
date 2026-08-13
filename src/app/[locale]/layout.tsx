@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Kufi_Arabic } from "next/font/google";
+import localFont from "next/font/local";
 import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -21,19 +21,19 @@ import { organizationSchema } from "@/lib/json-ld";
 
 const baseUrl = process.env.BASE_URL || "https://www.tedxalfalahyouth.com";
 
-const inter = Inter({
+const inter = localFont({
+  src: "./fonts/Inter.woff2",
   variable: "--font-inter",
-  subsets: ["latin"],
   display: "swap",
   preload: true,
 });
 
-const notoKufiArabic = Noto_Kufi_Arabic({
+const notoKufiArabic = localFont({
+  src: "./fonts/NotoKufiArabic.woff2",
   variable: "--font-noto-kufi-arabic",
-  subsets: ["arabic"],
   display: "swap",
   preload: true,
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: "400 900",
 });
 
 type Props = { params: Promise<{ locale: string }> };

@@ -19,7 +19,6 @@ const sections: Section[] = [
   { id: "highlights", label: "Highlights", labelAr: "الأبرز" },
   { id: "schedule", label: "Schedule", labelAr: "الجدول" },
   { id: "apply", label: "Apply", labelAr: "تقديم" },
-  { id: "sponsors", label: "Sponsors", labelAr: "الشركاء" },
   { id: "contact", label: "Contact", labelAr: "تواصل" },
 ];
 

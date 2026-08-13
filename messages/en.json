@@ -51,19 +51,19 @@
     "moreHeading": "More",
     "backToTop": "Back to top",
     "licenseHeading": "TEDx License",
-    "venueAddress": "Museum of the Future, Dubai, United Arab Emirates",
+    "venueAddress": "Nabd AlFalah, Abu Dhabi, United Arab Emirates",
     "phoneNumber": "+971 4 123 4567",
     "learnAboutTEDx": "Learn about TEDx"
   },
   "home": {
     "meta": {
       "title": "TEDxAlFalah Youth | Young Voices. Real Ideas.",
-      "description": "Young voices. Real ideas. The future starts earlier than we think. An independently organized TEDx event in Dubai, UAE."
+      "description": "Young voices. Real ideas. The future starts earlier than we think. An independently organized TEDx event in Abu Dhabi, UAE."
     },
     "hero": {
       "eventName": "TEDxAlFalah Youth",
       "tagline": "Tomorrow is shaped by what we do today.",
-      "date": "December 18, 2026",
+      "date": "December 19, 2026",
       "venue": "Abu Dhabi, United Arab Emirates",
       "scrollLabel": "Explore",
       "applyLabel": "Apply Now",
@@ -391,7 +391,7 @@
         "badge": "Event Timeline"
       },
       "sectionTitle": "Full Lineup",
-      "datePlaceholder": "Saturday, November 15, 2026",
+      "datePlaceholder": "Saturday, December 19, 2026",
       "timesNote": "Times are approximate and may shift slightly on event day.",
       "empty": "Full schedule coming soon.",
       "ticketsLabel": "Get Your Ticket",
@@ -693,11 +693,11 @@
         "badge": "Event Details",
         "title": "Event Day Information",
         "dateLabel": "Date",
-        "dateValue": "Saturday, 15 November 2026",
+        "dateValue": "Saturday, 19 December 2026",
         "timeLabel": "Time",
         "timeValue": "9:00 AM – 5:00 PM",
         "venueLabel": "Venue",
-        "venueValue": "Museum of the Future, Dubai",
+        "venueValue": "Nabd AlFalah, Abu Dhabi",
         "venueLink": "View Venue Details",
         "ageLabel": "Age Guidelines",
         "ageValue": "Open to all ages; recommended for 13+",

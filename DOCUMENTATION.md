@@ -1,8 +1,10 @@
 # TEDxAlFalah Youth — التوثيق الشامل للمشروع
 
 **حالة المشروع: مكتمل بالكامل من الناحية البرمجية والوظيفية.**
-الخطوة الوحيدة المتبقية هي الحصول على مفاتيح API الثلاثة من العميل
-(Sanity, Google, Resend) ووضعها بملف `.env.local` — لا يوجد أي كود
+الإيميلات التلقائية تعمل الآن **فعلياً عبر SMTP Hostinger** (nodemailer)
+بصناديق الدومين نفسها — لا حاجة لخدمة Resend. المتبقي فقط هو استكمال
+بيانات قنوات "التخزين والحماية" (Google Sheets وCloudflare Turnstile
+وUpstash) من حسابات العميل، ووضعها بملف `.env.local` — لا يوجد أي كود
 ناقص أو "سيُبنى لاحقاً".
 
 ---
@@ -38,7 +40,7 @@
 | عدد API Routes | 4 (Contact, Apply, Partner Inquiry, Tickets) |
 | CMS | Sanity (Studio جاهز بمجلد `studio/`) |
 | تخزين الفورمات | Google Sheets |
-| الإيميلات التلقائية | Resend |
+| الإيميلات التلقائية | SMTP Hostinger (nodemailer) — يعمل فوراً |
 | حالة البناء الإنتاجي | ✅ تم اختباره فعلياً بـ `next build` ونجح 100% |
 | حالة الفحص البرمجي | ✅ `tsc --noEmit` و`eslint` نظيفان تماماً (صفر أخطاء) |
 | **طبقات الأمان** | ✅ حماية سبام (Turnstile) + Rate Limiting + Security Headers + تعقيم مدخلات المستخدم — مدمجة بكل الفورمات الأربعة، بتراجع آمن بغياب المفاتيح |
@@ -390,28 +392,39 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n....\n-----END PRIVATE KEY-----
 **(اختياري) لتفعيل تسجيل التذاكر أيضاً:** كرر الخطوات 1-6 بجدول منفصل
 وضع النتيجة بمتغير `GOOGLE_TICKETS_SHEET_ID`.
 
-### 7.3 — Resend (الإيميلات التلقائية)
+### 7.3 — SMTP Hostinger (الإيميلات التلقائية)
 
-**الهدف**: إيميل تأكيد فوري للمتقدمين، وإشعارات لفريق العمل عند وصول
-رسالة تواصل أو استفسار رعاية.
+**الهدف**: إيميل تأكيد فوري للمتقدمين، وإشعار إداري كامل ببيانات كل طلب
+لصندوق الفريق، وإشعارات وصول رسائل التواصل واستفسارات الرعاية — كلها عبر
+صناديق Hostinger نفسها، دون أي خدمة خارجية.
 
-1. سجّل مجاناً على [resend.com](https://resend.com)
-2. من القائمة الجانبية: Domains → Add Domain → اكتب `tedxalfalahyouth.com`
-3. سيعطيك Resend سجلات DNS (عادة نوع TXT وMX وCNAME) → أضفها بلوحة تحكم
-   الدومين (تحتاج الدومين مفعّلاً ومُشترى مسبقاً من قبل العميل حسب نطاق
-   المشروع الأصلي)
-4. انتظر التحقق (قد يأخذ من دقائق لساعات حسب مزوّد الدومين)
-5. من القائمة الجانبية: API Keys → Create API Key → انسخه
+**ما نحتاجه مسبقاً** (يوفره صاحب الاستضافة): صندوق مرسل فعلي ببيانات
+SMTP الخاصة به. الإعداد الافتراضي بالمشروع:
+- `SMTP_HOST=smtp.hostinger.com` + `SMTP_PORT=465` (SSL)
+- `SMTP_USER` / `SMTP_PASS` = `marhaba@tedxalfalahyouth.com`
+- `EMAIL_FROM` = اسم وبريد المُرسِل الظاهر (صندوق حقيقي على نفس الدومين)
 
-أضفه بملف `.env.local`:
+أضفها بملف `.env.local`:
 ```
-RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=465
+SMTP_USER=marhaba@tedxalfalahyouth.com
+SMTP_PASS=xxxxxxxx
+EMAIL_FROM=TEDxAlFalah Youth <marhaba@tedxalfalahyouth.com>
 ```
 
-> إلى أن يتحقق الدومين، يمكنك اختبار الإيميلات مؤقتاً عبر تغيير عنوان
-> `from` بملفات `src/app/api/*/route.ts` لعنوان Resend التجريبي
-> `onboarding@resend.dev`، ثم إعادته لعنوان tedxalfalahyouth.com الحقيقي
-> بعد التحقق.
+**الصناديق المستلمَة** (توجيه الرسائل حسب نوعها بملفات
+`src/app/api/*/route.ts`):
+```
+ADMIN_APPLICATIONS_EMAIL=apply@tedxalfalahyouth.com
+CONTACT_EMAIL=marhaba@tedxalfalahyouth.com
+PARTNER_EMAIL=partners@tedxalfalahyouth.com
+MEDIA_EMAIL=media@tedxalfalahyouth.com
+```
+
+> دون بيانات SMTP تبقى الفورمات تعمل وترد `success: true` مع تحذير
+> `[MAILER] SMTP not configured` في السجل — لكن **لا تُطلق الموقع
+> للجمهور قبل ضبطها**.
 
 ---
 
@@ -499,13 +512,20 @@ cp .env.local.example .env.local
 التعبئة يجب أن يبدو هكذا (بقيم توضيحية فقط):
 
 ```env
-RESEND_API_KEY=re_123456789
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=465
+SMTP_USER=marhaba@tedxalfalahyouth.com
+SMTP_PASS=xxxxxxxx
+EMAIL_FROM=TEDxAlFalah Youth <marhaba@tedxalfalahyouth.com>
+
+ADMIN_APPLICATIONS_EMAIL=apply@tedxalfalahyouth.com
+CONTACT_EMAIL=marhaba@tedxalfalahyouth.com
+PARTNER_EMAIL=partners@tedxalfalahyouth.com
+MEDIA_EMAIL=media@tedxalfalahyouth.com
 
 GOOGLE_SHEET_ID=1AbCdEf...
 GOOGLE_SERVICE_ACCOUNT_EMAIL=tedx-bot@project.iam.gserviceaccount.com
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQ...\n-----END PRIVATE KEY-----\n"
-
-GOOGLE_TICKETS_SHEET_ID=1XyZ...
 
 NEXT_PUBLIC_SANITY_PROJECT_ID=ab12cd34
 NEXT_PUBLIC_SANITY_DATASET=production
@@ -590,7 +610,7 @@ Brief) وحالته بالمشروع الفعلي:
 | Apply: نص عدم القبول الحرفي | ✅ منفّذ حرفياً |
 | Apply: FAQ Accordion | ✅ منفّذ |
 | Apply: حفظ بجدول وليس إيميل فقط | ✅ منفّذ (Google Sheets) |
-| Apply: إيميل تأكيد تلقائي | ✅ منفّذ (Resend) |
+| Apply: إيميل تأكيد تلقائي | ✅ منفّذ (SMTP Hostinger) + إشعار إداري كامل بالبيانات |
 | Apply: إغلاق تلقائي بموعد نهائي + رسالة بديلة | ✅ منفّذ |
 | Sponsors: افتتاحية، شرائح، رعاة حاليون، CTA، PDF اختياري | ✅ منفّذ بالكامل |
 | Tickets: أنواع/أسعار، آلية شراء أو تسجيل، معلومات اليوم، سياسة الاسترجاع | ✅ منفّذ (فورم تسجيل — يحتاج قرار العميل إن كانت التذاكر مدفوعة عبر منصة خارجية) |

@@ -29,7 +29,7 @@ const securityHeaders = [
       "img-src 'self' data: https://cdn.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://*.basemaps.cartocdn.com https://cdnjs.cloudflare.com",
       "frame-src https://challenges.cloudflare.com https://www.google.com/maps",
       // 🔥 تم إضافة نطاق Sanity API الخاص بمشروعك لضمان عدم حظر الطلبات
-      "connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://5pbek4rg.api.sanity.io https://*.sanity.io",
+      "connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://*.api.sanity.io https://*.sanity.io",
     ].join("; "),
   },
 ];

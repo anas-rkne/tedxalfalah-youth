@@ -4,6 +4,7 @@ import { escapeHtml } from "@/lib/sanitize";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { validateOrigin } from "@/lib/cors";
+import { sendMail, isMailerConfigured } from "@/lib/mailer";
 
 const partnerSchema = z.object({
   name: z.string().min(1),
@@ -43,13 +44,14 @@ export async function POST(request: Request) {
 
   const { name, organization, email, phone, message } = parsed.data;
 
-  if (process.env.RESEND_API_KEY) {
+  // -------------------------------------------------------------------
+  // يصل إلى صندوق الرعايات PARTNER_EMAIL (partners@tedxalfalahyouth.com)
+  // عبر SMTP Hostinger. راجع .env.local.example لشرح المتغيرات.
+  // -------------------------------------------------------------------
+  if (isMailerConfigured()) {
     try {
-      const { Resend } = await import("resend");
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
-        from: "TEDxAlFalah Youth Partnerships <marhaba@tedxalfalahyouth.com>",
-        to: "partner@tedxalfalahyouth.com",
+      await sendMail({
+        to: process.env.PARTNER_EMAIL || "partners@tedxalfalahyouth.com",
         replyTo: email,
         subject: `New partnership inquiry from ${escapeHtml(organization)}`,
         html: `
@@ -66,7 +68,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to send" }, { status: 500 });
     }
   } else {
-    if (process.env.NODE_ENV === "development") console.log("[DEV] Partner inquiry received (RESEND_API_KEY not set) from organization:", organization);
+    if (process.env.NODE_ENV === "development") console.log("[DEV] Partner inquiry received (SMTP not configured) from organization:", organization);
   }
 
   return NextResponse.json({ success: true });

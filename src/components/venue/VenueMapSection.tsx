@@ -42,7 +42,7 @@ const VenueMapSection = memo(function VenueMapSection({
           <div className="absolute inset-0 rounded-[20px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)] pointer-events-none z-10" />
           <iframe
             title={mapTitle}
-            src={mapSrc || "https://www.google.com/maps?q=Dubai&output=embed"}
+            src={mapSrc || "https://www.google.com/maps?q=24.4356691,54.7326539&z=15&output=embed"}
             width="100%"
             height="100%"
             className="aspect-video w-full"

@@ -47,9 +47,11 @@ export default async function Home({ params }: Props) {
         <Hero locale={locale} />
       </ScrollSection>
 
-      <ScrollSection variant="default" id="sponsors" className="bg-white">
-        <SponsorsStrip locale={locale} />
-      </ScrollSection>
+      {eventInfo?.showSponsors && (
+        <ScrollSection variant="default" id="sponsors" className="bg-white">
+          <SponsorsStrip locale={locale} />
+        </ScrollSection>
+      )}
 
       <ScrollSection variant="default" id="contact" className="bg-white">
         <ContactBox locale={locale} />

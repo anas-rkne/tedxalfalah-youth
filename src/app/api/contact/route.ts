@@ -4,6 +4,7 @@ import { escapeHtml } from "@/lib/sanitize";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { validateOrigin } from "@/lib/cors";
+import { sendMail, isMailerConfigured } from "@/lib/mailer";
 
 const contactSchema = z.object({
   name: z.string().min(1),
@@ -54,18 +55,27 @@ export async function POST(request: Request) {
   }
 
   // -------------------------------------------------------------------
-  // إرسال فعلي عبر Resend. يتطلب متغير بيئة RESEND_API_KEY.
-  // راجع ملف .env.local.example بجذر المشروع للحصول على قائمة كل
-  // المتغيرات المطلوبة.
+  // إرسال فعلي عبر SMTP (صندوق Hostinger). يتطلب SMTP_HOST/SMTP_PORT/
+  // SMTP_USER/SMTP_PASS بملف .env.local — راجع .env.local.example.
+  //
+  // توجيه الرسائل حسب الموضوع إلى الصندوق المختص:
+  //   Sponsorship → PARTNER_EMAIL (partners@)
+  //   Media       → MEDIA_EMAIL   (media@)
+  //   الباقي      → CONTACT_EMAIL (marhaba@)
   // -------------------------------------------------------------------
-  if (process.env.RESEND_API_KEY) {
-    try {
-      const { Resend } = await import("resend");
-      const resend = new Resend(process.env.RESEND_API_KEY);
+  const inboxBySubject: Record<string, string> = {
+    Sponsorship: process.env.PARTNER_EMAIL || "partners@tedxalfalahyouth.com",
+    Media: process.env.MEDIA_EMAIL || "media@tedxalfalahyouth.com",
+  };
+  const inbox =
+    inboxBySubject[subject] ||
+    process.env.CONTACT_EMAIL ||
+    "marhaba@tedxalfalahyouth.com";
 
-      await resend.emails.send({
-        from: "TEDxAlFalah Youth <marhaba@tedxalfalahyouth.com>",
-        to: "marhaba@tedxalfalahyouth.com",
+  if (isMailerConfigured()) {
+    try {
+      await sendMail({
+        to: inbox,
         replyTo: email,
         subject: `[${subject}] New message from ${escapeHtml(name)}`,
         html: `
@@ -77,16 +87,16 @@ export async function POST(request: Request) {
         `,
       });
     } catch (error) {
-      console.error("Resend email failed:", error);
+      console.error("Contact email failed:", error);
       return NextResponse.json(
         { error: "Failed to send message" },
         { status: 500 }
       );
     }
   } else {
-    // بيئة تطوير: لا يوجد مفتاح Resend بعد، فقط نسجّل الطلب بدون البيانات
+    // بيئة تطوير: لا يوجد إعداد SMTP بعد، فقط نسجّل الطلب بدون البيانات
     // الكاملة (حتى بيئة التطوير لا يجب أن تُسرّب بيانات شخصية بالسجلات)
-    if (process.env.NODE_ENV === "development") console.log("[DEV] Contact form submission received (RESEND_API_KEY not set). Subject:", subject);
+    if (process.env.NODE_ENV === "development") console.log("[DEV] Contact form submission received (SMTP not configured). Subject:", subject);
   }
 
   return NextResponse.json({ success: true });

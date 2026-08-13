@@ -1,7 +1,6 @@
-const CACHE_NAME = "tedx-v1";
+const CACHE_NAME = "tedx-v2";
 const OFFLINE_URL = "/offline.html";
 const STATIC_ASSETS = /\.(png|jpg|jpeg|svg|gif|webp|ico|woff2?)$/i;
-const FONT_ORIGINS = ["https://fonts.googleapis.com", "https://fonts.gstatic.com"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -11,21 +10,23 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+    ).then(() => clients.claim())
+  );
 });
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Cross-origin resources (map tiles, CDNs, external APIs) bypass the
+  // service worker entirely and go straight to the network.
+  if (url.origin !== self.location.origin) return;
+
   // Static assets: cache-first
   if (STATIC_ASSETS.test(url.pathname)) {
-    event.respondWith(cacheFirst(request));
-    return;
-  }
-
-  // Google Fonts: cache-first
-  if (FONT_ORIGINS.includes(url.origin)) {
     event.respondWith(cacheFirst(request));
     return;
   }

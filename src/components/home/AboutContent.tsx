@@ -251,8 +251,8 @@ export default function AboutContent({
               aria-label={mapAlt}
             >
               <LeafletMap
-                center={[25.212, 55.282]} // إحداثيات متحف المستقبل في دبي
-                zoom={15}
+                center={[24.4356691, 54.7326539]} // إحداثيات نبض الفلاح في أبوظبي
+                zoom={16}
               />
             </div>
           </motion.div>
