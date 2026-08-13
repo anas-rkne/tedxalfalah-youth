@@ -31,7 +31,10 @@ export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps
         mapInstanceRef.current = null;
       }
 
-      const map = L.map(container).setView(center, zoom);
+      const map = L.map(container, { attributionControl: false }).setView(center, zoom);
+
+      // عنصر الإسناد: بلا بادئة "Leaflet" (BSD — غير مطلوب)، مع الإبقاء على إسناد Esri الرسمي
+      L.control.attribution({ prefix: false }).addTo(map);
 
       // القاعدة: قمر صناعي Esri (مجاني بلا مفتاح API)
       L.tileLayer(
