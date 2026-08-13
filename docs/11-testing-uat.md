@@ -42,8 +42,10 @@ curl -X POST http://localhost:3000/api/apply \
 
 **إخفاقات مقصودة لتجربتها (اختبار التحقق):**
 - احذف `guardianName` → **400** (المخطط الشرطي يرفض — `apply/route.ts:36-49`).
-- `"age": 5` → **400** (خارج 10–99 من الفورم — لكن لاحظ: حد العمر الصارم في الخادم مفتوح `z.coerce.number()` بلا min/max؛ القيد الحقيقي بالواجهة — تفصيل لاحق ابنهاية التحقق).
+- `"age": 5` → **400** (حد الخادم الصارم `z.coerce.number().min(10).max(99)` — `apply/route.ts:33-34`).
 - `"email": "bad"` → **400**.
+- أرسل جسدًا غير JSON (`-d 'broken'` بلا هيدر contentType) → **400** `{"error": "Invalid JSON body"}` (إصلاح اليوم — كان خطأ 500 سابقًا).
+- **اختبار إغلاق التقديم (403)**: أعد تشغيل dev مع `APPLICATION_DEADLINE=(تاريخ ماضٍ)` في `.env.local` → الطلب الصحيح كاملًا يعيد **403** `{"error": "Applications are closed"}`. (القيمة الافتراضية في `src/lib/constants.ts` — قراءة من البيئة أولًا.)
 
 ### 1.2 فورم Apply — مسار «خبير» (Expert)
 
@@ -112,6 +114,8 @@ curl -X POST http://localhost:3000/api/partner-inquiry \
   }'
 ```
 **المتوقع**: `200` → وصول `partners@`.
+
+**إخفاق مقصود (إصلاح اليوم)**: أرسل جسدًا غير JSON إلى `contact` أو `partner-inquiry` (`-d 'not-json'` بلا هيدر) → **400** `{"error": "Invalid JSON body"}` (كان خطأ 500 سابقًا).
 
 ### 1.5 اختبار Rate Limiting (429)
 

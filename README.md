@@ -2,7 +2,7 @@
 
 **"Tomorrow, Now."** — الموقع الرسمي لحدث TEDxAlFalah Youth: صفحات المتحدثين والفريق والجدول والمكان، نظام تقديم المتحدثين، الفورمات، والتكاملات الكاملة (Sanity، بريد SMTP حقيقي، حماية بوتات، تسجيل في Google Sheets).
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.2.10-black)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16.3.0-black)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-%E2%9C%93-blue)](https://www.typescriptlang.org)
 [![React](https://img.shields.io/badge/React-19.2.4-61dafb)](https://react.dev)
 [![Build Status](https://img.shields.io/badge/Build-Passing-success)]()

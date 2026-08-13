@@ -35,6 +35,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // مخرجات مستقلة للنشر على Hostinger Node — يُشغَّل بـ node .next/standalone/server.js
+  output: "standalone",
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "cdn.sanity.io" },

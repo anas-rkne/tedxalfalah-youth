@@ -6,7 +6,7 @@
 
 > **تحذير:** ملف `CREDENTIALS.md` يحتوي على المفاتيح الحقيقية — يجب حفظه في مكان آمن، ولا يتم مشاركته عبر الإيميل أو الدردشات العامة.
 >
-> **ملاحظة صادقة من فريق التسليم**: `CREDENTIALS.md` **لم يُنشأ بعد** — إنشاءه بند أول في قائمة "بند يجب إنجازه قبل التسليم النهائي" (§5). القيم الحقيقية الوحيدة الموجودة حاليًا هي في `.env.local` على جهاز التطوير (لا يُرفع لأي مكان) وموقعها موثق في `docs/03`.
+> **ملاحظة صادقة من فريق التسليم**: `CREDENTIALS.md` **لم يُنشأ بعد** — استُحدث **قالب `CREDENTIALS.template.md`** (مرفوع، بلا قيم) لإنشائه بنسخه إلى `CREDENTIALS.md` محليًا. القيم الحقيقية الوحيدة الموجودة حاليًا هي في `.env.local` على جهاز التطوير (لا يُرفع لأي مكان) وموقعها موثق في `docs/03`.
 
 ---
 
@@ -147,8 +147,8 @@
 
 | # | البند | الحالة |
 | :-: | :--- | :--- |
-| 1 | إنشاء `CREDENTIALS.md` (دخول Hostinger + WebMail + Sanity + Google + جدول: `SMTP_PASS`، `GOOGLE_PRIVATE_KEY`، `GOOGLE_SERVICE_ACCOUNT_EMAIL`، `GOOGLE_SHEET_ID`، `TURNSTILE_SECRET_KEY`، `UPSTASH_REDIS_REST_URL/TOKEN`، `SANITY_WEBHOOK_SECRET`) | **معلّق — يُنجز قبل التسليم** |
-| 2 | إضافة `CREDENTIALS.md` إلى `.gitignore` | **معلّق — يتبع البند 1** |
+| 1 | إنشاء `CREDENTIALS.md` من القالب المرفوع `CREDENTIALS.template.md` (`copy CREDENTIALS.template.md CREDENTIALS.md`) — دخول Hostinger + WebMail + Sanity + Google + جدول: `SMTP_PASS`، `GOOGLE_PRIVATE_KEY`، `GOOGLE_SERVICE_ACCOUNT_EMAIL`، `GOOGLE_SHEET_ID`، `TURNSTILE_SECRET_KEY`، `UPSTASH_REDIS_REST_URL/TOKEN`، `SANITY_WEBHOOK_SECRET`) | **معلّق — يُنجز قبل التسليم** |
+| 2 | `CREDENTIALS.md` مرفوض في `.gitignore` الآن (نمط `CREDENTIALS*` مع إبقاء القالب) | **تم اليوم** |
 | 3 | تعبئة مفاتيح Google/Cloudflare/Upstash/Sanity في `.env.local` (جلسة العميل بهاتفه — سجل في `docs/03`) | **معلّق — حسابان جاهزان** |
 | 4 | النشر على Hostinger Node.js (Checklist `docs/08` §4) + قرار GitHub/ZIP | **معلّق — جاهز للتنفيذ** |
 

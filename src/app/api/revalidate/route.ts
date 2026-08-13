@@ -10,6 +10,8 @@ const TYPE_PATH_MAP: Record<string, string[]> = {
   teamMember: ["/[locale]/team"],
   activation: ["/[locale]/activations"],
   session: ["/[locale]/schedule"],
+  sponsor: ["/[locale]"],
+  galleryImage: ["/[locale]/venue"],
   eventInfo: ["/[locale]", "/[locale]/speakers", "/[locale]/schedule"],
 };
 

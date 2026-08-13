@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { Map as LeafletMapInstance } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 interface LeafletMapProps {
@@ -13,7 +14,7 @@ const VENUE_LABEL = "نبض الفلاح — أبوظبي";
 
 export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
+  const mapInstanceRef = useRef<LeafletMapInstance | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

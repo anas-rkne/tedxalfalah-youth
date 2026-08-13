@@ -83,7 +83,7 @@ export default function ScrollIndicator() {
 
   useEffect(() => {
     if (!isHomePage) {
-      setIsVisible(false);
+      queueMicrotask(() => setIsVisible(false));
       return;
     }
     // انتظر قليلاً حتى يكتمل الرندر ثم أعد المراقب

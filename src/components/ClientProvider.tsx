@@ -1,6 +1,6 @@
 "use client";
 
-import { NextIntlClientProvider } from "next-intl";
+import { NextIntlClientProvider, type AbstractIntlMessages } from "next-intl";
 import { useEffect, useState } from "react";
 
 export function ClientProvider({
@@ -10,11 +10,11 @@ export function ClientProvider({
   children: React.ReactNode;
   locale: string;
 }) {
-  const [messages, setMessages] = useState<any>(null);
+  const [messages, setMessages] = useState<AbstractIntlMessages | null>(null);
 
   useEffect(() => {
     import(`../../messages/${locale}.json`)
-      .then((mod) => setMessages(mod.default))
+      .then((mod) => setMessages(mod.default as AbstractIntlMessages))
       .catch(() => setMessages(null));
   }, [locale]);
 

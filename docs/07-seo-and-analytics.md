@@ -208,4 +208,4 @@ const IS_PROD = process.env.NODE_ENV === "production"; // سطر 16
 | هل الموقع مفهرس بالكامل؟ | نعم — `robots.txt` يسمح بكل شيء، و22 عنوان URL في `sitemap.xml` (11 صفحة × لغتين) مع `hreflang` صحيح |
 | ماذا سيرى جوجل؟ | مخططات منظمة: Organization في كل صفحة + Event وWebSite بالرئيسية + Breadcrumb لكل صفحة + Person للمتحدثين والفريق |
 | هل التحليلات تعمل؟ | نعم — GA4 (`G-N3JFXW8D7J`) في الإنتاج فقط، مع `anonymize_ip` وتتبع تنقل كامل |
-| **أين يجب العمل قبل الإطلاق؟** | ① تحديث تاريخ `eventInfo` الفعلي في Sanity · ② إضافة `/speakers` لـ `ROUTES` في `sitemap.ts` عند الإعلان · ③ أداة موافقة كوكيز (GDPR) · ④ إضافة `twitter:site` · ⑤ التحقق من `BASE_URL` في الاستضافة |
+| **أين يجب العمل قبل الإطلاق؟** | ① تحديث تاريخ `eventInfo` الفعلي في Sanity · ② أداة موافقة كوكيز (GDPR) — القرار المعتمد: توثيق فقط (هذا التنبيه) لجمهور لا يُشترط فيه · ③ إضافة `twitter:site` · ④ التحقق من `BASE_URL` في الاستضافة · ⑤ رفع DMARC من `p=none` إلى `p=quarantine` في DNS (اختياري — محدد حاليًا عبر Hostinger) |

@@ -214,13 +214,13 @@ export default function ApplicationForm() {
       }
       setShowSuccess(true);
       setTimeout(() => router.push("/thank-you?type=apply"), 1200);
-    } catch (e: any) {
+    } catch (e: unknown) {
       clearTimeout(timeout);
       setShowSuccess(false);
-      const msg = e?.message;
+      const msg = e instanceof Error ? e.message : "";
       if (msg === "rate_limit") toast.error(tCommon("ui.tooManyRequests"));
       else if (msg === "server_error") toast.error(tCommon("ui.serverError"));
-      else if (e?.name === "AbortError") toast.error(tCommon("ui.connectionTimedOut"));
+      else if (e instanceof Error && e.name === "AbortError") toast.error(tCommon("ui.connectionTimedOut"));
       else toast.error(t("errorGeneric"));
       setStatus("error");
     }

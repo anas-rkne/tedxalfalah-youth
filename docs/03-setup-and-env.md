@@ -88,7 +88,7 @@ npm run start        # → http://localhost:3000 (مبني سلفًا)
 | 27 | `NEXT_PUBLIC_GA_ID` | معرّف Google Analytics 4 (تحميل gtag عند وجوده) | `src/components/Analytics.tsx:14` | `G-N3JFXW8D7J` — **مفعّل حاليًا** (موجود في example) | Google Analytics |
 | 28 | `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | (اختياري) بديل الخصوصية لـ Plausible — يُفضل تعطيل GA4 إن استُخدم | `src/components/Analytics.tsx:15` | (فارغ/معلّق في example) | حساب Plausible |
 | 29 | `NEXT_PUBLIC_APPLICATION_DEADLINE` | **نص العرض فقط** ("September 30, 2026") — **لا يتحكم بالإغلاق!** | `src/components/home/ApplyBanner.tsx:5` | `September 30, 2026` (افتراضي) — غير موجود في example | اختياري |
-| — | `APPLICATION_DEADLINE` | **الموعد الفعلي للإغلاق** (ثابت في الكود وليس متغيرًا) | `src/lib/constants.ts:1` (`"2026-09-30T23:59:59+04:00"`) يُستخدم في `apply/page.tsx:28` و`ApplyBanner.tsx:9` | `2026-09-30T23:59:59+04:00` (UTC+4) | يتطلب تعديل كود إن تغيّر |
+| — | `APPLICATION_DEADLINE` | **الموعد الفعلي للإغلاق** — قراءة من البيئة أولًا، وسقوط على الثابت | `src/lib/constants.ts:1-2` (`"2026-09-30T23:59:59+04:00"`) يُستخدم في `apply/route.ts` (حارس 403) و`apply/page.tsx:28` و`ApplyBanner.tsx:9` | `2026-09-30T23:59:59+04:00` (UTC+4) — اختياري في example | تغييره من البيئة فقط (بعد إصلاح اليوم) |
 
 ---
 

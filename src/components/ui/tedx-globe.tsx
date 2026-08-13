@@ -14,7 +14,7 @@ export function TedxGlobe() {
 
   // تأكد من أن المكون قد تم تحميله على العميل فقط
   useEffect(() => {
-    setIsMounted(true);
+    queueMicrotask(() => setIsMounted(true));
   }, []);
 
   // إذا لم يتم التحميل، نعرض مساحة فارغة بنفس النسبة لتجنب إزاحة التخطيط

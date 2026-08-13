@@ -26,8 +26,8 @@ const DefaultBackground = memo(function DefaultBackground({
   imageScale,
 }: {
   shouldReduceMotion: boolean | null;
-  imageY: any;
-  imageScale: any;
+  imageY: MotionValue<number>;
+  imageScale: MotionValue<number>;
 }) {
   return (
     <motion.div style={{ y: imageY, scale: imageScale }} className="absolute inset-0 z-0">

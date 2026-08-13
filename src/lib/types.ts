@@ -12,6 +12,7 @@ export interface Speaker {
     x?: string;
   };
   wave: number;
+  order?: number;
   isPublished: boolean;
 }
 

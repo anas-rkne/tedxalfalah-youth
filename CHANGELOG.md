@@ -108,11 +108,35 @@
 
 ---
 
+## [v1.0.0-release] — 2026-08-13 · المراجعة النهائية قبل النشر
+
+إغلاق بنود التدقيق الشامل المتفق عليها (آخر تعليمات الفريق قبل النشر).
+
+### Added
+- **إغلاق التقديم من الخادم**: حارس `APPLICATION_DEADLINE` في `POST /api/apply` (`apply/route.ts` — بعد rate limit وقبل التحقق) → **403** بعد الموعد. قراءة الموعد من البيئة أولًا (`constants.ts:1-2`) — واختبار إغلاق تجريبي موثق في `docs/11` §1.1.
+- **حقل ترتيب المتحدثين** `order` في `studio/schemaTypes/speaker.ts` (ترتيب داخل الموجة) + فرز GROQ `order(wave asc, order asc, name asc)` في `data.ts:31` + `order?` في `Speaker` (`types.ts`).
+- `sponsor` و`galleryImage` إلى `TYPE_PATH_MAP` (`revalidate/route.ts`) — الحذف/النشر للرعاة ومعرض المكان يعيد بناء الهوم وصفحة venue.
+- `CREDENTIALS.template.md` (نموذج سجل المفاتيح بلا قيم) + نمط `CREDENTIALS*` في `.gitignore` (مع `!CREDENTIALS.template.md`) — وإصلاح ذيل `.gitignore` المكسور ترميزًا.
+- مفاتيح بيئة جديدة: `BASE_URL`/`ALLOWED_API_ORIGINS`/`NEXT_PUBLIC_PLATINUMLIST_URL`/`NEXT_PUBLIC_APPLICATION_DEADLINE` إلى `.env.local` + مثالها في `.env.local.example` (+ `APPLICATION_DEADLINE` اختياريًا).
+
+### Changed
+- **ترقية `next` إلى `16.3.0`** + `eslint-config-next 16.3.0` + `engines.node >=20.9` + **إزالة `resend`** نهائيًا (`package.json`).
+- **`output: "standalone"`** مفعّل في `next.config.ts` (النشر عبر `node .next/standalone/server.js` — `docs/08` §2.3).
+- **Google Sheets → 20 عمودًا**: `parentalConsent`/`consentToTerms` يُسجلان (موثق في `docs/05` §7.1) + `setHeaderRow` إلزامي.
+- **JSON المكسور → 400** بدل 500 في `/api/apply` و`/api/contact` و`/api/partner-inquiry`.
+- حد العمر في الخادم مغلق `min(10).max(99)` (`apply/route.ts`).
+- وثائق: `docs/01` (resend محذوف) · `docs/03` (APPLICATION_DEADLINE قابل للتكوين) · `docs/05` (20 عمودًا) · `docs/08` (standalone مفعل + Node 16.3.0) · `docs/11` (اختبارات جديدة: JSON 400، إغلاق 403، age 5) · `README` (شارة 16.3.0).
+
+### Security
+- **`npm audit` → 0 ثغرات (مؤكد 13-08-2026)**: ترقية `next` إلى `16.3.0` حسمت تنبيهات next/sharp، و`npm audit fix` رفع `undici` → 7.29.0 واصلح tبعياته (hono/brace-expansion/fast-uri/ip-address/js-yaml). الشهادة الكاملة في `docs/06` §5.2.
+- إشعار Apply الإداري يتضمن سطري `parentalConsent`/`consentToTerms` — تتبع الموافقات القانونية.
+
+---
+
 ## ملاحظة التسجيل القادم
 
 | بعد | التحديث المتوقع |
 | :--- | :--- |
 | تعبئة مفاتيح Google/Turnstile/Upstash/Sanity | قفل Fail-Open → تشغيل الحماية الكاملة (جلسة العميل — `docs/03`) |
-| النشر على Hostinger Node.js | إضافة `output: 'standalone'` (اختياري — `docs/08` §2.3) |
-| ترقية التبعيات | `next@16.3.0` + غلق ثغرات npm audit |
+| النشر على Hostinger Node.js | تشغيل `node .next/standalone/server.js` + توثيق فعلي (standalone مفعّل الآن — `docs/08` §2.3) |
 | إطلاق صفحات الشروط/الخصوصية | إضافة `/terms` و`/privacy` (إلزامي) |

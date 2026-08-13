@@ -203,16 +203,17 @@ export const APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00";
 
 ## 7. Google Sheets — الأعمدة والتحذيرات
 
-### 7.1 أعمدة الصف الـ 18 (بالترتيب الدقيق في `addRow` — `apply/route.ts:89-108`)
+### 7.1 أعمدة الصف الـ 20 (بالترتيب الدقيق في `addRow` — `apply/route.ts:89-112`)
 
 ```text
-1.  timestamp          7.  city               13. schoolName
-2.  track              8.  talkIdeaTitle      14. guardianName
-3.  fullName           9.  ideaSummary        15. guardianContact
-4.  age                10. whyItMatters       16. organizationAndRole
-5.  email              11. themeConnection    17. areaOfWorkWithYouth
-6.  phone              12. videoLink          18. (timestamp يفتح الصف)
+1.  timestamp          6.  phone              11. themeConnection    16. organizationAndRole
+2.  track              7.  city               12. videoLink          17. areaOfWorkWithYouth
+3.  fullName           8.  talkIdeaTitle      13. schoolName         18. parentalConsent
+4.  age                9.  ideaSummary        14. guardianName       19. consentToTerms
+5.  email              10. whyItMatters       15. guardianContact    20. (timestamp يفتح الصف)
 ```
+
+> **تحديث اليوم:** العمودان 18–19 (`parentalConsent`/`consentToTerms`) أُضيفا مع إجبار `setHeaderRow` — أي جدول يدوي أُنشئ سابقًا بـ 18 عمودًا **يجب أن يُوسَّع** إلى 20 عنونًا (أو يُترك الجدول يضيفها أول صف).
 
 **الصفوف تُضاف بنفس الترتيب حرفيًا** — إذا أعددت الـ Sheet يدويًا بعناوين أعمدة، انسخ هذه الأسماء **بنفس الإملاء** (الخادم يضيفها كخريطة `column: value` وليس موضعيًا، فالترتيب الفعلي للأعمدة في الجدول يرتب بنفس ترتيب المفاتيح).
 

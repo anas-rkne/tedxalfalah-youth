@@ -59,6 +59,13 @@ export default defineType({
       validation: (Rule) => Rule.required().min(1),
     }),
     defineField({
+      name: "order",
+      title: "Order Within Wave",
+      description: "Position inside the wave (0, 1, 2...). Lower appears first.",
+      type: "number",
+      initialValue: 0,
+    }),
+    defineField({
       name: "isPublished",
       title: "Published",
       description: "Only published speakers appear on the live website",

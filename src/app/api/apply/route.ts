@@ -5,6 +5,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { validateOrigin } from "@/lib/cors";
 import { sendMail, isMailerConfigured } from "@/lib/mailer";
+import { APPLICATION_DEADLINE } from "@/lib/constants";
 
 function wordCount(text: string) {
   return text.trim().split(/\s+/).filter(Boolean).length;
@@ -14,7 +15,7 @@ function wordCount(text: string) {
 const applicationSchema = z.object({
   track: z.enum(["young-speaker", "expert"]),
   fullName: z.string().min(1),
-  age: z.coerce.number(),
+  age: z.coerce.number().min(10).max(99),
   email: z.string().email(),
   phone: z.string().min(1),
   city: z.string().min(1),
@@ -86,6 +87,29 @@ async function saveToGoogleSheet(data: ApplicationData) {
   await doc.loadInfo();
   const sheet = doc.sheetsByIndex[0];
 
+  await sheet.setHeaderRow([
+    "timestamp",
+    "track",
+    "fullName",
+    "age",
+    "email",
+    "phone",
+    "city",
+    "talkIdeaTitle",
+    "ideaSummary",
+    "whyItMatters",
+    "themeConnection",
+    "videoLink",
+    "howHeardAboutUs",
+    "schoolName",
+    "guardianName",
+    "guardianContact",
+    "organizationAndRole",
+    "areaOfWorkWithYouth",
+    "parentalConsent",
+    "consentToTerms",
+  ]);
+
   await sheet.addRow({
     timestamp: new Date().toISOString(),
     track: data.track,
@@ -105,6 +129,8 @@ async function saveToGoogleSheet(data: ApplicationData) {
     guardianContact: data.guardianContact || "",
     organizationAndRole: data.organizationAndRole || "",
     areaOfWorkWithYouth: data.areaOfWorkWithYouth || "",
+    parentalConsent: data.parentalConsent ? "Yes" : "No",
+    consentToTerms: "Yes",
   });
 }
 
@@ -157,6 +183,8 @@ async function sendAdminNotification(data: ApplicationData) {
       <p><strong>Guardian contact:</strong> ${escapeHtml(data.guardianContact || "-")}</p>
       <p><strong>Organization and role:</strong> ${escapeHtml(data.organizationAndRole || "-")}</p>
       <p><strong>Area of work with youth:</strong> ${escapeHtml(data.areaOfWorkWithYouth || "-")}</p>
+      <p><strong>Parental consent:</strong> ${data.parentalConsent ? "Yes" : "No"}</p>
+      <p><strong>Terms accepted:</strong> Yes</p>
       <p><strong>Submitted at:</strong> ${new Date().toLocaleString()}</p>
     `,
   });
@@ -175,7 +203,21 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = await request.json();
+  // 1.5) الإغلاق التلقائي للفورم — فحص سيرفر-سايد للموعد النهائي حتى لا
+  // يُقبل أي طلب بعد الموعد عبر طلبات مباشرة (الفحص العرضي وحده لا يكفي).
+  if (new Date() > new Date(APPLICATION_DEADLINE)) {
+    return NextResponse.json(
+      { error: "Applications are closed" },
+      { status: 403 }
+    );
+  }
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const parsed = applicationSchema.safeParse(body);
 
   if (!parsed.success) {

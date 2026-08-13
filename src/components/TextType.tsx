@@ -107,10 +107,10 @@ const TextType: React.FC<TextTypeProps> = ({
       }, speed);
     } else if (isDeleting && currentIndex === 0) {
       // Finished deleting
-      setIsDeleting(false);
+      queueMicrotask(() => setIsDeleting(false));
       // Move to next text
       if (textArray.length > 1) {
-        setTextIndex((prev) => (prev + 1) % textArray.length);
+        queueMicrotask(() => setTextIndex((prev) => (prev + 1) % textArray.length));
       }
       timeout = setTimeout(() => {
         // Just continue to typing

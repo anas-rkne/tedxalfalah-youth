@@ -107,7 +107,9 @@ function TicketBarcode() {
 /* ═══════════════════════════════════════════════════════════════
    مكون بطاقة التذكرة الرئيسية
    ═══════════════════════════════════════════════════════════════ */
-function TicketCard({ t }: { t: any }) {
+type TicketTranslator = (key: string) => string;
+
+function TicketCard({ t }: { t: TicketTranslator }) {
   return (
     <div className="relative group/card max-w-md mx-auto">
       {/* Glow Effect Behind */}

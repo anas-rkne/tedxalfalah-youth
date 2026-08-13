@@ -38,7 +38,7 @@
 
 - استضافة Node.js متوفرة في باقات **Business** أو **Cloud** (أو Web Apps المستقلة).
 - **باقة "Single Web Hosting" البسيطة لا تدعم Node.js** — إن كانت باقة العميل منها، يلزم ترقية (دعم Hostinger يوضح الفرق).
-- المطلوب تقنيًا: Node.js **20.9 أو أحدث** (متطلب Next.js 16 — ليس 18 كما قد تجد في مقالات قديمة؛ الإصدار الحالي `16.2.10` في `package.json:26`) — اختر **Node 22 LTS** إن وُجد كخيار.
+- المطلوب تقنيًا: Node.js **20.9 أو أحدث** (متطلب Next.js 16 — ليس 18 كما قد تجد في مقالات قديمة؛ الإصدار الحالي `16.3.0` — و`package.json` يحوي `engines.node` إلزاميًا) — اختر **Node 22 LTS** إن وُجد كخيار.
 
 ### 2.2 إنشاء Web App (موصى به: الاستيراد من GitHub)
 
@@ -58,24 +58,16 @@
 6. **دليل الإدخال (Entry Point/Directory)**: اتركه فارغًا ليعتمد على `package.json` (أو حدده كجذر المستودع إن طُلبت قيمة).
 7. أنشئ التطبيق → Hostinger ينشر، يثبّت، يبني، ويشغّل العملية عبر مدير عمليات Node خاص به (مكافئ pm2) — يعمل باستمرار ويعيد التشغيل تلقائيًا.
 
-### 2.3 إعدادات النشر: `output: 'standalone'` (اختياري موصى به)
+### 2.3 إعدادات النشر: `output: 'standalone'` (مفعّل إلزاميًا)
 
-**الوضع الحالي**: `next.config.ts` **لا يحوي** `output` حاليًا (قراءة كاملة للملف — 57 سطرًا). الخطوات الآمنة:
+**الوضع الحالي**: `output: "standalone"` **مفعّل بالفعل** في `next.config.ts` (أعلى كتلة `images`). بعد `npm run build` ينتج مجلد `.next/standalone/` — تحقق منه قبل النشر:
 
-1. أضف إلى `next.config.ts`:
-   ```ts
-   const nextConfig: NextConfig = {
-     output: "standalone",
-     // ... الباقي كما هو
-   };
-   ```
-2. أعد البناء محليًا وتأكد: `npm run build` ينتج مجلد `.next/standalone/`.
-3. في Hostinger غيّر Start Command إلى:
+1. أعد البناء محليًا: `npm run build` ثم تأكد من وجود `.next/standalone/` و`.next/standalone/server.js`.
+2. في Hostinger غيّر Start Command إلى:
    ```
    node .next/standalone/server.js
    ```
-   **وشرط مسبق**: بعد البناء يجب نسخ `.next/static` إلى `.next/standalone/.next/static` و`public` إلى `.next/standalone/public` (متطلب Next الرسمي لـ standalone — بدونها تعطل الصور/الأصول).
-4. إن سبّب ذلك تعقيدًا في إدارة الاستضافة: الخيار البسيط والوظيفي تمامًا **`npm start` بلا standalone** — القرار يخص حجم/عدد الطلبات، وكلاهما مدعوم من Next 16 (مع العلم أن middleware/اللغات تعمل في الصيغتين).
+   **وشرط مسبق**: بعد البناء يجب نسخ `.next/static` إلى `.next/standalone/.next/static` و`public` إلى `.next/standalone/public` (متطلب Next الرسمي لـ standalone — بدونها تعطل الصور/الأصول). إن كانت خطوة النسخ تُنفَّذ تلقائيًا في Web App عبر أمر بناء مخصص أضفها للأمر: `npm run build && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public`.
 
 ### 2.4 متغيرات البيئة في Hostinger
 

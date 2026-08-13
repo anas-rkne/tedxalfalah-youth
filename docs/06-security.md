@@ -118,19 +118,18 @@ default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudfl
 
 > **تحذير أمني هام:** قبل أي `git push` افحص `git status --porcelain` — إذا ظهر `.env.local` في القائمة فتوقف فورًا (الاستثناء الحالي يمنع هذا، لكنه الفحص الختامي).
 
-### 5.2 فحص التبعيات — `npm audit` (نتيجة حقيقية 2026-08-11)
+### 5.2 فحص التبعيات — `npm audit` (نتيجة حقيقية 2026-08-13)
 
-**النتيجة: 12 ثغرة (3 متوسطة + 9 عالية)** — حزم متأثرة:
+**النتيجة: 0 ثغرات** ✅ — تم الإغلاق الكامل في 13-08-2026:
 
-| الحزمة | النطاق المتأثر | علاقتها بالمشروع | الإصلاح |
-|---|---|---|---|
-| `nanoid` | ≤ 3.3.16 | تبعية عابرة (عبر Next) — حلقة تكرار بلوحات الحجم السلبي | `npm audit fix` (غير قسري) |
-| `next` | 9.3.4-canary.0 – 16.3.0-preview.10 | **المثبتة: 16.2.10** — داخل النطاق المتأثر (9 تنبيهات: Middleware bypass، SSRF، Cache confusion، DoS في Image Optimization...) | `npm audit fix --force` → يثبّت **next@16.3.0** (خارج نطاق `package.json` الحالي "16.2.10" — يتطلب تحديثًا مقصودًا واختبارًا) |
-| `postcss` | ≤ 8.5.22 | عبر next — XSS في CSS stringify + كشف ملفات sourceMappingURL | تلقائي مع إصلاح next |
-| `sharp` | < 0.35.0 | عبر next — ثغرات libvips (CVE-2026-33327...) | تلقائي مع إصلاح next |
-| `undici` | 7.0.0 – 7.28.0 | عميل HTTP (تبعية عابرة) — CRLF injection، كشف عبر-user | `npm audit fix` |
+| الخطوة | ما نُفّذ |
+|---|---|
+| ترقية `next` | **16.2.10 → 16.3.0** (متعمدة — أصلحت تنبيهات next الـ 9: Middleware bypass، SSRF، Cache confusion، DoS Image Optimization...) + `eslint-config-next 16.3.0` |
+| `npm audit fix` | رفع `undici` → 7.29.0 (خارج 7.0.0–7.28.0)، وتصحيح `hono`/`@hono/node-server`/`brace-expansion`/`fast-uri`/`ip-address`/`js-yaml` — كلها تبعيات عابرة |
+| تبعيات `sharp` | وصلت 0.35.3 تلقائيًا مع next 16.3.0 (خارج < 0.35.0) |
+| تحقق | `npm audit` → **found 0 vulnerabilities** (748 package) · `npm run build` سليم · `npm run lint` 0 أخطاء · `tsc --noEmit` سليم |
 
-**خطة التوصية (قبل الإطلاق)**: `npm audit fix` أولًا (يعالج undici/nanoid بلا مخاطرة)، ثم قرار واعٍ حول next: الترقية لـ `16.3.0` مع تشغيل `build` + اختبار الفورمات (تغيير رئيسي يستحق اختبارًا كاملًا)، **أو** مراجعة كل تنبيه يدويًا واعتماد ما لا ينطبق على استخدامنا. لا تُطبق `--force` بشكل أعمى قبل الترقية المقصودة.
+> **قاعدة للمستقبل**: لا تشغّل `npm audit fix --force` أبدًا؛ الترقيات الواعية مع `build` + `lint` + اختبار الفورمات (`docs/11`) كافية.
 
 ---
 

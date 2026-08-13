@@ -56,18 +56,18 @@ const FlipUnit: FC<FlipUnitProps> = memo(function FlipUnit({
   className,
 }: FlipUnitProps) {
   const [flipping, setFlipping] = useState(false);
-  const prevDigitRef = useRef(digit);
+  const [prevDigit, setPrevDigit] = useState(digit);
 
   useEffect(() => {
-    if (digit !== prevDigitRef.current) {
-      setFlipping(true);
+    if (digit !== prevDigit) {
+      queueMicrotask(() => setFlipping(true));
       const timer = setTimeout(() => {
         setFlipping(false);
-        prevDigitRef.current = digit;
+        setPrevDigit(digit);
       }, 550);
       return () => clearTimeout(timer);
     }
-  }, [digit]);
+  }, [digit, prevDigit]);
 
   return (
     <div className={cn(flipUnitVariants({ size, variant }), className)}>
@@ -76,7 +76,7 @@ const FlipUnit: FC<FlipUnitProps> = memo(function FlipUnit({
         <DigitSpan position="top">{digit}</DigitSpan>
       </div>
       <div className={cn(commonCardStyle, "rounded-b-lg translate-y-full")}>
-        <DigitSpan position="bottom">{prevDigitRef.current}</DigitSpan>
+        <DigitSpan position="bottom">{prevDigit}</DigitSpan>
       </div>
       <div
         className={cn(
@@ -85,7 +85,7 @@ const FlipUnit: FC<FlipUnitProps> = memo(function FlipUnit({
           flipping && "animate-flip-top",
         )}
       >
-        <DigitSpan position="top">{prevDigitRef.current}</DigitSpan>
+        <DigitSpan position="top">{prevDigit}</DigitSpan>
       </div>
       <div
         className={cn(
@@ -209,7 +209,7 @@ const FlipClock = ({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    setIsMounted(true);
+    queueMicrotask(() => setIsMounted(true));
     if (intervalRef.current) clearInterval(intervalRef.current);
 
     intervalRef.current = setInterval(() => {

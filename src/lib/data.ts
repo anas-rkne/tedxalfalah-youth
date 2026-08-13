@@ -24,11 +24,12 @@ export async function getSpeakers(): Promise<Speaker[]> {
     bio: string | null;
     socialLinks: { instagram?: string; linkedin?: string; x?: string } | null;
     wave: number;
+    order: number | null;
     isPublished: boolean;
   };
 
   const raw = await fetchSanity<Raw[]>(
-    `*[_type == "speaker" && (!defined(isPublished) || isPublished == true)] | order(wave asc) {
+    `*[_type == "speaker" && (!defined(isPublished) || isPublished == true)] | order(wave asc, order asc, name asc) {
       "id": _id,
       name,
       photo,
@@ -38,6 +39,7 @@ export async function getSpeakers(): Promise<Speaker[]> {
       bio,
       socialLinks,
       wave,
+      order,
       isPublished
     }`
   );
@@ -53,6 +55,7 @@ export async function getSpeakers(): Promise<Speaker[]> {
     bio: s.bio ?? "",
     socialLinks: s.socialLinks ?? {},
     wave: s.wave,
+    order: s.order ?? 0,
     isPublished: s.isPublished,
   }));
 }

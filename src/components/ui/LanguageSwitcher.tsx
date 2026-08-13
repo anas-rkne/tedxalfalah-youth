@@ -19,7 +19,7 @@ export default function LanguageSwitcher() {
   const switchTo = useCallback(() => {
     const { locale: _, ...paramsWithoutLocale } = params as Record<string, string>;
     router.replace(
-      { pathname, params: paramsWithoutLocale } as any,
+      { pathname, params: paramsWithoutLocale } as Parameters<typeof router.replace>[0],
       { locale: nextLocale }
     );
   }, [router, pathname, params, nextLocale]);
