@@ -82,6 +82,7 @@ export default async function TeamPage({ params }: Props) {
                 member={member}
                 index={index}
                 isArabic={isArabic}
+                interactive={true} // <--- أضفنا هذا السطر
               />
             ))}
           </div>

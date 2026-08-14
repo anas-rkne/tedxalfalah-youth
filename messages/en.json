@@ -341,6 +341,10 @@
         "text1": "IDEAS WORTH SPREADING",
         "text2": "INSPIRATION COMMUNITY",
         "text3": "CHANGE MAKERS"
+      },
+            "bio": {
+        "view": "View bio",
+        "close": "Close"
       }
     },
     "venue": {

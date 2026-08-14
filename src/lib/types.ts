@@ -31,6 +31,7 @@ export interface TeamMember {
   role: string;
   department: TeamDepartment;
   quote?: string;
+  bio?: string; // <--- هذا هو السطر الجديد الذي أضفناه
   linkedinUrl?: string;
   isPublished?: boolean;
 }

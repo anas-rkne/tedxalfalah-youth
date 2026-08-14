@@ -61,6 +61,7 @@ export async function getSpeakers(): Promise<Speaker[]> {
 }
 
 export async function getTeamMembers(): Promise<TeamMember[]> {
+  // --- التعديل الأول: إضافة `bio` إلى نوع Raw ---
   type Raw = {
     id: string;
     name: string;
@@ -70,7 +71,9 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
     quote: string | null;
     linkedinUrl: string | null;
     isPublished: boolean;
+    bio: string | null; // <--- أضفنا هذا
   };
+  // ----------------------------------------------
 
   const raw = await fetchSanity<Raw[]>(
     `*[_type == "teamMember" && (!defined(isPublished) || isPublished == true)] | order(name asc) {
@@ -81,7 +84,8 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
       department,
       quote,
       linkedinUrl,
-      isPublished
+      isPublished,
+      bio  // <--- أضفنا هذا الحقل إلى الاستعلام
     }`
   );
   if (!raw) return [];
@@ -94,6 +98,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
     department: m.department,
     quote: m.quote ?? undefined,
     linkedinUrl: m.linkedinUrl ?? undefined,
+    bio: m.bio ?? undefined, // <--- التعديل الثالث: تعيين القيمة إلى undefined إذا كانت null
   }));
 }
 

@@ -44,6 +44,15 @@ export default defineType({
       title: "Quote",
       type: "string",
     }),
+    // --- إضافة حقل السيرة الذاتية (Biography) ---
+    defineField({
+      name: "bio",
+      title: "Biography",
+      type: "text",
+      description: "A short biography of the team member (100-200 words)",
+      rows: 5,
+    }),
+    // ------------------------------------------------
     defineField({
       name: "linkedinUrl",
       title: "LinkedIn URL",
