@@ -93,7 +93,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
   return raw.map((m) => ({
     id: m.id,
     name: m.name,
-    imageUrl: m.photo ? urlFor(m.photo)?.width(400).quality(80).url() ?? null : null,
+    imageUrl: m.photo ? urlFor(m.photo)?.width(800).height(1067).quality(85).fit("crop").crop("entropy").url() ?? null : null,
     role: m.role,
     department: m.department,
     quote: m.quote ?? undefined,

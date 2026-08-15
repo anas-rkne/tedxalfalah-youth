@@ -11,7 +11,6 @@ import Analytics from "@/components/Analytics";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import SonnerProvider from "@/components/SonnerProvider";
 import ReadingProgress from "@/components/ui/ReadingProgress";
-import ScrollIndicator from "@/components/ui/ScrollIndicator";
 import { routing } from "@/i18n/routing";
 import PageTransition from "@/components/ui/PageTransition";
 import { ClientProvider } from "@/components/ClientProvider";
@@ -54,6 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: siteDesc,
     icons: {
       icon: [
+        { url: "/favicon.ico", sizes: "any" },
         { url: "/my-favicon/favicon-96x96.png", sizes: "96x96", type: "image/png" },
         { url: "/my-favicon/favicon.svg", type: "image/svg+xml" },
       ],
@@ -150,7 +150,6 @@ export default async function RootLayout({
           <main id="main-content" className="flex-1 relative">
             <PageTransition>{children}</PageTransition>
           </main>
-          <ScrollIndicator />
 <FooterContent />
           <SonnerProvider />
         </ClientProvider>

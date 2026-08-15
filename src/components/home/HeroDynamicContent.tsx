@@ -13,7 +13,6 @@ import SafeImage from "@/components/ui/SafeImage";
 import HeroTypewriterTitle from "@/components/home/HeroTypewriterTitle";
 import Countdown from "@/components/shared/Countdown";
 import ActionButtons from "@/components/home/ActionButtons";
-import ScrollIndicator from "@/components/ui/ScrollIndicator";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import FadeUp from "@/components/shared/FadeUp";
 
@@ -277,10 +276,6 @@ export default function HeroDynamicContent({
           delay={0.3}
         />
       </div>
-
-      <FadeUp delay={0.9}>
-        <ScrollIndicator />
-      </FadeUp>
     </BackgroundBeamsWithCollision>
   );
 }

@@ -191,7 +191,7 @@ const TeamMemberCard = memo(function TeamMemberCard({
             <div className="flex flex-col md:flex-row">
                 {/* صورة العضو — تمتد بارتفاع البطاقة كاملاً على الشاشات المتوسطة فأكبر */}
                 <div className="relative w-full md:w-[38%] md:self-stretch flex-shrink-0">
-                  <div className="relative aspect-square md:aspect-auto md:h-full overflow-hidden rounded-2xl md:rounded-none md:rounded-l-3xl bg-zinc-800">
+                  <div className="relative aspect-[3/4] md:aspect-auto md:h-full overflow-hidden rounded-2xl md:rounded-s-3xl md:rounded-e-none bg-zinc-800">
                     {imageSrc ? (
                       <SafeImage
                         src={imageSrc}
