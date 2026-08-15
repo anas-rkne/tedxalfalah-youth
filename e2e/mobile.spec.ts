@@ -10,7 +10,8 @@ test("mobile menu opens, shows links and navigates", async ({ page }) => {
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
   await page.getByRole("menuitem", { name: "Team" }).click();
   await page.waitForURL("**/en/team");
-  await expect(page.locator("body")).toContainText("Meet our team soon.");
+  await expect(page.locator("body")).toContainText("Meet the Team");
+  await expect(page.locator("body")).toContainText("Hamda Al Kaabi");
 });
 
 test("homepage renders on mobile viewport", async ({ page }) => {

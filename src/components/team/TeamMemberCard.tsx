@@ -18,11 +18,9 @@ const TeamMemberCard = memo(function TeamMemberCard({
   isArabic,
   interactive = false, // <--- إضافة هذا السطر
 }: TeamMemberCardProps) {
-  const t = useTranslations("team.bio");
+  const t = useTranslations("page.team.bio");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-
-  if (!member) return null;
 
   const imageSrc = member.imageUrl;
   const fullName = member.name ?? "";
@@ -82,6 +80,8 @@ const TeamMemberCard = memo(function TeamMemberCard({
     };
   }, [isModalOpen, closeModal]);
 
+  if (!member) return null;
+
   const isInteractive = interactive && hasBio;
 
   return (
@@ -113,7 +113,7 @@ const TeamMemberCard = memo(function TeamMemberCard({
                 alt={fullName}
                 fill
                 unoptimized
-                className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 z-0"
+                className="object-cover group-hover:scale-105 transition-all duration-700 z-0"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             </>
@@ -188,11 +188,10 @@ const TeamMemberCard = memo(function TeamMemberCard({
               </svg>
             </button>
 
-            <div className="p-6 md:p-8">
-              <div className="flex flex-col md:flex-row gap-6">
-                {/* صورة العضو */}
-                <div className="w-full md:w-1/3 flex-shrink-0">
-                  <div className="relative aspect-square overflow-hidden rounded-2xl bg-zinc-800">
+            <div className="flex flex-col md:flex-row">
+                {/* صورة العضو — تمتد بارتفاع البطاقة كاملاً على الشاشات المتوسطة فأكبر */}
+                <div className="relative w-full md:w-[38%] md:self-stretch flex-shrink-0">
+                  <div className="relative aspect-square md:aspect-auto md:h-full overflow-hidden rounded-2xl md:rounded-none md:rounded-l-3xl bg-zinc-800">
                     {imageSrc ? (
                       <SafeImage
                         src={imageSrc}
@@ -200,7 +199,7 @@ const TeamMemberCard = memo(function TeamMemberCard({
                         fill
                         unoptimized
                         className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        sizes="(max-width: 768px) 100vw, 38vw"
                       />
                     ) : (
                       <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950">
@@ -213,7 +212,7 @@ const TeamMemberCard = memo(function TeamMemberCard({
                 </div>
 
                 {/* تفاصيل العضو */}
-                <div className="w-full md:w-2/3 flex flex-col gap-4">
+                <div className="w-full md:w-[62%] p-6 md:p-8 flex flex-col gap-4">
                   <div className="flex flex-col gap-2">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-tedx-red/10 text-tedx-red rounded-full text-xs font-bold w-fit">
                       {member.role || member.department || ""}
@@ -257,7 +256,6 @@ const TeamMemberCard = memo(function TeamMemberCard({
               </div>
             </div>
           </div>
-        </div>
       )}
     </>
   );

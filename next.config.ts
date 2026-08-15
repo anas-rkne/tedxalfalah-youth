@@ -26,7 +26,7 @@ const securityHeaders = [
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://challenges.cloudflare.com https://www.googletagmanager.com`,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: https://cdn.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://server.arcgisonline.com",
+      "img-src 'self' data: https://cdn.sanity.io https://www.google-analytics.com https://www.googletagmanager.com https://cdnjs.cloudflare.com https://server.arcgisonline.com https://a.basemaps.cartocdn.com https://b.basemaps.cartocdn.com https://c.basemaps.cartocdn.com https://d.basemaps.cartocdn.com",
       "frame-src https://challenges.cloudflare.com https://www.google.com/maps",
       // 🔥 تم إضافة نطاق Sanity API الخاص بمشروعك لضمان عدم حظر الطلبات
       "connect-src 'self' https://challenges.cloudflare.com https://www.google-analytics.com https://www.googletagmanager.com https://*.api.sanity.io https://*.sanity.io",

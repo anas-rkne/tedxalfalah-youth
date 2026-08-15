@@ -10,8 +10,6 @@ interface LeafletMapProps {
   venueLabel?: string;
 }
 
-const VENUE_LABEL = "";
-
 export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<LeafletMapInstance | null>(null);
@@ -33,25 +31,17 @@ export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps
 
       const map = L.map(container, { attributionControl: false }).setView(center, zoom);
 
-      // عنصر الإسناد: بلا بادئة "Leaflet" (BSD — غير مطلوب)، مع الإبقاء على إسناد Esri الرسمي
+      // عنصر الإسناد: بلا بادئة "Leaflet" (BSD — غير مطلوب)، مع الإبقاء على إسناد CARTO/OSM الرسمي
       L.control.attribution({ prefix: false }).addTo(map);
 
-      // القاعدة: قمر صناعي Esri (مجاني بلا مفتاح API)
+      // القاعدة: خريطة رمادية فاتحة (CARTO Positron — مجانية بلا مفتاح API)
       L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
         {
-          maxZoom: 19,
           attribution:
-            "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
-        }
-      ).addTo(map);
-
-      // التسميات: شوارع وأسماء إنجليزية (Esri) — موحّدة باللغتين
-      L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}",
-        {
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/">CARTO</a>',
+          subdomains: "abcd",
           maxZoom: 19,
-          attribution: "&copy; Esri",
         }
       ).addTo(map);
 
@@ -68,17 +58,16 @@ export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps
         iconAnchor: [12, 12],
       });
 
-      const popupLabel = venueLabel || VENUE_LABEL;
+      // النقر على النقطة يفتح الموقع في Google Maps (نافذة جديدة)
+      const mapUrl =
+        process.env.NEXT_PUBLIC_VENUE_MAP_URL ||
+        "https://www.google.com/maps/place/%D9%86%D8%A8%D8%B6+%D8%A7%D9%84%D9%81%D9%84%D8%A7%D8%AD";
 
       L.marker(center, { icon: venueIcon })
         .addTo(map)
-        .bindPopup(
-          `<div class="text-center font-medium">
-             <span class="block text-[#E62B1E] font-bold">TEDxAlFalah Youth</span>
-             ${popupLabel ? `<span class="text-xs opacity-70" dir="auto">${popupLabel}</span>` : ""}
-           </div>`,
-          { closeButton: false }
-        );
+        .on("click", () => {
+          window.open(mapUrl, "_blank", "noopener,noreferrer");
+        });
 
       mapInstanceRef.current = map;
     };
@@ -96,11 +85,6 @@ export default function LeafletMap({ center, zoom, venueLabel }: LeafletMapProps
   return (
     <div className="relative w-full h-full">
       <div ref={mapRef} className="w-full h-full" />
-      {/* طبقة تعتيم شفافة فوق البلاطات — تحت العلامة والبوب أب */}
-      <div
-        aria-hidden
-        className="absolute inset-0 z-[450] pointer-events-none bg-slate-900/20"
-      />
     </div>
   );
 }

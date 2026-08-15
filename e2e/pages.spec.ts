@@ -7,11 +7,12 @@ test("speakers page shows empty state in both languages", async ({ page }) => {
   await expect(page.locator("body")).toContainText("المتحدثون قادمون قريباً.");
 });
 
-test("team page shows empty state in both languages", async ({ page }) => {
+test("team page shows team member cards in both languages", async ({ page }) => {
   await page.goto("/en/team");
-  await expect(page.locator("body")).toContainText("Meet our team soon.");
+  await expect(page.locator("body")).toContainText("Meet the Team");
+  await expect(page.locator("body")).toContainText("Hamda Al Kaabi");
   await page.goto("/ar/team");
-  await expect(page.locator("body")).toContainText("تعرف على فريقنا قريباً.");
+  await expect(page.locator("body")).toContainText("تعرّف على الفريق");
 });
 
 test("schedule shows empty state and FilterBar tabs are interactive", async ({ page }) => {

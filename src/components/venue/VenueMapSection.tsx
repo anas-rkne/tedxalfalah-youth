@@ -4,19 +4,18 @@ import { memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import SectionBadge from "@/components/ui/SectionBadge";
 import { useRTL } from "@/hooks/useRTL";
+import LeafletMap from "@/components/ui/LeafletMap";
 
 interface VenueMapSectionProps {
   title: string;
   mapTitle: string;
   directions: string;
-  mapSrc?: string;
 }
 
 const VenueMapSection = memo(function VenueMapSection({
   title,
   mapTitle,
   directions,
-  mapSrc,
 }: VenueMapSectionProps) {
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
@@ -40,19 +39,13 @@ const VenueMapSection = memo(function VenueMapSection({
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <div className="absolute inset-0 rounded-[20px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)] pointer-events-none z-10" />
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-slate-900/20 pointer-events-none z-10"
-          />
-          <iframe
-            title={mapTitle}
-            src={mapSrc || "https://www.google.com/maps?q=24.4356691,54.7326539&z=15&output=embed"}
-            width="100%"
-            height="100%"
-            className="aspect-video w-full"
-            style={{ border: 0 }}
-            loading="lazy"
-          />
+          <div className="relative w-full h-64 md:h-96">
+            <LeafletMap
+              center={[24.4356691, 54.7326539]}
+              zoom={16}
+              venueLabel={mapTitle}
+            />
+          </div>
         </motion.div>
 
         {/* تعليمات الوصول */}

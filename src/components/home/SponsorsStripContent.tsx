@@ -178,7 +178,7 @@ const SponsorMarquee = memo(function SponsorMarquee({ sponsors }: { sponsors: Sp
                 alt={sponsor.name}
                 fill
                 unoptimized
-                className="object-contain filter grayscale opacity-60 group-hover/logo:grayscale-0 group-hover/logo:opacity-100 transition-all duration-300"
+                className="object-contain transition-all duration-300"
                 sizes="160px"
               />
             ) : (
