@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import ThankYouContent from "@/components/thankyou/ThankYouContent";
+import { SITE_URL } from "@/lib/constants";
 
 const VALID_TYPES = ["contact", "apply", "partner", "tickets"] as const;
 type ThankYouType = (typeof VALID_TYPES)[number];
@@ -22,7 +23,11 @@ export async function generateMetadata({
   const { type } = await searchParams;
   const key = isValidType(type) ? type : "default";
   const t = await getTranslations({ locale, namespace: `thankYou.${key}.meta` });
-  return { title: t("title"), description: t("description") };
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: { canonical: `${SITE_URL}/${locale}/thank-you` },
+  };
 }
 
 const ctaConfig: Record<string, { href: string }> = {

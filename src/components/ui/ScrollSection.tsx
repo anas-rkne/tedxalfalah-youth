@@ -72,7 +72,9 @@ export default function ScrollSection({
     return (
       <section
         id={id}
-        className={`snap-start flex items-center justify-center relative ${className}`}
+        className={`snap-start flex items-center justify-center relative overflow-visible ${
+          variant === "hero" ? "z-20" : "z-10"
+        } ${className}`}
       >
         <div className="w-full">{children}</div>
       </section>
@@ -83,7 +85,9 @@ export default function ScrollSection({
     <motion.section
       id={id}
       ref={ref}
-      className={`snap-start flex items-center justify-center relative overflow-hidden ${className}`}
+      className={`snap-start flex items-center justify-center relative overflow-visible ${
+        variant === "hero" ? "z-20" : "z-10"
+      } ${className}`}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}

@@ -39,7 +39,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
-  if (WEBHOOK_SECRET && !verifySecret(request)) {
+  // الأمان: بدون مفتاح webhook مُعدّ لا يُقبل أي طلب — حتى لا يُترك
+  // الـ endpoint مفتوحاً لإعادة بناء الموقع بالكامل من أي مهاجم.
+  if (!WEBHOOK_SECRET) {
+    return NextResponse.json(
+      { error: "Webhook secret is not configured" },
+      { status: 503 }
+    );
+  }
+
+  if (!verifySecret(request)) {
     return NextResponse.json({ error: "Invalid secret" }, { status: 401 });
   }
 

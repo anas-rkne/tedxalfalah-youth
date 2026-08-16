@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import SpeakersGrid from "@/components/speakers/SpeakersGrid";
+import { SITE_URL } from "@/lib/constants";
 import { getSpeakers } from "@/lib/data";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
 import SectionBadge from "@/components/ui/SectionBadge";
@@ -15,6 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("meta.title"),
     description: t("meta.description"),
+    alternates: { canonical: `${SITE_URL}/${locale}/speakers` },
   };
 }
 

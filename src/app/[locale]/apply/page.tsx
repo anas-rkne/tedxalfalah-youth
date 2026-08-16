@@ -7,7 +7,7 @@ import ApplyHero from "@/components/apply/ApplyHero";
 import ApplyTimeline from "@/components/apply/ApplyTimeline";
 import SectionBadge from "@/components/ui/SectionBadge";
 import SectionHeader from "@/components/shared/SectionHeader";
-import { APPLICATION_DEADLINE } from "@/lib/constants";
+import { APPLICATION_DEADLINE, SITE_URL } from "@/lib/constants";
 import { Metadata } from "next";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("meta.title"),
     description: t("meta.description"),
+    alternates: { canonical: `${SITE_URL}/${locale}/apply` },
   };
 }
 

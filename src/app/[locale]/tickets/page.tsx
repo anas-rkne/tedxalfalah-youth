@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Metadata } from "next";
+import { SITE_URL } from "@/lib/constants";
 import {
   Calendar,
   Clock,
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("meta.title"),
     description: t("meta.description"),
+    alternates: { canonical: `${SITE_URL}/${locale}/tickets` },
   };
 }
 
@@ -42,11 +44,11 @@ function InfoCard({
   href?: string;
 }) {
   const content = (
-    <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-black/[0.06] hover:border-tedx-red/20 hover:shadow-[0_8px_30px_-12px_rgba(230,43,30,0.1)] transition-all duration-300 group">
+    <div className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-black/[0.06] hover:border-tedx-red/20 hover:shadow-[0_8px_30px_-12px_rgba(230,43,30,0.1)] transition-all duration-300 group min-w-0">
       <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-tedx-red flex-shrink-0 group-hover:bg-tedx-red group-hover:text-white transition-colors duration-300">
         {icon}
       </div>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">
           {label}
         </div>
@@ -60,7 +62,7 @@ function InfoCard({
 
   if (href) {
     return (
-      <Link href={href} className="block">
+      <Link href={href} className="block min-w-0">
         {content}
       </Link>
     );

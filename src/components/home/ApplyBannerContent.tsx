@@ -4,24 +4,21 @@ import { useRef, useMemo, memo } from "react";
 import {
   motion,
   useReducedMotion,
-  useMotionValue,   // ✅
-  useSpring,        // ✅
-  useTransform,     // ✅
+  useMotionValue,
+  useSpring,
+  useTransform,
 } from "framer-motion";
 
 import { Mic, Lightbulb, Users, CheckCircle2 } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
-import SectionBadge from "@/components/ui/SectionBadge";
-import SafeImage from "@/components/ui/SafeImage";
 import AnimatedWord from "@/components/shared/AnimatedWord";
-import DarkCTASection from "@/components/shared/DarkCTASection";
 
 interface ApplyBannerContentProps {
   isClosed: boolean;
   closedCta: string;
   badgeLabel: string;
-  text: string;
+  text: string; // العنوان الرئيسي الثاني
   subtitle: string;
   cta: string;
   stepsHeading: string;
@@ -41,8 +38,6 @@ interface ApplyBannerContentProps {
   stageBadgeLabel: string;
   stageTitle: string;
   stageDescription: string;
-  leftImageSrc?: string;
-  rightImageSrc?: string;
 }
 
 /* ═══════════ مكونات فرعية ═══════════ */
@@ -96,108 +91,30 @@ const FeatureItem = memo(function FeatureItem({ text }: { text: string }) {
   );
 });
 
-const ApplySideImage = memo(function ApplySideImage({
-  src,
-  alt,
-  direction,
-  delay,
+// مكون العنوان الثلاثي الأحمر
+const AnimatedTitleLine = memo(function AnimatedTitleLine({
+  text,
+  index,
+  shouldReduceMotion,
 }: {
-  src: string;
-  alt: string;
-  direction: "left" | "right";
-  delay: number;
+  text: string;
+  index: number;
+  shouldReduceMotion: boolean | null;
 }) {
-  const shouldReduceMotion = useReducedMotion();
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const springConfig = { stiffness: 100, damping: 30, mass: 1 };
-  const parallaxX = useSpring(
-    useTransform(mouseX, [-0.5, 0.5], direction === "left" ? [15, -15] : [-15, 15]),
-    springConfig
-  );
-  const parallaxY = useSpring(
-    useTransform(mouseY, [-0.5, 0.5], [10, -10]),
-    springConfig
-  );
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (shouldReduceMotion || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
-    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
   return (
     <motion.div
-      ref={containerRef}
-      initial={{ opacity: 0, x: direction === "left" ? -40 : 40 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={shouldReduceMotion ? {} : { opacity: 0, y: 40, rotateX: -40 }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}
-      className="hidden lg:flex flex-col items-center flex-shrink-0 w-56 lg:w-64 xl:w-72 relative"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      transition={{
+        duration: 0.7,
+        delay: index * 0.08,
+        ease: [0.23, 1, 0.32, 1],
+      }}
+      className={`block text-center w-full text-tedx-red text-5xl md:text-7xl font-black tracking-tight leading-[1.1]`}
+      style={{ transformStyle: "preserve-3d" }}
     >
-      <motion.div
-        className="relative w-full aspect-[3/4] z-10 overflow-visible will-change-transform"
-        style={{
-          x: shouldReduceMotion ? 0 : parallaxX,
-          y: shouldReduceMotion ? 0 : parallaxY,
-        }}
-        animate={shouldReduceMotion ? undefined : { y: [0, -12, 0] }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: [0.42, 0, 0.58, 1],
-          delay: delay + 0.5,
-        }}
-      >
-        <SafeImage
-          src={src}
-          alt={alt}
-          fill
-          priority
-          className="object-contain"
-          sizes="(max-width: 1280px) 224px, 288px"
-        />
-
-        {/* 5 جزيئات حمراء مطابقة لقسم الهيرو */}
-        {!shouldReduceMotion && (
-          <>
-            <motion.div
-              className="absolute top-1/4 -left-4 w-2 h-2 rounded-full bg-tedx-red z-20"
-              animate={{ y: [0, -20, 0], opacity: [0, 0.6, 0], scale: [0.5, 1, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity, delay: delay + 0.5, ease: [0.23, 1, 0.32, 1] }}
-            />
-            <motion.div
-              className="absolute top-1/3 -right-4 w-1.5 h-1.5 rounded-full bg-tedx-red z-20"
-              animate={{ y: [0, -15, 0], opacity: [0, 0.5, 0], scale: [0.5, 1.2, 0.5] }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: delay + 1.2, ease: [0.23, 1, 0.32, 1] }}
-            />
-            <motion.div
-              className="absolute bottom-1/3 left-1/4 w-1 h-1 rounded-full bg-tedx-red z-20"
-              animate={{ y: [0, -25, 0], x: [0, 10, 0], opacity: [0, 0.4, 0] }}
-              transition={{ duration: 3.5, repeat: Infinity, delay: delay + 0.8, ease: [0.23, 1, 0.32, 1] }}
-            />
-            <motion.div
-              className="absolute top-1/2 -right-6 w-2 h-2 rounded-full bg-tedx-red/80 z-20"
-              animate={{ y: [0, -18, 0], x: [0, -8, 0], opacity: [0, 0.7, 0], scale: [0.5, 1.3, 0.5] }}
-              transition={{ duration: 3.2, repeat: Infinity, delay: delay + 1.8, ease: [0.23, 1, 0.32, 1] }}
-            />
-            <motion.div
-              className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full bg-tedx-red z-20"
-              animate={{ y: [0, -22, 0], x: [0, -5, 0], opacity: [0, 0.5, 0], scale: [0.6, 1.1, 0.6] }}
-              transition={{ duration: 3.8, repeat: Infinity, delay: delay + 2.2, ease: [0.23, 1, 0.32, 1] }}
-            />
-          </>
-        )}
-      </motion.div>
+      {text}
     </motion.div>
   );
 });
@@ -212,84 +129,98 @@ export default function ApplyBannerContent({
   ctaHeading, ctaDescription,
   placeholderTitle, placeholderSubtitle,
   stageBadgeLabel, stageTitle, stageDescription,
-  leftImageSrc, rightImageSrc,
 }: ApplyBannerContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const { isRTL } = useRTL();
 
-  const titleWords = useMemo(() => text.split(" "), [text]);
-  const highlightWords = useMemo(
-    () => ["TEDx", "TEDxYouth", "تقدم", "شارك", "صوتك", "فكرتك", "Apply", "Speak", "Voice"],
-    []
-  );
+  // العنوان ثلاثي الأسطر الأحمر
+  const titleLines = useMemo(() => ["SHARE", "YOUR VOICE", "TODAY"], []);
 
   return (
-    <section ref={containerRef} className="section-padding relative bg-background overflow-hidden">
+    <section ref={containerRef} className="section-padding pt-0 relative bg-background overflow-hidden">
 
       {/* ═══════════ HERO + صور جانبية ═══════════ */}
       <div
         dir="ltr"
-  className="relative flex flex-col lg:flex-row items-center justify-center min-h-[60vh] pb-16 md:pb-24"
+        className="relative flex flex-col lg:flex-row items-center justify-center min-h-[60vh] pb-16 md:pb-24"
       >
-     <div className="absolute inset-0 pointer-events-none">
-<div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rounded-[50%] bg-tedx-red/5 blur-3xl" />
-</div>
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rounded-[50%] bg-tedx-red/5 blur-3xl" />
+        </div>
 
         <div className="container-padding relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10">
-          {leftImageSrc && (
-            <ApplySideImage src={leftImageSrc} alt="Left illustration" direction="left" delay={0.15} />
-          )}
+          
+          {/* العمود الأيسر: صورة Artboard 7 و Artboard 8 */}
+          <div className="hidden lg:flex flex-col flex-shrink-0 w-56 lg:w-64 xl:w-72 h-full relative min-h-[300px]">
+            <img
+              src="/images/Artboard 7.svg"
+              alt="Left illustration 1"
+              className="absolute -top-30 right-0 w-[80%] h-auto object-contain z-10 pointer-events-none select-none"
+            />
+            <img
+              src="/images/Artboard 8.svg"
+              alt="Left illustration 2"
+              className="absolute top-0 left-0 w-[80%] h-auto object-contain z-20 pointer-events-none select-none"
+            />
+          </div>
 
+          {/* المحتوى الأوسط */}
           <div className="flex-1 w-full max-w-4xl flex flex-col items-center text-center gap-8 md:gap-10" dir="auto">
+            
+            {/* 1. العنوان الأول الأحمر الثلاثي */}
+            <div className="perspective-[1000px] flex flex-col items-center justify-center w-full">
+              <AnimatedTitleLine
+                text={titleLines[0]}
+                index={0}
+                shouldReduceMotion={shouldReduceMotion}
+              />
+              <AnimatedTitleLine
+                text={titleLines[1]}
+                index={1}
+                shouldReduceMotion={shouldReduceMotion}
+              />
+              <AnimatedTitleLine
+                text={titleLines[2]}
+                index={2}
+                shouldReduceMotion={shouldReduceMotion}
+              />
+            </div>
+
+            {/* 2. العنوان الثاني الرئيسي (القادم من {text}) */}
             <motion.div
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+              className="perspective-[1000px]"
             >
-              <SectionBadge>{badgeLabel}</SectionBadge>
-            </motion.div>
-
-            <div className="perspective-[1000px]">
               <h1 className="heading-h1 tracking-[-0.03em] leading-[1.1]">
-                {titleWords.map((word, index) => (
-                  <AnimatedWord
-                    key={index}
-                    word={word}
-                    index={index}
-                    isHighlight={highlightWords.some((hw) =>
-                      word.toLowerCase().includes(hw.toLowerCase())
-                    )}
-                    shouldReduceMotion={shouldReduceMotion}
-                  />
-                ))}
+                {text}
               </h1>
-            </div>
-
-            <motion.div
-              initial={shouldReduceMotion ? {} : { scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className="flex items-center gap-3 origin-center"
-            >
-              <div className="h-px w-10 bg-border" />
-              <div className="h-1 w-16 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" />
-              <div className="h-px w-10 bg-border" />
             </motion.div>
 
+            {/* 🟢 تم نقل الفاصل الزخرفي إلى أسفل العنوان الثاني */}
+            <img
+              src="/images/Artboard 2 copy 2.svg"
+              alt=""
+              aria-hidden="true"
+              className="mx-auto mt-0 block w-40 md:w-56 h-10 md:h-12 object-cover origin-center pointer-events-none select-none"
+            />
+
+            {/* 3. النص الفرعي ({subtitle}) */}
             <motion.p
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
               className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light"
               dir={isRTL ? "rtl" : "ltr"}
             >
               {subtitle}
             </motion.p>
 
+            {/* 4. الزر */}
             <motion.div
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -302,13 +233,18 @@ export default function ApplyBannerContent({
             </motion.div>
           </div>
 
-          {rightImageSrc && (
-            <ApplySideImage src={rightImageSrc} alt="Right illustration" direction="right" delay={0.3} />
-          )}
+          {/* العمود الأيمن: صورة Artboard 4 (في أعلى العمود) */}
+          <div className="hidden lg:flex flex-col flex-shrink-0 w-56 lg:w-64 xl:w-72 h-full relative min-h-[300px]">
+            <img
+              src="/images/Artboard 4.svg"
+              alt="Right illustration"
+              className="absolute -top-40 right-4 scale-[1.1] h-auto object-contain z-10 pointer-events-none select-none"
+            />
+          </div>
+
         </div>
       </div>
 
- 
     </section>
   );
 }

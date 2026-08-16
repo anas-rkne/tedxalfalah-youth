@@ -12,8 +12,7 @@ export default async function Theme({ locale }: { locale: string }) {
       statSpeakersLabel={t("statSpeakers") || "Speakers"}
       statSeatsLabel={t("statSeats") || "Seats"}
       statDayLabel={t("statDay") || "Inspiring Day"}
-      leftImageSrc="/images/طفل 2.svg"
-      rightImageSrc="/images/طفلة 2.svg"
+     
     />
   );
 }

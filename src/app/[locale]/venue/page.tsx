@@ -9,13 +9,14 @@ import SectionBadge from "@/components/ui/SectionBadge";
 import { Metadata } from "next";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
 import { getGalleryImages } from "@/lib/data";
+import { SITE_URL } from "@/lib/constants";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "page.venue" });
-  return { title: t("meta.title"), description: t("meta.description") };
+  return { title: t("meta.title"), description: t("meta.description"), alternates: { canonical: `${SITE_URL}/${locale}/venue` } };
 }
 
 export default async function VenuePage({ params }: Props) {

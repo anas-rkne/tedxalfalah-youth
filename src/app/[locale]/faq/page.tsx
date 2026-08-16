@@ -6,6 +6,7 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import { Link } from "@/i18n/navigation";
 import SectionBadge from "@/components/ui/SectionBadge";
 import { Metadata } from "next";
+import { SITE_URL } from "@/lib/constants";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -15,6 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("meta.title"),
     description: t("meta.description"),
+    alternates: { canonical: `${SITE_URL}/${locale}/faq` },
   };
 }
 

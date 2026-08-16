@@ -12,7 +12,6 @@ import { Mail, Send, Loader2, Check } from "lucide-react";
 import TurnstileWidget from "@/components/ui/TurnstileWidget";
 import Input from "@/components/ui/Input";
 import { toast } from "sonner";
-import SectionBadge from "@/components/ui/SectionBadge";
 import { useRTL } from "@/hooks/useRTL";
 
 interface ContactBoxProps {
@@ -125,6 +124,13 @@ export default function ContactBox({
       </div>
 
       <div className="container-padding relative z-10 max-w-3xl mx-auto text-center">
+        {/* صورة Artboard 7 في أعلى يمين عمود المحتوى */}
+        <img
+          src="/images/Artboard 7.svg"
+          alt=""
+          aria-hidden="true"
+className="absolute -top-25 -right-5 w-32 md:w-40 lg:w-48 xl:w-56 pointer-events-none select-none z-0 opacity-80 -rotate-12"     />
+
         <motion.div
           initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -132,31 +138,26 @@ export default function ContactBox({
           transition={{ duration: 0.6 }}
           className="text-center mb-10"
         >
-          <div className="flex justify-center mb-4">
-            <SectionBadge>{badgeLabel}</SectionBadge>
-          </div>
-          <h2 className="heading-h1 tracking-[-0.03em] leading-[1.1]">{heading}</h2>
-          <motion.div
-            initial={shouldReduceMotion ? {} : { scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
-            className="flex items-center justify-center gap-3 origin-center mt-5"
-          >
-            <div className="h-px w-10 bg-border" />
-            <div className="h-1 w-14 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" />
-            <div className="h-px w-10 bg-border" />
-          </motion.div>
-          <motion.p
-            initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-muted-foreground mt-6 text-base sm:text-lg font-light leading-relaxed"
-            dir={isRTL ? "rtl" : "ltr"}
-          >
-            {intro}
-          </motion.p>
+<h2 className="heading-h1 tracking-[-0.03em] leading-[1.1] mb-0">{heading}</h2>
+
+{/* استبدال الخطوط الزخرفية بصورة Artboard 2 copy 2 */}
+<img
+  src="/images/Artboard 2 copy 2.svg"
+  alt=""
+  aria-hidden="true"
+className="mx-auto mt-0 block w-48 md:w-64 h-16 md:h-20 object-contain scale-125 origin-center pointer-events-none select-none"
+/>
+
+<motion.p
+  initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.6, delay: 0.3 }}
+  className="text-muted-foreground mt-2 text-base sm:text-lg font-light leading-relaxed"
+  dir={isRTL ? "rtl" : "ltr"}
+>
+  {intro}
+</motion.p>
         </motion.div>
 
         <motion.div
@@ -168,6 +169,14 @@ export default function ContactBox({
           dir={isRTL ? "rtl" : "ltr"}
         >
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-tedx-red to-transparent rounded-full" />
+
+          {/* صورة Artboard 8 على يمين الفورم عند 30% من الأعلى */}
+          <img
+            src="/images/Artboard 8.svg"
+            alt=""
+            aria-hidden="true"
+            className="absolute -right-20 top-[20%] translate-x-1/2 w-40 md:w-24 lg:w-28 xl:w-32 pointer-events-none select-none z-10"
+          />
 
           <form
             id="contact-box-form"

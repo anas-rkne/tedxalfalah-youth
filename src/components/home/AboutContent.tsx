@@ -3,9 +3,7 @@
 import { memo, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
-import { Lightbulb } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
-import SectionBadge from "@/components/ui/SectionBadge";
 import FadeUp from "@/components/shared/FadeUp";
 
 // استيراد CSS الخاص بـ Leaflet (ضروري لظهور الخريطة والأزرار)
@@ -163,16 +161,13 @@ export default function AboutContent({
   const highlightWords = ["TED", "TEDx"];
 
   return (
-    <section className="section-padding relative bg-background overflow-hidden">
+    // 🟢 التعديل 1: استبدال section-padding بـ pt-16 pb-16 للتحكم الدقيق بالمسافات
+    <section className="relative bg-background overflow-hidden  pb-16 lg:pb-20">
       {/* ─── HEADER ─── */}
       <div className="container-padding max-w-5xl mx-auto text-center">
-        <FadeUp>
-          <div className="flex justify-center mb-4">
-            <SectionBadge>{badgeLabel}</SectionBadge>
-          </div>
-        </FadeUp>
+        {/* تمت إزالة البادج (ABOUT THE EVENT) بالكامل */}
 
-        <div className="perspective-[1000px] mt-6 heading-margin">
+        <div className="perspective-[1000px] mt-6">
           <h1 className="heading-h1 tracking-[-0.03em] leading-[1.1]">
             {titleWords.map((word, index) => (
               <AnimatedWord
@@ -188,21 +183,18 @@ export default function AboutContent({
           </h1>
         </div>
 
-        <motion.div
-          initial={shouldReduceMotion ? {} : { scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="flex items-center justify-center gap-3 origin-center"
-        >
-          <div className="h-px w-10 bg-border" />
-          <div className="h-1 w-14 bg-gradient-to-r from-tedx-red to-red-400 rounded-full" />
-          <div className="h-px w-10 bg-border" />
-        </motion.div>
+        {/* استبدال الخطوط المزخرفة بصورة Artboard 2 copy 2.svg */}
+        <img
+          src="/images/Artboard 2 copy 2.svg"
+          alt=""
+          aria-hidden="true"
+          className="mx-auto mt-0 block w-40 md:w-56 h-20 md:h-24 object-contain scale-125 origin-center pointer-events-none select-none"
+        />
       </div>
 
       {/* ─── CONTENT ─── */}
-      <div className="container-padding max-w-7xl mx-auto mt-10 md:mt-16">
+      {/* 🟢 التعديل 2: تقليل المارجن العلوي من mt-10 md:mt-16 إلى mt-6 md:mt-8 */}
+      <div className="container-padding max-w-7xl mx-auto mt-6 md:mt-8">
         {/* dir="ltr" يثبت الترتيب البصري: النص يسار، الخريطة يمين، في كل اللغات */}
         <div
           dir="ltr"
@@ -217,17 +209,21 @@ export default function AboutContent({
             className="flex-1 max-w-xl"
             dir="auto"
           >
-            <div className="relative p-8 md:p-10 rounded-[24px] bg-card border border-border">
-              <div className="w-12 h-12 rounded-2xl bg-tedx-red/10 flex items-center justify-center text-tedx-red mb-6">
-                <Lightbulb className="w-6 h-6" />
-              </div>
+        <div className="relative p-8 md:p-10 pt-20 md:pt-24 rounded-[24px] bg-card border border-border overflow-visible">
+  {/* صورة Artboard 7 تطفو أعلى يسار البطاقة */}
+  <img
+    src="/images/Artboard 7.svg"
+    alt=""
+    aria-hidden="true"
+    className="absolute -top-40 max-sm:top-[-130px] -left-10 w-60 md:w-80 h-auto object-contain z-10 -rotate-45 "
+  />
 
-              <FormattedParagraph
-                text={body}
-                className="text-base md:text-lg text-muted-foreground leading-[1.9] font-light"
-                isRTL={isRTL}
-              />
-            </div>
+  <FormattedParagraph
+    text={body}
+    className="text-base md:text-lg text-muted-foreground leading-[1.9] font-light"
+    isRTL={isRTL}
+  />
+</div>
 
             <div className="mt-6 p-5 rounded-2xl bg-card border border-border">
               <p
@@ -239,26 +235,33 @@ export default function AboutContent({
             </div>
           </motion.div>
 
-          {/* خريطة دبي التفاعلية (Leaflet — تحريك وتكبير) على الجانب الأيمن من النص في كل اللغات
-              تم إضافة ارتفاع ثابت للحاوية لضمان ظهور الخريطة */}
-          <motion.div
-            initial={shouldReduceMotion ? {} : { opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex-1 md:order-last flex justify-center w-full"
-          >
-            <div 
-              className="relative w-full max-w-md lg:max-w-lg h-[300px] md:h-[400px] rounded-xl overflow-hidden shadow-lg" 
-              aria-label={mapAlt}
-            >
-              <LeafletMap
-                center={[24.4356691, 54.7326539]} // إحداثيات نبض الفلاح في أبوظبي
-                zoom={16}
-                venueLabel={venueLabel}
-              />
-            </div>
-          </motion.div>
+          {/* خريطة دبي التفاعلية (Leaflet) */}
+  <motion.div
+  initial={shouldReduceMotion ? {} : { opacity: 0, x: 40 }}
+  whileInView={{ opacity: 1, x: 0 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.8, delay: 0.2 }}
+  className="relative flex-1 md:order-last flex justify-center w-full"
+>
+  <div 
+    className="relative w-full max-w-md lg:max-w-lg h-[300px] md:h-[400px] rounded-xl overflow-hidden shadow-lg" 
+    aria-label={mapAlt}
+  >
+    <LeafletMap
+      center={[24.4356691, 54.7326539]}
+      zoom={16}
+      venueLabel={venueLabel}
+    />
+  </div>
+
+  {/* صورة Artboard 5 تطفو فوق الزاوية العلوية اليسرى من حاوية الخريطة */}
+  <img
+    src="/images/Artboard 5.svg"
+    alt=""
+    aria-hidden="true"
+    className="hidden lg:block absolute -top-[60%] -right-10 w-48 md:w-64 lg:w-72 pointer-events-none select-none z-20"
+  />
+</motion.div>
         </div>
       </div>
     </section>

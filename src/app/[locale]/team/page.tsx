@@ -8,6 +8,7 @@ import SectionBadge from "@/components/ui/SectionBadge";
 import TeamMemberCard from "@/components/team/TeamMemberCard";
 import JsonLd from "@/components/JsonLd";
 import { personSchema } from "@/lib/json-ld";
+import { SITE_URL } from "@/lib/constants";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("meta.title"),
     description: t("meta.description"),
+    alternates: { canonical: `${SITE_URL}/${locale}/team` },
   };
 }
 
@@ -91,7 +93,7 @@ export default async function TeamPage({ params }: Props) {
       </section>
 
       {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="mt-12 px-6 md:px-12 lg:px-24 relative z-10">
+      <footer className="mt-12 px-6 md:px-12 lg:px-24 relative ">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center border-t border-border pt-8 gap-8">
           <div className="flex gap-12">
             <div>

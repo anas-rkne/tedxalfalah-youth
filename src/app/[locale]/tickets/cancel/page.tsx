@@ -4,13 +4,14 @@ import SectionContainer from "@/components/ui/SectionContainer";
 import Button from "@/components/ui/Button";
 import TextReveal from "@/components/ui/TextReveal";
 import Breadcrumb from "@/components/ui/Breadcrumb";
+import { SITE_URL } from "@/lib/constants";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "page.tickets.cancel" });
-  return { title: t("meta.title"), description: t("meta.description") };
+  return { title: t("meta.title"), description: t("meta.description"), alternates: { canonical: `${SITE_URL}/${locale}/tickets/cancel` } };
 }
 
 export default async function TicketCancelPage({ params }: Props) {

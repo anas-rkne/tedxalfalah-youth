@@ -5,6 +5,7 @@ import ActivationCard from "@/components/activations/ActivationCard";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { getActivations } from "@/lib/data";
 import { Metadata } from "next";
+import { SITE_URL } from "@/lib/constants";
 import SectionBadge from "@/components/ui/SectionBadge";
 import DarkHeroSection from "@/components/shared/DarkHeroSection";
 
@@ -16,6 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("meta.title"),
     description: t("meta.description"),
+    alternates: { canonical: `${SITE_URL}/${locale}/activations` },
   };
 }
 

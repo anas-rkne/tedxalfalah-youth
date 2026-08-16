@@ -19,7 +19,7 @@ const flipUnitVariants = cva(
     variants: {
       size: {
         sm: "w-[clamp(1.5rem,4.5vw,2rem)] min-w-[clamp(1.5rem,4.5vw,2rem)] h-[clamp(2rem,6vw,3rem)] text-[clamp(1rem,3vw,1.5rem)]",
-        md: "w-[clamp(2rem,5.5vw,3rem)] min-w-[clamp(2rem,5.5vw,3rem)] h-[clamp(3rem,8vw,4.5rem)] text-[clamp(1.5rem,4.5vw,2.5rem)]",
+        md: "w-[clamp(1.5rem,7vw,3rem)] min-w-[clamp(1.5rem,7vw,3rem)] h-[clamp(3rem,8vw,4.5rem)] text-[clamp(1.5rem,4.5vw,2.5rem)]",
         lg: "w-[clamp(2.5rem,6.5vw,3.5rem)] min-w-[clamp(2.5rem,6.5vw,3.5rem)] h-[clamp(3.5rem,9.5vw,5.5rem)] text-[clamp(1.75rem,5.5vw,3rem)]",
         xl: "w-[clamp(3rem,8vw,4.5rem)] min-w-[clamp(3rem,8vw,4.5rem)] h-[clamp(4rem,11vw,7rem)] text-[clamp(2rem,6.5vw,4.5rem)]",
       },

@@ -49,8 +49,6 @@ export default async function ApplyBanner({ locale }: { locale: string }) {
       ctaHeading={t("ctaHeading")}
       ctaDescription={t("ctaDescription")}
 
-      leftImageSrc="/images/طفلة 1.svg"   
-      rightImageSrc="/images/صفل 1.svg"
 
 
 

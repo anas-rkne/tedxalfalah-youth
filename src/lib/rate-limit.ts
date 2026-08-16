@@ -34,6 +34,14 @@ export async function checkRateLimit(
   formKey: string
 ): Promise<{ allowed: boolean; remaining?: number }> {
   if (!ratelimit) {
+    if (process.env.NODE_ENV === "production") {
+      // في الإنتاج لا نمرّر الطلبات بدون Rate Limiting — الإغلاق الآمن
+      // أفضل من فتح الباب للإغراق الآلي.
+      console.error(
+        `[RATE LIMIT] Upstash not configured in production — requests to "${formKey}" rejected.`
+      );
+      return { allowed: false };
+    }
     console.warn(
       `[RATE LIMIT] Upstash not configured — request to "${formKey}" allowed without rate limiting. Add UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN before going live.`
     );

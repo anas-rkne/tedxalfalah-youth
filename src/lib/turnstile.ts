@@ -9,6 +9,14 @@ const isTurnstileConfigured = Boolean(process.env.TURNSTILE_SECRET_KEY);
  */
 export async function verifyTurnstile(token: string | undefined): Promise<boolean> {
   if (!isTurnstileConfigured) {
+    if (process.env.NODE_ENV === "production") {
+      // في الإنتاج لا نسمح أبداً بالمرور بدون Turnstile — الفورمات (خاصة
+      // طلبات التحدث وبيانات القُصَّر) لا تُقبل إلا مع تحقق حقيقي.
+      console.error(
+        "[TURNSTILE] TURNSTILE_SECRET_KEY is missing in production — requests rejected."
+      );
+      return false;
+    }
     console.warn(
       "[TURNSTILE] TURNSTILE_SECRET_KEY not configured — request allowed without bot verification. Add it before going live."
     );

@@ -9,7 +9,8 @@
       "schedule": "Schedule",
       "apply": "Apply",
       "tickets": "Tickets",
-      "faq": "FAQ"
+      "faq": "FAQ",
+      "thank-you": "Thank You"
     },
     "applyNow": "Apply Now",
     "more": "More",
@@ -66,7 +67,7 @@
       "scrollLabel": "Explore",
       "applyLabel": "Apply Now",
       "ticketsLabel": "Get Tickets",
-      "saveSeatLabel": "Save My Seat",
+      "saveSeatLabel": "Get Tickets",
       "badgeLabel": "TEDx Youth Event",
       "eventYear": "2026",
       "intro": "Nearly half of the UAE's population is under the age of 35. In a nation that believes its greatest asset is its people, creating spaces where ideas are shared across generations has never been more important. TEDxAlFalah Youth is one of those spaces.",

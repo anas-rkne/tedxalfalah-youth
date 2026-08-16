@@ -1,6 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import { getEventInfo } from "@/lib/data";
+import { SITE_URL } from "@/lib/constants";
 import JsonLd from "@/components/JsonLd";
 import { eventSchema, webSiteSchema } from "@/lib/json-ld";
 import ScrollSection from "@/components/ui/ScrollSection";
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("meta.title"),
     description: t("meta.description"),
+    alternates: { canonical: `${SITE_URL}/${locale}` },
   };
 }
 

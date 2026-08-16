@@ -27,7 +27,7 @@ test("home loads with hero and header nav", async ({ page }) => {
 
 test("countdown ticks every second", async ({ page }) => {
   await gotoOk(page, "/en");
-  const clock = page.locator("span.sr-only").first();
+  const clock = page.locator('div[aria-live="polite"] span.sr-only').first();
   await expect(clock).toBeVisible();
   await expect.poll(async () => (await clock.textContent()) ?? "").toMatch(/^\d{2}:\d{2}:\d{2}$/);
   const first = await clock.textContent();

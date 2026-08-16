@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import Header from "@/components/layout/Header";
 import FooterContent from "@/components/layout/FooterContent";
@@ -13,7 +13,7 @@ import SonnerProvider from "@/components/SonnerProvider";
 import ReadingProgress from "@/components/ui/ReadingProgress";
 import { routing } from "@/i18n/routing";
 import PageTransition from "@/components/ui/PageTransition";
-import { ClientProvider } from "@/components/ClientProvider";
+import { NextIntlClientProvider } from "next-intl";
 import JsonLd from "@/components/JsonLd";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import { organizationSchema } from "@/lib/json-ld";
@@ -117,6 +117,7 @@ export default async function RootLayout({
 
   setRequestLocale(locale);
   const dir = locale === "ar" ? "rtl" : "ltr";
+  const messages = await getMessages();
 
   return (
     <html
@@ -132,8 +133,8 @@ export default async function RootLayout({
       <body
         className={`min-h-full flex flex-col ${locale === "ar" ? "font-arabic" : ""}`}
       >
-        {/* الآن نمرر locale إلى ClientProvider */}
-        <ClientProvider locale={locale}>
+        {/* الترجمات تُمرَّر من السيرفر — SSR كامل بدون "Loading..." */}
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <Analytics />
           <ServiceWorkerRegister />
           <BreadcrumbJsonLd />
@@ -152,7 +153,7 @@ export default async function RootLayout({
           </main>
 <FooterContent />
           <SonnerProvider />
-        </ClientProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

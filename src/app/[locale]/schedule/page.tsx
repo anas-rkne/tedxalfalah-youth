@@ -2,6 +2,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { getSessions, getEventInfo } from "@/lib/data";
+import { SITE_URL } from "@/lib/constants";
 import ScheduleHeroSection from "@/components/schedule/ScheduleHeroSection";
 import SchedulePageClient from "./SchedulePageClient";
 
@@ -13,6 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t("meta.title"),
     description: t("meta.description"),
+    alternates: { canonical: `${SITE_URL}/${locale}/schedule` },
   };
 }
 

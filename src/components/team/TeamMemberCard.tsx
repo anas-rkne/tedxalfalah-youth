@@ -20,7 +20,10 @@ const TeamMemberCard = memo(function TeamMemberCard({
 }: TeamMemberCardProps) {
   const t = useTranslations("page.team.bio");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openTop, setOpenTop] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const imageSrc = member.imageUrl;
   const fullName = member.name ?? "";
@@ -29,6 +32,8 @@ const TeamMemberCard = memo(function TeamMemberCard({
 
   const openModal = useCallback(() => {
     if (interactive && hasBio) {
+      const top = cardRef.current?.getBoundingClientRect().top ?? 0;
+      setOpenTop(Math.max(0, top));
       setIsModalOpen(true);
     }
   }, [interactive, hasBio]);
@@ -61,6 +66,15 @@ const TeamMemberCard = memo(function TeamMemberCard({
     };
   }, [isModalOpen]);
 
+  // كشف الجوال (لتحديد موضع اللوحة المربوطة بالبطاقة)
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -87,6 +101,7 @@ const TeamMemberCard = memo(function TeamMemberCard({
   return (
     <>
       <div
+        ref={cardRef}
         className={`group relative rounded-3xl overflow-hidden bg-card border border-border hover:border-tedx-red/30 transition-all duration-500 hover:shadow-[0_10px_40px_-10px_rgba(230,43,30,0.15)] flex flex-col hero-fade-up ${
           isInteractive ? "cursor-pointer" : ""
         }`}
@@ -158,105 +173,146 @@ const TeamMemberCard = memo(function TeamMemberCard({
       </div>
 
       {/* النافذة المنبثقة (Modal) */}
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-          dir={isArabic ? "rtl" : "ltr"}
+{isModalOpen && (
+  <div
+    className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/75 backdrop-blur-md transition-opacity duration-300 modal-fade p-0 md:p-4"
+    dir={isArabic ? "rtl" : "ltr"}
+  >
+    <div
+      ref={modalRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={fullName}
+      className="relative w-full md:w-full md:max-w-2xl max-h-[90dvh] md:max-h-[85vh] flex flex-col overflow-hidden bg-zinc-900 shadow-2xl rounded-t-[2.5rem] md:rounded-3xl border border-zinc-800 transition-all duration-300 transform modal-slide-up"
+    >
+      {/* مؤشر السحب للموبايل (Handle) */}
+      <div className="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mt-3 md:hidden flex-shrink-0" />
+
+      {/* زر الإغلاق */}
+      <button
+        onClick={closeModal}
+        className="absolute top-4 end-4 z-30 p-2.5 rounded-full bg-zinc-800/80 text-zinc-300 hover:text-white hover:bg-zinc-700 transition-all duration-200 shadow-md backdrop-blur-sm"
+        aria-label={t("close")}
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          <div
-            ref={modalRef}
-            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-zinc-900 rounded-3xl shadow-2xl"
-          >
-            {/* زر الإغلاق */}
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors duration-200"
-              aria-label={t("close")}
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
+      {/* محتوى المودل القابل للتمرير */}
+      <div className="flex-1 overflow-y-auto px-6 pt-4 pb-8 md:p-8 flex flex-col items-center text-center md:items-start md:text-start">
+        
+        {/* رأس المودل: الصورة والاسم والمنصب */}
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-5 w-full pb-6 border-b border-zinc-800/80">
+          
+          {/* صورة العضو (دائرية احترافية في الموبايل والديسكتوب) */}
+          <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-2xl md:rounded-2xl overflow-hidden bg-zinc-800 flex-shrink-0 shadow-xl border-2 border-zinc-700/50">
+            {imageSrc ? (
+              <SafeImage
+                src={imageSrc}
+                alt={fullName}
+                fill
+                unoptimized
+                className="object-cover"
+                sizes="(max-width: 768px) 96px, 112px"
+              />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950">
+                <span className="text-3xl md:text-4xl font-black text-white/90">
+                  {firstLetter}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* الاسم والمنصب */}
+          <div className="flex flex-col justify-center gap-2 flex-1">
+            <span className="inline-flex items-center justify-center md:justify-start gap-1.5 px-3 py-1 bg-tedx-red/10 text-tedx-red rounded-full text-xs font-bold w-fit mx-auto md:mx-0">
+              {member.role || member.department || ""}
+            </span>
+            <h3 className={`text-2xl md:text-3xl font-bold text-white tracking-tight ${isArabic ? "font-arabic" : ""}`}>
+              {fullName}
+            </h3>
+          </div>
+        </div>
+
+        {/* السيرة الذاتية */}
+        {hasBio && (
+          <div className="w-full py-6 text-start">
+            <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2.5">
+              {isArabic ? "السيرة الذاتية" : "Biography"}
+            </h4>
+            <p className="text-zinc-300 leading-relaxed whitespace-pre-line text-sm md:text-base font-normal">
+              {member.bio}
+            </p>
+          </div>
+        )}
+
+        {/* زر LinkedIn */}
+        {member.linkedinUrl && (
+          <div className="w-full pt-2 mt-auto">
+            <a
+              href={member.linkedinUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2.5 w-full py-3.5 px-6 rounded-xl bg-tedx-red text-white hover:bg-tedx-red/90 active:scale-[0.98] transition-all duration-200 text-sm font-semibold shadow-lg shadow-tedx-red/20"
             >
               <svg
-                width="24"
-                height="24"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                fill="currentColor"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.064 2.065 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
               </svg>
-            </button>
-
-            <div className="flex flex-col md:flex-row">
-                {/* صورة العضو — تمتد بارتفاع البطاقة كاملاً على الشاشات المتوسطة فأكبر */}
-                <div className="relative w-full md:w-[38%] md:self-stretch flex-shrink-0">
-                  <div className="relative aspect-[3/4] md:aspect-auto md:h-full overflow-hidden rounded-2xl md:rounded-s-3xl md:rounded-e-none bg-zinc-800">
-                    {imageSrc ? (
-                      <SafeImage
-                        src={imageSrc}
-                        alt={fullName}
-                        fill
-                        unoptimized
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 38vw"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-950">
-                        <span className="text-6xl font-black text-white/80">
-                          {firstLetter}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* تفاصيل العضو */}
-                <div className="w-full md:w-[62%] p-6 md:p-8 flex flex-col gap-4">
-                  <div className="flex flex-col gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-tedx-red/10 text-tedx-red rounded-full text-xs font-bold w-fit">
-                      {member.role || member.department || ""}
-                    </span>
-                    <h3 className="text-2xl md:text-3xl font-bold text-white">
-                      {fullName}
-                    </h3>
-                  </div>
-
-                  {/* السيرة الذاتية */}
-                  {hasBio && (
-                    <div className="mt-2">
-                      <p className="text-gray-300 leading-relaxed whitespace-pre-line text-sm md:text-base">
-                        {member.bio}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* رابط LinkedIn */}
-                  {member.linkedinUrl && (
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <a
-                        href={member.linkedinUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-tedx-red hover:text-tedx-red/80 transition-colors duration-200"
-                      >
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                        >
-                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.064 2.065 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                        </svg>
-                        LinkedIn
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+              {isArabic ? "التواصل عبر لينكد إن" : "Connect on LinkedIn"}
+            </a>
           </div>
-      )}
+        )}
+
+      </div>
+    </div>
+  </div>
+)}
+
+{/* إضافة أنيميشن خاصة للـ Modal */}
+<style>{`
+
+  .modal-fade {
+    animation: modalFadeIn 0.25s ease-out both;
+  }
+  .modal-slide-up {
+    animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes modalSlideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @media (min-width: 768px) {
+    @keyframes modalSlideUp {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .modal-fade, .modal-slide-up { animation: none; }
+  }
+    
+`}</style>
     </>
   );
 });
