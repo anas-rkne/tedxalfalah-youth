@@ -8,6 +8,7 @@ import { InstagramIcon, LinkedinIcon, XIcon } from "@/components/ui/SocialIcons"
 import { Mail, ArrowUp, ArrowUpRight, MapPin, Phone, ExternalLink } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
+import SafeImage from "@/components/ui/SafeImage";
 
 const SOCIAL_LINKS = [
   { platform: "instagram" as const, url: "https://www.instagram.com/tedxalfalahyouth" },
@@ -177,23 +178,22 @@ export default function FooterContent() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
                 >
-                  <div className="flex items-baseline gap-1 mb-5">
-                    <span className="text-2xl font-black text-tedx-red tracking-tight">
-                      TEDx
-                    </span>
-                    <span className="text-lg font-bold text-zinc-900 tracking-tight">
-                      AlFalah
-                    </span>
-                    <span className="text-lg font-bold text-tedx-red tracking-tight">
-                      Youth
-                    </span>
+                  <div className="mb-5">
+                    <SafeImage
+                      src="/images/logo-black.png"
+                      alt="TEDxAlFalah Youth"
+                      width={144}
+                      height={48}
+                      sizes="(max-width: 640px) 144px, 160px"
+                      className="h-12 w-36 sm:h-14 sm:w-40 object-contain"
+                    />
                   </div>
                   <p className="text-sm text-zinc-400 leading-relaxed mb-6 max-w-sm">
                     {t("brandDescription")}
                   </p>
 
                   {/* عناصر الاتصال مع الشريط الأحمر العمودي */}
-                  <div className="border-l-4 border-tedx-red pl-3 space-y-3 mb-6">
+                  <div className="border-l-4 border-tedx-red pl-3 space-y-2 mb-6">
                     <a
                       href={`mailto:${EMAIL}`}
                       className="flex items-center gap-3 text-sm text-zinc-600 hover:text-tedx-red transition-colors group"
@@ -295,13 +295,15 @@ export default function FooterContent() {
                     {t("licenseHeading")}
                   </h3>
                   <div className="bg-white rounded-2xl border border-zinc-200 p-5 shadow-sm">
-                    <div className="flex items-baseline gap-1 mb-3">
-                      <span className="text-lg font-black text-zinc-900">
-                        TEDx
-                      </span>
-                      <span className="text-sm font-bold text-tedx-red">
-                        AlFalah
-                      </span>
+                    <div className="mb-3">
+                      <SafeImage
+                        src="/images/logo-black.png"
+                        alt="TEDxAlFalah Youth"
+                        width={96}
+                        height={32}
+                        sizes="96px"
+                        className="h-8 w-24 object-contain"
+                      />
                     </div>
                     <p className="text-xs text-zinc-400 leading-relaxed mb-3">
                       {t("licenseNotice")}
