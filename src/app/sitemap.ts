@@ -6,15 +6,7 @@ const BASE_URL = process.env.BASE_URL || "https://www.tedxalfalahyouth.com";
 const ROUTES = [
   "",
   "/team",
-  "/venue",
-  "/activations",
-  "/schedule",
-  "/speakers",
   "/apply",
-  "/tickets",
-  "/tickets/success",
-  "/tickets/cancel",
-  "/faq",
   "/thank-you",
 ];
 

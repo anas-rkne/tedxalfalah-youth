@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
-import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import Header from "@/components/layout/Header";
 import FooterContent from "@/components/layout/FooterContent";
@@ -12,6 +12,8 @@ import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import SonnerProvider from "@/components/SonnerProvider";
 import ReadingProgress from "@/components/ui/ReadingProgress";
 import { routing } from "@/i18n/routing";
+import enMessages from "../../../messages/en.json";
+import arMessages from "../../../messages/ar.json";
 import PageTransition from "@/components/ui/PageTransition";
 import { NextIntlClientProvider } from "next-intl";
 import JsonLd from "@/components/JsonLd";
@@ -33,6 +35,24 @@ const notoKufiArabic = localFont({
   display: "swap",
   preload: true,
   weight: "400 900",
+});
+
+const poppins = localFont({
+  src: [
+    { path: "./fonts/Poppins-Regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/Poppins-Black.woff2", weight: "900", style: "normal" },
+  ],
+  variable: "--font-poppins-face",
+  display: "swap",
+  preload: true,
+});
+
+const alexandria = localFont({
+  src: "./fonts/Alexandria.ttf",
+  variable: "--font-alexandria-face",
+  display: "swap",
+  preload: true,
+  weight: "100 900",
 });
 
 type Props = { params: Promise<{ locale: string }> };
@@ -117,14 +137,17 @@ export default async function RootLayout({
 
   setRequestLocale(locale);
   const dir = locale === "ar" ? "rtl" : "ltr";
-  const messages = await getMessages();
+  // تحميل الرسائل مباشرة من locale القادم من params — يضمن أن Provider يحمل
+  // رسائل اللغة الصحيحة في كل أوضاع العرض (ديناميكي/ثابت/هيدريشن) ولا يعتمد
+  // على requestLocale الذي قد يكون undefined في تمريرات العرض الثابتة.
+  const messages = locale === "ar" ? arMessages : enMessages;
 
   return (
     <html
       data-scroll-behavior="smooth"
       lang={locale}
       dir={dir}
-      className={`${inter.variable} ${notoKufiArabic.variable} h-full antialiased`}
+      className={`${inter.variable} ${notoKufiArabic.variable} ${poppins.variable} ${alexandria.variable} h-full antialiased`}
     >
       <head>
         <link rel="preconnect" href="https://cdn.sanity.io" />

@@ -143,7 +143,7 @@ export default function ApplyBannerContent({
       {/* ═══════════ HERO + صور جانبية ═══════════ */}
       <div
         dir="ltr"
-        className="relative flex flex-col lg:flex-row items-center justify-center min-h-[60vh] pb-16 md:pb-24"
+        className="relative flex flex-col lg:flex-row items-center justify-center min-h-[60vh] pb-10 md:pb-14"
       >
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] rounded-[50%] bg-tedx-red/5 blur-3xl" />
@@ -153,10 +153,12 @@ export default function ApplyBannerContent({
           
           {/* العمود الأيسر: صورة Artboard 7 و Artboard 8 */}
           <div className="hidden lg:flex flex-col flex-shrink-0 w-56 lg:w-64 xl:w-72 h-full relative min-h-[300px]">
-            <img
+            <motion.img
               src="/images/Artboard 7.svg"
               alt="Left illustration 1"
-              className="absolute -top-30 right-0 w-[80%] h-auto object-contain z-10 pointer-events-none select-none"
+              className="absolute -top-30 right-0 w-full h-auto object-contain z-10 pointer-events-none select-none"
+              animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
             />
             <img
               src="/images/Artboard 8.svg"
@@ -227,7 +229,7 @@ export default function ApplyBannerContent({
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
             >
-              <AnimatedSlidingButton href={isClosed ? "/tickets" : "/apply"} variant="primary">
+              <AnimatedSlidingButton href={isClosed ? "/" : "/apply"} variant="primary">
                 {isClosed ? closedCta : cta}
               </AnimatedSlidingButton>
             </motion.div>
@@ -235,10 +237,12 @@ export default function ApplyBannerContent({
 
           {/* العمود الأيمن: صورة Artboard 4 (في أعلى العمود) */}
           <div className="hidden lg:flex flex-col flex-shrink-0 w-56 lg:w-64 xl:w-72 h-full relative min-h-[300px]">
-            <img
+            <motion.img
               src="/images/Artboard 4.svg"
               alt="Right illustration"
-              className="absolute -top-40 right-4 scale-[1.1] h-auto object-contain z-10 pointer-events-none select-none"
+              className="absolute -top-40 right-4 scale-[1.35] h-auto object-contain z-10 pointer-events-none select-none"
+              animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
 

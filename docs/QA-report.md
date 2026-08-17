@@ -1,6 +1,7 @@
 # تقرير فحص ما قبل الإطلاق (Pre-Launch QA)
 
 التاريخ: 2026-08-15 — المرحلتان الأولى (آلي) والثانية (الريسبونسيف) مكتملتان. الفحص اليدوي البصري أدناه.
+آخر تحديث: 2026-08-16 — المرحلة الخامسة (طلب العميل الشامل) مكتملة.
 
 ## النتائج الإجمالية
 
@@ -86,6 +87,108 @@
 - **المجموعة الكاملة**: 8 (map-pin) + 86 (responsive) = **94/94 خضراء** بعد إعادة
   البناء؛ ESLint نظيف؛ لقطات `qa-screenshots/footer-logo-1440.png` و
   `footer-logo-320.png` والمراجعة البصرية.
+
+## المرحلة الخامسة — طلب العميل الشامل: هيرو جديد، ديدلاين، إخفاء الصفحات (57/57 ✓)
+
+### الهيرو (`src/components/home/HeroDynamicContent.tsx` + `Hero.tsx`)
+1. "Tomorrow, Now" → صورة `Artboard 9.svg` (عرض `w-40 sm:w-56 md:w-72` مع `-rotate-3`)
+   داخل FadeUp — مع نص `sr-only` للـ SEO.
+2. الرقم "19" → صورة `Artboard 1.svg` (`h-10 md:h-12`).
+3. "ديسمبر 2026" صار `text-black` (كان رمادياً) — تطبيقاً لطلب العميل.
+4. حذف زر "Get Tickets" من الهيرو (بقيت Apply فقط) + حذف `saveSeatLabel` + حذف
+   زخرفة `HeroFlourish` + حركة `fadeScale`.
+
+### الديدلاين
+- "September 30" → **"September 14, 2026"** في `src/components/home/ApplyBanner.tsx`
+  (الافتراضي) و`.env.local` (`NEXT_PUBLIC_APPLICATION_DEADLINE`) — يُدمج وقت البناء.
+
+### الصور الزخرفية (تكبير + حركة طفو)
+- `ThemeContent.tsx`: Artboard 6 `scale-y-[2.8]`، Artboard 7 `motion.img w-full`.
+- `AboutContent.tsx`: Artboard 7 `w-72 md:w-96`، Artboard 5 `w-56 md:w-72 lg:w-80`.
+- `ApplyBannerContent.tsx`: Artboard 7 `w-full`، Artboard 4 `scale-[1.35]`.
+- كلها بتحريك `y: [0, -10, 0]` (4.5s، تكرار ∞، `easeInOut`) مع احترام
+  `shouldReduceMotion` (أداة وصول `prefers-reduced-motion`).
+
+### قسم Join Us في الفوتر (`src/components/layout/FooterContent.tsx`)
+- الارتفاع `h-[200px] sm:h-[220px] md:h-[240px]`، حذف الخطّين بجانب `ctaLabel`
+  (شريط مزدوج يتحول إلى سطر واحد)، عنوان ضخم `text-6xl sm:text-7xl lg:text-8xl font-black`،
+  وحذف زر "Get Tickets" الثانوي.
+
+### إخفاء الصفحات (قابل للعكس — الملفات سليمة)
+- **8 صفحات تعيد `notFound()`**: `/speakers`، `/tickets`، `/tickets/success`،
+  `/tickets/cancel`، `/venue`، `/activations`، `/schedule`، `/faq` — كل صفحة
+  استُبدل محتواها بسطر `notFound()` (الإعادة = استرجاع الملف من git).
+- **`SpeakersPreview` مُخفى من الرئيسية** (إزالة الاستيراد + الكتلة من
+  `src/app/[locale]/page.tsx` فقط — المكوّن محفوظ).
+- **حذف روابط الصفحات المخفية**: الهيدر (رابط التذاكر)، الفوتر (Quick Links +
+  زر Get Tickets)، الهيرو، قسم Highlights (زر agenda)، thank-you (روابط
+  tickets/schedule → `/`)، not-found (tickets → apply/team).
+- **SEO**: `sitemap.ts` و`BreadcrumbJsonLd` يقتصران الآن على `/` و`/team` و`/apply`
+  و`/thank-you`.
+
+### ملاحظات فنية من التحقق
+- الصفحات المخفية تعيد **HTTP 200 مع محتوى 404** (سلوك Next.js في وضع streaming
+  مع RSC: الحالة تُدفع أولاً والمحتوى داخل الـ payload) — المحتوى فعلياً صفحة
+  "Page Not Found" بروابط Home/Apply/Team ✓ (تحقق بـ curl من الجسم).
+- الرابط الميت الوحيد المتبقي في كود حي: لا يوجد — `ScheduleHeroSection`/
+  `SchedulePageClient` (`/tickets`) و`ActionButtons.tsx` (`/tickets`) و
+  `ScheduleBannerContent.tsx` (`/schedule`) كود لا يمكن الوصول إليه (صفحاته مخفية
+  والمكوّنات غير مستوردة) — تُركت سليمة لإعادة التفعيل لاحقاً.
+- **إصلاح إضافي**: زر الحالة المغلقة للبانر (`closedCta`) كان "Get Tickets"/
+  "احجز تذكرتك" مع وصلة `/` (زر ميت بعد إغلاق التقديم في 14 سبتمبر) — أصبح
+  "Stay Tuned"/"تابعنا" في `messages/{en,ar}.json`.
+- **تم التحقق**: تواريخ "Application Journey" القديمة (Open Sep 15 / Close
+  Oct 15) موجودة في `apply.timeline.phases` بالترجمات **ولكنها لا تُعرض** —
+  مكوّن `ApplyTimeline` يعرض title/description فقط؛ إن ظهرت لاحقاً يجب
+  تحديثها لتوافق ديدلاين 14 سبتمبر.
+
+### إصلاح خط العنوان الرئيسي في الفوتر (طلب المستخدم)
+- "انضم إلينا!" كان يظهر بخط Inter (يُسقطه المتصفح على خط عربي النظام) لأن
+  عنوان `h2` حمل `font-sans` صراحةً وتجاوز `font-arabic` الموروث من الجذر.
+- الإصلاح في `FooterContent.tsx`: `${isRTL ? "font-arabic" : "font-sans"}`.
+- **التحقق بمتصفح حقيقي** (getComputedStyle): ar → `notoKufiArabic` (محمل ✓)،
+  en → `inter` ✓. إعادة البناء + 57/57 خضراء.
+
+### معالجة ملاحظات المستخدم (الهيرو والفوتر) — 57/57 ✓
+1. **هوامش "Tomorrow, Now" البيضاء**: الرسم داخل إطار مربع 1080×1080 يشغل نطاقاً
+   ضيقاً فقط (المقاس الفعلي بالحبر: Y 433–698) — قُصّ `viewBox` إلى `95 433 890 266`
+   في `public/images/Artboard 9.svg` (قِيسَ بالحبر الفعلي عبر bbox) → تُعرض الصورة
+   بلا هوامش (نسبة 2.89:1 فعلياً).
+2. **تكبير Artboard 2 و3 في الهيرو**: `w-36 md:w-48 lg:w-60 xl:w-72` →
+   `w-52 md:w-64 lg:w-80 xl:w-96` (288→384px على الشاشة الكبيرة) في
+   `HeroDynamicContent.tsx` — تحقق بالقياس الفعلي 384×384.
+3. **ترجمة الفوتر**: مُحقّقة فعلاً باللغتين (قائمة غيرتروك للبيانات نص-نص ✓) —
+   ما رآه المستخدم كان على خادم قديم (شغّلنا البناء الطازج).
+4. **وصف قسم Join Us على سطرين موضوعَين في الوسط**: مفتاحان جديدان
+   `ctaDescriptionL1/L2` (en/ar) وتصييرهما `span.block` متوسطين:
+   "Be part of a community that believes in the power" / "of ideas to change
+   the world" — وعربياً: "كن جزءاً من مجتمع يؤمن بقوة الأفكار" / "لتغيير العالم."
+5. **الشريط الأحمر للتواصل**: `dir="ltr"` ثابت على كتلة الاتصال في
+   `FooterContent.tsx` → الترتيب الفيزيائي (شريط ← أيقونة ← نص) مطابق
+   للإنكليزية في اللغتين (تحقق: border-left 4px + dir ltr في ar وen).
+- لقطات: `qa-screenshots/hero-en-1440-new.png`, `hero-en-375-new.png`,
+  `footer-ar-1440-new.png`, `footer-en-1440-new.png`.
+
+### ضبط الفجوة بين "Tomorrow, Now" والعنوان (5px — طلب المستخدم) — 57/57 ✓
+- الفجوة السابقة كانت صافي 8px (gap 16/24 − هامش 8/16) → أصبحت **5px صافية**
+  عبر `-mt-[11px] md:-mt-[19px]` على FadeUp العنوان (مع إبقاء gap الأب).
+- **مقاسة فعلياً**: 375px → 5.0px، 1440px → 5.1px (تصحيح إزاحة -rotate-3:
+  صندوق الدوران يوسّع حدود img ~4.2px/7.6px).
+- أُعيد `sr-only` "Tomorrow, Now — 2026" (كان مستخدم المشروع حذفه — نصوص
+  مخفية للـ SEO أُبقيت).
+- الـ SVG مقصوص فعلياً (viewBox 95 433 890 266، 12 مساراً أحمر فقط بلا
+  عناصر بيضاء) — نسبة الصورة المعروضة 2.89:1 بلا هوامش داخلية؛ الفراغ
+  الأفقي حولها تصميمي (اللافتة متوسّطة في حاوية max-w-4xl).
+- لقطات: `qa-screenshots/hero-375-gap.png`, `hero-1440-gap.png`.
+
+### الاختبارات بعد التحديث: **57/57 خضراء** (4.6m)
+- `navigation.spec` MAIN_ROUTES = / /team /apply /thank-you | `responsive.spec`
+  (35 حالة: 4 صفحات × 7 مقاسات EN + / و/team × 3 مقاسات AR + 404) | `pages.spec`
+  (حذف 4) | `map.spec` (حذف venue) | `map-pin.spec` (4 حالات: الرئيسية EN/AR ×
+  سطح/جوال) | `mobile.spec` (2).
+- لقطات المراجعة البصرية: `qa-screenshots/` (home-en-desktop/mobile، home-ar-desktop،
+  hero-en-desktop، joinus-en-desktop، apply-en-desktop، team-en-desktop،
+  hidden-speakers-en).
 
 ## إصلاحات أُدخلت أثناء الفحص
 

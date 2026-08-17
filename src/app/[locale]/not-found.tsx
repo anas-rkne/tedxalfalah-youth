@@ -27,23 +27,19 @@ export default async function NotFound() {
           <Button href="/" variant="primary" size="md">
             {t("backHome")}
           </Button>
-          <Button href="/tickets" variant="outline" size="md">
-            {tNav("tickets")}
+          <Button href="/apply" variant="outline" size="md">
+            {tNav("apply")}
           </Button>
         </div>
 
         <p className="text-sm text-gray-500 mt-10">
           {t("exploreLabel")}{" "}
+          <Link href="/team" className="underline hover:text-red-600">
+            {tNav("team")}
+          </Link>{" "}
+          ·{" "}
           <Link href="/apply" className="underline hover:text-red-600">
             {tNav("apply")}
-          </Link>{" "}
-          ·{" "}
-          <Link href="/tickets" className="underline hover:text-red-600">
-            {tNav("tickets")}
-          </Link>{" "}
-          ·{" "}
-          <Link href="/venue" className="underline hover:text-red-600">
-            {tNav("venue")}
           </Link>
         </p>
       </SectionContainer>

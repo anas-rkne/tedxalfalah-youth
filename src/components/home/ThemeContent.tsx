@@ -86,15 +86,21 @@ export default function ThemeContent({
           
           {/* 🟢 العمود الأيسر: صورة Artboard 6 - تم تكبيرها للضعف ورفعها 20px للأعلى */}
                  <div className="hidden lg:flex flex-col flex-shrink-0 w-56 lg:w-64 xl:w-72 h-full relative min-h-[300px] overflow-visible">
-            <Image
-              src="/images/Artboard 6.svg"
-              alt="Left illustration"
-              fill
-              // 🟢 scale-x-[1] يحافظ على العرض، scale-y-[2] يكبر الارتفاع للضعف
-              // 🟢 -translate-y-10 يرفعها للأعلى، و translate-x-8 يزحزحها لليمين
-              className="object-contain scale-x-[2] scale-y-[2.4] -translate-y-30 translate-x-16"
-              sizes="(max-width: 1280px) 224px, 288px"
-            />
+            <motion.div
+              className="relative w-full h-full"
+              animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Image
+                src="/images/Artboard 6.svg"
+                alt="Left illustration"
+                fill
+                // 🟢 scale-x-[1] يحافظ على العرض، scale-y-[2] يكبر الارتفاع للضعف
+                // 🟢 -translate-y-10 يرفعها للأعلى، و translate-x-8 يزحزحها لليمين
+                className="object-contain scale-x-[2] scale-y-[2.8] -translate-y-30 translate-x-16"
+                sizes="(max-width: 1280px) 224px, 288px"
+              />
+            </motion.div>
           </div>
 
           {/* المحتوى الأوسط */}
@@ -218,10 +224,12 @@ export default function ThemeContent({
 
           {/* 🟢 العمود الأيمن: صورة Artboard 7 */}
           <div className="hidden lg:block relative flex-shrink-0 w-56 lg:w-64 xl:w-72 h-auto overflow-visible">
-            <img
+            <motion.img
               src="/images/Artboard 7.svg"
               alt="Right illustration"
-              className="absolute -top-50 left-0 w-[80%] h-auto object-contain z-10"
+              className="absolute -top-50 left-0 w-full h-auto object-contain z-10"
+              animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
           

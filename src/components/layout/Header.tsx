@@ -14,7 +14,6 @@ import {
   X,
   Home,
   Users2,
-  Ticket,
   Handshake,
 } from "lucide-react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
@@ -45,7 +44,6 @@ const ALL_LINKS = useMemo(() => [
   { label: t("home"), href: "/", icon: Home },
   { label: t("team"), href: "/team", icon: Users2 },
   { label: t("apply"), href: "/apply", icon: Handshake },
-  { label: t("tickets"), href: "/tickets", icon: Ticket },
 ], [t]);
   const isArabic = isRTL; // isRTL يكون true عندما تكون اللغة عربية
 

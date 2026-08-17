@@ -22,16 +22,3 @@ test("home map renders tile images above the base", async ({ page }) => {
   const tileCount = await tiles.count();
   expect(tileCount).toBeGreaterThan(0);
 });
-
-test("venue page shows the same interactive Leaflet map with marker", async ({ page }) => {
-  await page.goto("/en/venue");
-  await expect(page.locator(".leaflet-container")).toBeVisible({ timeout: 30_000 });
-  const marker = page.locator(".custom-div-icon");
-  await expect(marker).toBeVisible({ timeout: 30_000 });
-  const [popup] = await Promise.all([
-    page.waitForEvent("popup"),
-    marker.click(),
-  ]);
-  await popup.waitForLoadState("domcontentloaded");
-  expect(popup.url()).toContain("google.com/maps");
-});

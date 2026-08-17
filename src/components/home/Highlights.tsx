@@ -14,7 +14,6 @@ export default async function Highlights({ locale }: { locale: string }) {
       isScheduleReady={isScheduleReady}
       mainHeading={t("mainHeading")}
       mainSubtitle={t("mainSubtitle")}
-      agendaButton={t("agendaButton")}
     />
   );
 }

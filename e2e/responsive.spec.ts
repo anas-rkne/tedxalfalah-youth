@@ -7,18 +7,12 @@ const HEIGHTS: Record<number, number> = {
 
 const PAGES: { path: string; name: string; markers: string[]; noHeader?: boolean }[] = [
   { path: "/", name: "home", markers: ["header", "#global-footer"] },
-  { path: "/speakers", name: "speakers", markers: ["#global-footer"] },
   { path: "/team", name: "team", markers: ["#global-footer"] },
-  { path: "/venue", name: "venue", markers: ["#global-footer"] },
-  { path: "/activations", name: "activations", markers: ["#global-footer"] },
-  { path: "/schedule", name: "schedule", markers: ["#global-footer"] },
   { path: "/apply", name: "apply", markers: ["#global-footer"] },
-  { path: "/tickets", name: "tickets", markers: ["#global-footer"] },
-  { path: "/faq", name: "faq", markers: ["#global-footer"] },
   { path: "/thank-you", name: "thank-you", markers: ["h1"], noHeader: true },
 ];
 
-const AR_PAGES = ["/", "/team", "/faq", "/venue", "/tickets"];
+const AR_PAGES = ["/", "/team"];
 const AR_WIDTHS = [320, 768, 1440];
 
 async function gotoNoWait(page: Page, path: string) {
@@ -74,9 +68,7 @@ for (const pageDef of PAGES) {
       }
 
       if (pageDef.markers.includes("#global-footer") && width < 640) {
-        const ctas = page.locator(
-          '#global-footer a[href*="/apply"], #global-footer a[href*="/tickets"]'
-        );
+        const ctas = page.locator('#global-footer a[href*="/en/apply"], #global-footer a[href*="/apply"]');
         const count = await ctas.count();
         expect(count).toBeGreaterThan(0);
         let widest = 0;

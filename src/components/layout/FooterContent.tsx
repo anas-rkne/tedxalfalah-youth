@@ -79,8 +79,6 @@ export default function FooterContent() {
     { label: tCommon("home"), href: "/" },
     { label: tCommon("team"), href: "/team" },
     { label: tCommon("apply"), href: "/apply" },
-    { label: tCommon("tickets"), href: "/tickets" },
-    { label: tCommon("faq"), href: "/faq" },
   ], [tCommon]);
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
@@ -95,20 +93,18 @@ export default function FooterContent() {
           1. CTA BANNER — أحمر زاهٍ مع دودل، بدون أزرار
           ═══════════════════════════════════════════════════════════════ */}
       <div
-        className="relative w-full min-h-[300px] sm:min-h-[350px] md:min-h-[420px] pt-14 sm:pt-16 md:pt-20 pb-12 md:pb-14 overflow-hidden flex items-center justify-center bg-tedx-red"
+        className="relative w-full mt-0 mb-[15px] h-[220px] sm:h-[240px] md:h-[260px] overflow-hidden flex items-center justify-center bg-tedx-red"
         style={DOODLE_BG}
       >
-        <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-8">
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-8 flex flex-col items-center gap-2 md:gap-3">
           <motion.div
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold uppercase tracking-widest text-white mb-4">
-              <span className="w-8 h-px bg-white/70" />
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-white/90">
               {t("ctaLabel")}
-              <span className="w-8 h-px bg-white/70" />
             </span>
           </motion.div>
 
@@ -117,7 +113,7 @@ export default function FooterContent() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="font-sans text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] mb-4"
+            className={`${isRTL ? "font-arabic" : "font-alexandria"} text-6xl sm:text-7xl lg:text-8xl font-black text-white tracking-wide leading-none`}
           >
             {t("joinUs")}
           </motion.h2>
@@ -127,9 +123,10 @@ export default function FooterContent() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-white text-base sm:text-lg max-w-[600px] mx-auto leading-relaxed px-4"
+            className="text-sm md:text-base text-white/80 max-w-2xl mx-auto leading-snug"
           >
-            {t("ctaDescription")}
+            <span className="block">{t("ctaDescriptionL1")}</span>
+            <span className="block">{t("ctaDescriptionL2")}</span>
           </motion.p>
         </div>
       </div>
@@ -151,14 +148,6 @@ export default function FooterContent() {
             className="px-8 py-3 min-w-[180px]"
           >
             {t("applyButton")}
-          </AnimatedSlidingButton>
-
-          <AnimatedSlidingButton
-            href="/tickets"
-            variant="secondary"
-            className="px-8 py-3 min-w-[180px] bg-white text-black border border-black hover:bg-zinc-50 hover:text-black"
-          >
-            {t("ticketsButton")}
           </AnimatedSlidingButton>
         </motion.div>
       </div>
@@ -192,8 +181,8 @@ export default function FooterContent() {
                     {t("brandDescription")}
                   </p>
 
-                  {/* عناصر الاتصال مع الشريط الأحمر العمودي */}
-                  <div className="border-l-4 border-tedx-red pl-3 space-y-2 mb-6">
+                  {/* عناصر الاتصال مع الشريط الأحمر العمودي — اتجاه ثابت LTR كالإنكليزية */}
+                  <div dir="ltr" className="border-l-4 border-tedx-red pl-3 space-y-2 mb-6">
                     <a
                       href={`mailto:${EMAIL}`}
                       className="flex items-center gap-3 text-sm text-zinc-600 hover:text-tedx-red transition-colors group"

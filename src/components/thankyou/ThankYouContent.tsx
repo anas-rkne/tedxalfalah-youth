@@ -183,7 +183,7 @@ export default function ThankYouContent({
               {cta}
             </Link>
             <Link
-              href="/schedule"
+              href="/"
               className="text-white/60 text-[14px] border-b border-white/20 pb-1 hover:text-white hover:border-white transition-all duration-300"
             >
               {secondaryCta}

@@ -32,9 +32,9 @@ export async function generateMetadata({
 
 const ctaConfig: Record<string, { href: string }> = {
   contact: { href: "/" },
-  apply: { href: "/schedule" },
+  apply: { href: "/" },
   partner: { href: "/" },
-  tickets: { href: "/venue" },
+  tickets: { href: "/" },
   default: { href: "/" },
 };
 

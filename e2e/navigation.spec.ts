@@ -2,14 +2,8 @@ import { test, expect, type Page } from "@playwright/test";
 
 const MAIN_ROUTES = [
   "/",
-  "/speakers",
   "/team",
-  "/venue",
-  "/activations",
-  "/schedule",
   "/apply",
-  "/tickets",
-  "/faq",
   "/thank-you",
 ];
 

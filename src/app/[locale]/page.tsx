@@ -9,9 +9,7 @@ import Hero from "@/components/home/Hero";
 import About from "@/components/home/About";
 import Theme from "@/components/home/Theme";
 import Highlights from "@/components/home/Highlights";
-import SpeakersPreview from "@/components/home/SpeakersPreview";
 import TeamPreview from "@/components/home/TeamPreview";
-import ScheduleBanner from "@/components/home/ScheduleBanner";
 import ApplyBanner from "@/components/home/ApplyBanner";
 import SponsorsStrip from "@/components/home/SponsorsStrip";
 import ContactBox from "@/components/contact/ContactBoxWrapper";
@@ -72,22 +70,11 @@ export default async function Home({ params }: Props) {
         <Highlights locale={locale} />
       </ScrollSection>
 
-      {eventInfo?.showSpeakers && (
-        <ScrollSection variant="stagger" id="speakers" className="bg-white">
-          <SpeakersPreview locale={locale} />
-        </ScrollSection>
-      )}
-
       {eventInfo?.showTeam && (
         <ScrollSection variant="stagger" id="team" className="bg-white">
           <TeamPreview locale={locale} />
         </ScrollSection>
       )}
-
-      <ScrollSection variant="default" id="schedule" className="bg-white">
-        <ScheduleBanner locale={locale}  />
-        
-      </ScrollSection>
 
       <ScrollSection variant="default" id="apply" className="bg-white">
         <ApplyBanner locale={locale} />

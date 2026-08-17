@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import ApplyBannerContent from "./ApplyBannerContent";
 import { APPLICATION_DEADLINE } from "@/lib/constants";
 
-const APPLICATION_DEADLINE_LABEL = process.env.NEXT_PUBLIC_APPLICATION_DEADLINE || "September 30, 2026";
+const APPLICATION_DEADLINE_LABEL = process.env.NEXT_PUBLIC_APPLICATION_DEADLINE || "September 14, 2026";
 
 export default async function ApplyBanner({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "home.applyBanner" });

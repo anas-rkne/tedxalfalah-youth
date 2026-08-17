@@ -6,8 +6,6 @@ const LNG = "54.7326539";
 const PAGES: { path: string; name: string }[] = [
   { path: "/en", name: "home-en" },
   { path: "/ar", name: "home-ar" },
-  { path: "/en/venue", name: "venue-en" },
-  { path: "/ar/venue", name: "venue-ar" },
 ];
 
 async function tapPinOpensMaps(page: Page, path: string) {
@@ -44,9 +42,9 @@ test.describe("map red pin opens event location link", () => {
 });
 
 test.describe("map red pin on mobile (iPhone 13 emulation)", () => {
-  const iPhone13 = { ...devices["iPhone 13"] };
+  const iPhone13 = { ...devices["iPhone 13"] } as Record<string, unknown>;
   delete iPhone13.defaultBrowserType;
-  test.use(iPhone13);
+  test.use(iPhone13 as unknown as Parameters<typeof test.use>[0]);
 
   for (const { path, name } of PAGES) {
     test(`${name}: pin tap opens Google Maps in new tab (mobile touch)`, async ({

@@ -44,6 +44,8 @@
     "joinUs": "Join Us!",
     "ctaLabel": "Ideas worth spreading",
     "ctaDescription": "Be part of a community that believes in the power of ideas to change the world.",
+    "ctaDescriptionL1": "Be part of a community that believes in the power",
+    "ctaDescriptionL2": "of ideas to change the world",
     "applyButton": "Apply Now",
     "ticketsButton": "Get Tickets",
     "brandDescription": "An independently organized TEDx event bringing together young voices and real ideas.",
@@ -134,7 +136,7 @@
       "stageBadgeLabel": "Coming Soon",
       "stageTitle": "The Stage Awaits Your Voice",
       "stageDescription": "Join 12+ young speakers who will change how we see the future.",
-      "closedCta": "Get Tickets"
+      "closedCta": "Stay Tuned"
     },
     "scheduleBanner": {
       "badge": "Schedule",

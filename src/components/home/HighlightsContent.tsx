@@ -3,13 +3,11 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useRTL } from "@/hooks/useRTL";
 import SectionBadge from "@/components/ui/SectionBadge";
-import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 
 interface HighlightsContentProps {
   isScheduleReady: boolean;
   mainHeading: string;
   mainSubtitle: string;
-  agendaButton: string;
 }
 
 const easeOut = [0.23, 1, 0.32, 1] as const;
@@ -18,7 +16,6 @@ export default function HighlightsContent({
   isScheduleReady,
   mainHeading,
   mainSubtitle,
-  agendaButton,
 }: HighlightsContentProps) {
   const { isRTL } = useRTL();
   const shouldReduceMotion = useReducedMotion();
@@ -51,25 +48,6 @@ export default function HighlightsContent({
             {mainSubtitle}
           </p>
         </motion.div>
-      </div>
-
-      <div className="relative pb-24 md:pb-32">
-        <div className="container-padding max-w-7xl mx-auto flex justify-center">
-          <motion.div
-            initial={shouldReduceMotion ? undefined : { opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, ease: easeOut }}
-          >
-            <AnimatedSlidingButton
-              href="/schedule"
-              variant="primary"
-              className="min-w-[280px] sm:min-w-[340px] py-4 text-base sm:text-lg"
-            >
-              {agendaButton}
-            </AnimatedSlidingButton>
-          </motion.div>
-        </div>
       </div>
     </section>
   );

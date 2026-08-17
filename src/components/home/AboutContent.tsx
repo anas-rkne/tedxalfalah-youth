@@ -211,11 +211,13 @@ export default function AboutContent({
           >
         <div className="relative p-8 md:p-10 pt-20 md:pt-24 rounded-[24px] bg-card border border-border overflow-visible">
   {/* صورة Artboard 7 تطفو أعلى يسار البطاقة */}
-  <img
+  <motion.img
     src="/images/Artboard 7.svg"
     alt=""
     aria-hidden="true"
-    className="absolute -top-40 max-sm:top-[-130px] -left-10 w-60 md:w-80 h-auto object-contain z-10 -rotate-45 "
+    className="absolute -top-40 max-sm:top-[-130px] -left-10 w-72 md:w-96 h-auto object-contain z-10 -rotate-45 "
+    animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
+    transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
   />
 
   <FormattedParagraph
@@ -255,11 +257,13 @@ export default function AboutContent({
   </div>
 
   {/* صورة Artboard 5 تطفو فوق الزاوية العلوية اليسرى من حاوية الخريطة */}
-  <img
+  <motion.img
     src="/images/Artboard 5.svg"
     alt=""
     aria-hidden="true"
-    className="hidden lg:block absolute -top-[60%] -right-10 w-48 md:w-64 lg:w-72 pointer-events-none select-none z-20"
+    className="hidden lg:block absolute -top-[60%] -right-10 w-56 md:w-72 lg:w-80 pointer-events-none select-none z-20"
+    animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
+    transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
   />
 </motion.div>
         </div>

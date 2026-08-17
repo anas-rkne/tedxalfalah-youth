@@ -44,6 +44,8 @@
     "joinUs": "انضم إلينا!",
     "ctaLabel": "أفكار تغيّر العالم",
     "ctaDescription": "كن جزءاً من مجتمع يؤمن بقوة الأفكار لتغيير العالم.",
+    "ctaDescriptionL1": "كن جزءاً من مجتمع يؤمن بقوة الأفكار",
+    "ctaDescriptionL2": "لتغيير العالم.",
     "applyButton": "قدّم الآن",
     "ticketsButton": "احجز تذكرتك",
     "brandDescription": "فعالية TEDx مستقلة تجمع أصوات الشباب والأفكار الحقيقية.",
@@ -134,7 +136,7 @@
       "stageBadgeLabel": "قادم قريباً",
       "stageTitle": "المسرح ينتظر صوتك",
       "stageDescription": "انضم إلى 12+ متحدث شاب سيُغيّرون الطريقة التي نرى بها المستقبل.",
-      "closedCta": "احجز تذكرتك"
+      "closedCta": "تابعنا"
     },
     "scheduleBanner": {
       "badge": "الجدول الزمني",

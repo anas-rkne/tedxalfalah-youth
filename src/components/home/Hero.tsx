@@ -31,7 +31,6 @@ export default async function Hero({
       venueText={t("venue")}
       countdownTarget={eventDate ? `${eventDate}T09:00:00+04:00` : undefined}
       applyLabel={t("applyLabel")}
-      saveSeatLabel={t("saveSeatLabel")}
       badgeLabel={t("badgeLabel")}
       eventYear={t("eventYear")}
       intro={t("intro")}
