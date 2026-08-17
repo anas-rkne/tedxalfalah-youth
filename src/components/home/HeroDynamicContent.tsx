@@ -46,27 +46,14 @@ const SaveTheDate = memo(function SaveTheDate({
         aria-hidden="true"
         className="flex flex-wrap items-center justify-center gap-x-8 sm:gap-x-12 gap-y-3"
       >
-        <div className="flex items-start gap-2">
-          <img
-            src="/images/Artboard 1.svg"
-            alt=""
-            aria-hidden="true"
-            className="h-10 md:h-12 w-auto object-contain pointer-events-none"
-          />
-          <div className="flex flex-col leading-tight pt-1">
-            <span className="text-zinc-800 font-bold text-sm md:text-base">
-              {monthEn}
-            </span>
-            <span
-              className="text-black text-sm md:text-base font-arabic"
-              dir="rtl"
-            >
-              {monthYearAr}
-            </span>
-          </div>
-        </div>
+        <img
+          src="/images/Screenshot 2026-08-17 085349.png"
+          alt=""
+          aria-hidden="true"
+          className="h-11 md:h-13 w-auto object-contain pointer-events-none"
+        />
 
-        <div className="flex flex-col items-center sm:items-start leading-tight text-sm md:text-base">
+        <div className="flex flex-col items-center sm:items-start leading-tight text-sm md:text-base gap-1">
           <span
             dir="rtl"
             lang="ar"

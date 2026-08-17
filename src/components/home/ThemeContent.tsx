@@ -7,7 +7,6 @@ import {
 } from "framer-motion";
 import { useRTL } from "@/hooks/useRTL";
 import SectionBadge from "@/components/ui/SectionBadge";
-import Image from "next/image"; // استخدام next/image القياسي
 
 interface ThemeContentProps {
   title: string;
@@ -71,7 +70,7 @@ export default function ThemeContent({
   const highlightWords = ["TEDx", "TEDxYouth", "Ideas", "Power", "Future", "Change"];
 
   return (
-    <section className="section-padding relative bg-background overflow-hidden">
+    <section className="section-padding relative bg-background overflow-x-clip">
       <div
         dir="ltr"
         className="relative flex flex-col lg:flex-row items-center justify-center min-h-[60vh]"
@@ -84,26 +83,23 @@ export default function ThemeContent({
 
         <div className="container-padding relative z-10 w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10">
           
-          {/* 🟢 العمود الأيسر: صورة Artboard 6 - تم تكبيرها للضعف ورفعها 20px للأعلى */}
-                 <div className="hidden lg:flex flex-col flex-shrink-0 w-56 lg:w-64 xl:w-72 h-full relative min-h-[300px] overflow-visible">
+          {/* 🟢 العمود الأيسر: صورة Artboard 6 — بعرض العمود الأصلي حتى لا يتغير حجم القسم الأوسط، بدون دوران */}
+<div className="hidden lg:flex flex-col flex-shrink-0 items-center relative w-56 lg:w-64 xl:w-72">
             <motion.div
-              className="relative w-full h-full"
+              className="relative w-full"
               animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Image
+              <img
                 src="/images/Artboard 6.svg"
-                alt="Left illustration"
-                fill
-                // 🟢 scale-x-[1] يحافظ على العرض، scale-y-[2] يكبر الارتفاع للضعف
-                // 🟢 -translate-y-10 يرفعها للأعلى، و translate-x-8 يزحزحها لليمين
-                className="object-contain scale-x-[2] scale-y-[2.8] -translate-y-30 translate-x-16"
-                sizes="(max-width: 1280px) 224px, 288px"
+                alt=""
+                aria-hidden="true"
+                className="w-full h-auto object-contain pointer-events-none select-none origin-center lg:scale-[1.4] lg:translate-x-[75px] lg:-translate-y-[200px] xl:scale-[1.65] xl:translate-x-[60px]"
               />
-            </motion.div>
-          </div>
+          </motion.div>
+        </div>
 
-          {/* المحتوى الأوسط */}
+        {/* المحتوى الأوسط */}
           <div className="flex-1 w-full max-w-4xl flex flex-col items-center text-center gap-8 md:gap-10" dir="auto">
             <motion.div
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}

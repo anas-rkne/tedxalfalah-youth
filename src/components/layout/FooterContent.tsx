@@ -25,6 +25,13 @@ const DOODLE_BG = {
   backgroundRepeat: "no-repeat",
 } as const;
 
+const DOODLE_BG_MOBILE = {
+  backgroundImage: "url('/images/footer-red-bg.svg')",
+  backgroundSize: "auto 690px",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+} as const;
+
 function SocialLinkItem({ platform, url }: { platform: string; url: string }) {
   const icons = {
     instagram: <InstagramIcon size={16} />,
@@ -96,6 +103,7 @@ export default function FooterContent() {
         className="relative w-full mt-0 mb-[15px] h-[220px] sm:h-[240px] md:h-[260px] overflow-hidden flex items-center justify-center bg-tedx-red"
         style={DOODLE_BG}
       >
+        <div className="absolute inset-0 sm:hidden" style={DOODLE_BG_MOBILE} aria-hidden />
         <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-8 flex flex-col items-center gap-2 md:gap-3">
           <motion.div
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
@@ -322,6 +330,10 @@ export default function FooterContent() {
         <div
           className="absolute inset-0 opacity-20 pointer-events-none"
           style={DOODLE_BG}
+        />
+        <div
+          className="absolute inset-0 opacity-20 pointer-events-none sm:hidden"
+          style={DOODLE_BG_MOBILE}
         />
 
         {/* خط علوي أبيض */}
