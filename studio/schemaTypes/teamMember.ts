@@ -52,6 +52,12 @@ export default defineType({
       description: "A short biography of the team member (100-200 words)",
       rows: 5,
     }),
+    defineField({
+      name: "order",
+      title: "Order (Grid Position)",
+      description: "1 = first in grid. Leave empty to keep at the end.",
+      type: "number",
+    }),
     // ------------------------------------------------
     defineField({
       name: "linkedinUrl",
