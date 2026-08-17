@@ -176,6 +176,10 @@ body {
   font-family: var(--font-noto-kufi-arabic), Arial, Helvetica, sans-serif;
 }
 
+.font-alexandria {
+  font-family: var(--font-alexandria-face), Arial, Helvetica, sans-serif;
+}
+
 /* ===== Animations ===== (تم حذف التكرار والاحتفاظ بواحد لكل منها) */
 
 @keyframes fade-in-up {
