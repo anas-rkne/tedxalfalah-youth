@@ -76,7 +76,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
   // ----------------------------------------------
 
   const raw = await fetchSanity<Raw[]>(
-    `*[_type == "teamMember" && (!defined(isPublished) || isPublished == true)] | order(name asc) {
+    `*[_type == "teamMember" && (!defined(isPublished) || isPublished == true)] | order(_createdAt asc, name asc) {
       "id": _id,
       name,
       photo,
