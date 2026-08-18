@@ -207,7 +207,6 @@
       "stepper2": "Review",
       "stepper3": "Result",
       "verticalLabel": "IDEAS WORTH SPREADING • TEDxAlFalah Youth • 2026",
-      "brandLabel": "TEDx Event",
       "footerHashtag": "#TEDxIdeas2026",
       "footerDate": "Next event: Coming soon",
       "footerContact": "Contact: marhaba@tedxalfalahyouth.com"
@@ -224,8 +223,7 @@
       "stat1": "Email Confirmed",
       "stat2": "Team at Work",
       "stat3": "Reply within 48h",
-      "cta": "Back to Home",
-      "secondaryCta": "Browse Schedule"
+      "cta": "Back to Homepage"
     },
     "apply": {
       "meta": {
@@ -239,8 +237,7 @@
       "stat1": "Email Confirmed",
       "stat2": "Talent Team",
       "stat3": "Contact within a week",
-      "cta": "View Schedule",
-      "secondaryCta": "Browse Schedule"
+      "cta": "Back to Homepage"
     },
     "partner": {
       "meta": {
@@ -254,8 +251,7 @@
       "stat1": "Email Confirmed",
       "stat2": "Partnerships Team",
       "stat3": "Contact within 48h",
-      "cta": "Back to Home",
-      "secondaryCta": "Browse Schedule"
+      "cta": "Back to Homepage"
     },
     "tickets": {
       "meta": {
@@ -269,8 +265,7 @@
       "stat1": "Email Confirmed",
       "stat2": "Ticket Booked",
       "stat3": "Get Ready!",
-      "cta": "View Venue Details",
-      "secondaryCta": "Browse Schedule"
+      "cta": "Back to Homepage"
     },
     "default": {
       "meta": {
@@ -284,8 +279,7 @@
       "stat1": "Under Review",
       "stat2": "Team at Work",
       "stat3": "We'll Reach Out",
-      "cta": "Back to Home",
-      "secondaryCta": "Browse Schedule"
+      "cta": "Back to Homepage"
     }
   },
   "page": {

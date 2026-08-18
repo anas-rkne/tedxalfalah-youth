@@ -54,7 +54,6 @@ export default async function ThankYouPage({
   return (
     <ThankYouContent
       headerSubtitle={tc("headerSubtitle")}
-      brandLabel={tc("brandLabel")}
       stepper1={tc("stepper1")}
       stepper2={tc("stepper2")}
       stepper3={tc("stepper3")}
@@ -69,7 +68,6 @@ export default async function ThankYouPage({
       stat2={t("stat2")}
       stat3={t("stat3")}
       cta={t("cta")}
-      secondaryCta={t("secondaryCta")}
       ctaHref={href}
     />
   );
