@@ -5,6 +5,7 @@ export default function FadeUp({
   children,
   delay = 0,
   className = "",
+  
 }: {
   children: React.ReactNode;
   delay?: number;

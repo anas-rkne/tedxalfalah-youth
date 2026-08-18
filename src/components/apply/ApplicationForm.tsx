@@ -80,6 +80,7 @@ const Field = memo(function Field({
   children,
   hint,
   isArabic,
+  requiredTag,
   className = "",
 }: {
   label: string;
@@ -87,11 +88,20 @@ const Field = memo(function Field({
   children: React.ReactNode;
   hint?: React.ReactNode;
   isArabic: boolean;
+  requiredTag?: string;
   className?: string;
 }) {
   return (
     <div className={`mb-4 ${className}`}>
-      <label className={`block text-[13px] font-semibold text-zinc-600 mb-1.5 ${isArabic ? 'font-arabic' : ''}`}>{label}{children}</label>
+      <label className={`block text-[13px] font-semibold text-zinc-600 mb-1.5 ${isArabic ? 'font-arabic' : ''}`}>
+        {label}
+        {requiredTag && (
+          <span className="ml-1 text-[10px] font-bold text-tedx-red border border-tedx-red/40 rounded px-1.5 py-0.5 align-middle">
+            {requiredTag}
+          </span>
+        )}
+        {children}
+      </label>
       {hint && <div className="flex justify-between items-center mt-1">{hint}</div>}
       {error && (
         <p className="text-xs text-tedx-red mt-1 flex items-center gap-1">
@@ -134,7 +144,10 @@ export default function ApplicationForm() {
             .min(1, t("errors.thisFieldRequired"))
             .refine((val) => wordCount(val) <= 150, t("errors.maxWords", { count: 150 })),
           themeConnection: z.enum(THEME_OPTIONS),
-          videoLink: z.string().url(t("errors.invalidUrl")).or(z.literal("")).optional(),
+          videoLink: z
+            .string()
+            .min(1, t("errors.videoLinkRequired"))
+            .url(t("errors.invalidUrl")),
           howHeardAboutUs: z.enum(HOW_HEARD_VALUES),
           consentToTerms: z.literal(true, {
             errorMap: () => ({ message: t("errors.consentRequired") }),
@@ -330,7 +343,7 @@ export default function ApplicationForm() {
             ))}
           </select>
         </Field>
-        <Field label={t("videoLink")} error={errors.videoLink?.message} isArabic={isArabic}>
+        <Field label={t("videoLink")} requiredTag={t("requiredTag")} error={errors.videoLink?.message} isArabic={isArabic}>
           <input {...register("videoLink")} className={inputClasses} placeholder={t("videoLinkPlaceholder")} />
         </Field>
         <Field label={t("howHeard")} isArabic={isArabic}>

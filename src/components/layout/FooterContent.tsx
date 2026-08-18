@@ -21,14 +21,21 @@ const EMAIL = "marhaba@tedxalfalahyouth.com";
 const DOODLE_BG = {
   backgroundImage: "url('/images/footer-red-bg.svg')",
   backgroundSize: "cover",
-  backgroundPosition: "center",
+  backgroundPosition: "center 42%",
   backgroundRepeat: "no-repeat",
 } as const;
 
 const DOODLE_BG_MOBILE = {
   backgroundImage: "url('/images/footer-red-bg.svg')",
-  backgroundSize: "auto 690px",
-  backgroundPosition: "center",
+  backgroundSize: "auto 513.5px",
+  backgroundPosition: "65.1% 43.7%",
+  backgroundRepeat: "no-repeat",
+} as const;
+
+const DOODLE_BG_TABLET = {
+  backgroundImage: "url('/images/footer-red-bg.svg')",
+  backgroundSize: "100% 660%",
+  backgroundPosition: "center 50%",
   backgroundRepeat: "no-repeat",
 } as const;
 
@@ -104,6 +111,7 @@ export default function FooterContent() {
         style={DOODLE_BG}
       >
         <div className="absolute inset-0 sm:hidden" style={DOODLE_BG_MOBILE} aria-hidden />
+        <div className="absolute inset-0 hidden sm:block lg:hidden" style={DOODLE_BG_TABLET} aria-hidden />
         <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-8 flex flex-col items-center gap-2 md:gap-3">
           <motion.div
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
@@ -334,6 +342,10 @@ export default function FooterContent() {
         <div
           className="absolute inset-0 opacity-20 pointer-events-none sm:hidden"
           style={DOODLE_BG_MOBILE}
+        />
+        <div
+          className="absolute inset-0 opacity-20 pointer-events-none hidden sm:block lg:hidden"
+          style={DOODLE_BG_TABLET}
         />
 
         {/* خط علوي أبيض */}

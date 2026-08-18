@@ -1,9 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { Check, Home, Calendar, Mail, Users } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
+
+interface TimelineStage {
+  date: string;
+  title: string;
+}
 
 interface ThankYouContentProps {
   headerSubtitle: string;
@@ -19,6 +25,11 @@ interface ThankYouContentProps {
   stat3: string;
   cta: string;
   ctaHref: string;
+  showTimeline: boolean;
+  timelineButton: string;
+  timelineTitle: string;
+  timelineSubtitle: string;
+  timelineStages: TimelineStage[];
   footerHashtag: string;
   footerDate: string;
   footerContact: string;
@@ -104,11 +115,17 @@ export default function ThankYouContent({
   stat3,
   cta,
   ctaHref,
+  showTimeline,
+  timelineButton,
+  timelineTitle,
+  timelineSubtitle,
+  timelineStages,
   footerHashtag,
   footerDate,
   footerContact,
 }: ThankYouContentProps) {
   const { isRTL } = useRTL();
+  const [timelineOpen, setTimelineOpen] = useState(false);
 
   return (
     <div className="h-screen bg-black text-white relative overflow-hidden flex flex-col selection:bg-tedx-red selection:text-white" dir={isRTL ? "rtl" : "ltr"}>
@@ -138,7 +155,7 @@ export default function ThankYouContent({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] px-6 lg:px-[60px] items-center z-10 pb-[60px] overflow-y-auto lg:overflow-hidden">
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] px-6 lg:px-[60px] items-center z-10 pb-[60px] overflow-y-auto">
         {/* Left Column (Hero Text Area) */}
         <div className="pt-10 lg:pt-0 lg:pb-10">
           <Stepper s1={stepper1} s2={stepper2} s3={stepper3} />
@@ -173,6 +190,16 @@ export default function ThankYouContent({
             transition={{ duration: 0.5, delay: 0.9 }}
             className="flex flex-wrap items-center gap-6"
           >
+            {showTimeline && (
+              <button
+                onClick={() => setTimelineOpen((open) => !open)}
+                aria-expanded={timelineOpen}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-tedx-red text-white font-bold text-base border border-tedx-red transition-all duration-300 hover:bg-tedx-red/90 hover:border-tedx-red/90 focus:outline-none focus:ring-2 focus:ring-tedx-red focus:ring-offset-2"
+              >
+                <Calendar className="w-5 h-5" />
+                {timelineButton}
+              </button>
+            )}
             <Link
               href={ctaHref}
               className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-tedx-red text-white font-bold text-base border border-tedx-red transition-all duration-300 hover:bg-tedx-red/90 hover:border-tedx-red/90 focus:outline-none focus:ring-2 focus:ring-tedx-red focus:ring-offset-2"
@@ -187,6 +214,55 @@ export default function ThankYouContent({
         <div className="relative flex justify-center items-center py-10 lg:py-0">
           <AnimatedCheckIcon />
         </div>
+
+        {/* Application Journey Timeline */}
+        {timelineOpen && (
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="col-span-full mt-10 lg:mt-14 pb-6"
+          >
+            <div className="max-w-5xl mx-auto">
+              <h2 className="text-2xl lg:text-3xl font-black text-white mb-1">
+                {timelineTitle}
+              </h2>
+              <p className="text-sm text-zinc-400 mb-8">{timelineSubtitle}</p>
+
+              {/* أفقي — ديسكتوب */}
+              <div className="hidden lg:flex items-start justify-between gap-2 relative">
+                <div className="absolute top-[32px] left-0 right-0 h-[3px] bg-tedx-red/30 rounded-full" />
+                {timelineStages.map((stage, i) => (
+                  <div
+                    key={i}
+                    className="relative flex-1 flex flex-col items-center text-center px-1"
+                  >
+                    <span className="text-[11px] font-bold text-tedx-red whitespace-nowrap mb-2">
+                      {stage.date}
+                    </span>
+                    <span className="relative w-4 h-4 rounded-full bg-tedx-red border-[3px] border-tedx-red/20 z-10" />
+                    <span className="text-[12px] text-white mt-2 leading-snug">
+                      {stage.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* عمودي — موبايل */}
+              <div className="lg:hidden border-s-2 border-tedx-red/30 ms-2 space-y-6">
+                {timelineStages.map((stage, i) => (
+                  <div key={i} className="relative ps-5">
+                    <span className="absolute -start-[7px] top-[2px] w-3 h-3 rounded-full bg-tedx-red border-2 border-tedx-red/20" />
+                    <div className="text-[11px] font-bold text-tedx-red uppercase tracking-[1px] mb-0.5">
+                      {stage.date}
+                    </div>
+                    <div className="text-sm text-white">{stage.title}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.section>
+        )}
       </main>
 
       {/* Footer Rail */}

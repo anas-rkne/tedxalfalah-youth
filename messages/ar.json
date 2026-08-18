@@ -209,7 +209,24 @@
       "verticalLabel": "أفكار تستحق النشر • TEDxAlFalah Youth • ٢٠٢٦",
       "footerHashtag": "#TEDxIdeas2026",
       "footerDate": "المؤتمر القادم: قريباً",
-      "footerContact": "اتصل بنا: marhaba@tedxalfalahyouth.com"
+      "footerContact": "اتصل بنا: marhaba@tedxalfalahyouth.com",
+      "timeline": {
+        "button": "عرض الجدول الزمني",
+        "title": "رحلتك في التقديم",
+        "subtitle": "كل ما يحدث بين تقديمك ويوم الفعالية.",
+        "stages": [
+          { "date": "18 أغسطس", "title": "فتح باب التقديم" },
+          { "date": "14 سبتمبر", "title": "إغلاق باب التقديم" },
+          { "date": "19 سبتمبر", "title": "مراجعة الطلبات" },
+          { "date": "25 سبتمبر", "title": "إعلان القائمة المختصرة" },
+          { "date": "28 سبتمبر – 3 أكتوبر", "title": "المقابلات والاختبارات" },
+          { "date": "6 أكتوبر", "title": "تأكيد مرحلة التقدم" },
+          { "date": "10 أكتوبر", "title": "الإعلان النهائي عن المتحدثين" },
+          { "date": "19 أكتوبر – 20 نوفمبر", "title": "التدريب والتطوير على المحادثة" },
+          { "date": "17 و18 ديسمبر", "title": "البروفات" },
+          { "date": "19 ديسمبر", "title": "يوم الفعالية" }
+        ]
+      }
     },
     "contact": {
       "meta": {
@@ -607,6 +624,7 @@
         "whyItMatters": "لماذا تهمّك هذه الفكرة",
         "themeConnection": "علاقة الفكرة بالموضوع",
         "videoLink": "رابط فيديو (مقطع من 60–90 ثانية)",
+        "requiredTag": "(إلزامي)",
         "howHeard": "كيف سمعت عنا؟",
         "howHeardOptions": {
           "socialMedia": "وسائل التواصل الاجتماعي",
@@ -638,6 +656,7 @@
           "thisFieldRequired": "هذا الحقل مطلوب",
           "themeConnectionRequired": "يرجى اختيار علاقة الفكرة بالموضوع",
           "invalidUrl": "يرجى إدخال رابط صحيح",
+          "videoLinkRequired": "رابط الفيديو مطلوب",
           "consentRequired": "يجب الموافقة على الشروط والأحكام",
           "schoolNameRequired": "اسم المدرسة مطلوب",
           "guardianNameRequired": "اسم ولي الأمر مطلوب",
@@ -725,8 +744,7 @@
       },
       "thankYou": {
         "title": "تم تأكيد حجزك!",
-        "body": "ستصلك تفاصيل التذكرة إلى بريدك الإلكتروني. نراك في يوم الفعالية!",
-        "cta": "مشاهدة الجدول الزمني"
+        "body": "ستصلك تفاصيل التذكرة إلى بريدك الإلكتروني. نراك في يوم الفعالية!"
       },
       "success": {
         "meta": {

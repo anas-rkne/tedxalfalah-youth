@@ -23,7 +23,7 @@ const applicationSchema = z.object({
   ideaSummary: z.string().min(1).refine((val) => wordCount(val) <= 300, "Idea summary must not exceed 300 words"),
   whyItMatters: z.string().min(1).refine((val) => wordCount(val) <= 150, "Why it matters must not exceed 150 words"),
   themeConnection: z.string().min(1),
-  videoLink: z.string().optional().or(z.literal("")),
+  videoLink: z.string().min(1),
   howHeardAboutUs: z.string(),
   consentToTerms: z.literal(true),
   schoolName: z.string().optional(),
@@ -140,18 +140,16 @@ async function sendConfirmationEmail(data: ApplicationData) {
     to: data.email,
     subject: "We've Received Your Application | TEDxAlFalah Youth",
     html: `
-      <p>Thank you for applying to be part of TEDxAlFalah Youth.</p>
-      <p>We're excited to have received your application and to learn more
-      about you, your ideas, and what you hope to bring to the TEDxAlFalah
-      Youth community. Our team will carefully review all submissions as part
-      of the selection process. If your application is shortlisted, a member
-      of the team will be in touch with you regarding the next steps.</p>
-      <p>Due to the number of applications we receive, we may not be able to
-      respond individually to every submission, but please know that every
-      application will be reviewed.</p>
-      <p>Thank you for taking the time to share your story and ideas with us.</p>
-      <p>TEDxAlFalah Youth<br />Tomorrow, Now.<br />Tomorrow is shaped by what
-      we do today.</p>
+      <p><strong>Your idea is in.</strong></p>
+      <p>You took the time to share your story, your thoughts, and something you
+      believe deserves to be heard, and we're really looking forward to reading it.</p>
+      <p>Our TEDxAlFalah Youth team will now go through the applications and get to
+      know the voices and ideas behind them.</p>
+      <p>If you're shortlisted, we'll be in touch with the next steps.</p>
+      <p>Until then, keep being curious, keep asking questions, and keep thinking a
+      little differently. You never know where one good idea can take you.</p>
+      <p>Hope to see you inside the red circle. &#128308;</p>
+      <p>Warm regards,<br />TEDxAlFalah Youth Team</p>
     `,
   });
 }
@@ -163,7 +161,10 @@ async function sendAdminNotification(data: ApplicationData) {
     data.track === "young-speaker" ? "Young Speaker" : "Expert Speaker";
 
   await sendMail({
-    to: process.env.ADMIN_APPLICATIONS_EMAIL || "apply@tedxalfalahyouth.com",
+    to: [
+      process.env.ADMIN_APPLICATIONS_EMAIL || "apply@tedxalfalahyouth.com",
+      process.env.CONTACT_EMAIL || "marhaba@tedxalfalahyouth.com",
+    ],
     subject: `New Application: ${trackLabel} - ${escapeHtml(data.fullName)}`,
     html: `
       <p><strong>Track:</strong> ${escapeHtml(trackLabel)}</p>

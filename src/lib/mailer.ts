@@ -45,7 +45,7 @@ function getTransport(): Transporter {
 }
 
 export interface MailOptions {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
   replyTo?: string;

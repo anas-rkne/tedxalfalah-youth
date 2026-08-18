@@ -111,8 +111,8 @@ const AnimatedTitleLine = memo(function AnimatedTitleLine({
         delay: index * 0.08,
         ease: [0.23, 1, 0.32, 1],
       }}
-      className={`block text-center w-full text-tedx-red text-5xl md:text-7xl font-black tracking-tight leading-[1.1]`}
-      style={{ transformStyle: "preserve-3d" }}
+      className={`block text-center w-full text-tedx-red text-5xl md:text-7xl font-alexandria font-black tracking-tight leading-[1.1]`}
+      style={{ transformStyle: "preserve-3d", fontWeight: 900 }}
     >
       {text}
     </motion.div>

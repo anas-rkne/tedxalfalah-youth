@@ -44,30 +44,37 @@ const SaveTheDate = memo(function SaveTheDate({
 
       <div
         aria-hidden="true"
-        className="flex flex-wrap items-center justify-center gap-x-8 sm:gap-x-12 gap-y-3"
+        className="flex flex-wrap items-center justify-center gap-x-8 sm:gap-x-12 "
       >
-        <img
-          src="/images/Screenshot 2026-08-17 085349.png"
-          alt=""
-          aria-hidden="true"
-          className="h-11 md:h-13 w-auto object-contain pointer-events-none"
-        />
+        <div className="flex flex-col items-center ">
+          <div className="flex items-center p-0 m-0">
+            <img
+              src="/images/Artboard 1.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-16 md:h-20 w-auto object-contain pointer-events-none"
+            />
+            <span className="text-xl md:text-2xl -ml-5 text-zinc-800 font-alexandria">
+              {monthEn}
+            </span>
+          </div>
+          <span dir="rtl" lang="ar"   className="font-alexandria text-xl md:text-2xl -mt-6 md:-mt-8 pl-4 text-zinc-800">
+            {monthYearAr}
+          </span>
+        </div>
 
-        <div className="flex flex-col items-center sm:items-start leading-tight text-sm md:text-base gap-1">
+        <div className="flex flex-col items-center sm:items-start leading-tight gap-1 pt-6">
           <span
-            dir="rtl"
-            lang="ar"
-            className="font-arabic text-black font-semibold"
+            dir="auto"
+            className="font-alexandria text-base md:text-lg  text-black"
           >
             {venueText}
           </span>
           {venueTextAr && (
             <span
-              dir="rtl"
-              lang="ar"
-              className="font-arabic text-black font-semibold"
-            >
-              {venueTextAr}
+              dir="auto"
+className="font-alexandria text-sm md:text-base text-black pl-0 min-[423px]:pl-[5.5rem] text-center md:text-right w-full">
+               {venueTextAr}
             </span>
           )}
         </div>

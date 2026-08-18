@@ -50,6 +50,10 @@ export default async function ThankYouPage({
   const tc = await getTranslations({ locale, namespace: "thankYou.common" });
   const t = await getTranslations({ locale, namespace: `thankYou.${key}` });
   const { href } = ctaConfig[key] || ctaConfig.default;
+  const timelineStages = tc.raw("timeline.stages") as {
+    date: string;
+    title: string;
+  }[];
 
   return (
     <ThankYouContent
@@ -61,6 +65,11 @@ export default async function ThankYouPage({
       footerHashtag={tc("footerHashtag")}
       footerDate={tc("footerDate")}
       footerContact={tc("footerContact")}
+      showTimeline={key === "apply" || key === "tickets"}
+      timelineButton={tc("timeline.button")}
+      timelineTitle={tc("timeline.title")}
+      timelineSubtitle={tc("timeline.subtitle")}
+      timelineStages={timelineStages}
       eyebrow={t("eyebrow")}
       title={t("title")}
       body={t("body")}

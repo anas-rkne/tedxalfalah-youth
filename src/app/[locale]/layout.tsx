@@ -6,7 +6,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import Header from "@/components/layout/Header";
 import FooterContent from "@/components/layout/FooterContent";
-import CustomCursorWrapper from "@/components/ui/CustomCursorWrapper";
 import Analytics from "@/components/Analytics";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import SonnerProvider from "@/components/SonnerProvider";
@@ -169,7 +168,6 @@ export default async function RootLayout({
             {locale === "ar" ? "تخطى إلى المحتوى" : "Skip to content"}
           </a>
           <ReadingProgress />
-          <CustomCursorWrapper />
           <Header key={locale} />
           <main id="main-content" className="flex-1 relative">
             <PageTransition>{children}</PageTransition>

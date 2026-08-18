@@ -209,7 +209,24 @@
       "verticalLabel": "IDEAS WORTH SPREADING • TEDxAlFalah Youth • 2026",
       "footerHashtag": "#TEDxIdeas2026",
       "footerDate": "Next event: Coming soon",
-      "footerContact": "Contact: marhaba@tedxalfalahyouth.com"
+      "footerContact": "Contact: marhaba@tedxalfalahyouth.com",
+      "timeline": {
+        "button": "View Timeline",
+        "title": "Your Application Journey",
+        "subtitle": "Everything that happens between your application and event day.",
+        "stages": [
+          { "date": "18 August", "title": "Applications open" },
+          { "date": "14 September", "title": "Applications close" },
+          { "date": "19 September", "title": "Screening of applications" },
+          { "date": "25 September", "title": "Shortlisting announced" },
+          { "date": "28 Sept – 3 Oct", "title": "Interviews & Auditions" },
+          { "date": "6 October", "title": "Confirmation of progression" },
+          { "date": "10 October", "title": "Final speaker selection announcement" },
+          { "date": "19 Oct – 20 Nov", "title": "Coaching and talk development" },
+          { "date": "17 & 18 December", "title": "Rehearsals" },
+          { "date": "19 December", "title": "Event day" }
+        ]
+      }
     },
     "contact": {
       "meta": {
@@ -606,6 +623,7 @@
         "whyItMatters": "Why It Matters",
         "themeConnection": "Connection to Theme",
         "videoLink": "Video Link (60–90 second clip)",
+        "requiredTag": "Required",
         "howHeard": "How did you hear about us?",
         "howHeardOptions": {
           "socialMedia": "Social Media",
@@ -637,6 +655,7 @@
           "thisFieldRequired": "This field is required",
           "themeConnectionRequired": "Please select a theme connection",
           "invalidUrl": "Please enter a valid URL",
+          "videoLinkRequired": "Video link is required",
           "consentRequired": "You must agree to the terms and conditions",
           "schoolNameRequired": "School name is required",
           "guardianNameRequired": "Guardian name is required",
@@ -724,8 +743,7 @@
       },
       "thankYou": {
         "title": "Your booking is confirmed!",
-        "body": "Ticket details will be sent to your email. See you on event day!",
-        "cta": "View Schedule"
+        "body": "Ticket details will be sent to your email. See you on event day!"
       },
       "success": {
         "meta": {

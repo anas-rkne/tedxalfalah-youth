@@ -44,6 +44,10 @@ CREDENTIALS*
 # vercel
 .vercel
 
+# python (أداة تحويل Markdown إلى PDF)
+.venv/
+/exports/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

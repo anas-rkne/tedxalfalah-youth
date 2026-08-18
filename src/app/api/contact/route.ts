@@ -63,19 +63,10 @@ export async function POST(request: Request) {
   // إرسال فعلي عبر SMTP (صندوق Hostinger). يتطلب SMTP_HOST/SMTP_PORT/
   // SMTP_USER/SMTP_PASS بملف .env.local — راجع .env.local.example.
   //
-  // توجيه الرسائل حسب الموضوع إلى الصندوق المختص:
-  //   Sponsorship → PARTNER_EMAIL (partners@)
-  //   Media       → MEDIA_EMAIL   (media@)
-  //   الباقي      → CONTACT_EMAIL (marhaba@)
+  // كل الرسائل تصِل إلى صندوق واحد: CONTACT_EMAIL (marhaba@).
   // -------------------------------------------------------------------
-  const inboxBySubject: Record<string, string> = {
-    Sponsorship: process.env.PARTNER_EMAIL || "partners@tedxalfalahyouth.com",
-    Media: process.env.MEDIA_EMAIL || "media@tedxalfalahyouth.com",
-  };
   const inbox =
-    inboxBySubject[subject] ||
-    process.env.CONTACT_EMAIL ||
-    "marhaba@tedxalfalahyouth.com";
+    process.env.CONTACT_EMAIL || "marhaba@tedxalfalahyouth.com";
 
   if (isMailerConfigured()) {
     try {
