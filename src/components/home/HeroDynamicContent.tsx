@@ -72,7 +72,7 @@ const SaveTheDate = memo(function SaveTheDate({
           {venueTextAr && (
             <span
               dir="auto"
-              className="font-alexandria text-xl md:text-2xl -mt-2 text-black pl-0 min-[423px]:pl-[5rem] text-center md:text-right w-full">
+              className="font-alexandria text-xl md:text-2xl -mt-2 text-black pl-0 min-[423px]:pl-[4rem] text-center md:text-right w-full">
                {venueTextAr}
             </span>
           )}
@@ -168,7 +168,7 @@ export default function HeroDynamicContent({
         <SaveTheDate
           countdownTarget={countdownTarget ?? EVENT_DATE}
           venueText="نبض الفلاح ,Nabdh Al Falah"
-          venueTextAr="آبو ظبي Abu Dhabi"
+          venueTextAr="آبوظــــــــبي Abu Dhabi"
           saveTheDateLabel={saveTheDateLabel}
           dateText={dateText}
         />
