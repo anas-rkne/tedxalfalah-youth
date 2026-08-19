@@ -120,7 +120,7 @@ export default function HeroDynamicContent({
         src="/images/Artboard 3.svg?v=3"
         alt=""
         aria-hidden="true"
-        className="hidden min-[1024px]:block absolute right-6 top-[51%] -translate-y-1/2 translate-x-[20px] w-36 xl:w-56 pointer-events-none select-none"
+        className="hidden min-[1028px]:block absolute right-20 top-[45%] -translate-y-1/2 translate-x-[20px] w-50 xl:w-56 pointer-events-none select-none"
         animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
         transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
       />
