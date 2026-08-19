@@ -4,7 +4,6 @@ import { memo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import HeroTypewriterTitle from "@/components/home/HeroTypewriterTitle";
 import Countdown from "@/components/shared/Countdown";
-import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import FadeUp from "@/components/shared/FadeUp";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 
@@ -54,11 +53,11 @@ const SaveTheDate = memo(function SaveTheDate({
               aria-hidden="true"
               className="h-16 md:h-20 w-auto object-contain pointer-events-none"
             />
-            <span className="text-xl md:text-2xl -ml-5 text-zinc-800 font-alexandria">
+          <span className="text-xl md:text-2xl -ml-4 md:-ml-6 text-zinc-800 font-alexandria">
               {monthEn}
             </span>
           </div>
-          <span dir="rtl" lang="ar"   className="font-alexandria text-xl md:text-2xl -mt-6 md:-mt-8 pl-4 text-zinc-800">
+          <span dir="rtl" lang="ar"   className="font-alexandria text-[21px] md:text-[27px] -mt-7 md:-mt-8 pl-4  text-zinc-800">
             {monthYearAr}
           </span>
         </div>
@@ -66,14 +65,14 @@ const SaveTheDate = memo(function SaveTheDate({
         <div className="flex flex-col items-center sm:items-start leading-tight gap-1 pt-6">
           <span
             dir="auto"
-            className="font-alexandria text-base md:text-lg  text-black"
+            className="font-alexandria text-base text-xl md:text-2xl  text-black"
           >
             {venueText}
           </span>
           {venueTextAr && (
             <span
               dir="auto"
-className="font-alexandria text-sm md:text-base text-black pl-0 min-[423px]:pl-[5.5rem] text-center md:text-right w-full">
+              className="font-alexandria text-xl md:text-2xl -mt-2 text-black pl-0 min-[423px]:pl-[5rem] text-center md:text-right w-full">
                {venueTextAr}
             </span>
           )}
@@ -168,8 +167,8 @@ export default function HeroDynamicContent({
       <FadeUp delay={0.4}>
         <SaveTheDate
           countdownTarget={countdownTarget ?? EVENT_DATE}
-          venueText="نبض الفلاح Nabdh Al Falah"
-          venueTextAr="ابو ظبي Abu Dhabi"
+          venueText="نبض الفلاح ,Nabdh Al Falah"
+          venueTextAr="آبو ظبي Abu Dhabi"
           saveTheDateLabel={saveTheDateLabel}
           dateText={dateText}
         />
