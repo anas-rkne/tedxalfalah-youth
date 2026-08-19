@@ -37,21 +37,22 @@
 | اللغة | TypeScript (فحص صارم، صفر أخطاء) |
 | التنسيق | Tailwind CSS v4 |
 | عدد الصفحات | 9 صفحات + Sitemap + Robots تلقائيين |
-| عدد API Routes | 4 (Contact, Apply, Partner Inquiry, Tickets) |
+| عدد API Routes | 4 (Contact, Apply, Partner Inquiry, Revalidate) |
 | CMS | Sanity (Studio جاهز بمجلد `studio/`) |
 | تخزين الفورمات | Google Sheets |
 | الإيميلات التلقائية | SMTP Hostinger (nodemailer) — يعمل فوراً |
 | حالة البناء الإنتاجي | ✅ تم اختباره فعلياً بـ `next build` ونجح 100% |
 | حالة الفحص البرمجي | ✅ `tsc --noEmit` و`eslint` نظيفان تماماً (صفر أخطاء) |
-| **طبقات الأمان** | ✅ حماية سبام (Turnstile) + Rate Limiting + Security Headers + تعقيم مدخلات المستخدم — مدمجة بكل الفورمات الأربعة، بتراجع آمن بغياب المفاتيح |
-| **الأنيميشن التفاعلي** | ✅ Framer Motion كامل: جسيمات تفاعلية، كتابة تلقائية، Flip Clock، أزرار Liquid، عدادات تصاعدية، كاروسيل بالسحب، مؤشر مخصص، Confetti |
+| **طبقات الأمان** | ✅ حماية سبام (Turnstile) + Rate Limiting + Security Headers + تعقيم مدخلات المستخدم — مدمجة بكل الفورمات (Contact، Apply، Partner Inquiry). Fail-Open في التطوير فقط؛ في الإنتاج Turnstile + Rate-Limit **Fail-Closed** (403 عند غياب المفاتيح) |
+| **الأنيميشن التفاعلي** | ✅ Framer Motion كامل: كتابة تلقائية، Flip Clock (العدّاد التنازلي)، أزرار Liquid، عدادات تصاعدية، كاروسيل بالسحب، كرة أرضية ثلاثية الأبعاد (three-globe) |
 
-**كيف يعمل المشروع الآن، هذه اللحظة، بدون أي مفتاح؟**
-كل صفحة تعرض بيانات تجريبية واقعية (متحدثين، فريق، رعاة، فعاليات)، وكل
-فورم يعمل بصرياً بالكامل (تحقق من الحقول، رسائل الخطأ، حالة الإرسال) لكنه
-يسجّل الطلب بـ Terminal بدل الإرسال الفعلي. هذا يسمح لك بتصفح واختبار
-الموقع بالكامل الآن، والتأكد أن كل شيء يعمل، **قبل** حتى الحصول على أي
-مفتاح.
+**كيف يعمل المشروع الآن بغياب المفاتيح؟**
+لا توجد بيانات تجريبية: بدون مفاتيح Sanity تُخفى أقسام المحتوى الفارغة
+تلقائياً (متحدثون، فريق، رعاة، فعاليات). الفورمات تعمل بسلوك fail-open
+في **التطوير** فقط (تسجيل خفيف بـ Terminal بلا أي بيانات شخصية)، بينما
+في **الإنتاج** تُرفض الفورمات بـ 403 عند غياب مفاتيح Turnstile/Rate-Limit.
+للربط الكامل: انسخ `.env.local.example` → `.env.local` واملأ القيم
+(راجع القسم 7).
 
 ---
 
@@ -59,7 +60,7 @@
 
 | الأداة | الإصدار المطلوب | كيفية التحقق |
 |---|---|---|
-| Node.js | 18.17 أو أحدث (يُفضّل 20+) | `node -v` |
+| Node.js | 20.9 أو أحدث (نص `engines` بـ package.json) | `node -v` |
 | npm | 10 أو أحدث | `npm -v` |
 | Git | أي إصدار حديث | `git --version` |
 
@@ -83,7 +84,7 @@ npm run dev
 `http://localhost:3000/en` (اللغة الافتراضية). يجب أن تشاهد:
 - الصفحة الرئيسية بعداد تنازلي حي (Countdown) يعمل فعلياً
 - قائمة تنقل تتحول لقائمة همبرغر على الموبايل
-- 8 أقسام بالصفحة الرئيسية بالترتيب الصحيح
+- 8 أقسام بالصفحة الرئيسية (Hero، Sponsors، Contact، About، Theme، Highlights، Team، Apply)
 - زر تبديل اللغة (EN/AR) بأعلى يمين الهيدر — جرّبه وتأكد أن الصفحة تتحول
   للعربية مع انعكاس الاتجاه (RTL) فوراً
 
@@ -95,9 +96,8 @@ npm run dev
 npm run build
 npm start
 ```
-إذا ظهرت لك رسالة `✓ Generating static pages using 1 worker (38/38)`
-فهذا يعني أن كل الصفحات (بنسختيها EN وAR) وAPI routes جاهزة للنشر بدون
-أي مشكلة.
+إذا ظهرت رسالة `✓ Generating static pages` دون أي خطأ، فكل الصفحات
+(بنسختيها EN وAR) وAPI routes جاهزة للنشر بدون أي مشكلة.
 
 ---
 
@@ -110,7 +110,7 @@ tedxalfalahyouth-website/
 ├── next.config.ts                ← مهيأ لقبول صور Sanity CDN
 ├── package.json
 │
-├── middleware.ts                 ← ★ يجب أن يبقى داخل src/middleware.ts بالضبط (راجع 14.7)
+├── middleware.ts                 ← ★ يقع بجذر المشروع (وليس داخل src/) — راجع 14.7
 ├── messages/
 │   ├── en.json                    ← كل نصوص الواجهة الإنجليزية
 │   └── ar.json                    ← كل نصوص الواجهة العربية
@@ -126,11 +126,10 @@ tedxalfalahyouth-website/
 │   │   ├── sitemap.ts                     ← يولّد sitemap.xml بنسختين لكل صفحة (en+ar)
 │   │   ├── robots.ts                      ← يولّد robots.txt تلقائياً
 │   │   ├── api/                           ← API routes (لا تُترجَم، ليست صفحات)
-│   │   │   ├── contact/route.ts           ← فورم Contact بالصفحة الرئيسية
-│   │   │   ├── apply/route.ts             ← الأهم: يحفظ بـ Google Sheet + إيميل تأكيد
-│   │   │   ├── partner-inquiry/route.ts   ← فورم Become a Partner
-│   │   │   ├── tickets/route.ts           ← فورم تسجيل التذاكر (وضع مجاني)
-│   │   │   └── create-checkout-session/route.ts  ← إنشاء جلسة دفع Stripe
+│   │   │   ├── contact/route.ts           ← فورم Contact — كل الرسائل لصندوق CONTACT_EMAIL
+│   │   │   ├── apply/route.ts             ← الأهم: Google Sheet + إيميل تأكيد + إشعار إداري
+│   │   │   ├── partner-inquiry/route.ts   ← استفسارات الرعاة (جاهز — لا فورم واجهة يستدعيه حالياً)
+│   │   │   └── revalidate/route.ts        ← Webhook من Sanity لإعادة توليد الصفحات
 │   │   │
 │   │   └── [locale]/                      ← ★ كل الصفحات الفعلية هنا (en أو ar)
 │   │       ├── layout.tsx                 ← القالب العام (Header+Footer+RTL+Metadata)
@@ -138,61 +137,58 @@ tedxalfalahyouth-website/
 │   │       ├── not-found.tsx              ← صفحة 404 مخصصة بهوية TEDx — مُترجَمة بالكامل
 │   │       ├── loading.tsx                ← حالة تحميل عامة (Spinner) لكل الموقع
 │   │       ├── thank-you/page.tsx         ← ★ صفحة الشكر الموحّدة — مُترجَمة بالكامل
-│   │       ├── speakers/page.tsx
-│   │       ├── speakers/loading.tsx       ← Skeleton مطابق لشبكة المتحدثين
-│   │       ├── team/page.tsx
-│   │       ├── team/loading.tsx           ← Skeleton مطابق لأقسام الفريق
-│   │       ├── venue/page.tsx
-│   │       ├── activations/page.tsx
-│   │       ├── activations/loading.tsx    ← Skeleton مطابق للبلوكات المتناوبة
-│   │       ├── apply/page.tsx             ← الأعقد: فورم + Timeline + FAQ
-│   │       ├── sponsors/page.tsx
-│   │       ├── sponsors/loading.tsx       ← Skeleton مطابق لشرائح الرعاية
-│   │       ├── tickets/page.tsx           ← يتحول تلقائياً: Stripe أو فورم مجاني
-│   │       ├── tickets/success/page.tsx   ← صفحة نجاح الدفع (Stripe)
-│   │       ├── tickets/cancel/page.tsx    ← صفحة إلغاء الدفع (Stripe)
-│   │       ├── schedule/page.tsx          ← الجدول الزمني الكامل ليوم الحدث
-│   │       ├── schedule/loading.tsx
-│   │       ├── faq/page.tsx               ← أسئلة شائعة عامة (منفصلة عن أسئلة Apply)
-│   │       └── terms/page.tsx             ← شروط وسياسة خصوصية كاملتان (مسودة جاهزة)
+│   │       ├── speakers/page.tsx + loading.tsx
+│   │       ├── team/page.tsx + loading.tsx
+│   │       ├── venue/page.tsx + loading.tsx
+│   │       ├── activations/page.tsx + loading.tsx
+│   │       ├── apply/page.tsx + loading.tsx  ← الأعقد: فورم + Timeline + FAQ
+│   │       ├── schedule/page.tsx + loading.tsx  ← الجدول الزمني الكامل ليوم الحدث
+│   │       ├── faq/page.tsx + loading.tsx   ← أسئلة شائعة عامة (منفصلة عن أسئلة Apply)
+│   │       └── tickets/                     ← مخفيّة بقرار العميل (كل صفحاتها تستدعي notFound)
+│   │           ├── page.tsx / success/page.tsx / cancel/page.tsx (كلها → 404)
 │   │
 │   ├── components/
-│   │   ├── layout/          Header.tsx, Footer.tsx
-│   │   ├── ui/               Button.tsx, Card.tsx, SectionContainer.tsx, SocialIcons.tsx, TurnstileWidget.tsx, TedxSpinner.tsx
-│   │   ├── shared/           Countdown.tsx, FaqAccordion.tsx
-│   │   ├── schedule/         ScheduleItem.tsx
-│   │   ├── ui/ (تابع)        LanguageSwitcher.tsx, AnimatedCheck.tsx
-│   │   ├── home/             كل الأقسام الثمانية بالصفحة الرئيسية (ملف لكل قسم)
-│   │   ├── speakers/         SpeakersGrid.tsx, SpeakerModal.tsx
-│   │   ├── apply/            ApplicationForm.tsx, ApplicationTimeline.tsx, ApplyFAQ.tsx
-│   │   ├── sponsors/         PartnerInquiryForm.tsx
-│   │   └── tickets/          TicketRegistrationForm.tsx (مجاني), TicketPurchaseForm.tsx (Stripe)
+│   │   ├── layout/           Header.tsx, FooterContent.tsx
+│   │   ├── header/           Logo.tsx, NavLink.tsx, MobileMenu.tsx, MoreDropdown.tsx
+│   │   ├── ui/               Button.tsx, Modal.tsx, TurnstileWidget.tsx, TedxSpinner.tsx, ScrollSection.tsx, LanguageSwitcher.tsx, flip-clock.tsx, tedx-globe.tsx, UaeMap.tsx, LeafletMap.tsx ...
+│   │   ├── shared/           Countdown.tsx, FaqAccordion.tsx, TextType.tsx, FadeUp.tsx ...
+│   │   ├── home/             Hero, About, Theme, Highlights, TeamPreview, ApplyBanner, SponsorsStrip (ملف لـكل قسم + Content)
+│   │   ├── speakers/         SpeakersGrid.tsx, SpeakerCard.tsx, SpeakerModal.tsx, SpeakersStage.tsx, SpeakersPreview.tsx
+│   │   ├── apply/            ApplicationForm.tsx, ApplyTimeline.tsx, ApplyFAQ.tsx, ApplyHero.tsx
+│   │   ├── contact/          ContactBox.tsx, ContactBoxWrapper.tsx
+│   │   ├── schedule/         ScheduleItem.tsx, ScheduleTimeline.tsx, FilterBar.tsx
+│   │   ├── venue/            VenueMapSection.tsx, VenueGallerySection.tsx
+│   │   ├── activations/      ActivationCard.tsx
+│   │   ├── team/             TeamMemberCard.tsx
+│   │   └── thankyou/         ThankYouContent.tsx
 │   │
 │   └── lib/
-│       ├── types.ts           ← تعريف Speaker, TeamMember, Activation, Sponsor, Session
-│       ├── mock-data.ts       ← بيانات تجريبية (تُستخدم بغياب مفاتيح Sanity)
+│       ├── types.ts           ← تعريف Speaker, TeamMember, Activation, Sponsor, Session, EventInfo, GalleryImage
 │       ├── sanity.ts          ← عميل Sanity (يُفعَّل تلقائياً بمجرد وجود المفتاح)
-│       ├── data.ts            ← ★ نقطة الدخول الوحيدة: كل صفحة تستورد من هنا فقط
-│       ├── turnstile.ts       ← التحقق من عدم كون المُرسل بوتاً (Cloudflare)
-│       ├── rate-limit.ts      ← تحديد عدد الطلبات المسموحة لكل IP (Upstash)
+│       ├── data.ts            ← ★ نقطة الدخول الوحيدة: كل صفحة تستورد من هنا فقط (استعلامات GROQ)
+│       ├── constants.ts       ← APPLICATION_DEADLINE (14 سبتمبر 2026) وثوابت أخرى
+│       ├── json-ld.ts         ← مخططات Schema.org (Event, WebSite)
+│       ├── turnstile.ts       ← التحقق من عدم كون المُرسل بوتاً (Cloudflare) — fail-closed في الإنتاج
+│       ├── rate-limit.ts      ← 5 طلبات/10 دقائق/فورم/IP (Upstash)
+│       ├── cors.ts            ← الأصول المسموح بها لاستدعاء الـ API
 │       ├── sanitize.ts        ← تعقيم نصوص المستخدم قبل إدراجها بالإيميلات
-│       ├── stripe.ts          ← عميل Stripe (يُفعَّل تلقائياً بمجرد وجود المفتاح)
-│       └── tickets.ts         ← ★ مصدر الأسعار الوحيد والموثوق (لا يُقرأ من المتصفح)
+│       ├── mailer.ts          ← إرسال SMTP (fail-open)
+│       └── utils.ts
 │
 ├── public/
-│   ├── brand/                 ← ضع شعار TEDx الحقيقي هنا لاحقاً
-│   └── mock/                  ← صور SVG بديلة (placeholders) للبيانات التجريبية
+│   ├── images/                ← صور الموقع (Artboard SVG، footer-red-bg.svg، venue-hero.webp، شعارات logo-black/white.png ...)
+│   ├── Alexandria/ my-favicon/ ← خطوط/أيقونات محلية
+│   ├── favicon.ico, og-image.jpg
+│   └── sw.js + offline.html    ← Service Worker لـ PWA
 │
 └── studio/                     ← مشروع Sanity Studio (مستقل تماماً)
     ├── package.json            ← له تثبيت حزم منفصل: cd studio && npm install
     ├── sanity.config.ts
     ├── sanity.cli.ts
-    └── schemaTypes/
-        ├── speaker.ts
-        ├── teamMember.ts
-        ├── activation.ts
-        ├── sponsor.ts
-        └── session.ts          ← جلسات الجدول الزمني، مرتبطة بالمتحدثين
+    └── schemaTypes/            ← 7 أنواع محتوى
+        ├── speaker.ts / teamMember.ts / activation.ts / sponsor.ts / session.ts
+        └── eventInfo.ts        ← مفاتيح إظهار/إخفاء الأقسام (showSpeakers/showSponsors/showTeam)
+        └── galleryImage.ts     ← معرض صور المكان
 ```
 
 ---
@@ -200,9 +196,11 @@ tedxalfalahyouth-website/
 ## 5. شرح تفصيلي لكل صفحة
 
 ### 5.1 الصفحة الرئيسية (`/`)
-8 أقسام بالترتيب: Hero (بعداد تنازلي حي)، About، Theme، Speakers Preview
-(4 متحدثين من البيانات الحقيقية/التجريبية)، Highlights، Apply Banner،
-Sponsors Strip، Contact Form (فورم فعلي متصل بـ `/api/contact`).
+8 أقسام بالترتيب الحالي للكود: Hero (بعداد تنازلي حي)، Sponsors Strip
+(يظهر عند تفعيل `showSponsors` بـ Sanity)، Contact Form (فورم فعلي متصل
+بـ `/api/contact`)، About، Theme، Highlights، Team Preview (يظهر عند
+تفعيل `showTeam`)، Apply Banner. (لا يوجد قسم Speakers Preview —
+الرئيسية تعرض معاينة الفريق بدلاً منه).
 
 ### 5.2 Speakers (`/speakers`)
 شبكة بطاقات لكل المتحدثين المنشورين (`isPublished: true`)، مرتبة حسب
@@ -242,20 +240,19 @@ Coaching, Marketing, Partnerships, Volunteers) — الأقسام الفارغة
 عند الإرسال: يُحفظ الطلب بـ Google Sheet **و** يُرسَل إيميل تأكيد فوري
 للمتقدم — كلاهما عبر `/api/apply/route.ts`.
 
-### 5.7 Sponsors (`/sponsors`)
-فقرة افتتاحية، عرض شرائح الرعاية (Platinum/Gold/Silver/Community)،
-الرعاة الحاليون (من البيانات الحقيقية)، فورم "Become a Partner" متصل
-بـ `/api/partner-inquiry`، رابط تحميل PDF (يحتاج رفع الملف الفعلي
-بـ `public/sponsorship-deck.pdf`).
+### 5.7 Sponsors (`/sponsors`) — ⚠️ الصفحة مخفيّة حاليًا
+لا يوجد مسار `/sponsors` في الكود (أُزيل بقرار العميل). كشف الرعاة يتم
+عبر شريط Sponsors بالصفحة الرئيسية (بيانات من Sanity)، وAPI استفسارات
+الرعاة `/api/partner-inquiry` موجود وجاهز (يرسل لصندوق partners@) لكن
+لا يوجد فورم واجهة يستدعيه حالياً. رابط تحميل PDF
+(`public/sponsorship-deck.pdf`) لم يُرفع بعد — يُرفع لاحقاً عند الطلب.
 
-### 5.8 Tickets (`/tickets`)
-أنواع التذاكر والأسعار، ثم فورم يتحول تلقائياً حسب توفر `STRIPE_SECRET_KEY`:
-- **مفعّل**: دفع فعلي عبر Stripe Checkout — الأسعار تُقرأ حصراً من
-  `src/lib/tickets.ts` بالخادم (وليس من المتصفح) لمنع أي تلاعب بالسعر،
-  ثم إعادة توجيه لصفحتي `/tickets/success` أو `/tickets/cancel`.
-- **غير مفعّل**: فورم تسجيل مجاني (الوضع الحالي الافتراضي).
-
-معلومات يوم الحدث، سياسة الاسترجاع.
+### 5.8 Tickets (`/tickets`) — ⚠️ الصفحة مخفيّة حاليًا
+صفحات `/tickets` و`/tickets/success` و`/tickets/cancel` موجودة بالكود
+لكنها تستدعي `notFound()` بقرار العميل (لا يُعرض الشراء بالموقع الآن).
+كود Stripe (TicketPurchaseForm و`lib/tickets.ts` و`api/create-checkout-session`)
+**أُزيل بالكامل**. إن عادت التذاكر لاحقاً، المسار المُوصى به: زر خارجي
+لمنصة Platinumlist عبر `NEXT_PUBLIC_PLATINUMLIST_URL` (محفوظ بـ `.env.local`).
 
 ### 5.9 Schedule (`/schedule`) — صفحة جديدة
 جدول زمني كامل ليوم الحدث، يُجلب من نوع محتوى `session` بـ Sanity
@@ -269,19 +266,11 @@ Coaching, Marketing, Partnerships, Volunteers) — الأقسام الفارغة
 تستخدم مكوّن `FaqAccordion` المشترك (نفس المكوّن الذي أُعيد استخدامه
 بصفحة Apply لتفادي التكرار).
 
-### 5.11 Terms (`/terms`)
-**مسودة قانونية شاملة وحقيقية** (وليست placeholder فارغة كما كانت
-سابقاً) بـ 6 أقسام: Application Terms, Ticketing Terms, Photography
-Consent, **Privacy Policy مفصّلة** (تشرح بوضوح ما يُجمَع من بيانات، لماذا،
-أين يُخزَّن، ولأي مدة، مع تركيز خاص على بيانات القُصَّر بمسار Young
-Speaker)، TEDx Licensing، Liability.
-
-⚠️ **تنبيه مهم موثّق أيضاً بأعلى ملف الكود نفسه**: هذا النص مسودة معقولة
-الصياغة لكنه **ليس استشارة قانونية** ولم يُراجَع من محامٍ. يجب مراجعته
-من محامٍ مرخّص بدولة الإمارات (خصوصاً فيما يخص قانون حماية البيانات
-الشخصية PDPL وأحكامه الخاصة بالقُصَّر) وملء كل الحقول `[PLACEHOLDER]`
-المتبقية (اسم الجهة القانونية، الإمارة المختصة قضائياً، تاريخ آخر
-تحديث) قبل النشر الفعلي.
+### 5.11 Terms (`/terms`) — ⚠️ الصفحة أُزيلت حاليًا
+لا يوجد مسار `/terms` في الكود (أُزيل بقرار العميل). إن أُعيدت لاحقاً
+يُعاد بناء المحتوى القانوني من مصدر مُراجَع قانونياً — **تنبيه**: لا
+يُنشر أي نص قانوني قبل مراجعة محامٍ مرخّص بدولة الإمارات (خصوصاً فيما
+يخص قانون حماية البيانات الشخصية PDPL وأحكامه الخاصة بالقُصَّر).
 
 ---
 
@@ -293,7 +282,8 @@ Speaker)، TEDx Licensing، Liability.
 ```
 هل NEXT_PUBLIC_SANITY_PROJECT_ID موجود بملف .env.local؟
    نعم → يجلب البيانات الحقيقية من Sanity عبر استعلامات GROQ
-   لا  → يستخدم البيانات التجريبية من mock-data.ts تلقائياً
+   لا  → يعيد قوائم فارغة — تُخفى الأقسام الفارغة تلقائياً بالواجهة
+        (لا توجد بيانات تجريبية في المشروع)
 ```
 
 **النتيجة العملية**: بمجرد إضافة مفتاح Sanity، يتحول الموقع بالكامل
@@ -413,8 +403,12 @@ SMTP_PASS=xxxxxxxx
 EMAIL_FROM=TEDxAlFalah Youth <marhaba@tedxalfalahyouth.com>
 ```
 
-**الصناديق المستلمَة** (توجيه الرسائل حسب نوعها بملفات
-`src/app/api/*/route.ts`):
+**الصناديق المستلمَة** (المسارات الفعلية بملفات `src/app/api/*/route.ts`):
+- فورم Contact → **كل** الرسائل لصندوق `CONTACT_EMAIL` (marhaba@) — لا
+  توزيع حسب الموضوع
+- فورم Apply → إشعار إداري لـ `ADMIN_APPLICATIONS_EMAIL` + `CONTACT_EMAIL`
+- استفسارات الرعاة → `PARTNER_EMAIL`
+- `MEDIA_EMAIL` غير مستخدم في الكود (احتياطي فقط)
 ```
 ADMIN_APPLICATIONS_EMAIL=apply@tedxalfalahyouth.com
 CONTACT_EMAIL=marhaba@tedxalfalahyouth.com
@@ -430,7 +424,7 @@ MEDIA_EMAIL=media@tedxalfalahyouth.com
 
 ### 7.4 — Cloudflare Turnstile (حماية الفورمات من السبام)
 
-**الهدف**: منع البوتات الآلية من إغراق الفورمات الأربعة بطلبات مزيفة —
+**الهدف**: منع البوتات الآلية من إغراق الفورمات بطلبات مزيفة —
 ضروري بشكل خاص لأن فورم Apply يجمع بيانات أطفال حقيقيين.
 
 1. افتح [dash.cloudflare.com](https://dash.cloudflare.com) → سجّل مجاناً
@@ -446,8 +440,10 @@ NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAA...
 TURNSTILE_SECRET_KEY=0x4AAAAAAA...
 ```
 
-> بدون هذين المفتاحين، الفورمات تعمل عادةً بدون أي تحقق (وضع تطوير آمن)
-> — لكن **لا تطلق الموقع للجمهور بدونهما إطلاقاً**.
+> بدون هذين المفتاحين: في وضع **التطوير** تعمل الفورمات بدون تحقق
+> (fail-open)، أما في **الإنتاج** فتُرفض كل الفورمات برمز **403**
+> (fail-closed) — يجب ضبط المفاتيح قبل الإطلاق، وإلا فلن يعمل الموقع
+> للجمهور إطلاقاً.
 
 ### 7.5 — Upstash Redis (تحديد عدد الطلبات المسموحة)
 
@@ -467,39 +463,21 @@ UPSTASH_REDIS_REST_TOKEN=AXXXxxxx...
 ```
 
 الإعداد الافتراضي بالكود: **5 طلبات لكل IP كل 10 دقائق** لكل فورم على
-حدة (Contact وApply وPartner Inquiry وTickets كل منها له حد مستقل). يمكن
-تعديل هذا الرقم بملف `src/lib/rate-limit.ts` إن احتجت.
+حدة (Contact وApply وPartner Inquiry — كل منها له حد مستقل). بدون
+مفاتيح Upstash: الفورم يعمل في التطوير، ويُرفض بـ 429 في الإنتاج
+(fail-closed). يمكن تعديل الرقم بملف `src/lib/rate-limit.ts`.
 
 ---
 
-### 7.6 — Stripe (الدفع الفعلي بصفحة Tickets — اختياري)
+### 7.6 — Stripe (الدفع بصفحة Tickets) — ⚠️ أُزيل من المشروع
 
-**الهدف**: تحويل صفحة `/tickets` من فورم تسجيل مجاني إلى نظام دفع فعلي
-عبر Stripe Checkout، إن قرر العميل أن الحدث مدفوع.
+كود الدفع (Stripe Checkout، `src/lib/tickets.ts`، صفحتا
+`/tickets/success` و`/tickets/cancel`، وفورم `TicketPurchaseForm`)
+**أُزيل بالكامل**، وصفحات `/tickets` نفسها مخفيّة بقرار العميل (راجع 5.8).
 
-1. سجّل مجاناً على [dashboard.stripe.com/register](https://dashboard.stripe.com/register)
-2. من لوحة Stripe (وضع Test أولاً للتجربة) → Developers → API keys
-3. انسخ **Secret key** (يبدأ بـ `sk_test_...` بوضع الاختبار، أو
-   `sk_live_...` بوضع الإنتاج الفعلي)
-
-أضفه بملف `.env.local`:
-```
-STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxx
-```
-
-**السلوك التلقائي**: بمجرد إضافة هذا المفتاح، تتحول صفحة `/tickets`
-تلقائياً من فورم التسجيل المجاني إلى فورم شراء فعلي يُعيد توجيه المستخدم
-لصفحة دفع Stripe الآمنة. **الأسعار تُقرأ حصراً من `src/lib/tickets.ts`**
-(وليس من أي قيمة تُرسَل من المتصفح) لمنع أي تلاعب بالسعر — عدّل هذا
-الملف لتحديث الأسعار الحقيقية بمجرد تأكيدها من العميل.
-
-بعد تأكيد نجاح المدفوعات بوضع Test، بدّل المفتاح لنسخة `sk_live_...`
-الحقيقية من نفس لوحة Stripe قبل الإطلاق النهائي.
-
-> بديل أبسط: إن فضّل العميل استخدام منصة تذاكر خارجية جاهزة (Platinumlist
-> مثلاً) بدل بناء نظام دفع خاص، يمكن استبدال زر "Proceed to Payment"
-> برابط خارجي مباشر بدل هذا التكامل بالكامل — الخيار الحالي (Stripe)
-> يُفعَّل تلقائياً فقط عند الحاجة الفعلية له.
+إن قرر العميل لاحقاً أن التذاكر مدفوعة، المسار المُوصى به الآن: زر خارجي
+لمنصة Platinumlist عبر `NEXT_PUBLIC_PLATINUMLIST_URL` المحفوظ بـ
+`.env.local` — بلا أي تكامل دفع داخلي.
 
 ---
 
@@ -571,7 +549,7 @@ git push -u origin main
 - [ ] الموقع يعمل بصرياً بشكل صحيح على موبايل حقيقي (ليس فقط DevTools)
 - [ ] كل نصوص `[PLACEHOLDER]` استُبدلت بمحتوى العميل الحقيقي (راجع القسم 12)
 - [ ] رابط `/terms` يحتوي النص القانوني النهائي وليس القالب المؤقت
-- [ ] مفتاحا Turnstile مضافان — التحقق من ظهور الـ widget فعلياً بكل الفورمات الأربعة
+- [ ] مفتاحا Turnstile مضافان — التحقق من ظهور الـ widget فعلياً بكل الفورمات (Contact/Apply/Partner Inquiry)
 - [ ] مفتاحا Upstash مضافان — تجربة إرسال نفس الفورم 6 مرات متتالية يُظهر رسالة "Too many requests" بالمحاولة السادسة
 - [ ] صلاحية الوصول لـ Google Sheet مقيّدة لأعضاء الفريق فقط (وليست "Anyone with the link")
 - [ ] النص القانوني بصفحة Terms روجع من محامٍ (خصوصية بيانات القُصَّر تحديداً)
@@ -585,8 +563,8 @@ Brief) وحالته بالمشروع الفعلي:
 
 | بند بالمستند الأصلي | الحالة |
 |---|---|
-| Header: شعار، قائمة تنقل 8 عناصر، زر Apply بارز | ✅ منفّذ |
-| Header: مبدّل لغة (if bilingual) | ⏸️ لم يُبنَ — بانتظار تأكيد العميل إن كان الموقع ثنائي اللغة فعلاً |
+| Header: شعار، قائمة تنقل (Home/Team/Apply)، زر Apply بارز | ✅ منفّذ |
+| Header: مبدّل لغة (if bilingual) | ✅ منفّذ (LanguageSwitcher بأعلى يمين الهيدر — الموقع ثنائي اللغة) |
 | Footer: تواصل، سوشال ميديا، روابط سريعة، نص ترخيص TEDx، رابط Terms، حقوق نشر | ✅ منفّذ بالكامل حرفياً |
 | Home: Hero (اسم الحدث، الثيم، Countdown، زرّي CTA) | ✅ منفّذ |
 | Home: About مع نص الترخيص | ✅ منفّذ |
@@ -601,7 +579,7 @@ Brief) وحالته بالمشروع الفعلي:
 | Speakers: دعم الإعلان بدفعات (waves) عبر CMS | ✅ منفّذ (حقل wave + isPublished بـ Sanity) |
 | Team: مجمّع حسب 6 أقسام محددة | ✅ منفّذ حرفياً |
 | Venue: اسم، صورة، سرد، خريطة، وصول، معرض صور | ✅ منفّذ |
-| Venue: مخطط تفاعلي للمكان (اختياري بالمستند الأصلي) | ⏸️ لم يُبنَ — بند اختياري صراحة بالمستند الأصلي |
+| Venue: مخطط تفاعلي للمكان (اختياري بالمستند الأصلي) | ✅ منفّذ (خريطة تفاعلية UaeMap/LeafletMap بصفحة المكان) |
 | Activations: بلوكات مرنة قابلة للإضافة/الحذف | ✅ منفّذ عبر Sanity |
 | Apply: الثيم + من يمكنه التقديم + 80%/عبارة الترحيب | ✅ منفّذ حرفياً |
 | Apply: شرح آلية المراجعة | ✅ منفّذ |
@@ -612,29 +590,30 @@ Brief) وحالته بالمشروع الفعلي:
 | Apply: حفظ بجدول وليس إيميل فقط | ✅ منفّذ (Google Sheets) |
 | Apply: إيميل تأكيد تلقائي | ✅ منفّذ (SMTP Hostinger) + إشعار إداري كامل بالبيانات |
 | Apply: إغلاق تلقائي بموعد نهائي + رسالة بديلة | ✅ منفّذ |
-| Sponsors: افتتاحية، شرائح، رعاة حاليون، CTA، PDF اختياري | ✅ منفّذ بالكامل |
-| Tickets: أنواع/أسعار، آلية شراء أو تسجيل، معلومات اليوم، سياسة الاسترجاع | ✅ منفّذ (فورم تسجيل — يحتاج قرار العميل إن كانت التذاكر مدفوعة عبر منصة خارجية) |
-| Terms: قالب بـ 6 أقسام قانونية | ✅ منفّذ — مسودة قانونية شاملة (وليست placeholder فارغة)، بانتظار مراجعة محامٍ فقط |
+| Sponsors: افتتاحية، شرائح، رعاة حاليون، CTA، PDF اختياري | ⚠️ الصفحة مخفيّة حاليًا بقرار العميل — شريط الرعاة بالرئيسية + API الرعاة جاهز (راجع 5.7) |
+| Tickets: أنواع/أسعار، آلية شراء أو تسجيل، معلومات اليوم، سياسة الاسترجاع | ⚠️ الصفحة مخفيّة حاليًا بقرار العميل (notFound) — لا بيع تذاكر عبر الموقع الآن (راجع 5.8) |
+| Terms: قالب بـ 6 أقسام قانونية | ⚠️ الصفحة أُزيلت حاليًا بقرار العميل — تُعاد فقط بعد مراجعة محامٍ (راجع 5.11) |
 
 ### ميزات إضافية أُضيفت بعد التسليم الأول (بطلب صريح، تتجاوز نطاق البريف الأصلي)
 
 | الميزة | الحالة |
 |---|---|
-| حماية النماذج من السبام (Turnstile + Rate Limiting) | ✅ منفّذ على كل النماذج الأربعة |
-| نظام دفع تذاكر حقيقي (Stripe Checkout) | ✅ منفّذ، يتفعّل تلقائياً بمجرد إضافة `STRIPE_SECRET_KEY` |
+| حماية النماذج من السبام (Turnstile + Rate Limiting) | ✅ منفّذ على كل النماذج (Contact، Apply، Partner Inquiry) |
+| نظام دفع تذاكر حقيقي (Stripe Checkout) | ❌ أُزيل من المشروع بالكامل — التذاكر عبر منصة خارجية عند الحاجة (راجع 7.6) |
 | صفحة Schedule (جدول زمني ليوم الحدث) | ✅ منفّذ، مرتبط بالمتحدثين عبر Sanity |
 | صفحة FAQ عامة (منفصلة عن أسئلة Apply) | ✅ منفّذ |
 | صفحة 404 وLoading مخصصتان بهوية TEDx | ✅ منفّذ |
 | Security Headers (CSP, HSTS, إلخ) | ✅ منفّذ |
 | تعقيم مدخلات المستخدم قبل الإيميلات | ✅ منفّذ |
-| دعم اللغتين (English/Arabic) بنية تقنية كاملة + RTL | ✅ منفّذ بالكامل (38 مساراً مُولَّداً، en+ar لكل صفحة) |
+| دعم اللغتين (English/Arabic) بنية تقنية كاملة + RTL | ✅ منفّذ بالكامل (مساران لكل صفحة: en + ar) |
 | ترجمة كاملة: Header, Footer, الصفحة الرئيسية, 404, صفحة الشكر | ✅ منفّذ حرفياً |
 | ترجمة باقي الصفحات (Speakers, Apply, إلخ) | ⏸️ البنية التقنية جاهزة، النصوص بانتظار جلسة ترجمة منفصلة — راجع القسم 14.4 |
-| صفحة شكر مخصصة بدل رسالة مضمّنة (`/thank-you`) | ✅ منفّذ على 4 من 4 فورمات (Stripe له تدفق مستقل خاص به) |
+| صفحة شكر مخصصة بدل رسالة مضمّنة (`/thank-you`) | ✅ منفّذ على 3 من 3 فورمات (Contact، Apply، Partner Inquiry) |
 
-**البندان الوحيدان غير المنفّذين حالياً بندان اختياريان/معلَّقان صراحةً
-بالمستند الأصلي نفسه** (مبدّل اللغة يحتاج تأكيد العميل، ومخطط الموقع
-التفاعلي كان اختيارياً بالنص الأصلي) — وليسا نقصاً بالتنفيذ.
+**مبدّل اللغة ومخطط الموقع التفاعلي** (بندان اختياريان بالمستند الأصلي)
+**منفّذان الآن** (LanguageSwitcher + UaeMap/LeafletMap). البنود
+المتغيّرة بقرارات العميل: صفحات `/tickets` و`/sponsors` و`/terms`
+مخفيّة/أُزيلت (راجع 5.7/5.8/5.11)، وملف PDF الرعاية يُرفع لاحقاً.
 
 ---
 
@@ -645,22 +624,21 @@ Brief) وحالته بالمشروع الفعلي:
 
 | الموقع | المحتوى المطلوب |
 |---|---|
-| `src/components/home/Hero.tsx` | تاريخ الحدث الحقيقي (`EVENT_DATE`) |
+| `src/components/home/Hero.tsx` | تاريخ الحدث الحقيقي (من وثيقة `eventInfo` بـ Sanity) |
 | `src/components/home/About.tsx` | نص About النهائي |
 | `src/components/home/Highlights.tsx` | الأرقام الحقيقية (عدد المتحدثين/الحضور/الفعاليات) |
-| `src/components/home/ApplyBanner.tsx` | الموعد النهائي الحقيقي للتقديم |
-| `src/app/apply/page.tsx` | `APPLICATION_DEADLINE` الفعلي (يتحكم بالإغلاق التلقائي) |
-| `src/components/apply/ApplicationTimeline.tsx` | تواريخ المراحل الـ 11 الحقيقية |
+| `src/components/home/ApplyBanner.tsx` | الموعد النهائي المعروض (نص الترجمة — القيمة المُلزمة في `src/lib/constants.ts`) |
+| `src/lib/constants.ts` | `APPLICATION_DEADLINE` — **مُحسم: 14 سبتمبر 2026** (يغلق الفورم تلقائياً بعدها) |
+| `src/components/apply/ApplyTimeline.tsx` | تواريخ المراحل الـ 11 الحقيقية |
 | `src/components/apply/ApplyFAQ.tsx` | إجابات الأسئلة الشائعة الفعلية |
 | `src/app/venue/page.tsx` | اسم المكان، النص السردي، رابط خريطة حقيقي، إرشادات المواقف |
-| `src/app/sponsors/page.tsx` | الفقرة الافتتاحية، مزايا كل شريحة رعاية |
-| `src/app/tickets/page.tsx` | تأكيد الأسعار الفعلية بملف `src/lib/tickets.ts`، تاريخ/وقت الحدث، سياسة الاسترجاع |
-| `src/lib/tickets.ts` | **الأسعار الحقيقية** (priceAED) لكل نوع تذكرة — حالياً أسعار توضيحية مؤقتة |
-| `src/app/schedule/page.tsx` | تاريخ الحدث، وجلسات Sanity الحقيقية بدل البيانات التجريبية |
+| صفحة `/sponsors` | ~~الصفحة أُزيلت~~ — عند إعادتها: الفقرة الافتتاحية، مزايا كل شريحة رعاية |
+| صفحة `/tickets` | ~~مخفيّة بقرار العميل~~ — عند إعادتها: تاريخ/وقت الحدث + زر Platinumlist خارجي |
+| `src/app/schedule/page.tsx` | تاريخ الحدث، وجلسات Sanity الحقيقية |
 | `src/app/faq/page.tsx` | إجابات الأسئلة الشائعة العامة الفعلية |
-| `src/app/terms/page.tsx` | **النص القانوني الكامل بعد مراجعة محامٍ** — راجع التنبيه بأعلى الملف نفسه |
-| `public/brand/` | شعار TEDx الرسمي (استبدال الشعار النصي المؤقت بالهيدر) |
-| `public/sponsorship-deck.pdf` | ملف PDF حقيقي لباقة الرعاية |
+| صفحة `/terms` | ~~الصفحة أُزيلت~~ — عند إعادتها: النص القانوني الكامل بعد مراجعة محامٍ |
+| شعارات الموقع | ✅ تم — `logo-black.png`/`logo-white.png` بـ `public/images` (مستخدمة بالهيدر والفوتر وصفحة الشكر) |
+| `public/sponsorship-deck.pdf` | لم يُرفع بعد — يُرفع لاحقاً عند الطلب |
 
 ---
 
@@ -678,7 +656,7 @@ Brief) وحالته بالمشروع الفعلي:
 أعد تشغيل `npm run dev` بالكامل — Next.js يقرأ متغيرات البيئة فقط عند
 بدء التشغيل.
 
-**"Sanity Studio لا يعرض الأنواع الأربعة"**
+**"Sanity Studio لا يعرض أنواع المحتوى"**
 تأكد أنك اخترت "Yes" عند سؤال "use existing configuration" وقت
 `sanity init`، وإلا كرر الخطوة وتأكد من عدم استبدال ملف
 `studio/sanity.config.ts` الموجود مسبقاً.
@@ -696,9 +674,9 @@ Vercel وأي جهاز عادي متصل بالإنترنت لن يواجه هذ
 المشروع يستخدم **next-intl** مع نمط `[locale]` بمسارات Next.js. أهم ما يجب معرفته:
 
 - كل الصفحات أصبحت تحت `src/app/[locale]/...` (مثال: `src/app/[locale]/speakers/page.tsx`)
-- `src/middleware.ts` يكتشف اللغة تلقائياً ويوجّه `/` لـ `/en` افتراضياً
-- كل صفحة تُنشَأ تلقائياً بنسختين: `/en/...` و`/ar/...` (مؤكَّد فعلياً — بناء
-  إنتاجي كامل ولّد 38 مساراً بنجاح، بواقع نسختين لكل صفحة)
+- `middleware.ts` (بجذر المشروع — وليس داخل `src/`) يكتشف اللغة تلقائياً ويوجّه `/` لـ `/en` افتراضياً
+- كل صفحة تُنشَأ تلقائياً بنسختين: `/en/...` و`/ar/...` (مؤكَّد فعلياً —
+  بناء إنتاجي كامل ناجح، بواقع نسختين لكل صفحة)
 - الاتجاه (RTL/LTR) يتغيّر تلقائياً حسب اللغة عبر `<html dir="rtl">` عند
   العربية — **مؤكَّد فعلياً** بالاختبار المباشر
 - خط عربي مخصص (`Noto Sans Arabic`) يُحمَّل تلقائياً فقط عند اللغة العربية
@@ -711,9 +689,9 @@ Vercel وأي جهاز عادي متصل بالإنترنت لن يواجه هذ
 تقنية فارغة:
 
 - **Header وFooter** (تظهران بكل صفحة بالموقع)
-- **الصفحة الرئيسية بالكامل** (كل الأقسام الثمانية: Hero, About, Theme,
-  Speakers Preview, Highlights, Apply Banner, Sponsors Strip, Contact Form
-  — شامل رسائل التحقق من الفورم بالعربية)
+- **الصفحة الرئيسية بالكامل** (كل الأقسام الثمانية: Hero, Sponsors,
+  Contact, About, Theme, Highlights, Team Preview, Apply Banner — شامل
+  رسائل التحقق من الفورم بالعربية)
 - **صفحة 404**
 - **صفحة الشكر الجديدة** (`/thank-you`)
 
@@ -721,7 +699,7 @@ Vercel وأي جهاز عادي متصل بالإنترنت لن يواجه هذ
 
 هذه الصفحات تعمل تقنياً بشكل صحيح تحت `/ar/...` (لا أخطاء، لا صفحات
 بيضاء)، لكن نصوصها الثابتة لم تُترجَم بعد: Speakers, Team, Venue,
-Activations, Schedule, Apply, Sponsors, Tickets, FAQ, Terms.
+Activations, Schedule, Apply, FAQ.
 
 **لماذا هذا القرار؟** طلب المشروع كان "على الأقل توفير محتوى ثنائي اللغة
 للصفحات الرئيسية" — وقد أُنجزت البنية التقنية الكاملة (القابلة للتوسعة
@@ -755,29 +733,27 @@ Activations, Schedule, Apply, Sponsors, Tickets, FAQ, Terms.
 
 ### 14.6 صفحة الشكر المخصصة (`/thank-you`)
 
-بدلاً من رسالة نجاح مضمّنة بمكان الفورم، الفورمات الأربعة (Contact,
-Apply, Partner Inquiry, Ticket Registration) تُعيد التوجيه الآن لصفحة
-`/thank-you?type=X` برسوم متحركة بسيطة (علامة صح تُرسَم بـ CSS) ورسالة
-مخصصة حسب نوع الفورم:
+بدلاً من رسالة نجاح مضمّنة بمكان الفورم، الفورمات (Contact, Apply,
+Partner Inquiry) تُعيد التوجيه لصفحة `/thank-you?type=X` برسوم متحركة
+بسيطة (علامة صح تُرسَم بـ CSS) ورسالة مخصصة حسب نوع الفورم:
 
 | القيمة `type` | متى تُستخدم | زر الإجراء |
 |---|---|---|
 | `contact` | فورم التواصل بالصفحة الرئيسية | العودة للرئيسية |
 | `apply` | فورم التقديم | مشاهدة الجدول الزمني |
 | `partner` | فورم Become a Partner | العودة للرئيسية |
-| `tickets` | فورم تسجيل التذاكر المجاني | مشاهدة الجدول الزمني |
+| `tickets` | (احتياطي فقط — لا فورم تذاكر فعلي حاليًا) | مشاهدة الجدول الزمني |
 
-**ملاحظة**: مسار الدفع الفعلي عبر Stripe (`TicketPurchaseForm`) لا يستخدم
-هذه الصفحة — له صفحتا نجاح/إلغاء مخصصتان بالفعل (`/tickets/success` و
-`/tickets/cancel`) لأن Stripe يتطلب تدفقاً مختلفاً (إعادة توجيه خارجية ثم
-عودة).
+**ملاحظة**: كود Stripe وصفحتا `/tickets/success` و`/tickets/cancel`
+أُزيلا مع إخفاء صفحة `/tickets` (راجع 5.8 و7.6) — إن عادت التذاكر
+تُوجَّه للشراء الخارجي عبر Platinumlist.
 
 ### 14.7 تنبيه تقني مهم — موقع ملف middleware.ts
 
-بما أن المشروع يستخدم مجلد `src/`، يجب أن يبقى `middleware.ts` **داخل**
-`src/middleware.ts` وليس بجذر المشروع — هذا خطأ شائع يتسبب بعدم عمل
-اكتشاف اللغة تلقائياً وظهور خطأ 404 بالمسار الجذري `/` (واجهناه فعلياً
-أثناء البناء وتم إصلاحه). لا تنقله.
+`middleware.ts` يقع **بجذر المشروع** (وليس داخل `src/`) — وهو الوضع
+الصحيح المعمول به حالياً (تحقّق: `middleware.ts` بجذر الريبو ولا يوجد
+`src/middleware.ts`). نقله إلى داخل `src/` يكسّر اكتشاف اللغة تلقائياً
+ويسبب 404 بالمسار الجذري `/` — لا تنقله.
 
 ---
 
@@ -792,9 +768,9 @@ Apply, Partner Inquiry, Ticket Registration) تُعيد التوجيه الآن 
 | المكتبة | الاستخدام | ملاحظة |
 |---|---|---|
 | `framer-motion` | كل الأنيميشن التفاعلي (Flip, Drag, Glow, عدادات) | كما طُلب بالضبط |
-| `@tsparticles/react` + `@tsparticles/slim` | خلفية الجسيمات بـ Hero | **بديل تقني**: `react-tsparticles` المطلوبة أصلاً متوقفة رسمياً (deprecated)، استُبدلت بالحزمة الرسمية الحالية لنفس المطوّر |
-| `react-type-animation` | تأثير الكتابة التلقائية بعنوان Hero | كما طُلب بالضبط |
-| `react-confetti` | قصاصات ورقية ترحيبية | كما طُلب بالضبط |
+| `three-globe` + `three` + `@react-three/fiber` | كرة أرضية ثلاثية الأبعاد تفاعلية (`ui/tedx-globe.tsx`) | بديل Globe.js — يعمل بالكامل من جهة العميل |
+| `react-type-animation` | تأثير الكتابة التلقائية بعنوان Hero | لم تُستخدَم كحزمة — بُني مكوّن `TextType.tsx` مخصص بـ Framer Motion بدلاً منها |
+| `react-confetti` | قصاصات ورقية ترحيبية | ~~أُزيل~~ — غير موجود بالمشروع الحالي |
 | ~~`react-countdown`~~ | — | **لم تُستخدَم**: بُني عداد Flip Clock مخصص بـ Framer Motion مباشرة، وهو ما سمح به الطلب الأصلي نفسه ("أو سنبني مخصصاً") |
 
 ### 15.2 خريطة المكونات (اسم الطلب ↔ الملف الفعلي بالمشروع)
@@ -802,44 +778,44 @@ Apply, Partner Inquiry, Ticket Registration) تُعيد التوجيه الآن 
 | الاسم بطلب العميل | الملف الفعلي |
 |---|---|
 | `<HeroSection />` | `src/components/home/Hero.tsx` (Server Component ينسّق الترجمة + المكونات أدناه) |
-| خلفية الجسيمات | `src/components/home/HeroParticlesBackground.tsx` |
-| الكتابة التلقائية | `src/components/home/HeroTypewriterTitle.tsx` |
-| `<CountdownTimer />` | `src/components/shared/Countdown.tsx` + `src/components/shared/FlipDigit.tsx` |
+| ~~خلفية الجسيمات~~ | ~~أُزيل~~ — لا توجد particles بالمشروع الحالي |
+| الكتابة التلقائية | `src/components/TextType.tsx` (مكوّن مخصص بـ Framer Motion) |
+| `<CountdownTimer />` | `src/components/shared/Countdown.tsx` + `src/components/ui/flip-clock.tsx` |
 | `<ActionButtons />` | `src/components/home/ActionButtons.tsx` |
 | `<AboutSection />` (قسم الأرقام) | `src/components/home/Highlights.tsx` + `src/components/home/AnimatedStats.tsx` |
-| `<SpeakersCarousel />` | `src/components/home/SpeakersCarousel.tsx` (يستبدل الشبكة الثابتة بـ `SpeakersPreview.tsx`) |
-| المؤشر المخصص | `src/components/ui/CustomCursor.tsx` (مُدمَج بـ `[locale]/layout.tsx`، يظهر بكل صفحات الموقع) |
-| Confetti عند التحميل | `src/components/ui/WelcomeConfetti.tsx` (يظهر مرة واحدة فقط لكل جلسة متصفح، وليس بكل تنقّل بين الصفحات) |
+| `<SpeakersCarousel />` | `src/components/home/SpeakersStage.tsx` + `src/components/home/SpeakersPreview.tsx` |
+| ~~المؤشر المخصص~~ | ~~أُزيل~~ — لا يوجد CustomCursor بالمشروع الحالي |
+| ~~Confetti عند التحميل~~ | ~~أُزيل~~ — لا يوجد WelcomeConfetti بالمشروع الحالي |
 
 ### 15.3 قرار معماري مهم: لماذا لم تتحول Hero/Highlights/SpeakersPreview لـ Client Components بالكامل؟
 
 هذه الصفحات **Server Components** تجلب الترجمة (next-intl) والبيانات
-(Sanity/mock) من الخادم مباشرة — وهذا ضروري لأداء الموقع وSEO ودعم
+(Sanity) من الخادم مباشرة — وهذا ضروري لأداء الموقع وSEO ودعم
 اللغتين. حوّلتها بالكامل لـ Client Components كان سيفقد هذه الفوائد.
-بدلاً من ذلك، كل مكوّن أنيميشن (`HeroParticlesBackground`,
-`ActionButtons`, `AnimatedStats`, `SpeakersCarousel`...) هو
+بدلاً من ذلك، كل مكوّن أنيميشن (`TextType`,
+`ActionButtons`, `AnimatedStats`, `SpeakersStage`...) هو
 `"use client"` منفصل يستقبل النص المترجَم/البيانات كـ **props** من
 المكوّن الأب. هذا النمط يحافظ على نفس معمارية المشروع بالكامل (راجع
 القسم 6) بينما يضيف التفاعلية المطلوبة تماماً.
 
 ### 15.4 اعتبارات إمكانية الوصول (Accessibility) — إضافة استباقية
 
-المؤشر المخصص وخلفية الجسيمات يحترمان تلقائياً إعداد النظام
-`prefers-reduced-motion` (يُعطَّلان تماماً لمن يفعّل "تقليل الحركة")،
-والمؤشر المخصص يُعطَّل تلقائياً على أجهزة اللمس (لا معنى له بالموبايل/التابلت
-أصلاً). هذا لم يُطلَب صراحة لكنه معيار مهني أساسي، ولا يؤثر إطلاقاً على
-تجربة الأطفال المستهدفين على الأجهزة العادية.
+مكوّنات الأنيميشن (والكرة الأرضية ثلاثية الأبعاد) تحترم تلقائياً إعداد
+النظام `prefers-reduced-motion` (تُعطَّل الحركة لمن يفعّل "تقليل
+الحركة") — لم يُطلَب صراحةً لكنه معيار مهني أساسي، ولا يؤثر على تجربة
+معظم المستخدمين.
 
 ### 15.5 التحقق المُنفَّذ فعلياً
 
 - ✅ `tsc --noEmit` و`eslint` نظيفان تماماً
-- ✅ **بناء إنتاجي كامل ناجح مرتين متتاليتين** — نفس 38 مساراً بدون أي
-  تراجع، حتى مع إضافة مكتبة الجسيمات الثقيلة (تحتوي عشرات الحزم الفرعية)
+- ✅ **بناء إنتاجي كامل ناجح مرتين متتاليتين** — بدون أي تراجع، حتى
+  مع إضافة مكتبة الرسوم ثلاثية الأبعاد (three/three-globe)
 - ✅ اختبار مباشر: الصفحة الرئيسية تُرجع 200 وتعرض نص "Tomorrow, Now"
   فعلياً من مكوّن الكتابة التلقائية
-- ملاحظة: خلفية الجسيمات لا تظهر بالـ HTML الأولي من الخادم (متوقّع
-  ومقصود تماماً — مكوّن client-only يُعيد `null` أثناء SSR لتفادي مشاكل
-  الـ hydration مع Canvas، ويظهر فقط بعد التحميل بجافاسكربت بالمتصفح)
+- ملاحظة: الكرة الأرضية ثلاثية الأبعاد (three-globe) لا تظهر بالـ HTML
+  الأولي من الخادم (متوقّع ومقصود تماماً — مكوّن client-only يُعيد `null`
+  أثناء SSR لتفادي مشاكل الـ hydration مع WebGL، ويظهر بعد التحميل
+  بالمتصفح)
 
 ### 15.6 نقطة بخصوص Lenis (المذكورة بطلب العميل)
 
@@ -848,4 +824,4 @@ Apply, Partner Inquiry, Ticket Registration) تُعيد التوجيه الآن 
 يحتوي Lenis إطلاقاً** (لم يُطلَب أو يُبنَ بأي مرحلة سابقة)، لذلك هذا البند
 غير قابل للتطبيق حالياً. إن أراد العميل إضافة Lenis لاحقاً، راجع توثيق
 Lenis الرسمي حول `data-lenis-prevent` على عنصر الكاروسيل بالسحب
-(`SpeakersCarousel.tsx`) لمنع التعارض.
+(`src/components/home/SpeakersStage.tsx`) لمنع التعارض.

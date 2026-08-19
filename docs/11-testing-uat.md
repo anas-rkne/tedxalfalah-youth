@@ -10,7 +10,7 @@
 
 ## 1. سيناريوهات الاختبار المحلي (أوامر CURL جاهزة)
 
-> **متطلب مسبق**: الخادم يعمل (`npm run dev`). وإذا كان `TURNSTILE_SECRET_KEY` **معبّأ** في `.env.local` فالتوكن `"dummy-token"` سيرفض (403) — للاختبار الكامل إما أزله مؤقتًا (يعمل Fail-Open) أو استخدم التوكن الحقيقي من الودجت. **وأهم ملاحظة للأصل**: هذه الأوامر ترسل من الـ Terminal **بلا `Origin`** — فتتجاوز طبقة CORS (سلوك طبيعي موثق في `src/lib/cors.ts:16`).
+> **متطلب مسبق**: الخادم يعمل (`npm run dev`). وإذا كان `TURNSTILE_SECRET_KEY` **معبّأ** في `.env.local` فالتوكن `"dummy-token"` سيرفض (403) — للاختبار الكامل إما أزله مؤقتًا (يعمل Fail-Open **فقط في التطوير**؛ في الإنتاج غياب المفتاح يرفض الطلبات 403) أو استخدم التوكن الحقيقي من الودجت. **وأهم ملاحظة للأصل**: هذه الأوامر ترسل من الـ Terminal **بلا `Origin`** — فتتجاوز طبقة CORS (سلوك طبيعي موثق في `src/lib/cors.ts:16`).
 
 ### 1.1 فورم Apply — مسار «متحدث شاب» (Young Speaker)
 
@@ -28,7 +28,7 @@ curl -X POST http://localhost:3000/api/apply \
     "ideaSummary": "كيف يمكن للذكاء الاصطناعي أن يساعد الأطفال على التعلم وتطوير مهاراتهم الإبداعية في المستقبل",
     "whyItMatters": "لأن المستقبل يحتاج إلى مبتكرين شباب يفكرون خارج الصندوق",
     "themeConnection": "spark",
-    "videoLink": "",
+    "videoLink": "https://youtube.com/watch?v=testclip",
     "howHeardAboutUs": "Social Media",
     "consentToTerms": true,
     "schoolName": "مدرسة دبي الدولية",
@@ -43,6 +43,7 @@ curl -X POST http://localhost:3000/api/apply \
 **إخفاقات مقصودة لتجربتها (اختبار التحقق):**
 - احذف `guardianName` → **400** (المخطط الشرطي يرفض — `apply/route.ts:36-49`).
 - `"age": 5` → **400** (حد الخادم الصارم `z.coerce.number().min(10).max(99)` — `apply/route.ts:33-34`).
+- احذف `videoLink` أو أرسله فارغًا → **400** (الحقل **إجباري** الآن — `apply/route.ts:26`).
 - `"email": "bad"` → **400**.
 - أرسل جسدًا غير JSON (`-d 'broken'` بلا هيدر contentType) → **400** `{"error": "Invalid JSON body"}` (إصلاح اليوم — كان خطأ 500 سابقًا).
 - **اختبار إغلاق التقديم (403)**: أعد تشغيل dev مع `APPLICATION_DEADLINE=(تاريخ ماضٍ)` في `.env.local` → الطلب الصحيح كاملًا يعيد **403** `{"error": "Applications are closed"}`. (القيمة الافتراضية في `src/lib/constants.ts` — قراءة من البيئة أولًا.)
@@ -63,6 +64,7 @@ curl -X POST http://localhost:3000/api/apply \
     "ideaSummary": "تجربة عملية في تصميم برامج تعليمية تفاعلية للشباب في المدارس الحكومية",
     "whyItMatters": "لأن التعليم هو الرافعة الحقيقية لنهضة الأجيال",
     "themeConnection": "beyond",
+    "videoLink": "https://youtube.com/watch?v=testclip",
     "howHeardAboutUs": "School",
     "consentToTerms": true,
     "organizationAndRole": "أكاديمية الشباب - مستشار تعليمي",
@@ -72,7 +74,7 @@ curl -X POST http://localhost:3000/api/apply \
 ```
 **المتوقع**: `200` — احذف `organizationAndRole` لترى **400**.
 
-### 1.3 فورم Contact — موضوع Sponsorship (يُوجَّه لـ partners@)
+### 1.3 فورم Contact — مواضيع مختلفة (كلها تُوجَّه لـ marhaba@ — لا توجيه حسب الموضوع)
 
 ```bash
 curl -X POST http://localhost:3000/api/contact \
@@ -85,7 +87,7 @@ curl -X POST http://localhost:3000/api/contact \
     "turnstileToken": "dummy-token"
   }'
 ```
-وموضوع **General** (يُوجَّه لـ marhaba@):
+وموضوع **General** (نفس الوجهة — كل المواضيع تصِل `marhaba@` والموضوع يُدرج في عنوان الإيميل `[Subject]` فقط):
 ```bash
 curl -X POST http://localhost:3000/api/contact \
   -H "Content-Type: application/json" \
@@ -156,11 +158,11 @@ Invoke-RestMethod -Uri http://localhost:3000/api/contact -Method Post -ContentTy
 | مسارات خاطئة | `/en/nonexistent` و`/ar/nonexistent` = **404** (صفحة NotFound ثنائية اللغة) |
 | الرئيسية | بلا أقسام متحدثين/رعاة/فريق (الأعلام OFF)، لا أثر لأسماء أحمد/سارة، JSON-LD `startDate 2026-12-19` + مكان `نبض الفلاح` |
 | الخرائط | venue iframe `hl=en` · `LeafletMap` بعتيم `bg-slate-900/20` (طبقة CSS ظاهرة في الـ SSR) |
-| SEO | `robots.txt` يسمح + يشير لـ sitemap · `sitemap.xml` فيه كل المسارات + alternates |
+| SEO | `robots.txt` يسمح + يشير لـ sitemap · `sitemap.xml` فيه المسارات الحالية (4: `/` `/team` `/apply` `/thank-you`) + alternates |
 | الترويسات | CSP (Sanity/esri/Cloudflare/GTM…) · `X-Frame-Options` · `Strict-Transport-Security` · `nosniff` · `Referrer-Policy` · `Permissions-Policy` — الكل بحضورها |
 | API | `{}` → 400 · JSON مكسور → 400 (رسالة "Invalid JSON body" دقيقة) · GET → 405 · `revalidate` بلا سر → 200 محليًا (يشترط `SANITY_WEBHOOK_SECRET` في الإنتاج) |
 | Contact فعلي | بجسم صالح (`subject` من القائمة + `message` ≥10) → **`{"success":true}`** · بجسم ناقص → رسالة `Invalid form data` بحقولها الدقيقة (إثبات عمل zod) |
-| Apply | مفتوح (الموعد الافتراضي 2026-09-30) · Turnstile + النموذج **يُبنى client-side** — تحقق من الحزم: `0ybt9bfy7l393.js` يحوي `render=explicit` + site key، و`0_3tc6k_y0mrj.js` يحوي `fullName` (غيابهما من الـ SSR **سلوك متوقع** لا خلل) |
+| Apply | مفتوح (الموعد الافتراضي 2026-09-14) · الفيديو إجباري (`videoLink` مطلوب) · Turnstile + النموذج **يُبنى client-side** — تحقق من الحزم: `0ybt9bfy7l393.js` يحوي `render=explicit` + site key، و`0_3tc6k_y0mrj.js` يحوي `fullName` (غيابهما من الـ SSR **سلوك متوقع** لا خلل) |
 
 **ملاحظات تشغيلية**: سكربتات PowerShell لا تستخدم `curl -o NUL` (خطأ "filename or extension is too long") — استخدم `-o $tmp -w "%{http_code}"` · إعادة `npm run build` مع خادم standalone يعمل = `EBUSY` على `.next\standalone` — أوقف الخادم أولًا.
 
@@ -187,9 +189,9 @@ npx playwright test e2e/forms.spec.ts   # ملف واحد
 **نتائج فحصية مهمة من الجلسة**:
 
 1. **اكتشاف 403 "origin not allowed"**: المتصفح يرسل `Origin: http://localhost:3001` والقائمة الثابتة في `cors.ts` لم تكن تشمل 3001 → أُضيف (`src/lib/cors.ts` أسطر 3–8) — **تأكيد أمني: origin دخيل يبقى 403** (مُختبَر). في الإنتاج لا حاجة (الموقع والـ API نفس الأصل).
-2. **Turnstile محليًا يعطي خطأ 110200** (لا اتصال بـ challenges.cloudflare.com في بيئة الاختبار) — متوقع؛ قارئ القرصنة fail-open بلا سر — **في الإنتاج يُتحقق فعلًا** (جلسة مفاتيح العميل).
+2. **Turnstile محليًا يعطي خطأ 110200** (لا اتصال بـ challenges.cloudflare.com في بيئة الاختبار) — متوقع؛ قارئ القرصنة fail-open بلا سر **في التطوير فقط** — الإنتاج fail-closed (يرفض 403 عند غياب المفتاح) ويُتحقق فعلًا عند تعبئته (جلسة مفاتيح العميل).
 3. **إصلاح وصول (a11y) حقيقي**: نص العداد لقارئ الشاشة كان غير مبطن "13:4:53" → صار "13:04:53" (`flip-clock.tsx` — يستخدم المتغيرات المبطنة).
-4. قائمة الجوال تعرض 4 عناصر فقط (Home/Team/Apply/Tickets) — **تصميم مقصود** وليس بندًا ناقصًا (الاختبار يعتمد على Team).
+4. قائمة الجوال تعرض 3 عناصر فقط (Home/Team/Apply) — **تصميم مقصود** وليس بندًا ناقصًا (الاختبار يعتمد على Team؛ رابط التذاكر أُزيل مع إخفاء الصفحة).
 5. هشاشة خارجية ملاحظة: جلب Sanity قد يفشل لحظيًا (فشل نشر) → JSON-LD يستخدم fallback "Abu Dhabi, United Arab Emirates" — Fail-Open مصمم، يُعاد المحاولة تلقائيًا.
 6. GA4 يُطلق حتى محليًا على standalone (`NODE_ENV=production`) — كما صُمم (Production-only).
 
@@ -199,13 +201,13 @@ npx playwright test e2e/forms.spec.ts   # ملف واحد
 
 | الحدث (Event) | السلوك المتوقع (Expected) | مكان التحقق (Where to verify) |
 |---|---|---|
-| Apply — Young Speaker | ① صف كامل (18 عمودًا) في Google Sheets · ② تأكيد للمتقدم النص الحرفي (`sendConfirmationEmail` — `apply/route.ts:111`) · ③ إشعار إداري بكامل الحقول | ① الـ Sheet (صف جديد) · ② بريد `test@example.com` الوهمي · ③ `apply@` في WebMail |
-| Apply — Expert | ① صف بـ `organizationAndRole` و`areaOfWorkWithYouth` مملوءَين · ② نفس الإيميلين | ① الـ Sheet · ②/③ صناديق البريد أعلاه |
-| Contact — `Sponsorship` | ① الإيميل إلى **`PARTNER_EMAIL`** · ② `replyTo` = بريد المُرسِل (الرد يعود له) | صندوق `partners@` — عنوان الرسالة يبدأ `[Sponsorship]` |
-| Contact — `Media` | الإيميل إلى `MEDIA_EMAIL` | صندوق `media@` |
+| Apply — Young Speaker | ① صف كامل (20 عمودًا) في Google Sheets · ② تأكيد للمتقدم بالنص المعتمد الجديد (يبدأ «Your idea is in.» — `sendConfirmationEmail` — `apply/route.ts:137`) · ③ إشعار إداري بكامل الحقول (بما فيها رابط الفيديو) | ① الـ Sheet (صف جديد) · ② بريد `test@example.com` الوهمي · ③ `apply@` + نسخة `marhaba@` في WebMail |
+| Apply — Expert | ① صف بـ `organizationAndRole` و`areaOfWorkWithYouth` مملوءَين · ② نفس البريدين (التأكيد + الإشعار) | ① الـ Sheet · ②/③ صناديق البريد أعلاه |
+| Contact — `Sponsorship` | ① الإيميل إلى **`CONTACT_EMAIL` (marhaba@)** · ② `replyTo` = بريد المُرسِل (الرد يعود له) | صندوق `marhaba@` — عنوان الرسالة يبدأ `[Sponsorship]` |
+| Contact — `Media` | الإيميل إلى `CONTACT_EMAIL` (marhaba@) | صندوق `marhaba@` — عنوان الرسالة يبدأ `[Media]` |
 | Contact — `General`/`Speaking`/`Volunteering` | الإيميل إلى `CONTACT_EMAIL` | صندوق `marhaba@` |
 | Partner Inquiry | الإيميل إلى `PARTNER_EMAIL` بعنوان `New partnership inquiry from ...` | صندوق `partners@` |
-| إرسال Apply بعد `APPLICATION_DEADLINE` | ① الفورم يختفي من `/apply` · ② تظهر بطاقة الإغلاق (`page.apply.closed.*`) | المتصفح — صفحة `/apply` (الفحص من الخادم: `apply/page.tsx:28`) |
+| إرسال Apply بعد `APPLICATION_DEADLINE` | ① الفورم يختفي من `/apply` · ② تظهر بطاقة الإغلاق (`page.apply.closed.*`) | المتصفح — صفحة `/apply` (الفحص من الخادم: `apply/page.tsx:29`) |
 | 6 طلبات متتالية لنفس الفورم | الخمس الأولى تنجح والسادسة **429** | أوامر curl §1.5 + شريط الشبكة |
 | فشل الـ Sheet | الطلب ينجح (`success: true`) و`Google Sheets save failed` بالسجل | سجل الخادم (`apply/route.ts:211`) |
 | بلا إعداد SMTP | الطلب ينجح و`[MAILER] SMTP not configured` بالسجل — **لا يعتبر نجاحًا للبريد** | سجل الخادم |
@@ -231,10 +233,10 @@ npx playwright test e2e/forms.spec.ts   # ملف واحد
 - [ ] فورم Apply تجريبي (بيانات وهمية): إيميل التأكيد يصل + صف جديد في الـ Sheet (إن عُدّت Google).
 - [ ] فورم Contact تجريبي يصل `marhaba@`.
 - [ ] Turnstile **يظهر** في فورمات Apply وContact (المفتاحان معبآن) — الودجت جزء من الفورمات الثلاثة المبرمجة (فورم Partner بلا واجهة حاليًا).
-- [ ] صفحة `/tickets` — زر التذاكر يوجه لرابط Platinumlist الصحيح.
+- [ ] صفحة `/tickets` — **يجب أن تعيد 404** (مخفية بطلب العميل؛ تُستعاد لاحقًا عند الحاجة).
 - [ ] صفحة `/apply` — الفورم ظاهر وموعد `APPLICATION_DEADLINE` الصحيح يظهر في البانر.
 - [ ] Webhook: تنشر `speaker` جديد (Published ON) في Studio → يظهر حيًا خلال دقيقة بلا إعادة نشر.
-- [ ] **نقطة معلّقة موثقة**: لا توجد صفحة **`/terms`** ولا صفحة **`/privacy`** في الموقع حاليًا (قائمة الصفحات المؤكدة: home/team/venue/activations/schedule/apply/tickets/faq/thank-you/speakers) — **إضافة صفحة الشروط والسياسة إلزامية قبل الإطلاق** (خصوصية بيانات قُصَّر — راجع `docs/06` §4.3).
+- [ ] **نقطة معلّقة موثقة**: لا توجد صفحة **`/terms`** ولا صفحة **`/privacy`** في الموقع حاليًا (قائمة الصفحات المؤكدة: home/team/venue/activations/schedule/apply/faq/thank-you/speakers — و`/tickets` مخفي بطلب العميل) — **إضافة صفحة الشروط والسياسة إلزامية قبل الإطلاق** (خصوصية بيانات قُصَّر — راجع `docs/06` §4.3).
 
 ---
 
@@ -246,7 +248,7 @@ npx playwright test e2e/forms.spec.ts   # ملف واحد
 1. افتح `https://tedxalfalahyouth.com`.
 2. تأكد من ظهور الهيدر والشعار والصفحة الرئيسية.
 3. انقر زر اللغة (EN/AR) — يجب أن تتحول الصفحة للعربية **وينعكس الاتجاه** (النص من اليمين لليسار).
-4. افتح كل صفحة بالقائمة (Speakers, Team, Venue, Apply, Tickets, Schedule, FAQ) وتأكد أنها تفتح سليمًا.
+4. افتح كل صفحة بالقائمة (Speakers, Team, Venue, Apply, Schedule, FAQ) وتأكد أنها تفتح سليمًا. (رابط `Tickets` أُزيل من القائمة — الصفحة مخفية وتُعيد 404.)
 
 ### الخطوة 2 — فورم التواصل (Contact)
 1. انتقل لأسفل الرئيسية لقسم Contact.
@@ -255,16 +257,17 @@ npx playwright test e2e/forms.spec.ts   # ملف واحد
 
 ### الخطوة 3 — فورم التقديم (Apply) — الأهم
 1. افتح `/apply` واختر مسار **Young Speaker**.
-2. املأ ببيانات **وهمية** (اسم/عمر/إيميل وهمي تستطيع الوصول إليه).
+2. املأ ببيانات **وهمية** (اسم/عمر/إيميل وهمي تستطيع الوصول إليه) وأرفق **رابط فيديو وهمي** (الحقل إجباري الآن).
 3. فعّل **Parental Consent** و**Agree to Terms**.
 4. اضغط **Submit** وتحقق:
    - ① علامة نجاح ثم الانتقال لصفحة الشكر.
-   - ② وصول إيميل التأكيد للإيميل الوهمي.
-   - ③ (للمسؤول) صف جديد ببياناتك في Google Sheet التطبيقات.
+   - ② وصول إيميل التأكيد للإيميل الوهمي (النص يبدأ «Your idea is in.»).
+   - ③ (للمسؤول) صف جديد ببياناتك في Google Sheet التطبيقات + الإشعار الإداري في `apply@` و`marhaba@`.
+   - ④ في صفحة الشكر (type=apply) اضغط زر **View Timeline / عرض الجدول الزمني** — يظهر «Application Journey» بمراحله العشر.
 
-### الخطوة 4 — التذاكر
-1. افتح `/tickets` — يجب أن تجد زر شراء (Platinumlist).
-2. انقر عليه — يُحولك لمنصة التذاكر (الرابط من `NEXT_PUBLIC_PLATINUMLIST_URL`).
+### الخطوة 4 — التذاكر (صفحة مخفية حاليًا)
+1. افتح `/tickets` — يجب أن تشاهد صفحة **404 (غير موجودة)** — الصفحة مخفية بطلب العميل حاليًا ويمكن إعادتها لاحقًا.
+2. عند إعادة تفعيلها لاحقًا، تحقق من زر الشراء (الرابط من `NEXT_PUBLIC_PLATINUMLIST_URL`).
 
 ### الخطوة 5 — محتوى Sanity (للإداري فقط)
 1. ادخل `https://tedxalfalahyouth.sanity.studio` بحسابك.

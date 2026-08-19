@@ -202,8 +202,32 @@
 
 ---
 
-| بعد | التحديث المتوقع |
-| :--- | :--- |
+---
+
+## [v1.0.0-client-approvals] — 2026-08-19 · التعديلات المعتمدة الأخيرة + تجديد التوثيق
+
+سلسلة طلبات العميل النهائية قبل التسليم، منفّذة ومتحقق منها على خادم إنتاج محمّل بالبيئة (:3100).
+
+### Added
+- **الجدول الزمني في صفحة الشكر**: 10 مراحل (18 أغسطس ← 19 ديسمبر) بترجمة en/ar (`messages` → `thankYou.common.timeline`)؛ زر تبديل "View Timeline"/"عرض الجدول الزمني" بجانب "Back to Homepage"؛ يظهر فقط عند `type=apply` أو `type=tickets` (تحقق: `aria-expanded` حاضر للنوعين وغائب لبقية الأنواع).
+- **حقل رابط الفيديو إلزامي** في فورم التقديم: `z.string().min(1)` + شارة "(إلزامي)"/"(Required)" — الطلب بلا رابط → 400 `videoLink: Required`.
+- **إيميل تأكيد التطبيق بنص العميل الجديد**: يبدأ "Your idea is in." وينتهي "Warm regards, TEDxAlFalah Youth Team" (بدل النص القديم بتوقيع "Tomorrow, Now.") — الموضوع دون تغيير (`apply/route.ts` `sendConfirmationEmail`).
+- **إعادة تصميم SaveTheDate في الهيرو**: `public/images/Artboard 1.svg` (حمراء، `h-16 md:h-20`) بجانب "December" + سطر "ديسمبر 2026" عربي بمسافة 2px؛ العمود المكاني بأحجام الوصف الجديدة (`text-base md:text-lg` للأول، `text-sm md:text-base` للثاني).
+
+### Changed
+- **فورم التواصل → صندوق واحد**: جميع الرسائل تصل إلى `CONTACT_EMAIL` (marhaba@) — حذف `inboxBySubject` نهائيًا (تحقق SMTP فعلي).
+- **إشعار التطبيق الإداري**: يصل لصندوقَين معًا — `ADMIN_APPLICATIONS_EMAIL` (apply@) + `CONTACT_EMAIL` (marhaba@) (تحقق SMTP فعلي).
+- **عنوان الهيرو عريض**: `font-alexandria` + `fontWeight: 900` لكل الأسطر الثلاثة (المنقولة والثابتة).
+- **خلفية الفوتر على الموبايل**: `background-size: cover` (تغطية كاملة بدل القص).
+- **حذف المؤشر المخصص**: ملفّا `smooth-cursor` وأي مراجع — لا أثر في الكود.
+- **الوثائق**: تصحيح 15 ملفًا على الحالة الفعلية (الديدلاين **14 سبتمبر** محسومة من العميل، توجيه البريد، `fail-closed` لـ Turnstile في الإنتاج، الصفحات المخفية، نصوص الإيميلات) + إعادة توليد الـ PDF في `exports/` (13 وثيقة + `CREDENTIALS-quick-reference.pdf`) مع فحص `qa_pdfs.py`.
+- **باكر CTA الفوتر**: أُبقيت خلفية `footer-red-bg.svg` بطبقاتها المضبوطة (جرى التراجع عن تصميم "Artboard 2 copy.svg").
+
+### Fixed
+- **53/53 فحصًا للـ thank-you**: التأكيد أن العرض العام (بلا `type`) يظهر البديل العام والصفحة تُظهر الجدول الزمني عند المسارات الفعلية (`?type=apply`/`?type=tickets`).
+- أرقام أسطر قديمة في `docs/05` و`docs/11` استُبدلت بأسماء الدوال (منع الانحراف مستقبلًا).
+
+---
 | تعبئة مفاتيح Google/Turnstile/Upstash/Sanity | قفل Fail-Open → تشغيل الحماية الكاملة (جلسة العميل — `docs/03`) |
 | النشر على Hostinger Node.js | تشغيل `node .next/standalone/server.js` + توثيق فعلي (standalone مفعّل الآن — `docs/08` §2.3) |
 | إطلاق صفحات الشروط/الخصوصية | إضافة `/terms` و`/privacy` (إلزامي) |

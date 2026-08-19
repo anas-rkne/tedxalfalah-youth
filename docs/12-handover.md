@@ -12,13 +12,13 @@
 
 ## 1. حزمة التسليم (Deliverables Package)
 
-### 1.1 الوثائق المسلّمة (12 وثيقة في `docs/`)
+### 1.1 الوثائق المسلّمة (12 وثيقة مرقّمة في `docs/` + تقرير الفحص `docs/QA-report.md`)
 
 | # | الوثيقة | المحتوى |
 | :-: | :--- | :--- |
 | 01 | `01-overview.md` | نظرة استراتيجية شاملة وفهرس المشروع |
 | 02 | `02-architecture.md` | بنية النظام، Tech Stack، القرارات المعمارية |
-| 03 | `03-setup-and-env.md` | **جدول المتغيرات البيئية الـ29** + إدارة البيئة |
+| 03 | `03-setup-and-env.md` | **جدول المتغيرات البيئية الـ25** + إدارة البيئة |
 | 04 | `04-content-management.md` | دليل Sanity Studio: 7 جداول حقلًا بحقل |
 | 05 | `05-forms-email-system.md` | الفورمات الأربعة ومسار البريد والإيميلات الحرفية |
 | 06 | `06-security.md` | طبقات الحماية وأمان الإنتاج ونتائج npm audit |
@@ -55,6 +55,18 @@
 | `https://console.upstash.com` | لوحة Rate Limiting (مفاتيح البيئة) |
 | `https://dash.cloudflare.com` | لوحة Turnstile (مفاتيح الفورمات) |
 
+### 1.5 حزمة التصدير PDF (`exports/`)
+
+| الملف | الوصف |
+| :--- | :--- |
+| `exports/01-overview.pdf` … `exports/12-handover.pdf` | نسخ PDF من الوثائق المرجعية الـ12 في `docs/` |
+| `exports/QA-report.pdf` | تقرير فحص ما قبل الإطلاق (`docs/QA-report.md`) |
+| `exports/CREDENTIALS-quick-reference.pdf` | المرجع السريع للمفاتيح والاعتمادات |
+| `exports/sponsorship-deck.pdf` | **غير جاهز بعد — معلّق** (يُضاف فور توفّر عرض الرعاة) |
+| `exports/apply-qr-print.png` (1181×1181px @300DPI) · `exports/apply-qr-email.png` (512px) · `exports/apply-qr.svg` (متجه 55mm) · `exports/apply-qr-poster.pdf` (A4) | أصول QR Code لصفحة التقديم `https://tedxalfalahyouth.com/apply` — أحمر #ff0014 + شعار مركزي، جودة أخطاء H، **وحدات حادة (توليد بالدقة الأصلية — بلا تكبير مموّه)**، مولّدة عبر `qr_generate.py` (نصّيًا تحقّق منها: فك التشفير يطابق الرابط حرفيًا) |
+
+> تُولَّد الحزمة عبر `md2pdf.py` / `run-md2pdf.cmd` في جذر المشروع — **أعد تشغيلها بعد أي تعديل على الوثائق** لإعادة توليد الـ PDFs المحدّثة. أصول الـ QR عبر `qr_generate.py` (بيئة `md2pdf` — حزم `qrcode`/`pillow`/`pyzbar`/`arabic-reshaper`/`python-bidi`).
+
 ---
 
 ## 2. دليل العميل — صفحة واحدة (اطبعها وعلّقها)
@@ -71,10 +83,10 @@
 
 | الصندوق | ماذا يصل إليه |
 | :--- | :--- |
-| `marhaba@` | كل ما يخص الحدث العام، والتواصل، والتطوع (Volunteering)، والاستفسارات العامة |
-| `apply@` | إشعار كل طلب متحدث جديد (مع كامل بياناته — راجعها هنا) |
-| `partners@` | الرعايات والشراكات (فورم Contact بكلمة Sponsorship + فورم Partner) |
-| `media@` | الإعلام والصحافة |
+| `marhaba@` | **كل رسائل فورم Contact بجميع مواضيعها** (General/Speaking/Sponsorship/Media/Volunteering — لا توجيه حسب الموضوع بعد الآن) + نسخة من كل إشعار طلب Apply جديد |
+| `apply@` | إشعار كل طلب متحدث جديد (بكامل بياناته ورابط الفيديو — راجعها هنا) |
+| `partners@` | الرعايات والشراكات (فورم Partner inquiry + أي مراسلة شراكات مباشرة) |
+| `media@` | بريد مباشر فقط (المراسلات الصحفية اليدوية) — لا يصل منه شيء من الفورمات |
 
 > كلمة مرور كل صندوق سُلّمت سابقًا (WebMail — إن نسيتها، أبِدلها من hPanel أو راسل المطور).
 
@@ -106,7 +118,7 @@
 | 20–25 | تغيير رابط التذاكر (إن تغيّر) وتمديد الموعد (بمساعدة المطور) | الإلمام بالمهام الاستثنائية |
 | 25–30 | أسئلة وأجوبة | ضمان الفهم الكامل |
 
-> **ملاحظة المهام الاستثنائية**: تغيير `NEXT_PUBLIC_PLATINUMLIST_URL` و`APPLICATION_DEADLINE` (في `src/lib/constants.ts:1` — حاليًا `2026-09-30T23:59:59+04:00`) **يتطلب إعادة نشر الموقع** — يجريها المطور فقط (راجع `docs/09` §1.3).
+> **ملاحظة المهام الاستثنائية**: تغيير `NEXT_PUBLIC_PLATINUMLIST_URL` و`APPLICATION_DEADLINE` (في `src/lib/constants.ts:1` — حاليًا `2026-09-14T23:59:59+04:00`) **يتطلب إعادة نشر الموقع** — يجريها المطور فقط (راجع `docs/09` §1.3).
 
 ---
 
@@ -190,7 +202,7 @@
 | قسم الفريق بالرئيسية | حقل `showTeam` + `TeamPreview` (`src/components/home/TeamPreview.tsx` — 8 أعضاء كحد أقصى + زر "Meet the Team") + ترجمة `home.teamPreview` (en/ar) + النوع/الاستعلام — **نشر Studio محدّث** (مخطط + وصفه الجديد) |
 | دلالة الأعلام | الثلاثة لـ**قسم الرئيسية فقط** — أُزيلت بوابة `notFound()` من `speakers/page.tsx` و`team/page.tsx` نهائيًا (قرار العميل: الصفحتان مفتوحتان دائمًا وتعرضان «قريبًا» عند الفراغ) — أوصاف الـ schema نُقّحت «(Homepage)» |
 | طبقات الخريطة | تعتيم `bg-slate-900/20` فوق `LeafletMap` (`z-[450]` تحت العلامة/البوب أب) و`VenueMapSection` — لرفع تباين القراءة |
-| الفحص الشامل | خادم standalone (منفذ 3001): **56/56 فحصًا ناجحًا** — تفاصيل `docs/11` §1.3؛ Turnstile يتأكد من حزم JS (`render=explicit` + site key — بناء client-side متوقع) · `/api/contact` مؤكد `{"success":true}` بجسم صالح · `/en/apply` مفتوح (الموعد الافتراضي 2026-09-30) |
+| الفحص الشامل | خادم standalone (منفذ 3001): **56/56 فحصًا ناجحًا** — تفاصيل `docs/11` §1.3؛ Turnstile يتأكد من حزم JS (`render=explicit` + site key — بناء client-side متوقع) · `/api/contact` مؤكد `{"success":true}` بجسم صالح · `/en/apply` مفتوح (الموعد الافتراضي 2026-09-14) |
 | ملاحظة تشغيلية | إعادة `npm run build` تتطلب إيقاف خادم standalone أولًا (`EBUSY rmdir .next\standalone`) · `curl` في سكربتات PowerShell: لا تستخدم `-o NUL` (خطأ طول اسم الملف) — التقط `-o $tmp -w "%{http_code}"` |
 
 ---

@@ -28,17 +28,17 @@
 
 | الخدمة | الحالة | المفتاح المطلوب | أين يُقرأ في الكود |
 | :--- | :--- | :--- | :--- |
-| **Sanity CMS** | `⏳` (مشروع العميل الجديد `hisn3dku` جاهز وفارغ — نشر الـ Studio ينتظر دخول حساب العميل) | `NEXT_PUBLIC_SANITY_PROJECT_ID` · `SANITY_WEBHOOK_SECRET` | `src/lib/sanity.ts` · `src/app/api/revalidate/route.ts` |
+| **Sanity CMS** | `✅` (مضبوط — مشروع `hisn3dku`/`production` فيه 15 وثيقة والـ Studio منشور) | `NEXT_PUBLIC_SANITY_PROJECT_ID` · `SANITY_WEBHOOK_SECRET` | `src/lib/sanity.ts` · `src/app/api/revalidate/route.ts` |
 | **SMTP (Email)** | `✅` **مفعّل ومُختبَر فعليًا** (تحقق SMTP + 5 رسائل حقيقية) | `SMTP_USER` · `SMTP_PASS` | `src/lib/mailer.ts` |
-| **Google Sheets** | `⏳` (في انتظار الـ Service Account والـ private key) | `GOOGLE_PRIVATE_KEY` · `GOOGLE_SERVICE_ACCOUNT_EMAIL` · `GOOGLE_SHEET_ID` | `src/app/api/apply/route.ts` |
-| **Turnstile (Cloudflare)** | `⏳` (في انتظار مفتاحي الموقع والسر — يعمل Fail-Open حاليًا) | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` · `TURNSTILE_SECRET_KEY` | `src/lib/turnstile.ts` |
-| **Upstash Redis** | `⏳` (في انتظار الـ URL/Token — Rate Limiting صامت بدونها) | `UPSTASH_REDIS_REST_URL` · `UPSTASH_REDIS_REST_TOKEN` | `src/lib/rate-limit.ts` |
-| **Webhook إبطال الكاش** | `⏳` (يعمل الرمز — يحتاج نشر الـ Studio وتفعيل السر) | `SANITY_WEBHOOK_SECRET` | `src/app/api/revalidate/route.ts` |
-| **Platinumlist** | `✅` (الرابط مضبوط) | `NEXT_PUBLIC_PLATINUMLIST_URL` | `src/app/[locale]/tickets/page.tsx` |
+| **Google Sheets** | `✅` (مضبوط — الـ Service Account وID الجدول موجودان في `.env.local`) | `GOOGLE_PRIVATE_KEY` · `GOOGLE_SERVICE_ACCOUNT_EMAIL` · `GOOGLE_SHEET_ID` | `src/app/api/apply/route.ts` |
+| **Turnstile (Cloudflare)** | `✅` (مضبوط — Fail-Closed في الإنتاج: تُرفض الفورمات بدون مفاتيح) | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` · `TURNSTILE_SECRET_KEY` | `src/lib/turnstile.ts` |
+| **Upstash Redis** | `✅` (مضبوط — 5 طلبات/10 دقائق/فورم/IP) | `UPSTASH_REDIS_REST_URL` · `UPSTASH_REDIS_REST_TOKEN` | `src/lib/rate-limit.ts` |
+| **Webhook إبطال الكاش** | `✅` (مضبوط — Studio منشور والسر مفعّل) | `SANITY_WEBHOOK_SECRET` | `src/app/api/revalidate/route.ts` |
+| **Platinumlist** | `⏸️` (غير مستخدم حاليًا — صفحات `/tickets` مخفيّة بقرار العميل، والرابط محفوظ للتفعيل لاحقًا) | `NEXT_PUBLIC_PLATINUMLIST_URL` | لا يُقرأ في الكود حاليًا |
 | **Google Analytics 4** | `✅` (مفعّل — يُحمَّل في الإنتاج فقط) | `NEXT_PUBLIC_GA_ID` | `src/components/Analytics.tsx` |
 | **Security Headers + CSP** | `✅` (مفعّلة في `next.config.ts`) | — | `next.config.ts` |
 
-> **فلسفة Fail-Open**: الموقع يعمل بالكامل بلا أي مفتاح (بيانات تجريبية + تسجيل بالـ terminal) — كل `⏳` أعلاه تتحول تلقائيًا إلى تشغيل كامل بمجرد إضافة القيمة إلى `.env.local`. أدق مرجع لكل متغير: `docs/03-setup-and-env.md`.
+> **سلوك غياب المفاتيح**: لا توجد بيانات تجريبية — بدون مفاتيح Sanity تُخفى الأقسام الفارغة تلقائيًا. SMTP/Rate-limit تعمل Fail-Open في التطوير فقط (تسجيل خفيف بالـ terminal)، أما **Turnstile ففي الإنتاج Fail-Closed** (تُرفض الفورمات بـ 403). أدق مرجع لكل متغير: `docs/03-setup-and-env.md`.
 
 ---
 
@@ -49,7 +49,7 @@ npm install
 npm run dev
 ```
 
-افتح `http://localhost:3000` — الموقع كاملًا (EN/AR، 12 صفحة، كل الفورمات وAPIs) يعمل فورًا بلا إعداد.
+افتح `http://localhost:3000` — الموقع كاملًا (EN/AR، 9 صفحات، كل الفورمات وAPIs) يعمل فورًا بلا إعداد.
 
 للربط بالخدمات الحقيقية، انسخ القالب واملأ قيمك:
 

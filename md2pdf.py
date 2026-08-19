@@ -31,7 +31,7 @@ FONT_MONO = "DejaVu Sans Mono"
 CSS_TEMPLATE = """
 @page {{
   size: A4;
-  margin: 2.5cm 2cm 2cm 2cm;
+  margin: 1.8cm 1.2cm 1.6cm 1.2cm;
   @bottom-center {{
     content: "صفحة " counter(page) " من " counter(pages);
     font-family: "{fonts}", serif;
@@ -99,6 +99,7 @@ table {{
   border-collapse: collapse;
   margin: 16px 0;
   page-break-inside: auto;
+  table-layout: fixed;
 }}
 
 thead {{
@@ -114,7 +115,7 @@ th {{
   font-size: 10pt;
   text-align: center;
   border: 1px solid #881337;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }}
 
 td {{
@@ -122,17 +123,11 @@ td {{
   padding: 8px 12px;
   vertical-align: top;
   font-size: 10pt;
-  overflow-wrap: break-word;
-}}
-
-/* جداول عريضة بلا قواطع (مثل جدول DNS في 08): توزيع ثابت + كسر قسري */
-body.doc-08-deployment-hosting table {{
-  table-layout: fixed;
-}}
-
-body.doc-08-deployment-hosting td,
-body.doc-08-deployment-hosting th {{
   overflow-wrap: anywhere;
+}}
+
+td code, th code {{
+  word-break: break-all;
 }}
 
 tr:nth-child(even) {{

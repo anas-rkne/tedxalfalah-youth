@@ -37,7 +37,7 @@
 |---|---|---|---|
 | **1. CORS** | `src/lib/cors.ts` — `validateOrigin(request)` (سطر 13) | يقارن `Origin` الوارد بقائمة `ALLOWED_API_ORIGINS` (أو القائمة الثابتة: `www.tedxalfalahyouth.com`, `tedxalfalahyouth.com`, `localhost:3000`, `localhost:3001` — أسطر 3–8). طلبات بلا Origin تمر (أغلب أدوات الاختبار) | **403** `Forbidden: origin not allowed` (سطر 22) |
 | **2. Rate Limit** | `src/lib/rate-limit.ts` — `checkRateLimit(request, formKey)` (سطر 32) | نافذة منزلقة عبر Upstash: **5 طلبات لكل 10 دقائق لكل `formKey:IP`** (سطر 20) — مفتاح منفصل لكل فورم. يستخرج IP من `x-forwarded-for` ثم `x-real-ip` (أسطر 43–46). القيمتان `5` و`"10 m"` قابلتان للتعديل بسطر واحد | **429** `Too many requests. Please try again later.` |
-| **3. Turnstile** | `src/lib/turnstile.ts` — `verifyTurnstile(token)` (سطر 10) | يرسل الرمز لـ `challenges.cloudflare.com/turnstile/v0/siteverify` (سطر 23-33) ويتحقق أن `data.success === true`. بدون مفتاح: **Fail-Open** مع تحذير (سطر 11-15) | **403** `Verification failed. Please try again.` |
+| **3. Turnstile** | `src/lib/turnstile.ts` — دالة `verifyTurnstile(token)` | يرسل الرمز لـ `challenges.cloudflare.com/turnstile/v0/siteverify` ويتحقق أن `data.success === true`. بدون مفتاح (`TURNSTILE_SECRET_KEY`): **Fail-Open في وضع التطوير فقط** (تحذير + تمرير)؛ أما في **الإنتاج فهو Fail-Closed** — يُرفض الطلب (يرجع `false` → 403) | **403** `Verification failed. Please try again.` |
 | **4. Zod** | مخططات الـ routes — `applicationSchema` (`apply/route.ts:14`)، `contactSchema` (`contact/route.ts:9`)، `partnerSchema` (`partner-inquiry/route.ts:9`) | تحقق صارم من الشكل: إيميل صالح، أطوال، قيم enum، منطق `superRefine` الشرطي، حدود الكلمات | **400** + تفاصيل `z.error.flatten()` |
 | **5. Sanitization** | `src/lib/sanitize.ts` — `escapeHtml()` (سطر 9) + `sanitizePrivateKey()` (سطر 26) | يهرب `& < > " '` في كل نص مستخدم قبل إدراجه في قالب إيميل HTML (يمنع XSS عبر الحقول النصية). الثاني يصلح مفتاح Google (`\n` + 7-bit) قبل استخدامه في JWT | — (وقائي، لا يرفض) |
 | **6. Text Limits** | `ApplicationForm.tsx:29-31` + `route.ts:9-11` — `wordCount()` | `ideaSummary ≤ 300 كلمة` و`whyItMatters ≤ 150 كلمة` — يمنع إدخال نصوص ضخمة (DoS خفيف، تضخم إيميل/Sheet) | عدّاد حي + رفض `safeParse` عند الخادم |
@@ -89,9 +89,9 @@ default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudfl
 فورم Apply يجمع **بيانات شخصية لأطفال 10–14 سنة**: الاسم، العمر، المدرسة، فكرة المحاضرة + **بيانات أولياء الأمور**: الاسم ورقم الهاتف + إقرار موافقة (الحقول في `apply/route.ts:26-31` وحارس `superRefine` أسطر 36-49).
 
 ### 4.2 الحماية المطبقة (من الكود)
-- **التعقيم**: كل هذه البيانات تمر عبر `escapeHtml` قبل بناء الإشعار الإداري (`apply/route.ts:141-160`) — حتى لو كتب طفل `<script>...</script>` في أي حقل، يصل كنص معروض بلا تنفيذ (منع XSS في الإيميلات).
-- **لا تسجيل**: حتى في بيئة التطوير يُسجَّل فقط `[DEV] Application received for track "..."` (سطر 216-219) — التعليق في الكود (سطر 214-215): *"لا نسجّل بيانات الطلب الكاملة بالسجل (حتى محلياً) لأنها تحتوي بيانات شخصية حساسة لقُصَّر"*.
-- **لا تدفق للعموم**: لا يوجد أي تخزين/عرض عام لهذه البيانات — وجهتها الوحيدة: إيميل `apply@` (داخلي) + Google Sheet (اختياري).
+- **التعقيم**: كل هذه البيانات تمر عبر `escapeHtml` قبل بناء الإشعار الإداري (دالة `sendAdminNotification` في `apply/route.ts`) — حتى لو كتب طفل `<script>...</script>` في أي حقل، يصل كنص معروض بلا تنفيذ (منع XSS في الإيميلات).
+- **لا تسجيل**: حتى في بيئة التطوير يُسجَّل فقط `[DEV] Application received for track "..."` (فرع غياب إعدادات الـ Sheet داخل `POST`) — والتعليق في الكود أعلى `saveToGoogleSheet`: *"لا نسجّل بيانات الطلب الكاملة بالسجل (حتى محلياً) لأنها تحتوي بيانات شخصية حساسة لقُصَّر"*.
+- **لا تدفق للعموم**: لا يوجد أي تخزين/عرض عام لهذه البيانات — وجهتها الوحيدة: إيميلا `apply@` و`marhaba@` (داخليان) + Google Sheet (اختياري).
 
 > **تحذير أمني هام:** يجب أن يكون Google Sheet مقيّد الوصول (**Restricted**) وليس عامًا (ممنوع "Anyone with the link")، والوصول مقتصرًا على **أعضاء فريق المراجعة فقط** (بالبريد الإلكتروني، بحق Editor لـ `GOOGLE_SERVICE_ACCOUNT_EMAIL` وViewer للفريق). هذا التحذير مكتوب داخل الكود نفسه (`apply/route.ts:68-71`): *"لأنه يحتوي بيانات أطفال 10-14 سنة وبيانات أولياء أمورهم"*.
 

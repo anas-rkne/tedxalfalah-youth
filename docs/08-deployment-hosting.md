@@ -79,7 +79,7 @@
 > **تحذير خطير — `GOOGLE_PRIVATE_KEY`:** هذا المفتاح يحتوي أحرف `\n` (أسطر جديدة حرفيًا). عند لصقه في حقل بيئة داخل لوحة Hostinger **قد تُحذف الأسطر أو تُفسَّر خطأ** فيفشل اتصال Google Sheets بخطأ ByteString. الحلول الآمنة بالترتيب: ① رفع ملف `.env` كاملًا عبر File Manager (المفتاح بين علامتي اقتباس كما هو من Google Cloud بلا أي تعديل) — أو ② تشفيره base64 ووضعه كقيمة سطر واحد ثم فك التشفير في بيئة البناء. (وعلى أي حال يعالج الكود ما ورد من `\n`/غير-ASCII عبر `sanitizePrivateKey` في `src/lib/sanitize.ts:26-32` — لكن لا تعتمد عليه لتعويض لصق مكسور).
 
 **قائمة المتغيرات الكاملة قبل أول بناء** (من `.env.local.example`):
-`BASE_URL=https://tedxalfalahyouth.com` (أو www حسب النسخة المعتمدة — راجع 2.6) · `NEXT_PUBLIC_PLATINUMLIST_URL` · `NEXT_PUBLIC_VENUE_MAP_URL` · `ALLOWED_API_ORIGINS` · `SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS/EMAIL_FROM` · `ADMIN_APPLICATIONS_EMAIL/CONTACT_EMAIL/PARTNER_EMAIL/MEDIA_EMAIL` · `GOOGLE_SHEET_ID/GOOGLE_SERVICE_ACCOUNT_EMAIL/GOOGLE_PRIVATE_KEY` · `NEXT_PUBLIC_TURNSTILE_SITE_KEY/TURNSTILE_SECRET_KEY` · `UPSTASH_REDIS_REST_URL/UPSTASH_REDIS_REST_TOKEN` · `NEXT_PUBLIC_SANITY_PROJECT_ID/NEXT_PUBLIC_SANITY_DATASET` · `SANITY_WEBHOOK_SECRET` · `NEXT_PUBLIC_GA_ID`.
+`BASE_URL=https://tedxalfalahyouth.com` (أو www حسب النسخة المعتمدة — راجع 2.6) · `NEXT_PUBLIC_PLATINUMLIST_URL` · `NEXT_PUBLIC_VENUE_MAP_URL` · `ALLOWED_API_ORIGINS` · `SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS/EMAIL_FROM` · `ADMIN_APPLICATIONS_EMAIL/CONTACT_EMAIL/PARTNER_EMAIL` · `GOOGLE_SHEET_ID/GOOGLE_SERVICE_ACCOUNT_EMAIL/GOOGLE_PRIVATE_KEY` · `NEXT_PUBLIC_TURNSTILE_SITE_KEY/TURNSTILE_SECRET_KEY` · `UPSTASH_REDIS_REST_URL/UPSTASH_REDIS_REST_TOKEN` · `NEXT_PUBLIC_SANITY_PROJECT_ID/NEXT_PUBLIC_SANITY_DATASET` · `SANITY_WEBHOOK_SECRET` · `NEXT_PUBLIC_GA_ID` · (بقية `MEDIA_EMAIL` في القالب لكنه **لم يعد مستخدمًا في كود التوجيه** — كل رسائل فورم Contact تصِل `CONTACT_EMAIL`).
 
 **قاعدة ذهبية**: أي متغير يبدأ بـ `NEXT_PUBLIC_` يُدمج في كود المتصفح **وقت البناء** — يعني: ① لا تضع أي سر فيه إطلاقًا (سيظهر لأي زائر)، و② بأي تغيير عليه يجب **إعادة البناء** (Rebuild) وليس فقط إعادة تشغيل.
 
@@ -122,15 +122,15 @@
 > نفّذ بالترتيب — كل بند له دليل نصي؛ لا تنتقل للبند التالي قبل نجاح سابقه.
 
 1. **HTTPS/SSL**: تصفح `https://tedxalfalahyouth.com` — شهادة تلقائية (Let's Encrypt مجاني عبر Hostinger) وينبغي تفعيلها ضمن إعدادات التطبيق قبل الغاء الإصدار النهائي. تحقق من حماية الاتصال وتجددها تلقائيًا.
-2. **فحص الصفحات الأساسية**: `/`, `/speakers`, `/team`, `/apply`, `/tickets`, `/schedule`, `/venue`, `/faq` — باللغتين `/en` و`/ar` — كلها تعمل وتظهر المحتوى بصور سليمة (لا صور مكسورة من CDN).
-3. **فحص الفورمات (بريد حقيقي)**: أرسل طلب Apply + رسالة Contact — تأكد وصول **تأكيد المتقدم + الإشعار الإداري** إلى `apply@tedxalfalahyouth.com` ورسالة Contact إلى `marhaba@tedxalfalahyouth.com` (WebMail — وليس Spam؛ إن وصلت Spam فراجع SPF/DKIM في القسم 1).
+2. **فحص الصفحات الأساسية**: `/`, `/speakers`, `/team`, `/apply`, `/schedule`, `/venue`, `/faq` — باللغتين `/en` و`/ar` — كلها تعمل وتظهر المحتوى بصور سليمة (لا صور مكسورة من CDN). **ملاحظة:** `/tickets` مخفٍ حاليًا بطلب العميل ويجب أن يُعيد 404 (لا يُفحص كمحتوى).
+3. **فحص الفورمات (بريد حقيقي)**: أرسل طلب Apply + رسالة Contact — تأكد وصول **تأكيد المتقدم** إلى بريده الوهمي، و**الإشعار الإداري** إلى `apply@tedxalfalahyouth.com` **و`marhaba@tedxalfalahyouth.com` (نسخة)**, ورسالة Contact (أي موضوع) إلى `marhaba@tedxalfalahyouth.com` (WebMail — وليس Spam؛ إن وصلت Spam فراجع SPF/DKIM في القسم 1).
 4. **فحص Google Sheets**: افتح الـ Sheet وتأكد ظهور صف جديد بكامل الحقول (بعد تعبئة `GOOGLE_*` الثلاثة).
 5. **فحص Turnstile**: الودجت يظهر في الفورمات (بعد تعبئة المفتاحين) والقبول/الرفض يعمل بلا أخطاء في السجل.
 6. **فحص Rate Limiting**: أرسل 6 طلبات متتالية لنفس الفورم من نفس IP — الطلب السادس يعيد `429 Too many requests` (سجل التوكن يستقبلها: `rate-limit.ts:20` — 5/10د).
 7. **فحص Webhook**: انشر وثيقة `speaker` جديدة (isPublished: ON) في Studio → تظهر على `/speakers` حيًا خلال ثوانٍ بلا إعادة نشر يدوية (+ نتيجة `{"revalidated": true}` في سجل الطلب).
 8. **فحص SMTP داخلي**: تحقق من السجلات: اتصال `smtp.hostinger.com:465` ناجح بلا `ECONNREFUSED` (إن حُظر المنفذ من بيئة الاستضافة، اضبط إعدادات SMTP أو تواصل مع دعم Hostinger — الاختبار المعياري يعيد `SMTP-VERIFY-OK`).
 9. **فحص `BASE_URL`**: تأكد قيمته في الاستضافة هي `https://tedxalfalahyouth.com` (نسخة www إن اُعتمدت) — **ليست localhost** — وإلا خرّبت الروابط المطلقة في JSON-LD وصور المشاركات (راجع `docs/07` §2.3).
-10. **مراجعة السجلات**: Web Apps → Logs — بلا أخطاء متكررة (`ECONNREFUSED`, `[Sanity] Fetch failed`, `[MAILER]/[TURNSTILE]/[RATE LIMIT] not configured` — ء من الثلاثة الأخيرة تعني حماية معطلة، راجع `docs/06` §5 و`docs/10` §5).
+10. **مراجعة السجلات**: Web Apps → Logs — بلا أخطاء متكررة (`ECONNREFUSED`, `[Sanity] Fetch failed`, `[MAILER]/[TURNSTILE]/[RATE LIMIT] not configured`). **قراءة دقيقة:** في الإنتاج غياب `TURNSTILE_SECRET_KEY`/`UPSTASH_*` يُفشل الطلبات عمدًا (403/429 — fail-closed)، بينما غياب SMTP يبقى fail-open (الطلب يُقبل دون بريد). راجع `docs/06` §5 و`docs/10` §5/§6.
 11. **اختبار مقلب بعدها**: رابط `GET /api/revalidate?secret=<خطأ>` يعيد 401، ورابط Takedown غير مسموح الأصول يعيد 403 — حجر الزاوية الأمني قيد التفعيل.
 
 ---

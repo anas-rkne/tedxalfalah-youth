@@ -92,7 +92,7 @@
 2. **لاختبار الحد**: أرسل 6 طلبات متتالية لنفس الفورم من نفس IP — السادس يجب أن يعيد 429 (تحقق من السلوك المتوقع).
 3. **لزيادة الحد** (مطور): ارفع `5` إلى `10`/`20` في `src/lib/rate-limit.ts:20` — ثم أعد البناء.
 4. **شبكات عامة**: مدارس/مؤسسات تشارك IP واحد — عدة مستخدمين يفجرون الحد معًا. الحل: خفّف النافذة إلى `"5 m"` بدل `"10 m"` (نفس الاعتبار)، أو افصل حسب متغير إضافي (قرار معماري — راجع `docs/02`).
-5. **بدون Upstash**: يتحول Fail-Open فورًا (تحذير `[RATE LIMIT] not configured` بالسجل) — تحقق أن مفاتيح Upstash محمّلة في الإنتاج.
+5. **بدون Upstash**: في التطوير يتحول Fail-Open (تحذير `[RATE LIMIT] not configured` بالسجل)، أما **في الإنتاج فهو fail-closed — الطلبات تُرفض (429)**. تأكد أن مفاتيح Upstash محمّلة في الإنتاج.
 
 ---
 
@@ -106,7 +106,7 @@
 2. أضف `localhost` (أو `http://localhost:3000`) إلى حقل **Domains**.
 3. Save — ثم جرّب مجددًا (أعد تحميل الصفحة للحصول على توكن جديد؛ الرموز تنتهي صلاحيتها).
 
-**سلوك Fail-Open (تصميم مقصود):** بدون `TURNSTILE_SECRET_KEY` في `.env` (`src/lib/turnstile.ts:11`) يمر التحقق كاملًا بتحذير بالسجل — لتطوير أسرع. وبدون `NEXT_PUBLIC_TURNSTILE_SITE_KEY` لا يُعرض الودجت أصلًا (`TurnstileWidget.tsx:35`).
+**سلوك Fail-Open/Closed (مقصود):** بدون `TURNSTILE_SECRET_KEY` في `.env` (`src/lib/turnstile.ts:1`) يمر التحقق كاملًا بتحذير بالسجل **في التطوير فقط** — أما في **الإنتاج فغياب المفتاح يرفض الطلبات (403 — fail-closed)**. وبدون `NEXT_PUBLIC_TURNSTILE_SITE_KEY` لا يُعرض الودجت أصلًا (`TurnstileWidget.tsx:35`).
 > **متى يكون 403 تحذيرًا حقيقيًا؟** «Verification failed» رغم مفاتيح صحيحة = توكن منتهٍ — أعد تحميل الصفحة (زر الإرسال المزدوج سبب شائع: التوكن الأول استُهلك).
 
 **رسالة «Ignored message from wrong origin» في Console المتصفح:** تحذير **تشخيصي غير ضار** يُطلقه سكربت Cloudflare نفسه (`api.js`) — يستمع `api.js` لرسائل `window` كجزء من بروتوكوله الداخلي، وفي بيئة التطوير يصل إليه أحيانًا postMessage من الصفحة المحلية (`http://localhost:3000`) أو من أدوات الـ dev فيتجاهلها ويطبع السطر. **لا تؤثر على الودجت ولا على التحقق** (التحقق server-side عبر `siteverify` مستقل تمامًا)، ولا تظهر على نطاق الإنتاج. التحصينات المطبقة في `TurnstileWidget.tsx` (2026-08-13): تحميل السكربت بـ `?render=explicit` (إيقاف وضع auto-render ومسحه من الإضافات العالمية) + استدعاء `turnstile.remove(widgetId)` عند unmount لقتل أي iframe متبقٍ أثناء التنقل الداخلي (SPA) قبل وصول رسائله.
@@ -176,8 +176,8 @@
 | السجل (Log Line) | الملف المصدر | المعنى |
 |---|---|---|
 | `[MAILER] SMTP not configured` | `src/lib/mailer.ts:56` | البريد معطل مؤقتًا — الطلب يقبل |
-| `[TURNSTILE] ... not configured` | `src/lib/turnstile.ts:12` | حماية البوتات معطلة |
-| `[RATE LIMIT] Upstash not configured` | `src/lib/rate-limit.ts:37` | الحد الكمي غير نشط |
+| `[TURNSTILE] ... not configured` | `src/lib/turnstile.ts:12` | التطوير فقط يمر — في الإنتاج الطلبات تُرفض (403 — fail-closed) |
+| `[RATE LIMIT] Upstash not configured` | `src/lib/rate-limit.ts:40` | التطوير فقط يمر — في الإنتاج الطلبات تُرفض (429 — fail-closed) |
 | `[Sanity] Fetch failed` | `src/lib/data.ts:10` | فشل جلب المحتوى (يُطبع بالتطوير فقط) |
 | `Google Sheets save failed` | `src/app/api/apply/route.ts:211` | فشل الـ Sheet — الإشعار الإداري يكفي |
 | `ECONNREFUSED` | (الاتصال) | المنفذ محجوب (SMTP 465/أخرى) |

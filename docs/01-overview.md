@@ -37,7 +37,7 @@ TEDx هو برنامج أحداث محلية مستقل **مرخّص من TED** 
 الشعار الفرعي **"Tomorrow, Now."** موجود بمواضع متعددة:
 
 - وسم الموقع (`src/app/[locale]/layout.tsx:45`)
-- تذييل رسالة تأكيد التقديم (`src/app/api/apply/route.ts` — "Tomorrow, Now.<br />Tomorrow is shaped by what we do today.")
+- **وليست** في رسالة تأكيد التقديم: `sendConfirmationEmail` (`src/app/api/apply/route.ts`) تبدأ بـ "Your idea is in." وتنتهي بـ "Warm regards," ثم "TEDxAlFalah Youth Team" — بلا توقيع "Tomorrow, Now." ولا جملة "Tomorrow is shaped by what we do today."
 - `messages/en.json` السطر 65: `"tagline": "Tomorrow is shaped by what we do today."`
 - `messages/en.json` السطر 319: `"taglineMain": "Tomorrow is shaped by"` (جزء من Hero الكتابة المتدرجة في `src/components/home/Hero.tsx`)
 
@@ -63,25 +63,25 @@ TEDx هو برنامج أحداث محلية مستقل **مرخّص من TED** 
 |---|---|---|
 | 1 | استقبال طلبات المتحدثين بمسارين | صفحة `/apply` + `src/app/api/apply/route.ts` (مسارا `young-speaker` و`expert` بخانات وآلية مراجعة) |
 | 2 | تسويق الحدث وبناء الحضور | Hero مع عدّاد تنازلي، أقسام About/Theme/Highlights في `src/app/[locale]/page.tsx` |
-| 3 | بيع/تسجيل التذاكر عبر منصة خارجية | صفحة `/tickets` + زر يشير إلى `NEXT_PUBLIC_PLATINUMLIST_URL` (`src/app/[locale]/tickets/page.tsx` السطر 211) |
+| 3 | بيع/تسجيل التذاكر عبر منصة خارجية | زر خارجي إلى `NEXT_PUBLIC_PLATINUMLIST_URL` (رابط Platinumlist)؛ صفحة `/tickets` نفسها **مخفية حاليًا** — ترجع `notFound()` (`src/app/[locale]/tickets/page.tsx`) |
 | 4 | جذب الرعاة والشراكات | API خلفي `src/app/api/partner-inquiry/route.ts` + استفسارات Sponsorship في فورم التواصل `src/app/api/contact/route.ts` |
-| 5 | التواصل مع الجمهور واستفسارات الإعلام | فورم Contact في `src/components/contact/ContactBox.tsx` مع توجيه الصناديق حسب الموضوع (قسم 5.3 في `docs/05-forms-email-system.md`) |
+| 5 | التواصل مع الجمهور واستفسارات الإعلام | فورم Contact في `src/components/contact/ContactBox.tsx` — كل الرسائل تصِل صندوقًا واحدًا `CONTACT_EMAIL` (قسم 6 في `docs/05-forms-email-system.md`) |
 | 6 | بناء مصداقية البحث (SEO للمنظمين) | JSON-LD الثلاثي + sitemap/robots (انظر `docs/07-seo-and-analytics.md`) |
 
 ### 2.2 الجمهور المستهدف (3 فئات)
 
 **الفئة 1 — الشباب المتقدمون (10–14 سنة وأكثر):**
 - فورم `/apply` يقبل مسار "Young Speaker" — ويتطلب بيانات ولي الأمر والموافقة الأبوية (تحقق شرطي في `applicationSchema.superRefine`، أسطر 33–46 في `route.ts`).
-- الإشعار الإداري بكل البيانات يصل إلى `apply@tedxalfalahyouth.com`، وتُحفظ البيانات في Google Sheets بمجرد التفعيل.
+- الإشعار الإداري بكل البيانات يصل إلى صندوقين معًا: `ADMIN_APPLICATIONS_EMAIL` (`apply@tedxalfalahyouth.com`) و`CONTACT_EMAIL` (`marhaba@tedxalfalahyouth.com`)؛ وتُحفظ البيانات في Google Sheets بمجرد التفعيل.
 - قيود النصوص: ملخص الفكرة ≤ 300 كلمة، "لماذا تهمك الفكرة" ≤ 150 كلمة.
 
 **الفئة 2 — أولياء الأمور والحضور:**
-- صفحة `/tickets` (أنواع التذاكر، معلومات اليوم، ما يجب إحضاره، سياسة الاسترجاع) مع **زر شراء خارجي عبر Platinumlist** — لا يوجد دفع داخل الموقع.
+- صفحة `/tickets` **مخفية حاليًا** (تُرجع `notFound()` — قرار العميل): معلومات التذاكر وزر الشراء الخارجي عبر Platinumlist جاهزان في الكود لكن لا يُعرضان للزوار — لا يوجد دفع داخل الموقع.
 - صفحة `/venue` (خريطة + موقع + معرض) وصفحات `/schedule` و`/faq`.
 - الثنائية اللغوية الكاملة (EN/AR مع RTL) تخدم الجمهورين المحلي والدولي.
 
 **الفئة 3 — رعاة الشركات والشركاء:**
-- واجهة "Sponsorship" في فورم Contact تُوجّه لصندوق `partners@` (`src/app/api/contact/route.ts` — خريطة `inboxBySubject`).
+- واجهة "Sponsorship" في فورم Contact تُرسل كسائر رسائل الفورم إلى `CONTACT_EMAIL` (`marhaba@`) — قيمة `subject` لا تغيّر المتلقي، بل تُدرَج في جسم الإيميل فقط.
 - API مخصص `partner-inquiry` جاهز (بلا واجهة منشورة حاليًا — انظر الملاحظة في القسم 5.2) يرسل كامل بيانات الاستفسار لصندوق الشراكات.
 
 ---
@@ -147,7 +147,7 @@ TEDx هو برنامج أحداث محلية مستقل **مرخّص من TED** 
    ```ts
    const isTurnstileConfigured = Boolean(process.env.TURNSTILE_SECRET_KEY);
    ```
-   وعند غيابه يكتب تحذيرًا ويكمل، ثم يرجع `true` (تمرير) بدل إسقاط التحقق. التحذير النصي (سطر 13): *"TURNSTILE_SECRET_KEY not configured — request allowed without bot verification. Add it before going live."*
+   عند غياب المفتاح: في وضع **التطوير** يكتب تحذيرًا ويرجع `true` (تمرير) لتسهيل الاختبار المحلي (تحذير سطر 20: *"TURNSTILE_SECRET_KEY not configured — request allowed without bot verification. Add it before going live."*)؛ أما في **الإنتاج** فلا يسمح أبدًا بالمرور — يرجع `false` ويُرفض الطلب بـ 403 (تحذير سطر 15: *"TURNSTILE_SECRET_KEY is missing in production — requests rejected."*).
 
 2. **Rate Limit** — `src/lib/rate-limit.ts:38`: عند غياب `UPSTASH_REDIS_REST_URL/TOKEN` يُسجَّل تحذير مماثل ويُسمح بالطلب.
 
@@ -157,7 +157,7 @@ TEDx هو برنامج أحداث محلية مستقل **مرخّص من TED** 
 
 5. **Sanity** — `fetchSanity` ترجع `null` عند أي خطأ وتبلغ فقط في وضع التطوير (`src/lib/data.ts:9`).
 
-> **تنبيه أمني (من تعليقات الكود نفسها):** التحذيرات أعلاه موجهة للمطور — الوضع Fail-Open مقبول للتطوير، لكن **لا تُطلق الموقع للجمهور دون تفعيل Turnstile وRate Limit على الأقل**، وخاصة أن فورم Apply يجمع بيانات أطفال وأولياء أمور (انظر تعليق الحماية في `src/app/api/apply/route.ts` أعلى `saveToGoogleSheet`).
+> **تنبيه أمني (من تعليقات الكود نفسها):** وضع Fail-Open مقبول للتطوير فقط — فبدون `TURNSTILE_SECRET_KEY` في الإنتاج تُرفض طلبات الفورمات بـ 403 (Fail-Closed)، وبدون Upstash لا يعمل تحديد عدد الطلبات. **لا تُطلق الموقع للجمهور دون تفعيل Turnstile وRate Limit**، وخاصة أن فورم Apply يجمع بيانات أطفال وأولياء أمور (انظر تعليق الحماية في `src/app/api/apply/route.ts` أعلى `saveToGoogleSheet`).
 
 ---
 
@@ -169,18 +169,18 @@ TEDx هو برنامج أحداث محلية مستقل **مرخّص من TED** 
 | إظهار/إخفاء أقسام المتحدثين والرعاة | مخفية (لا يوجد مستند `eventInfo`) — وهو المطلوب حاليًا | تظهر بتبديل المفتاحين في Studio | Studio → نوع `eventInfo` | — |
 | تحديث الموقع عند تغيير المحتوى | يدوي (إعادة بناء) | تلقائي عبر Webhook | `manage.sanity.io` → Webhooks → `/api/revalidate` | `SANITY_WEBHOOK_SECRET` |
 | حفظ طلبات التقديم | لا يُحفظ (يصل الإشعار الإداري فقط على apply@) | يُحفظ صف جديد في Google Sheet تلقائيًا | Google Cloud (Service Account) + Sheet مشاركة Editor | `GOOGLE_SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY` |
-| إيميل تأكيد المتقدم + الإشعار الإداري | ✅ **يعمل فعليًا** عبر SMTP | نفس السلوك (فوري) | `src/lib/mailer.ts` + `.env.local` | `SMTP_*`, `EMAIL_FROM`, `ADMIN_APPLICATIONS_EMAIL` |
-| فورم Contact بتوجيه الصناديق | ✅ **يعمل فعليًا** (General→marhaba@، Sponsorship→partners@، Media→media@) | نفس السلوك | `src/app/api/contact/route.ts` | `CONTACT_EMAIL`, `PARTNER_EMAIL`, `MEDIA_EMAIL` |
+| إيميل تأكيد المتقدم + الإشعار الإداري | ✅ **يعمل فعليًا** عبر SMTP | نفس السلوك (فوري) | `src/lib/mailer.ts` + `.env.local` | `SMTP_*`, `EMAIL_FROM`, `ADMIN_APPLICATIONS_EMAIL`, `CONTACT_EMAIL` (الإشعار الإداري يُرسل للصندوقين معًا) |
+| فورم Contact | ✅ **يعمل فعليًا** — كل الرسائل تصِل `CONTACT_EMAIL` (marhaba@)، وقيمة `subject` تُدرَج في جسم الإيميل فقط (لا توجيه حسب الموضوع) | نفس السلوك | `src/app/api/contact/route.ts` | `CONTACT_EMAIL` |
 | استفسارات الرعاة (API) | ✅ يعمل عند الاستدعاء (بلا واجهة) | واجهة نشر عند الحاجة | Route + (لاحقًا) صفحة Partners | `PARTNER_EMAIL` |
-| حماية الفورمات من البوتات | تمرير آمن (Fail-Open) مع تحذير | فحص Turnstile حقيقي | dash.cloudflare.com → Turnstile | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` |
+| حماية الفورمات من البوتات | تطوير: تمرير مع تحذير (Fail-Open) / إنتاج: رفض بـ 403 (Fail-Closed) | فحص Turnstile حقيقي | dash.cloudflare.com → Turnstile | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` |
 | تحديد عدد الطلبات | بلا تحديد (Fail-Open) | 5 طلبات/10 د/فورم/IP | console.upstash.com | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` |
-| التذاكر | ✅ صفحة كاملة + زر Platinumlist خارجي | نفس السلوك (لا دفع داخلي أبدًا) | `src/app/[locale]/tickets/page.tsx` | `NEXT_PUBLIC_PLATINUMLIST_URL` (موجود) |
+| التذاكر | ✅ الصفحة **مخفية حاليًا** (`notFound()` — قرار العميل)؛ الزر الخارجي لـ Platinumlist جاهز في الكود | تظهر عند طلب العميل (لا دفع داخلي أبدًا) | `src/app/[locale]/tickets/page.tsx` | `NEXT_PUBLIC_PLATINUMLIST_URL` (موجود) |
 | التحليلات GA4 | ✅ مفعّل | نفس السلوك | `src/components/Analytics.tsx` | `NEXT_PUBLIC_GA_ID` (موجود) |
 | الخرائط | ✅ خريطة Leaflet (الرئيسية) + iframe (المكان) | نفس السلوك | `src/components/ui/LeafletMap.tsx` + `VenueMapSection` | `NEXT_PUBLIC_VENUE_MAP_URL` (موجود) |
 | الخطوط/البناء بلا إنترنت | ✅ محلية | نفس السلوك | `layout.tsx` | — |
 | النشر | يعمل محليًا (start:3000) | على استضافة Hostinger Node (Web App) | hPanel (انظر `docs/08-deployment-hosting.md`) | كل المتغيرات بإعدادات الموقع |
 
-> **ملاحظة حول التذاكر:** لا يوجد مسار API للتذاكر (`src/app/api/tickets/route.ts`) — **لم يتم العثور على هذا الملف في الكود**. صفحة التذاكر صفحة عرض وتسويق، والشراء يتم خارجيًا عبر "Proceed" إلى Platinumlist. ولا يوجد `STRIPE_SECRET_KEY` في `.env.local.example` نهائيًا (مؤشر قاطع على عدم اعتماد Stripe).
+> **ملاحظة حول التذاكر:** لا يوجد مسار API للتذاكر (`src/app/api/tickets/route.ts`) — **لم يتم العثور على هذا الملف في الكود**. صفحة `/tickets` ترجع `notFound()` حاليًا (قرار العميل)، وكذلك `/tickets/success` و`/tickets/cancel`. الشراء يتم خارجيًا عبر زر إلى Platinumlist، ولا يوجد `STRIPE_SECRET_KEY` في `.env.local.example` نهائيًا (مؤشر قاطع على عدم اعتماد Stripe).
 
 ---
 
@@ -194,7 +194,7 @@ TEDx هو برنامج أحداث محلية مستقل **مرخّص من TED** 
   nodemailer.createTransport({ host: "smtp.hostinger.com", port: 465, secure: true, auth: { user, pass } })
   ```
 - حزمة `resend` **محذوفة نهائيًا** من `package.json` (رفعت في المرحلة النهائية قبل النشر) — لا توجد أي إشارة لها في الكود.
-- المكاسب: لا تحقق DNS خارجي، رسائل حقيقية فورية من دومين العميل نفسه، وتوجه حسب الموضوع إلى الصناديق المختصة.
+- المكاسب: لا تحقق DNS خارجي، رسائل حقيقية فورية من دومين العميل نفسه، والتسليم إلى صناديق العميل على نفس الخادم دون وسيط (الاستثناء: فورم Contact يرسل كل الرسائل إلى صندوق واحد `CONTACT_EMAIL` — التوجيه الخاص بالصناديق يخص Apply وPartner فقط).
 
 ### 5.2 فصل Sanity Studio
 
@@ -216,7 +216,7 @@ TEDx هو برنامج أحداث محلية مستقل **مرخّص من TED** 
 ### 5.4 اعتماد Platinumlist للتذاكر (وليس Stripe)
 
 - `.env.local.example`: `NEXT_PUBLIC_PLATINUMLIST_URL=https://platinumlist.net/event/tedx-youth-alfalah` ✅
-- `src/app/[locale]/tickets/page.tsx:211`: زر يشير إلى `process.env.NEXT_PUBLIC_PLATINUMLIST_URL || "https://platinumlist.net/event/tedx-youth-alfalah"`
+- `src/app/[locale]/tickets/page.tsx:211`: زر يشير إلى `process.env.NEXT_PUBLIC_PLATINUMLIST_URL || "https://platinumlist.net/event/tedx-youth-alfalah"` — (الصفحة نفسها ترجع `notFound()` حاليًا، والكود قائم تحسبًا لإظهارها)
 - **لا يوجد** `STRIPE_SECRET_KEY` في أي ملف أو متغير، ولا يوجد مسار دفع في الكود → التذاكر تُباع خارجيًا حصريًا.
 
 ### 5.5 فروق إضافية
@@ -245,16 +245,16 @@ TEDx هو برنامج أحداث محلية مستقل **مرخّص من TED** 
 | **SSG / Static Generation** | توليد الصفحات وقت البناء — مخرجات `next build` صنّفت `/_not-found` و`/robots.txt` و`/sitemap.xml` كمسارات ثابتة (○)، بينما صفحات `[locale]` الـ12 ومسارات API الأربعة ديناميكية (ƒ) تُقدَّم عند الطلب مع كاش وإعادة توليد عبر Webhook. |
 | **CSP** | سياسة أمان المحتوى (`Content-Security-Policy`) في `next.config.ts` — قائمة بيضاء صارمة للمصادر (Sanity API، Cloudflare، GTM، Google Maps...). |
 | **eventInfo** | نوع Sanity (مستند تحكم واحد) بحقول `date`/`venue` و**المفاتيح الثلاثة** `showSpeakers`/`showSponsors`/`showTeam` التي تتحكم بقسم الرئيسية المقابل فقط — الصفحات المستقلة (`/speakers`، `/team`) تفتح دائمًا بحالة «قريبًا» (غياب الأعلام = إخفاء إرادي). |
-| **Fail-Open** | سياسة عدم الفشل عند غياب المفاتيح: تمرير الطلب مع تحذير في السجل (Turnstile/Rate Limit/Mailer/Sheets/Sanity). |
+| **Fail-Open / Fail-Closed** | سياسة عدم الفشل عند غياب المفاتيح: تمرير الطلب مع تحذير في السجل (Rate Limit/Mailer/Sheets/Sanity — وTurnstile في أوضاع التطوير فقط). أما Turnstile في الإنتاج فهو **Fail-Closed**: غياب `TURNSTILE_SECRET_KEY` = رفض الطلب بـ 403. |
 | **Mock Data** | **لم يتم العثور على `src/lib/mock-data.ts` في الكود** — البيانات التجريبية عبارة عن وثائق منشورة فعلًا في Sanity (8 وثائق)، والسلوك عند غياب الإعداد هو فراغ آمن. |
-| **Platinumlist** | منصة تذاكر خارجية في الإمارات — وجهة زر الشراء في `/tickets` عبر `NEXT_PUBLIC_PLATINUMLIST_URL`. |
+| **Platinumlist** | منصة تذاكر خارجية في الإمارات — وجهة زر الشراء المرتقبة في `/tickets` (الصفحة مخفية حاليًا) عبر `NEXT_PUBLIC_PLATINUMLIST_URL`. |
 | **Upstash Redis** | خدمة Redis سحابية — يستخدمها `src/lib/rate-limit.ts` عبر `@upstash/ratelimit` لتحديد 5 طلبات/10 د/فورم/IP. |
 | **Turnstile** | خدمة Cloudflare لمكافحة البوتات — widget في `src/components/ui/TurnstileWidget.tsx` وتحقق server-side في `src/lib/turnstile.ts`. |
 | **SMTP / nodemailer** | بروتوكول إرسال البريد مع مكتبة Node — ناقل الإرسال الحالي عبر Hostinger (`src/lib/mailer.ts`). |
 | **Sanity Webhook / revalidate** | إشعار Sanity لـ `/api/revalidate` (`src/app/api/revalidate/route.ts`) — يستدعي `revalidatePath` للصفحات المرتبطة بالنوع عبر `TYPE_PATH_MAP`، محميًا بـ `SANITY_WEBHOOK_SECRET`. |
 | **JSON-LD** | بيانات Schema.org المدمجة في HTML (Organization/WebSite/Event) عبر `src/lib/json-ld.ts` + مكوّن `JsonLd.tsx` — لتحسين ظهور نتائج البحث. |
 | **isPublished / wave** | حقلا Sanity: `isPublished` يفلتر المنشور فقط في كل الاستعلامات؛ `wave` يحدد ترتيب إعلان المتحدثين (1,2,3...). |
-| **APPLICATION_DEADLINE** | ثابت في `src/lib/constants.ts` = `2026-09-30T23:59:59+04:00` — يغلق فورم التقديم تلقائيًا ويعرض رسالة بديلة. |
+| **APPLICATION_DEADLINE** | ثابت في `src/lib/constants.ts` = `2026-09-14T23:59:59+04:00` — يغلق فورم التقديم تلقائيًا ويعرض رسالة بديلة. |
 
 ---
 

@@ -81,13 +81,13 @@ tedxalfalahyouth-website/
 │   │   │   ├── activations/    ← الأنشطة في المكان
 │   │   │   ├── schedule/       ← جدول اليوم + فلاتر + SchedulePageClient
 │   │   │   ├── apply/          ← فورم المسارين + Timeline 11 مرحلة + FAQ
-│   │   │   ├── tickets/        ← التذاكر + subroutes success/ + cancel/
+│   │   │   ├── tickets/        ← التذاكر (مخفية — notFound) + success/ وcancel/ (مخفيان أيضًا)
 │   │   │   ├── venue/          ← الخريطة + معرض المكان
 │   │   │   ├── faq/            ← الأسئلة الشائعة
 │   │   │   └── thank-you/      ← شكر بعد الفورمات
 │   │   ├── api/                ← مسارات الخادم (4)
 │   │   │   ├── apply/route.ts          ← POST طلبات التقديم (Sheet + إيميلان)
-│   │   │   ├── contact/route.ts        ← POST فورم التواصل (توجيه حسب الموضوع)
+│   │   │   ├── contact/route.ts        ← POST فورم التواصل (كل الرسائل إلى CONTACT_EMAIL)
 │   │   │   ├── partner-inquiry/route.ts← POST استفسارات الشراكات (بلا واجهة حاليًا)
 │   │   │   └── revalidate/route.ts     ← POST Webhook Sanity (revalidatePath)
 │   │   ├── robots.ts           ← robots.txt تلقائي من BASE_URL
@@ -107,7 +107,7 @@ tedxalfalahyouth-website/
 │   │   ├── team/ activations/ venue/ thankyou/  ← بطاقات الصفحات
 │   │   └── ui/                 ← مكوّنات عامة: Button, Input, Modal, LeafletMap, flip-clock,
 │   │                            globe, tedx-globe, TurnstileWidget, SafeImage, ScrollSection,
-│   │                            ScrollReveal, PageTransition, LanguageSwitcher, CustomCursor, ...
+│   │                            ScrollReveal, PageTransition, LanguageSwitcher, ...(مكوّن CustomCursor حُذف)
 │   │
 │   ├── lib/                    ← منطق الخادم والمشارك
 │   │   ├── sanity.ts           ← العميل + urlFor + isSanityConfigured
@@ -162,14 +162,14 @@ tedxalfalahyouth-website/
 │ 3. applicationSchema.safeParse    [zod]       │ ← بيانات غير صحيحة → 400
 │ 4. verifyTurnstile(token)         [turnstile] │ ← بوت → 403
 │ 5. saveToGoogleSheet(data)   (إن وُجِدت إعدادات)│ ← فشل = تحذير فقط (غير قاتل)
-│ 6. sendMail → تأكيد المتقدم (النص الحرفي)      │
-│ 7. sendMail → إشعار إداري لـ apply@            │ ← فشل = تحذير فقط
+│ 6. sendMail → تأكيد المتقدم (نص معتمد)           │
+│ 7. sendMail → إشعار إداري: apply@ + marhaba@     │ ← فشل = تحذير فقط
 └───────────────────────────────────────────────┘
    ▼
 JSON { "success": true } → الفورم يعرض النجاح ويحوّل /thank-you
 ```
 
-الأمر نفسه تقريبًا لـ `/api/contact` (مخطط أصغر + توجيه الصندوق حسب `subject`) و`/api/partner-inquiry`. كل طبقة (1–7) موجودة كدالة حقيقية في `src/lib/` — بدون أي "منطق وهمي".
+الأمر نفسه تقريبًا لـ `/api/contact` (مخطط أصغر — كل الرسائل تصِل صندوقًا واحدًا `CONTACT_EMAIL` مع إدراج `subject` في جسم الإيميل) و`/api/partner-inquiry` (إلى `PARTNER_EMAIL`). كل طبقة (1–7) موجودة كدالة حقيقية في `src/lib/` — بدون أي "منطق وهمي".
 
 ### 3.2 تدفق بيانات Sanity → الصفحات
 
@@ -216,11 +216,12 @@ nodemailer.createTransport({ host: smtp.hostinger.com, port: 465, secure: true, 
 SMTP Hostinger (SSL 465 — اختبرناه: SMTP-VERIFY-OK)
    ▼
 ┌──────────────────────────────────────────────────────────────┐
-│ التوجيه حسب الصندوق:                                         │
-│  apply/route.ts        → to = data.email (تأكيد)             │
-│                        → to = ADMIN_APPLICATIONS_EMAIL        │
-│  contact/route.ts      → Sponsorship→PARTNER_EMAIL           │
-│                          Media→MEDIA_EMAIL ← الباقي→CONTACT_EMAIL │
+│ التوجيه النهائي:                                             │
+│  apply/route.ts        → to = data.email (تأكيد المتقدم)     │
+│                        → to = ADMIN_APPLICATIONS_EMAIL +     │
+│                           CONTACT_EMAIL (إشعار إداري موازٍ)  │
+│  contact/route.ts      → to = CONTACT_EMAIL دائمًا           │
+│                           (كل الرسائل؛ subject بالجسم فقط)   │
 │  partner-inquiry/route→ to = PARTNER_EMAIL                   │
 │  كلها: from = EMAIL_FROM (marhaba@... اسم حقيقي)               │
 └──────────────────────────────────────────────────────────────┘
@@ -305,7 +306,7 @@ nodemailer.createTransport({ host: "smtp.hostinger.com", port: 465, secure: true
 
 **المنطق** (من التحليل والتوثيق السابق): إرسال Resend يتطلب حسابًا خارجيًا + تحقق DNS من ملكية الدومين + `RESEND_API_KEY`. هذا حاجز إضافي قبل "الإطلاق" ويزيد نقاط الفشل. الصناديق التي يملكها العميل على Hostinger (على نفس الدومين) جاهزة **اليوم** وبيانات SMTP معروفة؛ فالتحويل يمنح:
 - تحكمًا كاملًا بالمرسل (`from`) على دومين مملوك.
-- توصيلًا فوريًا للصناديق المختصة (apply@/partners@/media@/marhaba@) بدون وسيط.
+- توصيلًا فوريًا للصناديق المختصة المستخدمة فعليًا (تأكيد المتقدم ← بريده، إشعار إداري ← apply@ وmarhaba@، شراكات ← partners@) بدون وسيط.
 - عمل Fail-Open سلس في التطوير (تحذير بدل فشل).
 - النتيجة: البريد **مفعّل ومختبر فعليًا** (5 إرسالات ناجحة) بينما لو بقي Resend لكان الموقع بلا قدرة إرسال حتى يوفّر العميل مفتاح الدومين.
 
@@ -320,10 +321,10 @@ nodemailer.createTransport({ host: "smtp.hostinger.com", port: 465, secure: true
 - **الالتزام بالهوية**: خطان بنفس الأسماء القديمة (`--font-inter`, `--font-noto-kufi-arabic`) حتى لا تتغير المتغيرات في CSS.
 - (بقايا قديمة): `next.config.ts` ما زال يسمح بـ `fonts.gstatic.com` و`fonts.googleapis.com` في CSP `font-src/style-src` — أسطر بلا مستخدم فعلي الآن، ويُفضّل إزالتها في مراجعة أمنية لاحقة.
 
-### 6.3 لماذا سياسة Fail-Open في كل الخدمات؟
+### 6.3 لماذا سياسة Fail-Open في أغلب الخدمات (مع استثناء Turnstile في الإنتاج)؟
 
 **الدليل — أربعة مواضع صريحة**:
-- `src/lib/turnstile.ts:11` — غياب المفتاح → تحذير → `return true`.
+- `src/lib/turnstile.ts:11` — غياب المفتاح: في التطوير → تحذير → `return true`؛ في **الإنتاج** → تحذير → `return false` (الطلب يُرفض بـ 403).
 - `src/lib/rate-limit.ts:36` — غياب Upstash → تحذير → `{ allowed: true }`.
 - `src/lib/mailer.ts` — غياب SMTP → تحذير → الإيميل يُتخطى والطلب يكمل.
 - `src/lib/data.ts:4` — غياب Sanity → `null` → قوائم فارغة.
@@ -331,7 +332,7 @@ nodemailer.createTransport({ host: "smtp.hostinger.com", port: 465, secure: true
 
 **المنطق**: التطوير المحلي يجب ألا يتطلب إنشاء حسابات في 4 خدمات سحابية قبل كتابة سطر واحد من الكود؛ والموقع يجب أن **يعمل دائمًا** (بصريًا ووظيفيًا) أثناء مراحل العرض على العميل. الثمن معروف ومقبول مؤقتًا: حماية أضعف قبل الإطلاق.
 
-> **تحذير هام (من تعليقات الكود نفسها):** وضع Fail-Open **ليس وضعًا للإنتاج**. قبل الإطلاق العام يجب تفعيل Turnstile وUpstash على الأقل (فورم Apply يجمع بيانات قُصَّر وأولياء أمور). توجد تحذيرات `console.warn` صريحة في كل ملف تبدو في سجل الخادم — يجب ألا يبقى أي منها يوم النشر.
+> **تحذير هام (من تعليقات الكود نفسها):** وضع Fail-Open **ليس وضعًا للإنتاج** (وTurnstile أصلًا **Fail-Closed** في الإنتاج — يرفض الطلبات بـ 403 دون مفتاح). قبل الإطلاق العام يجب تفعيل Turnstile وUpstash على الأقل (فورم Apply يجمع بيانات قُصَّر وأولياء أمور). توجد تحذيرات `console.warn` صريحة في كل ملف تبدو في سجل الخادم — يجب ألا يبقى أي منها يوم النشر.
 
 ### 6.4 لماذا `sw.js` يتجاوز الطلبات غير الأصلية ويخطي مرحلة الانتظار؟
 
@@ -355,7 +356,7 @@ caches.keys().filter(key => key !== CACHE_NAME).map(key => caches.delete(key)) /
 ### 6.6 لماذا المواعيد والعمر كما هي؟
 
 **الدليل — قيم حرفية في الكود والترجمات**:
-- `src/lib/constants.ts:1`: `APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00"` — **UTC+4 (توقيت الإمارات) صريحًا**، تُستخدم في `src/app/[locale]/apply/page.tsx:28` و`src/components/home/ApplyBanner.tsx:9` لإغلاق الفورم كليًا بعد الموعد.
+- `src/lib/constants.ts:1-2`: `APPLICATION_DEADLINE = "2026-09-14T23:59:59+04:00"` — **UTC+4 (توقيت الإمارات) صريحًا**، تُستخدم في `src/app/[locale]/apply/page.tsx:28` و`src/components/home/ApplyBanner.tsx:9` لإغلاق الفورم كليًا بعد الموعد.
 - التاريخ النهائي للحدث: `2026-12-19` (احتياط JSON-LD في `json-ld.ts:28` + مستند `eventInfo` عند توافره).
 - الساعات: `messages/en.json:698` → `"timeValue": "9:00 AM – 5:00 PM"` (معلومات التذاكر).
 - العمر: `messages/en.json:703` → `"ageValue": "Open to all ages; recommended for 13+"` (وFAQ السطر 764: يُنصح بـ 10+، ومسار المتحدث الشاب 10–18، وتحقق الفورم `ageRange 10–99`).

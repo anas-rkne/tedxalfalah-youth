@@ -10,12 +10,12 @@
 
 | الفورم | مسار الـ API | مكان الظهور في الواجهة | الغرض | نموذج البيانات (zod) |
 |---|---|---|---|---|
-| **Apply** (تقديم كمتحدث) | `POST /api/apply` | `src/components/apply/ApplicationForm.tsx` — صفحة `/apply` (قسم 4 من الصفحة) | جمع طلبات المتحدثين (شبان 10–18 وخبراء) ببيانات أولياء الأمور | `applicationSchema` — `src/app/api/apply/route.ts:14-58` (18+ حقلاً مع `superRefine`) |
-| **Contact** (تواصل) | `POST /api/contact` | `src/components/contact/ContactBox.tsx` (ملفوف بـ `ContactBoxWrapper`) — أسفل صفحة الرئيسية | رسائل عامة للمنظمة | `contactSchema` — `src/app/api/contact/route.ts:9-21` |
-| **Partner Inquiry** (شراكة) | `POST /api/partner-inquiry` | **لا توجد واجهة حاليًا** — الـ API مبرمج وجاهز | استفسارات الرعايات/الشراكات | `partnerSchema` — `src/app/api/partner-inquiry/route.ts:9-16` |
-| **Tickets** (تذاكر) | **لا يوجد `/api/tickets`** | زر شراء خارجي في صفحة `/tickets` | التوجيه لمنصة Platinumlist الخارجية | — (لا نموذج zod؛ الضغط = رابط خارجي) |
+| **Apply** (تقديم كمتحدث) | `POST /api/apply` | `src/components/apply/ApplicationForm.tsx` — صفحة `/apply` (قسم 4 من الصفحة) | جمع طلبات المتحدثين (شبان 10–18 وخبراء) ببيانات أولياء الأمور | `applicationSchema` — مخطط داخل `src/app/api/apply/route.ts` (20 حقلاً مع `superRefine`) |
+| **Contact** (تواصل) | `POST /api/contact` | `src/components/contact/ContactBox.tsx` (ملفوف بـ `ContactBoxWrapper`) — أسفل صفحة الرئيسية | رسائل عامة للمنظمة | `contactSchema` — مخطط داخل `src/app/api/contact/route.ts` |
+| **Partner Inquiry** (شراكة) | `POST /api/partner-inquiry` | **لا توجد واجهة حاليًا** — الـ API مبرمج وجاهز | استفسارات الرعايات/الشراكات | `partnerSchema` — مخطط داخل `src/app/api/partner-inquiry/route.ts` |
+| **Tickets** (تذاكر) | **لا يوجد `/api/tickets`** | صفحة `/tickets` **مخفية حاليًا** (`notFound()` — قرار العميل)؛ زر Platinumlist الخارجي جاهز في الكود | التوجيه لمنصة Platinumlist الخارجية | — (لا نموذج zod؛ الضغط = رابط خارجي) |
 
-> **توضيح التذاكر (محقق):** لا يوجد ملف `src/app/api/tickets/route.ts` في المشروع. صفحة التذاكر تعرض المعلومات + زر يوجّه إلى `NEXT_PUBLIC_PLATINUMLIST_URL` (`src/app/[locale]/tickets/page.tsx:211`). أي إشارة قديمة في README إلى "فورم Tickets يحفظ في Google Sheet" **غير مطابقة للكود الحالي**.
+> **توضيح التذاكر (محقق):** لا يوجد ملف `src/app/api/tickets/route.ts` في المشروع. صفحة `/tickets` (وكذلك `/tickets/success` و`/tickets/cancel`) ترجع `notFound()` حاليًا — قرار العميل بإخفائها؛ والزر الخارجي إلى `NEXT_PUBLIC_PLATINUMLIST_URL` قائم في الكود (`src/app/[locale]/tickets/page.tsx`). أي إشارة قديمة في README إلى "فورم Tickets يحفظ في Google Sheet" **غير مطابقة للكود الحالي**.
 
 **التشابهات بين الثلاثة:** كل مسار يبدأ بالترتيب نفسه: `validateOrigin` → `checkRateLimit(formKey)` → `safeParse` → `verifyTurnstile` → ثم منطق الإرسال الخاص به.
 
@@ -45,12 +45,10 @@
    ▼
 التوجيه النهائي:
 ├── /api/apply:
-│     ├── الإيميل 1: to = المتقدم نفسه (data.email)          ← تأكيد الاستلام (نص حرفي معتمد)
-│     └── الإيميل 2: to = ADMIN_APPLICATIONS_EMAIL (apply@)   ← إشعار إداري بكل البيانات
-├── /api/contact: (خريطة inboxBySubject)
-│     ├── subject == "Sponsorship" → PARTNER_EMAIL (partners@)
-│     ├── subject == "Media"       → MEDIA_EMAIL   (media@)
-│     └── الباقي                   → CONTACT_EMAIL (marhaba@)
+│     ├── الإيميل 1: to = المتقدم نفسه (data.email)          ← تأكيد الاستلام (نص معتمد: يبدأ "Your idea is in." وينتهي "Warm regards," ثم "TEDxAlFalah Youth Team")
+│     └── الإيميل 2: to = ADMIN_APPLICATIONS_EMAIL + CONTACT_EMAIL  ← إشعار إداري موازٍ للصندوقين
+├── /api/contact: (بلا توجيه حسب الموضوع)
+│     └── to = CONTACT_EMAIL (marhaba@) دائمًا — قيمة subject تُدرَج في عنوان الإيميل ومتنه فقط
 └── /api/partner-inquiry:
       └── to = PARTNER_EMAIL (partners@)  + replyTo = بريد المُرسل
 ```
@@ -74,6 +72,8 @@
 | `young-speaker` | `schoolName` + `guardianName` + `guardianContact` + `parentalConsent === true` | أسطر 36–49 | أسطر 149–163 |
 | `expert` | `organizationAndRole` + `areaOfWorkWithYouth` | أسطر 50–57 | أسطر 164–171 |
 
+> **ملاحظة (محققة):** حقل `videoLink` **مطلوب دائمًا** في المسارين (`z.string().min(1)` على الخادم، مع شارة "(Required)"/"(إلزامي)" في الواجهة) — أي وصف سابق له كحقل اختياري غير مطابق للكود.
+
 ### 3.3 الحدود النصية (Word Count)
 
 | الحقل | الحد | الدالة |
@@ -88,44 +88,38 @@
 1. المستخدم يملأ الفورم ويضغط "إرسال" — يتحقق `zodResolver` محليًا.
 2. `TurnstileWidget` يولّد `turnstileToken` (المفتاح العام غير مفعّل → `null`/فارغ مقبول في التطوير).
 3. `fetch('/api/apply', { method: 'POST' })` مع `AbortController` مهلة 20 ثانية (سطر 200-201).
-4. الخادم: `validateOrigin` → `checkRateLimit("apply")` → `safeParse` → `verifyTurnstile` (أسطر 165-198).
-5. **حفظ في Google Sheets**: إن وُجدت المتغيرات الثلاثة (`GOOGLE_SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY` — الحارس أسطر 200-203) يُستدعى `saveToGoogleSheet` عبر `google-spreadsheet` + `JWT` (سطر 62-109). **فشله = `console.error` فقط والطلب يكمل.**
-6. **تأكيد المتقدم**: `sendConfirmationEmail(data.email)` (سطر 111-131) — نص حرفي معتمد من العميل.
-7. **الإشعار الإداري**: `sendAdminNotification` إلى `ADMIN_APPLICATIONS_EMAIL` (سطر 135-163) — كل بيانات الطلب.
+4. الخادم: `POST()` في `apply/route.ts` ينفذ `validateOrigin` → `checkRateLimit("apply")` → `safeParse` → `verifyTurnstile`.
+5. **حفظ في Google Sheets**: إن وُجدت المتغيرات الثلاثة (`GOOGLE_SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY` — الحارس `hasGoogleSheetConfig` داخل `POST`) يُستدعى دالة `saveToGoogleSheet` عبر `google-spreadsheet` + `JWT`. **فشله = `console.error` فقط والطلب يكمل.**
+6. **تأكيد المتقدم**: دالة `sendConfirmationEmail(data)` في `apply/route.ts` — نص معتمد من العميل يبدأ بـ "Your idea is in." وينتهي بـ "Warm regards," ثم "TEDxAlFalah Youth Team".
+7. **الإشعار الإداري**: دالة `sendAdminNotification` تُرسل إلى `ADMIN_APPLICATIONS_EMAIL` و`CONTACT_EMAIL` معًا — كل بيانات الطلب.
 8. الواجهة تعرض زر "✓" ثم `router.push("/thank-you?type=apply")` بعد 1.2 ثانية (سطر 216).
 
 > **سلوكيات دقيقة (مهمة للمساءلة):**
 > - فشل أي إيميل في Apply = `console.error` **دون** إسقاط الطلب — الإشعار الإداري هو قناة الاستلام الأساسية والـ Sheet قناة تخزين إضافية.
-> - البيانات الشخصية **لا تُطبع أبدًا** في السجلات (حتى في التطوير: `[DEV] Application received for track "..."` فقط — سطر 216-219).
-> - في تطوير بلا SMTP: `[DEV] Confirmation email would be sent...` (سطر 236).
+> - البيانات الشخصية **لا تُطبع أبدًا** في السجلات (حتى في التطوير: `[DEV] Application received for track "..."` فقط في فرع غياب إعدادات الـ Sheet).
+> - في تطوير بلا SMTP: `[DEV] Confirmation email would be sent...` فقط في فرع غياب إعداد البريد.
 
 ---
 
 ## 4. نصوص الإيميلات الحرفية (مطابقة 100% للكود)
 
-### 4.1 رسالة التأكيد للمتقدم — `sendConfirmationEmail` (`route.ts:111-131`)
+### 4.1 رسالة التأكيد للمتقدم — دالة `sendConfirmationEmail` في `src/app/api/apply/route.ts`
 
-> نص معتمد من العميل — **لا يُغيّر** (تعليق صريح في الكود، سطر 112).
+> نص معتمد من العميل — **لا يُغيّر** (تعليق صريح في الكود أعلى الدالة).
+
+**البنية الحالية (بداية ونهاية فقط — النص الكامل في الكود):**
 
 ```html
-<p>Thank you for applying to be part of TEDxAlFalah Youth.</p>
-<p>We're excited to have received your application and to learn more
-about you, your ideas, and what you hope to bring to the TEDxAlFalah
-Youth community. Our team will carefully review all submissions as part
-of the selection process. If your application is shortlisted, a member
-of the team will be in touch with you regarding the next steps.</p>
-<p>Due to the number of applications we receive, we may not be able to
-respond individually to every submission, but please know that every
-application will be reviewed.</p>
-<p>Thank you for taking the time to share your story and ideas with us.</p>
-<p>TEDxAlFalah Youth<br />Tomorrow, Now.<br />Tomorrow is shaped by what
-we do today.</p>
+<p><strong>Your idea is in.</strong></p>
+<p>... (بقية الفقرات كما اعتمدها العميل في الكود) ...</p>
+<p>Warm regards,<br />TEDxAlFalah Youth Team</p>
 ```
 
 - **المرسل إليه**: `data.email` (بريد المتقدم) — لا `replyTo`.
 - **الموضوع**: `We've Received Your Application | TEDxAlFalah Youth`.
+- **مهم**: الرسالة تبدأ بجملة "**Your idea is in.**" وتنتهي بتوقيع "**Warm regards,**" ثم "**TEDxAlFalah Youth Team**" — **بلا** توقيع "Tomorrow, Now." و**بلا** جملة "Tomorrow is shaped by what we do today." (أي اقتباس قديم لهما في رسالة التأكيد غير مطابق للكود الحالي).
 
-### 4.2 الإشعار الإداري — `sendAdminNotification` (`route.ts:135-163`)
+### 4.2 الإشعار الإداري — دالة `sendAdminNotification` في `src/app/api/apply/route.ts`
 
 **الموضوع**: `New Application: {Young Speaker|Expert Speaker} - {اسم المتقدم}`
 
@@ -150,18 +144,20 @@ we do today.</p>
 <p><strong>Submitted at:</strong> {الوقت المحلي الآن}</p>
 ```
 
-- **كل قيمة تمر عبر `escapeHtml`** (`src/lib/sanitize.ts:9-17`) — يحوّل `& < > " '` إلى كيانات HTML، ليمنع حقن كود خبيث في الإيميل عبر أي حقل نصي (message/ideaSummary...).
-- **الغرض**: تمكين فريق التقديم من مراجعة الطلب **دون فتح Google Sheets** — صندوق `apply@tedxalfalahyouth.com` هو الآن (بلا مفاتيح Google) القناة الحية الفعلية.
+- **كل قيمة تمر عبر `escapeHtml`** (`src/lib/sanitize.ts`) — يحوّل `& < > " '` إلى كيانات HTML، ليمنع حقن كود خبيث في الإيميل عبر أي حقل نصي (message/ideaSummary...).
+- **المتلقي**: صندوقان معًا — `ADMIN_APPLICATIONS_EMAIL` (`apply@tedxalfalahyouth.com`) و`CONTACT_EMAIL` (`marhaba@tedxalfalahyouth.com`) — نسخة موازية لكل طلب.
+- **الغرض**: تمكين فريق التقديم من مراجعة الطلب **دون فتح Google Sheets** — الصندوقان `apply@` و`marhaba@` هما الآن (بلا مفاتيح Google) القناتان الحيتان الفعليتان.
 
 ---
 
 ## 5. الإغلاق التلقائي (APPLICATION_DEADLINE)
 
-**القيمة الحالية** (`src/lib/constants.ts:1`):
+**القيمة الحالية** (`src/lib/constants.ts:1-2`):
 ```ts
-export const APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00";
+export const APPLICATION_DEADLINE =
+  process.env.APPLICATION_DEADLINE || "2026-09-14T23:59:59+04:00";
 ```
-توقيت **UTC+4 صريحًا** (= توقيت الإمارات) — يوم 30 سبتمبر 2026 حتى آخر لحظة.
+توقيت **UTC+4 صريحًا** (= توقيت الإمارات) — يوم 14 سبتمبر 2026 حتى آخر لحظة.
 
 **الآلية (خادم صرف — لا يمكن التلاعب بها من المتصفح):**
 - `src/app/[locale]/apply/page.tsx:28`:
@@ -171,26 +167,25 @@ export const APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00";
 - عند `isClosed: true` **لا يُعرض الفورم أصلًا** (سطر 100-113) — تظهر بطاقة إغلاق بترجمتي `page.apply.closed.title` و`page.apply.closed.body` (مفتاحا الترجمة من `messages/{en,ar}.json`).
 - الفحص يحدث في **Server Component** — أي محاولة تلاعب بساعة المتصفح بلا جدوى.
 - **نفس المنطق في الرئيسية**: `src/components/home/ApplyBanner.tsx:9` يخفي بانر التقديم بعد الموعد.
-- متغير آخر ذو صلة (لعرض النص فقط): `NEXT_PUBLIC_APPLICATION_DEADLINE` يغير **تسمية** "September 30, 2026" في البانر (سطر 5) — **لا يتحكم بالإغلاق** (الإغلاق من الثابت أعلاه).
-- **لتغيير الموعد مستقبلًا**: عدّل `constants.ts:1` (أو أعد تعيين القيمة عبر متغير بيئة — غير منفذ حاليًا) وأعد البناء.
+- متغير آخر ذو صلة (لعرض النص فقط): `NEXT_PUBLIC_APPLICATION_DEADLINE` يغير **تسمية** "September 14, 2026" في البانر (سطر 5) — **لا يتحكم بالإغلاق** (الإغلاق من الثابت أعلاه).
+- **لتغيير الموعد مستقبلًا**: عدّل الثابت في `src/lib/constants.ts:1-2` (يقرأ متغير البيئة `APPLICATION_DEADLINE` أولًا ثم يسقط على القيمة الافتراضية) وأعد البناء.
 
 ---
 
 ## 6. فورم Contact وPartner
 
-### 6.1 Contact — خريطة التوجيه (من `contact/route.ts:66-73`)
+### 6.1 Contact — وجهة واحدة لكل الرسائل (من `contact/route.ts`)
 
-حقل `subject` من نوع enum بخمس قيم صارمة (سطر 12-18): `General` / `Speaking` / `Sponsorship` / `Volunteering` / `Media`.
+حقل `subject` من نوع enum بخمس قيم صارمة: `General` / `Speaking` / `Sponsorship` / `Volunteering` / `Media` — لكنه **لا يوجّه الرسائل**.
 
-| `subject` الوارد | الصندوق | المتغير | الافتراضي |
-|---|---|---|---|
-| `Sponsorship` | صندوق الرعايات | `PARTNER_EMAIL` | `partners@tedxalfalahyouth.com` |
-| `Media` | صندوق الإعلام | `MEDIA_EMAIL` | `media@tedxalfalahyouth.com` |
-| كل ما عداها (`General`/`Speaking`/`Volunteering`) | الصندوق العام | `CONTACT_EMAIL` | `marhaba@tedxalfalahyouth.com` |
+| المتلقي | المتغير | الافتراضي |
+|---|---|---|
+| **كل الرسائل** (بكل المواضيع الخمسة) | `CONTACT_EMAIL` | `marhaba@tedxalfalahyouth.com` |
 
-- **الحقائق الحالية**: الواجهة الحالية ترسل `subject: "General"` دائمًا (`ContactBox.tsx:88`) — فكل رسائل الموقع تصل `marhaba@`. خريطة التوجيه **جاهزة ومختبرة** (رسائل Sponsorship/Media وصلت صناديقها فعلًا في اختبارات 2026-08-11) وتُفعَّل بمجرد أن ترسل أي واجهة قيمة أخرى.
+- **لا توجيه حسب الموضوع**: خريطة `inboxBySubject` أُزيلت نهائيًا من الكود — قيمة `subject` تُدرَج في **عنوان الإيميل ومتنه** فقط (`subject: [${subject}] New message from ...` + سطر `Subject:` في الجسم) ولا تغيّر المتلقي إطلاقًا.
+- **معلومة ذات صلة**: `PARTNER_EMAIL` و`MEDIA_EMAIL` لم تعودا مستلزمتين من هذا الفورم — وجهة استفسارات الشراكة هي مسار Partner Inquiry، وصندوق الإعلام (media@) لا يستهلكه أي route حاليًا.
 - `replyTo: email` — الرد يصل لبريد المرسل مباشرة.
-- **فشل الإرسال = `500`** مع `{ error: "Failed to send message" }` (سطر 91-94) — لا قناة بديلة لهذا الفورم.
+- **فشل الإرسال = `500`** مع `{ error: "Failed to send message" }` — لا قناة بديلة لهذا الفورم.
 
 ### 6.2 Partner Inquiry
 
@@ -240,10 +235,10 @@ export const APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00";
 
 | الـ Route | عند فشل `sendMail` فعليًا | عند غياب إعداد SMTP | هل يُسقط الطلب (500)؟ |
 | :--- | :--- | :--- | :--- |
-| `/api/apply` | `console.error` لكل إيميل على حدة (سطر 226-233) — الإيميلان مستقلان؛ فشل أحدهما لا يوقف الآخر | `[DEV]` في السجل فقط (سطر 236) | **لا** — يعيد `success: true` دائمًا (الأولوية للحفظ/الإشعار، الإيميل قناة تأكيد إضافية) |
-| `/api/contact` | `console.error` + `{ error: "Failed to send message" }` (سطر 89-95) | `[DEV]` فقط (سطر 99) | **نعم** — `500` (الإيميل هو القناة الوحيدة لهذا الفورم) |
-| `/api/partner-inquiry` | `console.error` + `{ error: "Failed to send" }` (سطر 66-69) | `[DEV]` فقط (سطر 71) | **نعم** — `500` (نفس السبب) |
-| `/api/tickets` | **لا يوجد route** — التذاكر زر خارجي لـ Platinumlist (`tickets/page.tsx:211`) | — | — |
+| `/api/apply` | `console.error` لكل إيميل على حدة — الإيميلان مستقلان؛ فشل أحدهما لا يوقف الآخر | `[DEV]` في السجل فقط (فرع غياب SMTP في `POST`) | **لا** — يعيد `success: true` دائمًا (الأولوية للحفظ/الإشعار، الإيميل قناة تأكيد إضافية) |
+| `/api/contact` | `console.error` + `{ error: "Failed to send message" }` | `[DEV]` فقط (فرع غياب SMTP في `POST`) | **نعم** — `500` (الإيميل هو القناة الوحيدة لهذا الفورم) |
+| `/api/partner-inquiry` | `console.error` + `{ error: "Failed to send" }` | `[DEV]` فقط (فرع غياب SMTP في `POST`) | **نعم** — `500` (نفس السبب) |
+| `/api/tickets` | **لا يوجد route** — وزر Platinumlist الخارجي جاهز في الكود لكن صفحة `/tickets` مخفية (`notFound()`) | — | — |
 
 > **المنطق المعماري**: Apply يملك **ثلاث قنوات** (Sheet + تأكيد + إشعار إداري) فلا يسقط بأي فشل فرعي؛ Contact وPartner لهما **قناة واحدة** (الإيميل) فيفشلان صراحة ليعرف المستخدم أنه يجب إعادة المحاولة. هذا السلوك مقصود ومقنن — لا تغيّره دون مراجعة القرار المعماري في `docs/02` (ADR 6.3).
 
@@ -255,9 +250,9 @@ export const APPLICATION_DEADLINE = "2026-09-30T23:59:59+04:00";
 |---|---|
 | `transport.verify()` عبر Hostinger 465 | **SMTP-VERIFY-OK** |
 | Contact General → `marhaba@` | وصل |
-| Contact Sponsorship → `partners@` | وصل |
-| Contact Media → `media@` | وصل |
-| Apply (مساران) → تأكيد المتقدم + إشعار `apply@` | وصلا |
+| Contact Sponsorship → `marhaba@` (كل المواضيع لصندوق واحد بعد إزالة التوجيه) | وصل |
+| Contact Media → `marhaba@` | وصل |
+| Apply (مساران) → تأكيد المتقدم + إشعار `apply@` و`marhaba@` | وصلا |
 | `npx tsc --noEmit` + `next build` | نظيفان |
 
 **التحقق بنفسك**: كل الرسائل في WebMail الصناديق (`https://webmail.tedxalfalahyouth.com`). اختبار سريع محليًا:
