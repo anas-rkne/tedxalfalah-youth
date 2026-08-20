@@ -23,7 +23,6 @@ const applicationSchema = z.object({
   ideaSummary: z.string().min(1).refine((val) => wordCount(val) <= 300, "Idea summary must not exceed 300 words"),
   whyItMatters: z.string().min(1).refine((val) => wordCount(val) <= 150, "Why it matters must not exceed 150 words"),
   themeConnection: z.string().min(1),
-  videoLink: z.string().min(1),
   howHeardAboutUs: z.string(),
   consentToTerms: z.literal(true),
   schoolName: z.string().optional(),
@@ -99,7 +98,6 @@ async function saveToGoogleSheet(data: ApplicationData) {
     "ideaSummary",
     "whyItMatters",
     "themeConnection",
-    "videoLink",
     "howHeardAboutUs",
     "schoolName",
     "guardianName",
@@ -122,7 +120,6 @@ async function saveToGoogleSheet(data: ApplicationData) {
     ideaSummary: data.ideaSummary,
     whyItMatters: data.whyItMatters,
     themeConnection: data.themeConnection,
-    videoLink: data.videoLink || "",
     howHeardAboutUs: data.howHeardAboutUs,
     schoolName: data.schoolName || "",
     guardianName: data.guardianName || "",
@@ -177,7 +174,6 @@ async function sendAdminNotification(data: ApplicationData) {
       <p><strong>Idea summary:</strong> ${escapeHtml(data.ideaSummary)}</p>
       <p><strong>Why it matters:</strong> ${escapeHtml(data.whyItMatters)}</p>
       <p><strong>Theme connection:</strong> ${escapeHtml(data.themeConnection)}</p>
-      <p><strong>Video link:</strong> ${escapeHtml(data.videoLink || "-")}</p>
       <p><strong>How they heard about us:</strong> ${escapeHtml(data.howHeardAboutUs)}</p>
       <p><strong>School name:</strong> ${escapeHtml(data.schoolName || "-")}</p>
       <p><strong>Guardian name:</strong> ${escapeHtml(data.guardianName || "-")}</p>

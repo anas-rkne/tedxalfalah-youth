@@ -28,7 +28,6 @@ curl -X POST http://localhost:3000/api/apply \
     "ideaSummary": "كيف يمكن للذكاء الاصطناعي أن يساعد الأطفال على التعلم وتطوير مهاراتهم الإبداعية في المستقبل",
     "whyItMatters": "لأن المستقبل يحتاج إلى مبتكرين شباب يفكرون خارج الصندوق",
     "themeConnection": "spark",
-    "videoLink": "https://youtube.com/watch?v=testclip",
     "howHeardAboutUs": "Social Media",
     "consentToTerms": true,
     "schoolName": "مدرسة دبي الدولية",
@@ -43,7 +42,7 @@ curl -X POST http://localhost:3000/api/apply \
 **إخفاقات مقصودة لتجربتها (اختبار التحقق):**
 - احذف `guardianName` → **400** (المخطط الشرطي يرفض — `apply/route.ts:36-49`).
 - `"age": 5` → **400** (حد الخادم الصارم `z.coerce.number().min(10).max(99)` — `apply/route.ts:33-34`).
-- احذف `videoLink` أو أرسله فارغًا → **400** (الحقل **إجباري** الآن — `apply/route.ts:26`).
+- **أرسل الطلب بلا `videoLink` (أو معه)** → يُقبل المخطط في الحالتين (الحقل أُزيل نهائيًا من الفورم والخادم — 2026-08؛ الاستجابة بعدهما 403 Turnstile في بيئة اختبار بلا توكن حقيقي وليست 400).
 - `"email": "bad"` → **400**.
 - أرسل جسدًا غير JSON (`-d 'broken'` بلا هيدر contentType) → **400** `{"error": "Invalid JSON body"}` (إصلاح اليوم — كان خطأ 500 سابقًا).
 - **اختبار إغلاق التقديم (403)**: أعد تشغيل dev مع `APPLICATION_DEADLINE=(تاريخ ماضٍ)` في `.env.local` → الطلب الصحيح كاملًا يعيد **403** `{"error": "Applications are closed"}`. (القيمة الافتراضية في `src/lib/constants.ts` — قراءة من البيئة أولًا.)
@@ -64,7 +63,6 @@ curl -X POST http://localhost:3000/api/apply \
     "ideaSummary": "تجربة عملية في تصميم برامج تعليمية تفاعلية للشباب في المدارس الحكومية",
     "whyItMatters": "لأن التعليم هو الرافعة الحقيقية لنهضة الأجيال",
     "themeConnection": "beyond",
-    "videoLink": "https://youtube.com/watch?v=testclip",
     "howHeardAboutUs": "School",
     "consentToTerms": true,
     "organizationAndRole": "أكاديمية الشباب - مستشار تعليمي",
@@ -162,7 +160,7 @@ Invoke-RestMethod -Uri http://localhost:3000/api/contact -Method Post -ContentTy
 | الترويسات | CSP (Sanity/esri/Cloudflare/GTM…) · `X-Frame-Options` · `Strict-Transport-Security` · `nosniff` · `Referrer-Policy` · `Permissions-Policy` — الكل بحضورها |
 | API | `{}` → 400 · JSON مكسور → 400 (رسالة "Invalid JSON body" دقيقة) · GET → 405 · `revalidate` بلا سر → 200 محليًا (يشترط `SANITY_WEBHOOK_SECRET` في الإنتاج) |
 | Contact فعلي | بجسم صالح (`subject` من القائمة + `message` ≥10) → **`{"success":true}`** · بجسم ناقص → رسالة `Invalid form data` بحقولها الدقيقة (إثبات عمل zod) |
-| Apply | مفتوح (الموعد الافتراضي 2026-09-14) · الفيديو إجباري (`videoLink` مطلوب) · Turnstile + النموذج **يُبنى client-side** — تحقق من الحزم: `0ybt9bfy7l393.js` يحوي `render=explicit` + site key، و`0_3tc6k_y0mrj.js` يحوي `fullName` (غيابهما من الـ SSR **سلوك متوقع** لا خلل) |
+| Apply | مفتوح (الموعد الافتراضي 2026-09-14) · **لا حقل فيديو** (أُزيل 2026-08 — لا يُجمع ولا يُطلب) · Turnstile + النموذج **يُبنى client-side** — تحقق من الحزم: `0ybt9bfy7l393.js` يحوي `render=explicit` + site key، و`0_3tc6k_y0mrj.js` يحوي `fullName` (غيابهما من الـ SSR **سلوك متوقع** لا خلل) |
 
 **ملاحظات تشغيلية**: سكربتات PowerShell لا تستخدم `curl -o NUL` (خطأ "filename or extension is too long") — استخدم `-o $tmp -w "%{http_code}"` · إعادة `npm run build` مع خادم standalone يعمل = `EBUSY` على `.next\standalone` — أوقف الخادم أولًا.
 
@@ -201,7 +199,7 @@ npx playwright test e2e/forms.spec.ts   # ملف واحد
 
 | الحدث (Event) | السلوك المتوقع (Expected) | مكان التحقق (Where to verify) |
 |---|---|---|
-| Apply — Young Speaker | ① صف كامل (20 عمودًا) في Google Sheets · ② تأكيد للمتقدم بالنص المعتمد الجديد (يبدأ «Your idea is in.» — `sendConfirmationEmail` — `apply/route.ts:137`) · ③ إشعار إداري بكامل الحقول (بما فيها رابط الفيديو) | ① الـ Sheet (صف جديد) · ② بريد `test@example.com` الوهمي · ③ `apply@` + نسخة `marhaba@` في WebMail |
+| Apply — Young Speaker | ① صف كامل (19 عمودًا) في Google Sheets · ② تأكيد للمتقدم بالنص المعتمد الجديد (يبدأ «Your idea is in.» — `sendConfirmationEmail` — `apply/route.ts:134`) · ③ إشعار إداري بكامل الحقول (حقل رابط الفيديو أُزيل — 2026-08) | ① الـ Sheet (صف جديد) · ② بريد `test@example.com` الوهمي · ③ `apply@` + نسخة `marhaba@` في WebMail |
 | Apply — Expert | ① صف بـ `organizationAndRole` و`areaOfWorkWithYouth` مملوءَين · ② نفس البريدين (التأكيد + الإشعار) | ① الـ Sheet · ②/③ صناديق البريد أعلاه |
 | Contact — `Sponsorship` | ① الإيميل إلى **`CONTACT_EMAIL` (marhaba@)** · ② `replyTo` = بريد المُرسِل (الرد يعود له) | صندوق `marhaba@` — عنوان الرسالة يبدأ `[Sponsorship]` |
 | Contact — `Media` | الإيميل إلى `CONTACT_EMAIL` (marhaba@) | صندوق `marhaba@` — عنوان الرسالة يبدأ `[Media]` |

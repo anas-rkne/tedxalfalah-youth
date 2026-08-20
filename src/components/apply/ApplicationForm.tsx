@@ -144,10 +144,6 @@ export default function ApplicationForm() {
             .min(1, t("errors.thisFieldRequired"))
             .refine((val) => wordCount(val) <= 150, t("errors.maxWords", { count: 150 })),
           themeConnection: z.enum(THEME_OPTIONS),
-          videoLink: z
-            .string()
-            .min(1, t("errors.videoLinkRequired"))
-            .url(t("errors.invalidUrl")),
           howHeardAboutUs: z.enum(HOW_HEARD_VALUES),
           consentToTerms: z.literal(true, {
             errorMap: () => ({ message: t("errors.consentRequired") }),
@@ -342,9 +338,6 @@ export default function ApplicationForm() {
               <option key={option} value={option}>{t(`themeConnectionOptions.${option}`)}</option>
             ))}
           </select>
-        </Field>
-        <Field label={t("videoLink")} requiredTag={t("requiredTag")} error={errors.videoLink?.message} isArabic={isArabic}>
-          <input {...register("videoLink")} className={inputClasses} placeholder={t("videoLinkPlaceholder")} />
         </Field>
         <Field label={t("howHeard")} isArabic={isArabic}>
           <select {...register("howHeardAboutUs")} className={`${inputClasses} appearance-none bg-[url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23A1A1AA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")] bg-no-repeat bg-[right_16px_center] ${isArabic ? 'bg-[left_16px_center] pl-10' : 'pr-10'}`}>

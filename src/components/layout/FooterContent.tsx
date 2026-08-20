@@ -19,23 +19,23 @@ const SOCIAL_LINKS = [
 const EMAIL = "marhaba@tedxalfalahyouth.com";
 
 const DOODLE_BG = {
-  backgroundImage: "url('/images/footer-red-bg.svg')",
+  backgroundImage: "url('/images/pattern.svg')",
   backgroundSize: "cover",
-  backgroundPosition: "center 42%",
+  backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
 } as const;
 
 const DOODLE_BG_MOBILE = {
-  backgroundImage: "url('/images/footer-red-bg.svg')",
-  backgroundSize: "auto 513.5px",
-  backgroundPosition: "65.1% 43.7%",
+  backgroundImage: "url('/images/pattern.svg')",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
 } as const;
 
 const DOODLE_BG_TABLET = {
-  backgroundImage: "url('/images/footer-red-bg.svg')",
-  backgroundSize: "100% 660%",
-  backgroundPosition: "center 50%",
+  backgroundImage: "url('/images/pattern.svg')",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
 } as const;
 
@@ -104,22 +104,38 @@ export default function FooterContent() {
   return (
     <footer id="global-footer" className="relative w-full overflow-hidden" dir={isRTL ? "rtl" : "ltr"}>
       {/* ═══════════════════════════════════════════════════════════════
-          1. CTA BANNER — أحمر زاهٍ مع دودل، بدون أزرار
+          1. CTA BANNER — هيكلية بسيطة: أب خارجي + ارتفاع + خلفية حمراء
           ═══════════════════════════════════════════════════════════════ */}
       <div
-        className="relative w-full mt-0 mb-[15px] h-[220px] sm:h-[240px] md:h-[260px] overflow-hidden flex items-center justify-center bg-tedx-red"
-        style={DOODLE_BG}
+        // 🟢 تمت إعادة h- متجاوب و bg-tedx-red لضمان تغطية البانر بالكامل
+        className="relative w-full mt-0 mb-[15px] h-[180px] sm:h-[220px] md:h-[260px] overflow-hidden flex items-center justify-center bg-tedx-red pt-5 pb-5 border-2"
+        style={{
+          // 🟢 الخلفية الافتراضية للشاشات المتوسطة والكبيرة (تابلت + ديسكتوب)
+          backgroundImage: "url('/images/footer-red-bg-fixed.svg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
       >
-        <div className="absolute inset-0 sm:hidden" style={DOODLE_BG_MOBILE} aria-hidden />
-        <div className="absolute inset-0 hidden sm:block lg:hidden" style={DOODLE_BG_TABLET} aria-hidden />
-        <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-8 flex flex-col items-center gap-2 md:gap-3">
+        {/* 🟢 طبقة خلفية مخصصة للموبايل فقط (تختفي عند الشاشات الأكبر من sm) */}
+        <div
+          className="absolute inset-0 sm:hidden"
+          style={{
+            backgroundImage: "url('/images/pattern 2.svg.webp')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+
+        <div className="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center gap-1 md:gap-2 lg:gap-3">
           <motion.div
             initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-white/90">
+            <span className="text-[9px] xs:text-[10px] sm:text-xs md:text-sm lg:text-base font-bold uppercase tracking-[0.2em] text-white/90">
               {t("ctaLabel")}
             </span>
           </motion.div>
@@ -129,7 +145,7 @@ export default function FooterContent() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className={`${isRTL ? "font-arabic" : "font-alexandria"} text-6xl sm:text-7xl lg:text-8xl font-black text-white tracking-wide leading-none`}
+            className={`${isRTL ? "font-arabic" : "font-alexandria"} text-4xl xs:text-5xl sm:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-black text-white tracking-wide leading-none`}
           >
             {t("joinUs")}
           </motion.h2>
@@ -139,7 +155,7 @@ export default function FooterContent() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-sm md:text-base text-white/80 max-w-2xl mx-auto leading-snug"
+            className="text-[10px] xs:text-[11px] sm:text-xs md:text-sm lg:text-base text-white/80 max-w-2xl mx-auto leading-snug"
           >
             <span className="block">{t("ctaDescriptionL1")}</span>
             <span className="block">{t("ctaDescriptionL2")}</span>
@@ -336,7 +352,7 @@ export default function FooterContent() {
       <div className="relative bg-tedx-red overflow-hidden">
         {/* نمط الدودل خفيف */}
         <div
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="absolute inset-0 opacity-20 pointer-events-none hidden lg:block"
           style={DOODLE_BG}
         />
         <div

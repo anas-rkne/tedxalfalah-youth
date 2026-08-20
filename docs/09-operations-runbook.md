@@ -104,7 +104,7 @@
 | نوع الرسالة | الصندوق المستلم | كيف تصل | كيفية الرد |
 | :--- | :--- | :--- | :--- |
 | كل رسائل فورم Contact (كل المواضيع: General/Speaking/Sponsorship/Media/Volunteering) | `marhaba@tedxalfalahyouth.com` | رسالة إيميل فورية مع تفاصيل المرسل (الموضوع يُدرج في عنوان الإيميل فقط — **لا توجيه حسب الموضوع**) | WebMail — رد عادي |
-| طلبات التقديم (فورم Apply) | `apply@tedxalfalahyouth.com` + `marhaba@tedxalfalahyouth.com` (نسخة) + **Google Sheet** | إشعار إداري بكامل بيانات الطلب (بما فيها رابط الفيديو) + صف في الجدول | الرد على المتقدم من الإيميل؛ راجع القائمة كاملة في الـ Sheet |
+| طلبات التقديم (فورم Apply) | `apply@tedxalfalahyouth.com` + `marhaba@tedxalfalahyouth.com` (نسخة) + **Google Sheet** | إشعار إداري بكامل بيانات الطلب + صف في الجدول (حقل رابط الفيديو أُزيل من الفورم — 2026-08) | الرد على المتقدم من الإيميل؛ راجع القائمة كاملة في الـ Sheet |
 | شراكات/رعايات | `partners@tedxalfalahyouth.com` | حاليًا عبر الـ API الجاهز (`POST /api/partner-inquiry`) — **لا توجد واجهة فورم بعد**، وعند تفعيلها تصل هنا | WebMail |
 | استفسارات إعلامية (Media) | `media@tedxalfalahyouth.com` | **بريد مباشر فقط** — رسائل فورم Contact بموضوع Media تصِل `marhaba@` (لا صندوق منفصل للفورم) | WebMail |
 | تأكيدات المتقدمين | بريد المتقدم نفسه | رسالة تأكيد تلقائية (النص المعتمد الجديد يبدأ «Your idea is in.» — السطر المرجعي `sendConfirmationEmail` في `src/app/api/apply/route.ts`) | — (لا رد) |

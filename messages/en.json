@@ -52,7 +52,7 @@
     "moreHeading": "More",
     "backToTop": "Back to top",
     "licenseHeading": "TEDx License",
-    "venueAddress": "Nabd AlFalah, Abu Dhabi, United Arab Emirates",
+    "venueAddress": "Nabdh AlFalah, Abu Dhabi, United Arab Emirates",
     "phoneNumber": "+971 4 123 4567",
     "learnAboutTEDx": "Learn about TEDx"
   },
@@ -519,7 +519,7 @@
             "title": "Applications Open",
             "date": "September 1, 2026",
             "description": "Applications open for young speakers and experts.",
-            "whatToExpect": "Complete the form carefully and include a test video if possible."
+            "whatToExpect": "Complete the form carefully and share your best idea."
           },
           {
             "title": "Applications Close",
@@ -622,7 +622,6 @@
         "wordCount": "({count}/{max} words)",
         "whyItMatters": "Why It Matters",
         "themeConnection": "Connection to Theme",
-        "videoLink": "Video Link (60–90 second clip)",
         "requiredTag": "Required",
         "howHeard": "How did you hear about us?",
         "howHeardOptions": {
@@ -654,8 +653,6 @@
           "maxWords": "Maximum {count} words",
           "thisFieldRequired": "This field is required",
           "themeConnectionRequired": "Please select a theme connection",
-          "invalidUrl": "Please enter a valid URL",
-          "videoLinkRequired": "Video link is required",
           "consentRequired": "You must agree to the terms and conditions",
           "schoolNameRequired": "School name is required",
           "guardianNameRequired": "Guardian name is required",
@@ -677,7 +674,6 @@
         "talkIdeaTitlePlaceholder": "An attention-grabbing title",
         "ideaSummaryPlaceholder": "Briefly explain your idea...",
         "whyItMattersPlaceholder": "What impact will it make?",
-        "videoLinkPlaceholder": "https://... (60–90 sec)",
         "themeConnectionOptions": {
           "spark": "THE SPARK: Where every idea begins. Share the moment that inspired your idea.",
           "leap": "THE LEAP: Choosing to take the first step. Share how you turned an idea into action.",

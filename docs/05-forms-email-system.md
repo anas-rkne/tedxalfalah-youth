@@ -69,10 +69,10 @@
 
 | المسار | تصبح إلزامية | دليل الخادم (`apply/route.ts`) | دليل العميل (`ApplicationForm.tsx`) |
 |---|---|---|---|
-| `young-speaker` | `schoolName` + `guardianName` + `guardianContact` + `parentalConsent === true` | أسطر 36–49 | أسطر 149–163 |
-| `expert` | `organizationAndRole` + `areaOfWorkWithYouth` | أسطر 50–57 | أسطر 164–171 |
+| `young-speaker` | `schoolName` + `guardianName` + `guardianContact` + `parentalConsent === true` | أسطر 36–49 | أسطر 159–172 |
+| `expert` | `organizationAndRole` + `areaOfWorkWithYouth` | أسطر 50–57 | أسطر 173–180 |
 
-> **ملاحظة (محققة):** حقل `videoLink` **مطلوب دائمًا** في المسارين (`z.string().min(1)` على الخادم، مع شارة "(Required)"/"(إلزامي)" في الواجهة) — أي وصف سابق له كحقل اختياري غير مطابق للكود.
+> **ملاحظة (محققة):** حقل `videoLink` **أُزيل من الفورم والمسارين نهائيًا** (أُغسطس 2026) — لا يُجمَع ولا يُطلب، وأي وصف سابق له كحقل إجباري أو اختياري غير مطابق للكود الحالي.
 
 ### 3.3 الحدود النصية (Word Count)
 
@@ -134,7 +134,6 @@
 <p><strong>Idea summary:</strong> {ideaSummary}</p>
 <p><strong>Why it matters:</strong> {whyItMatters}</p>
 <p><strong>Theme connection:</strong> {themeConnection}</p>
-<p><strong>Video link:</strong> {videoLink | "-"}</p>
 <p><strong>How they heard about us:</strong> {howHeardAboutUs}</p>
 <p><strong>School name:</strong> {schoolName | "-"}</p>
 <p><strong>Guardian name:</strong> {guardianName | "-"}</p>
@@ -198,17 +197,17 @@ export const APPLICATION_DEADLINE =
 
 ## 7. Google Sheets — الأعمدة والتحذيرات
 
-### 7.1 أعمدة الصف الـ 20 (بالترتيب الدقيق في `addRow` — `apply/route.ts:89-112`)
+### 7.1 أعمدة الصف الـ 19 (بالترتيب الدقيق في `addRow` — `apply/route.ts:111-131`)
 
 ```text
-1.  timestamp          6.  phone              11. themeConnection    16. organizationAndRole
-2.  track              7.  city               12. videoLink          17. areaOfWorkWithYouth
-3.  fullName           8.  talkIdeaTitle      13. schoolName         18. parentalConsent
-4.  age                9.  ideaSummary        14. guardianName       19. consentToTerms
-5.  email              10. whyItMatters       15. guardianContact    20. (timestamp يفتح الصف)
+1.  timestamp          6.  phone              11. themeConnection    16. areaOfWorkWithYouth
+2.  track              7.  city               12. schoolName         17. parentalConsent
+3.  fullName           8.  talkIdeaTitle      13. guardianName       18. consentToTerms
+4.  age                9.  ideaSummary        14. guardianContact    19. (timestamp يفتح الصف)
+5.  email              10. whyItMatters       15. organizationAndRole
 ```
 
-> **تحديث اليوم:** العمودان 18–19 (`parentalConsent`/`consentToTerms`) أُضيفا مع إجبار `setHeaderRow` — أي جدول يدوي أُنشئ سابقًا بـ 18 عمودًا **يجب أن يُوسَّع** إلى 20 عنونًا (أو يُترك الجدول يضيفها أول صف).
+> **تحديث اليوم:** عمود `videoLink` أُزيل من `setHeaderRow`/`addRow` (أُغسطس 2026) — الصفوف الجديدة 19 عمودًا؛ الجداول القائمة تحتفظ بعمود `videoLink` الفارغ (بلا إزالة) للحفاظ على توافق البيانات التاريخية.
 
 **الصفوف تُضاف بنفس الترتيب حرفيًا** — إذا أعددت الـ Sheet يدويًا بعناوين أعمدة، انسخ هذه الأسماء **بنفس الإملاء** (الخادم يضيفها كخريطة `column: value` وليس موضعيًا، فالترتيب الفعلي للأعمدة في الجدول يرتب بنفس ترتيب المفاتيح).
 

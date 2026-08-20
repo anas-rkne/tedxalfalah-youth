@@ -339,7 +339,7 @@ npx sanity deploy
 أنشئ Google Sheet جديد باسم "TEDxAlFalah Applications"، وأضف بالصف
 الأول (Row 1) عناوين الأعمدة التالية **بنفس الترتيب والتهجئة بالضبط**:
 ```
-timestamp | track | fullName | age | email | phone | city | talkIdeaTitle | ideaSummary | whyItMatters | themeConnection | videoLink | howHeardAboutUs | schoolName | guardianName | guardianContact | organizationAndRole | areaOfWorkWithYouth
+timestamp | track | fullName | age | email | phone | city | talkIdeaTitle | ideaSummary | whyItMatters | themeConnection | howHeardAboutUs | schoolName | guardianName | guardianContact | organizationAndRole | areaOfWorkWithYouth
 ```
 
 **الخطوة 2 — تفعيل الـ API:**

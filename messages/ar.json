@@ -520,7 +520,7 @@
             "title": "فتح باب التقديم",
             "date": "1 سبتمبر 2026",
             "description": "يفتح باب التقديم للمتحدثين الشباب والخبراء.",
-            "whatToExpect": "املأ النموذج بعناية وأرفق فيديو الاختبار إن أمكن."
+            "whatToExpect": "املأ النموذج بعناية وشارك أفضل فكرة لديك."
           },
           {
             "title": "إغلاق باب التقديم",
@@ -623,7 +623,6 @@
         "wordCount": "({count}/{max} كلمة)",
         "whyItMatters": "لماذا تهمّك هذه الفكرة",
         "themeConnection": "علاقة الفكرة بالموضوع",
-        "videoLink": "رابط فيديو (مقطع من 60–90 ثانية)",
         "requiredTag": "(إلزامي)",
         "howHeard": "كيف سمعت عنا؟",
         "howHeardOptions": {
@@ -655,8 +654,6 @@
           "maxWords": "الحد الأقصى {count} كلمة",
           "thisFieldRequired": "هذا الحقل مطلوب",
           "themeConnectionRequired": "يرجى اختيار علاقة الفكرة بالموضوع",
-          "invalidUrl": "يرجى إدخال رابط صحيح",
-          "videoLinkRequired": "رابط الفيديو مطلوب",
           "consentRequired": "يجب الموافقة على الشروط والأحكام",
           "schoolNameRequired": "اسم المدرسة مطلوب",
           "guardianNameRequired": "اسم ولي الأمر مطلوب",
@@ -678,7 +675,6 @@
         "talkIdeaTitlePlaceholder": "عنوان يجذب الانتباه",
         "ideaSummaryPlaceholder": "اشرح فكرتك باختصار...",
         "whyItMattersPlaceholder": "ما الأثر الذي ستتركه؟",
-        "videoLinkPlaceholder": "https://... (60–90 ثانية)",
         "themeConnectionOptions": {
           "spark": "الشرارة: حيث تبدأ كل فكرة. شاركنا اللحظة التي ألهمت فكرتك.",
           "leap": "القفزة: اختيار اتخاذ الخطوة الأولى. شاركنا كيف حوّلت فكرتك إلى فعل.",
