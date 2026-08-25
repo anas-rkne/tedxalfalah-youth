@@ -11,7 +11,7 @@ import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
 import SafeImage from "@/components/ui/SafeImage";
 
 const SOCIAL_LINKS = [
-  { platform: "instagram" as const, url: "https://www.instagram.com/tedxalfalahyouth" },
+  { platform: "instagram" as const, url: "https://www.instagram.com/tedxalfalahyouth/" },
   { platform: "linkedin" as const, url: "https://www.linkedin.com/company/tedxalfalahyouth" },
   { platform: "x" as const, url: "https://x.com/tedxalfalahyouth" },
 ];

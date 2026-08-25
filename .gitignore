@@ -40,6 +40,7 @@ yarn-error.log*
 # credentials (never commit real secrets)
 CREDENTIALS*
 !CREDENTIALS.template.md
+gen_credentials_xlsx.py
 
 # vercel
 .vercel

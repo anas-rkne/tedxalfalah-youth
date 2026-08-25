@@ -11,9 +11,16 @@ type ModalProps = {
   onClose: () => void;
   children: React.ReactNode;
   title?: string;
+  wide?: boolean;
 };
 
-export default function Modal({ isOpen, onClose, children, title }: ModalProps) {
+export default function Modal({
+  isOpen,
+  onClose,
+  children,
+  title,
+  wide = false,
+}: ModalProps) {
   const { isRTL } = useRTL();
   const t = useTranslations("common");
   const modalRef = useRef<HTMLDivElement>(null);
@@ -50,7 +57,7 @@ export default function Modal({ isOpen, onClose, children, title }: ModalProps) 
         >
           <motion.div
             ref={modalRef}
-            className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 relative shadow-xl"
+            className={`bg-white rounded-2xl ${wide ? "max-w-2xl" : "max-w-lg"} w-full max-h-[90vh] overflow-y-auto p-6 relative shadow-xl`}
             onClick={(e) => e.stopPropagation()}
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

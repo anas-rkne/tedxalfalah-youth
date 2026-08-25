@@ -215,16 +215,46 @@
         "title": "رحلتك في التقديم",
         "subtitle": "كل ما يحدث بين تقديمك ويوم الفعالية.",
         "stages": [
-          { "date": "18 أغسطس", "title": "فتح باب التقديم" },
-          { "date": "14 سبتمبر", "title": "إغلاق باب التقديم" },
-          { "date": "19 سبتمبر", "title": "مراجعة الطلبات" },
-          { "date": "25 سبتمبر", "title": "إعلان القائمة المختصرة" },
-          { "date": "28 سبتمبر – 3 أكتوبر", "title": "المقابلات والاختبارات" },
-          { "date": "6 أكتوبر", "title": "تأكيد مرحلة التقدم" },
-          { "date": "10 أكتوبر", "title": "الإعلان النهائي عن المتحدثين" },
-          { "date": "19 أكتوبر – 20 نوفمبر", "title": "التدريب والتطوير على المحادثة" },
-          { "date": "17 و18 ديسمبر", "title": "البروفات" },
-          { "date": "19 ديسمبر", "title": "يوم الفعالية" }
+          {
+            "date": "18 أغسطس",
+            "title": "فتح باب التقديم"
+          },
+          {
+            "date": "14 سبتمبر",
+            "title": "إغلاق باب التقديم"
+          },
+          {
+            "date": "19 سبتمبر",
+            "title": "مراجعة الطلبات"
+          },
+          {
+            "date": "25 سبتمبر",
+            "title": "إعلان القائمة المختصرة"
+          },
+          {
+            "date": "28 سبتمبر – 3 أكتوبر",
+            "title": "المقابلات والاختبارات"
+          },
+          {
+            "date": "6 أكتوبر",
+            "title": "تأكيد مرحلة التقدم"
+          },
+          {
+            "date": "10 أكتوبر",
+            "title": "الإعلان النهائي عن المتحدثين"
+          },
+          {
+            "date": "19 أكتوبر – 20 نوفمبر",
+            "title": "التدريب والتطوير على المحادثة"
+          },
+          {
+            "date": "17 و18 ديسمبر",
+            "title": "البروفات"
+          },
+          {
+            "date": "19 ديسمبر",
+            "title": "يوم الفعالية"
+          }
         ]
       }
     },
@@ -322,7 +352,6 @@
         "title": "تعرّف على الفريق",
         "description": "الأشخاص الذين يقفون وراء TEDxAlFalah Youth."
       },
-      
       "title": "تعرّف على الفريق",
       "empty": "تعرف على فريقنا قريباً.",
       "departments": {
@@ -356,9 +385,9 @@
         "text3": "صناع التغيير"
       },
       "bio": {
-      "view": "عرض السيرة",
-      "close": "إغلاق"
-    }
+        "view": "عرض السيرة",
+        "close": "إغلاق"
+      }
     },
     "venue": {
       "hero": {
@@ -809,6 +838,147 @@
           "answer": "تواصل معنا عبر نموذج الاتصال في صفحتنا الرئيسية، أو أرسل لنا بريداً إلكترونياً مباشرة على marhaba@tedxalfalahyouth.com. سنكون سعداء بمساعدتك."
         }
       }
+    }
+  },
+  "admin": {
+    "meta": {
+      "title": "لوحة إدارة الطلبات"
+    },
+    "login": {
+      "title": "دخول المشرف",
+      "description": "أدخل اسم المستخدم وكلمة المرور للوصول إلى إدارة الطلبات",
+      "username": "اسم المستخدم",
+      "placeholder": "كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "wrong": "اسم المستخدم أو كلمة المرور غير صحيحة",
+      "notConfigured": "لوحة الإدارة غير مضبوطة على هذا الخادم",
+      "rateLimited": "محاولات كثيرة جدًا. حاول مرة أخرى لاحقًا."
+    },
+    "dashboard": {
+      "title": "إدارة الطلبات",
+      "subtitle": "مراجعة الطلبات وإدارة حالتها",
+      "refresh": "تحديث",
+      "refreshing": "جارٍ التحديث...",
+      "logout": "تسجيل الخروج",
+      "changePassword": "تغيير كلمة المرور",
+      "lastUpdated": "تحديث تلقائي كل 15 ثانية",
+      "total": "الكل",
+      "pending": "قيد المراجعة",
+      "accepted": "مقبول",
+      "rejected": "مرفوض",
+      "exportExcel": "تصدير Excel",
+      "exporting": "جارٍ التصدير...",
+      "searchPlaceholder": "ابحث بالاسم أو البريد أو المدرسة...",
+      "noResults": "لا توجد طلبات مطابقة للفلاتر",
+      "loading": "جارٍ تحميل الطلبات...",
+      "trackAll": "كل المسارات",
+      "youngTrack": "متحدثون شباب",
+      "expertTrack": "خبراء",
+      "statusAll": "كل الحالات"
+    },
+    "table": {
+      "name": "الاسم",
+      "email": "البريد",
+      "track": "المسار",
+      "age": "العمر",
+      "status": "الحالة",
+      "date": "التقديم",
+      "actions": "إجراءات",
+      "viewDetails": "عرض التفاصيل",
+      "pageInfo": "صفحة {current} من {total}",
+      "prev": "السابق",
+      "next": "التالي",
+      "pageSize": "عدد الصفوف"
+    },
+    "modal": {
+      "title": "تفاصيل الطلب",
+      "changeStatus": "حالة المراجعة",
+      "saveStatus": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ...",
+      "saved": "تم حفظ التغييرات بنجاح",
+      "saveFailed": "فشل تحديث الحالة. حاول مرة أخرى."
+    },
+    "fields": {
+      "timestamp": "تاريخ التقديم",
+      "track": "المسار",
+      "fullName": "الاسم الكامل",
+      "age": "العمر",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "city": "المدينة",
+      "talkIdeaTitle": "عنوان فكرة المحاضرة",
+      "ideaSummary": "ملخص الفكرة",
+      "whyItMatters": "لماذا هي مهمة",
+      "themeConnection": "علاقتها بثيم الفعالية",
+      "howHeardAboutUs": "كيف عرف عنا",
+      "schoolName": "اسم المدرسة",
+      "guardianName": "اسم ولي الأمر",
+      "guardianContact": "تواصل ولي الأمر",
+      "organizationAndRole": "جهة العمل والمنصب",
+      "areaOfWorkWithYouth": "مجال العمل مع الشباب",
+      "parentalConsent": "موافقة ولي الأمر",
+      "consentToTerms": "الموافقة على الشروط",
+      "status": "الحالة"
+    },
+    "tracks": {
+      "young-speaker": "متحدث شاب",
+      "expert": "متحدث خبير"
+    },
+    "statuses": {
+      "pending": "قيد المراجعة",
+      "accepted": "مقبول",
+      "rejected": "مرفوض"
+    },
+    "errors": {
+      "fetchFailed": "فشل تحميل الطلبات. حاول مرة أخرى.",
+      "unauthorized": "انتهت الجلسة. يرجى تسجيل الدخول مجددًا."
+    },
+    "timeFilter": {
+      "all": "كل الفترات",
+      "thisWeek": "هذا الأسبوع",
+      "thisMonth": "هذا الشهر"
+    },
+    "newBadge": {
+      "count": "{count} جديد",
+      "markSeen": "تحديد كمقروء",
+      "sinceLastVisit": "منذ زيارتك الأخيرة"
+    },
+    "bulk": {
+      "selected": "{count} selected",
+      "accept": "Accept",
+      "reject": "Reject",
+      "clear": "Clear",
+      "saving": "Processing…",
+      "done": "Done",
+      "failed": "Some updates failed"
+    },
+    "tableExtra": {
+      "school": "School"
+    },
+    "modalExtra": {
+      "notes": "Internal notes",
+      "notesPlaceholder": "Notes for the team about this applicant…",
+      "saveChanges": "Save changes",
+      "emailSection": "Decision email",
+      "sendAcceptEmail": "Send acceptance",
+      "sendRejectEmail": "Send rejection",
+      "emailSending": "Sending…",
+      "emailSentAt": "Sent {date}",
+      "emailFailed": "Email failed. Please try again."
+    },
+    "statsBar": {
+      "title": "الرسوم البيانية",
+      "daily": "الطلبات اليومية",
+      "byTrack": "حسب المسار",
+      "bySource": "حسب المصدر"
+    },
+    "changePassword": {
+      "title": "تغيير كلمة المرور",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة (8 أحرف على الأقل)",
+      "saving": "جارٍ الحفظ...",
+      "save": "حفظ",
+      "success": "تم تغيير كلمة المرور. سيتم تسجيل خروجك خلال ثانيتين..."
     }
   }
 }

@@ -106,6 +106,9 @@ async function saveToGoogleSheet(data: ApplicationData) {
     "areaOfWorkWithYouth",
     "parentalConsent",
     "consentToTerms",
+    // عمود حالة المراجعة — تديره لوحة الإدارة (/admin/applications)؛
+    // وجوده هنا منذ الإنشاء يمنع سباق إعادة كتابة الترويسة مع اللوحة
+    "status",
   ]);
 
   await sheet.addRow({
@@ -128,6 +131,7 @@ async function saveToGoogleSheet(data: ApplicationData) {
     areaOfWorkWithYouth: data.areaOfWorkWithYouth || "",
     parentalConsent: data.parentalConsent ? "Yes" : "No",
     consentToTerms: "Yes",
+    status: "pending",
   });
 }
 

@@ -10,7 +10,7 @@ export function organizationSchema() {
     description:
       "An independently organized TEDx event showcasing young voices and real ideas.",
     sameAs: [
-      "https://www.instagram.com/tedxalfalahyouth",
+      "https://www.instagram.com/tedxalfalahyouth/",
       "https://www.linkedin.com/company/tedxalfalahyouth",
       "https://x.com/tedxalfalahyouth",
     ],

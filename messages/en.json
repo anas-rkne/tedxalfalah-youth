@@ -215,16 +215,46 @@
         "title": "Your Application Journey",
         "subtitle": "Everything that happens between your application and event day.",
         "stages": [
-          { "date": "18 August", "title": "Applications open" },
-          { "date": "14 September", "title": "Applications close" },
-          { "date": "19 September", "title": "Screening of applications" },
-          { "date": "25 September", "title": "Shortlisting announced" },
-          { "date": "28 Sept – 3 Oct", "title": "Interviews & Auditions" },
-          { "date": "6 October", "title": "Confirmation of progression" },
-          { "date": "10 October", "title": "Final speaker selection announcement" },
-          { "date": "19 Oct – 20 Nov", "title": "Coaching and talk development" },
-          { "date": "17 & 18 December", "title": "Rehearsals" },
-          { "date": "19 December", "title": "Event day" }
+          {
+            "date": "18 August",
+            "title": "Applications open"
+          },
+          {
+            "date": "14 September",
+            "title": "Applications close"
+          },
+          {
+            "date": "19 September",
+            "title": "Screening of applications"
+          },
+          {
+            "date": "25 September",
+            "title": "Shortlisting announced"
+          },
+          {
+            "date": "28 Sept – 3 Oct",
+            "title": "Interviews & Auditions"
+          },
+          {
+            "date": "6 October",
+            "title": "Confirmation of progression"
+          },
+          {
+            "date": "10 October",
+            "title": "Final speaker selection announcement"
+          },
+          {
+            "date": "19 Oct – 20 Nov",
+            "title": "Coaching and talk development"
+          },
+          {
+            "date": "17 & 18 December",
+            "title": "Rehearsals"
+          },
+          {
+            "date": "19 December",
+            "title": "Event day"
+          }
         ]
       }
     },
@@ -354,7 +384,7 @@
         "text2": "INSPIRATION COMMUNITY",
         "text3": "CHANGE MAKERS"
       },
-            "bio": {
+      "bio": {
         "view": "View bio",
         "close": "Close"
       }
@@ -808,6 +838,147 @@
           "answer": "Get in touch through the contact form on our homepage, or email us directly at marhaba@tedxalfalahyouth.com. We'll be happy to help."
         }
       }
+    }
+  },
+  "admin": {
+    "meta": {
+      "title": "Applications Dashboard"
+    },
+    "login": {
+      "title": "Admin Login",
+      "description": "Enter your username and password to manage applications",
+      "username": "Username",
+      "placeholder": "Password",
+      "submit": "Sign in",
+      "wrong": "Incorrect username or password",
+      "notConfigured": "Dashboard is not configured on this server",
+      "rateLimited": "Too many attempts. Please try again later."
+    },
+    "dashboard": {
+      "title": "Applications Management",
+      "subtitle": "Review applications and manage their status",
+      "refresh": "Refresh",
+      "refreshing": "Refreshing...",
+      "logout": "Log out",
+      "changePassword": "Change password",
+      "lastUpdated": "Auto-refreshing every 15s",
+      "total": "Total",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "exportExcel": "Export Excel",
+      "exporting": "Exporting...",
+      "searchPlaceholder": "Search by name, email or school...",
+      "noResults": "No applications match your filters",
+      "loading": "Loading applications...",
+      "trackAll": "All tracks",
+      "youngTrack": "Young Speakers",
+      "expertTrack": "Experts",
+      "statusAll": "All statuses"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "track": "Track",
+      "age": "Age",
+      "status": "Status",
+      "date": "Submitted",
+      "actions": "Actions",
+      "viewDetails": "View details",
+      "pageInfo": "Page {current} of {total}",
+      "prev": "Previous",
+      "next": "Next",
+      "pageSize": "Rows per page"
+    },
+    "modal": {
+      "title": "Application Details",
+      "changeStatus": "Review status",
+      "saveStatus": "Save changes",
+      "saving": "Saving...",
+      "saved": "Changes saved successfully",
+      "saveFailed": "Failed to update status. Please try again."
+    },
+    "fields": {
+      "timestamp": "Submitted at",
+      "track": "Track",
+      "fullName": "Full name",
+      "age": "Age",
+      "email": "Email",
+      "phone": "Phone",
+      "city": "City",
+      "talkIdeaTitle": "Talk idea title",
+      "ideaSummary": "Idea summary",
+      "whyItMatters": "Why it matters",
+      "themeConnection": "Theme connection",
+      "howHeardAboutUs": "How they heard about us",
+      "schoolName": "School name",
+      "guardianName": "Guardian name",
+      "guardianContact": "Guardian contact",
+      "organizationAndRole": "Organization & role",
+      "areaOfWorkWithYouth": "Area of work with youth",
+      "parentalConsent": "Parental consent",
+      "consentToTerms": "Terms accepted",
+      "status": "Status"
+    },
+    "tracks": {
+      "young-speaker": "Young Speaker",
+      "expert": "Expert Speaker"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "errors": {
+      "fetchFailed": "Failed to load applications. Please try again.",
+      "unauthorized": "Session expired. Please sign in again."
+    },
+    "timeFilter": {
+      "all": "All time",
+      "thisWeek": "This week",
+      "thisMonth": "This month"
+    },
+    "newBadge": {
+      "count": "{count} new",
+      "markSeen": "Mark as read",
+      "sinceLastVisit": "since last visit"
+    },
+    "bulk": {
+      "selected": "{count} selected",
+      "accept": "Accept",
+      "reject": "Reject",
+      "clear": "Clear",
+      "saving": "Processing…",
+      "done": "Done",
+      "failed": "Some updates failed"
+    },
+    "tableExtra": {
+      "school": "School"
+    },
+    "modalExtra": {
+      "notes": "Internal notes",
+      "notesPlaceholder": "Notes for the team about this applicant…",
+      "saveChanges": "Save changes",
+      "emailSection": "Decision email",
+      "sendAcceptEmail": "Send acceptance",
+      "sendRejectEmail": "Send rejection",
+      "emailSending": "Sending…",
+      "emailSentAt": "Sent {date}",
+      "emailFailed": "Email failed. Please try again."
+    },
+    "statsBar": {
+      "title": "Charts",
+      "daily": "Daily submissions",
+      "byTrack": "By track",
+      "bySource": "By source"
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "currentPassword": "Current password",
+      "newPassword": "New password (min 8 characters)",
+      "saving": "Saving...",
+      "save": "Save",
+      "success": "Password changed. You will be signed out in 2 seconds..."
     }
   }
 }

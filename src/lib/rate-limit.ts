@@ -7,6 +7,10 @@ const isConfigured = Boolean(
 
 let ratelimit: Ratelimit | null = null;
 
+// محدد ثانٍ أوسع لطلبات لوحة الإدارة (قراءة/تحديث الطلبات) — تفاعل بشري
+// مكثّف لكنه ما يزال مقيّدًا لمنع أي إغراق آلي على نقاط النهاية المحمية.
+let adminApiRatelimit: Ratelimit | null = null;
+
 if (isConfigured) {
   const redis = new Redis({
     url: process.env.UPSTASH_REDIS_REST_URL as string,
@@ -18,6 +22,13 @@ if (isConfigured) {
   ratelimit = new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(5, "10 m"),
+    analytics: true,
+  });
+
+  // 100 طلب / 10 دقائق للوحة الإدارة (جلب القائمة، تحديث حالة، إلخ)
+  adminApiRatelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(100, "10 m"),
     analytics: true,
   });
 }
@@ -53,6 +64,45 @@ export async function checkRateLimit(
     request.headers.get("x-real-ip") ||
     "unknown";
 
-  const { success, remaining } = await ratelimit.limit(`${formKey}:${ip}`);
-  return { allowed: success, remaining };
+  try {
+    const { success, remaining } = await ratelimit.limit(`${formKey}:${ip}`);
+    return { allowed: success, remaining };
+  } catch (error) {
+    // انقطاع Upstash العابر لا يجب أن يُسقط الفورمات كلها بـ500 — نمرّر
+    // الطلب مع سجل صريح (التوفر أولاً؛ الحماية الأساسية تبقى قائمة).
+    console.error(`[RATE LIMIT] Upstash error on "${formKey}" — failing open:`, error);
+    return { allowed: true };
+  }
+}
+
+/**
+ * نفس منطق checkRateLimit لكن بالمحدد الأوسع الخاص بلوحة الإدارة
+ * (100 طلب / 10 دقائق / IP). الإغلاق الآمن نفسه عند غياب Upstash بالإنتاج.
+ */
+export async function checkAdminApiRateLimit(
+  request: Request
+): Promise<{ allowed: boolean }> {
+  if (!adminApiRatelimit) {
+    if (process.env.NODE_ENV === "production") {
+      console.error(
+        "[RATE LIMIT] Upstash not configured in production — admin API requests rejected."
+      );
+      return { allowed: false };
+    }
+    return { allowed: true };
+  }
+
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+
+  try {
+    const { success } = await adminApiRatelimit.limit(`admin-api:${ip}`);
+    return { allowed: success };
+  } catch (error) {
+    // نفس التسامح العابر: انقطاع Upstash لا يقفل لوحة الإدارة مؤقتًا.
+    console.error("[RATE LIMIT] Upstash error on admin-api — failing open:", error);
+    return { allowed: true };
+  }
 }
