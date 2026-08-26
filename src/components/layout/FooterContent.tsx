@@ -47,7 +47,6 @@ function SocialLinkItem({ platform, url }: { platform: string; url: string }) {
   const labels = {
     instagram: "Instagram",
     linkedin: "LinkedIn",
-    x: "X (Twitter)",
   };
   return (
     <a
