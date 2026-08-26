@@ -43,7 +43,6 @@ function SocialLinkItem({ platform, url }: { platform: string; url: string }) {
   const icons = {
     instagram: <InstagramIcon size={16} />,
     linkedin: <LinkedinIcon size={16} />,
-    x: <XIcon size={16} />,
   };
   const labels = {
     instagram: "Instagram",
@@ -225,18 +224,6 @@ export default function FooterContent() {
                       />
                       <span>{EMAIL}</span>
                     </a>
-                    {t("phoneNumber") && (
-                      <a
-                        href={`tel:${t("phoneNumber")}`}
-                        className="flex items-center gap-3 text-sm text-zinc-600 hover:text-tedx-red transition-colors group"
-                      >
-                        <Phone
-                          size={15}
-                          className="text-tedx-red group-hover:scale-110 transition-transform"
-                        />
-                        <span>{t("phoneNumber")}</span>
-                      </a>
-                    )}
                     <div className="flex items-start gap-3 text-sm text-zinc-600">
                       <MapPin
                         size={15}
