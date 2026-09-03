@@ -45,10 +45,52 @@ function getTransport(): Transporter {
   return transport;
 }
 
+/* ── HTML email helpers ─────────────────────────────────────── */
+
+const EMAIL_FONT =
+  "font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;";
+
+/** Wrap any HTML fragment in a complete email document with charset and styling. */
+export function wrapEmailHtml(bodyHtml: string, lang = "en"): string {
+  const dir = lang === "ar" ? "rtl" : "ltr";
+  return `<!DOCTYPE html>
+<html lang="${lang}" dir="${dir}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+</head>
+<body style="margin:0;padding:0;background:#f9fafb;">
+  <div style="max-width:600px;margin:0 auto;padding:20px 16px;${EMAIL_FONT}color:#1a1a1a;font-size:14px;line-height:1.6;">
+    ${bodyHtml}
+  </div>
+</body>
+</html>`;
+}
+
+/** Strip HTML tags to produce a plain-text version of email content. */
+function stripHtml(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<\/div>/gi, "\n")
+    .replace(/<\/?[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 export interface MailOptions {
   to: string | string[];
   subject: string;
   html: string;
+  text?: string;
   replyTo?: string;
 }
 
@@ -59,12 +101,15 @@ export async function sendMail(options: MailOptions): Promise<void> {
     );
     return;
   }
-  await getTransport().sendMail({ from: EMAIL_FROM, ...options });
+  const text = options.text ?? stripHtml(options.html);
+  await getTransport().sendMail({
+    from: EMAIL_FROM,
+    ...options,
+    text,
+  });
 }
 
-/* ------------------------------------------------------------------ */
-/* إيميل قرار القبول / الرفض — ثنائي اللغة مع نموذج HTML بسيط راقي    */
-/* ------------------------------------------------------------------ */
+/* ── Decision email (accept / reject) ───────────────────────── */
 
 interface DecisionEmailOpts {
   to: string;
@@ -74,7 +119,7 @@ interface DecisionEmailOpts {
 
 const DECISION_SUBJECT: Record<string, string> = {
   accepted:
-    "🎉 تهانينا! تم قبولك في TEDxAlFalah Youth | Congratulations — You're In!",
+    "تهانينا! تم قبولك في TEDxAlFalah Youth | Congratulations — You're In!",
   rejected:
     "بشأن طلبك في TEDxAlFalah Youth | Regarding Your Application — TEDxAlFalah Youth",
 };
@@ -97,7 +142,9 @@ const DECISION_BODY_AR: Record<string, { greeting: string; body: string; closing
 
 بعد مراجعة دقيقة لكل الطلبات، يسعدنا إبلاغك بأنه قد **لم يتم قبول طلبك** في هذه الدورة نظراً لعدد الطلبات الكبير ومحدودية المقاعد.
 
-نشجعك على التقديم في فعالياتنا المستقبلية، ونwaldك بأن كل فكرة تستحق منصة.\n\nنتمنى لك التوفيق دائماً.`,
+نشجعك على التقديم في فعالياتنا المستقبلية، ونؤكد لك أن كل فكرة تستحق منصة.
+
+نتمنى لك التوفيق دائماً.`,
 
     closing: "مع خالص التقدير،\nفريق TEDxAlFalah Youth",
   },
@@ -121,14 +168,15 @@ We will be in touch shortly with registration and preparation details.`,
 
 After careful review of all applications, we regret to inform you that your application was **not selected** for this edition due to the high volume of submissions and limited speaking slots.
 
-We strongly encourage you to apply at our future events — every idea deserves a stage.\n\nWishing you all the best.`,
+We strongly encourage you to apply at our future events — every idea deserves a stage.
+
+Wishing you all the best.`,
 
     closing: "With sincere appreciation,\nTEDxAlFalah Youth Team",
   },
 };
 
 function stripTripleStar(text: string): string {
-  // Markdown-ish `**bold**` → <strong>bold</strong>
   return text.replace(/\*\*([^*]+?)\*\*/g, "<strong>$1</strong>");
 }
 
@@ -148,29 +196,27 @@ function buildDecisionHtml(decision: "accepted" | "rejected", fullName: string):
   const replace = (tpl: string, name: string) =>
     tpl.replace("{name}", escapeHtml(name));
 
-  return `
-<div style="font-family:system-ui,-apple-system,Arial,sans-serif;max-width:600px;margin:0 auto;color:#1a1a1a;">
-  <div style="background:${accent};color:#fff;padding:18px 22px;border-radius:12px 12px 0 0;font-size:14px;font-weight:700;letter-spacing:.3px;">
-    TEDxAlFalah Youth — ${label.ar} | ${label.en}
+  const bodyHtml = `
+<div style="background:${accent};color:#fff;padding:18px 22px;border-radius:12px 12px 0 0;font-size:14px;font-weight:700;letter-spacing:.3px;">
+  TEDxAlFalah Youth — ${label.ar} | ${label.en}
+</div>
+<div style="border:1px solid #e5e7eb;border-top:none;padding:28px 22px;border-radius:0 0 12px 12px;">
+  <p style="font-size:17px;font-weight:700;margin:0 0 10px;">${replace(ar.greeting, fullName)}</p>
+  <div dir="rtl" lang="ar" style="font-size:14px;line-height:1.75;color:#333;margin-bottom:26px;">
+    ${nl2br(stripTripleStar(replace(ar.body, fullName)))}
+    <p style="white-space:pre-line;margin-top:18px;color:#555;">${nl2br(replace(ar.closing, fullName))}</p>
   </div>
-  <div style="border:1px solid #e5e7eb;border-top:none;padding:28px 22px;border-radius:0 0 12px 12px;">
-    <!-- AR -->
-    <p style="font-size:17px;font-weight:700;margin:0 0 10px;">${replace(ar.greeting, fullName)}</p>
-    <div dir="rtl" lang="ar" style="font-size:14px;line-height:1.75;color:#333;margin-bottom:26px;">
-      ${nl2br(stripTripleStar(replace(ar.body, fullName)))}
-      <p style="white-space:pre-line;margin-top:18px;color:#555;">${nl2br(replace(ar.closing, fullName))}</p>
-    </div>
-    <hr style="border:none;border-top:1px solid #e5e7eb;margin:0 0 24px;">
-    <!-- EN -->
-    <p style="font-size:17px;font-weight:700;margin:0 0 10px;">${replace(en.greeting, fullName)}</p>
-    <div dir="ltr" lang="en" style="font-size:14px;line-height:1.75;color:#333;">
-      ${nl2br(stripTripleStar(replace(en.body, fullName)))}
-      <p style="white-space:pre-line;margin-top:18px;color:#555;">${nl2br(replace(en.closing, fullName))}</p>
-    </div>
-    <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0 16px;">
-    <p style="font-size:12px;color:#999;margin:0;">© ${new Date().getFullYear()} TEDxAlFalah Youth · tedxalfalahyouth.com</p>
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:0 0 24px;">
+  <p style="font-size:17px;font-weight:700;margin:0 0 10px;">${replace(en.greeting, fullName)}</p>
+  <div dir="ltr" lang="en" style="font-size:14px;line-height:1.75;color:#333;">
+    ${nl2br(stripTripleStar(replace(en.body, fullName)))}
+    <p style="white-space:pre-line;margin-top:18px;color:#555;">${nl2br(replace(en.closing, fullName))}</p>
   </div>
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0 16px;">
+  <p style="font-size:12px;color:#999;margin:0;">© ${new Date().getFullYear()} TEDxAlFalah Youth · tedxalfalahyouth.com</p>
 </div>`;
+
+  return wrapEmailHtml(bodyHtml, "ar");
 }
 
 export async function sendDecisionEmail({

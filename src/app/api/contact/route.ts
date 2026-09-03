@@ -4,7 +4,7 @@ import { escapeHtml } from "@/lib/sanitize";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { validateOrigin } from "@/lib/cors";
-import { sendMail, isMailerConfigured } from "@/lib/mailer";
+import { sendMail, isMailerConfigured, wrapEmailHtml } from "@/lib/mailer";
 
 const contactSchema = z.object({
   name: z.string().min(1),
@@ -73,14 +73,14 @@ export async function POST(request: Request) {
       await sendMail({
         to: inbox,
         replyTo: email,
-        subject: `[${subject}] New message from ${escapeHtml(name)}`,
-        html: `
-          <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-          <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
-          <p><strong>Message:</strong></p>
-          <p>${escapeHtml(message).replace(/\n/g, "<br />")}</p>
-        `,
+        subject: `[${subject}] New message from ${name}`,
+        html: wrapEmailHtml(`
+          <p style="margin:0 0 8px;"><strong>Name:</strong> ${escapeHtml(name)}</p>
+          <p style="margin:0 0 8px;"><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p style="margin:0 0 8px;"><strong>Subject:</strong> ${escapeHtml(subject)}</p>
+          <p style="margin:0 0 8px;"><strong>Message:</strong></p>
+          <p style="margin:0;">${escapeHtml(message).replace(/\n/g, "<br />")}</p>
+        `, "en"),
       });
     } catch (error) {
       console.error("Contact email failed:", error);

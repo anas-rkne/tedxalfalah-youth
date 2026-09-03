@@ -4,7 +4,7 @@ import { escapeHtml } from "@/lib/sanitize";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { validateOrigin } from "@/lib/cors";
-import { sendMail, isMailerConfigured } from "@/lib/mailer";
+import { sendMail, isMailerConfigured, wrapEmailHtml } from "@/lib/mailer";
 
 const partnerSchema = z.object({
   name: z.string().min(1),
@@ -58,15 +58,15 @@ export async function POST(request: Request) {
       await sendMail({
         to: process.env.PARTNER_EMAIL || "partners@tedxalfalahyouth.com",
         replyTo: email,
-        subject: `New partnership inquiry from ${escapeHtml(organization)}`,
-        html: `
-          <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-          <p><strong>Organization:</strong> ${escapeHtml(organization)}</p>
-          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-          <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
-          <p><strong>Message:</strong></p>
-          <p>${escapeHtml(message).replace(/\n/g, "<br />")}</p>
-        `,
+        subject: `New partnership inquiry from ${organization}`,
+        html: wrapEmailHtml(`
+          <p style="margin:0 0 8px;"><strong>Name:</strong> ${escapeHtml(name)}</p>
+          <p style="margin:0 0 8px;"><strong>Organization:</strong> ${escapeHtml(organization)}</p>
+          <p style="margin:0 0 8px;"><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p style="margin:0 0 8px;"><strong>Phone:</strong> ${escapeHtml(phone)}</p>
+          <p style="margin:0 0 8px;"><strong>Message:</strong></p>
+          <p style="margin:0;">${escapeHtml(message).replace(/\n/g, "<br />")}</p>
+        `, "en"),
       });
     } catch (error) {
       console.error("Partner inquiry email failed:", error);

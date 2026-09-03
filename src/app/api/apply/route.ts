@@ -4,7 +4,7 @@ import { escapeHtml } from "@/lib/sanitize";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { validateOrigin } from "@/lib/cors";
-import { sendMail, isMailerConfigured } from "@/lib/mailer";
+import { sendMail, isMailerConfigured, wrapEmailHtml } from "@/lib/mailer";
 import { APPLICATION_DEADLINE } from "@/lib/constants";
 
 function wordCount(text: string) {
@@ -137,21 +137,22 @@ async function saveToGoogleSheet(data: ApplicationData) {
 
 async function sendConfirmationEmail(data: ApplicationData) {
   // نص حرفي معتمد من العميل — لا يُغيّر.
+  const bodyHtml = `
+    <p style="font-size:17px;font-weight:700;margin:0 0 14px;">Your idea is in.</p>
+    <p style="margin:0 0 12px;">You took the time to share your story, your thoughts, and something you
+    believe deserves to be heard, and we're really looking forward to reading it.</p>
+    <p style="margin:0 0 12px;">Our TEDxAlFalah Youth team will now go through the applications and get to
+    know the voices and ideas behind them.</p>
+    <p style="margin:0 0 12px;">If you're shortlisted, we'll be in touch with the next steps.</p>
+    <p style="margin:0 0 12px;">Until then, keep being curious, keep asking questions, and keep thinking a
+    little differently. You never know where one good idea can take you.</p>
+    <p style="margin:0 0 12px;">Hope to see you inside the red circle. &#128308;</p>
+    <p style="margin:0;color:#555;">Warm regards,<br>TEDxAlFalah Youth Team</p>
+  `;
   await sendMail({
     to: data.email,
     subject: "We've Received Your Application | TEDxAlFalah Youth",
-    html: `
-      <p><strong>Your idea is in.</strong></p>
-      <p>You took the time to share your story, your thoughts, and something you
-      believe deserves to be heard, and we're really looking forward to reading it.</p>
-      <p>Our TEDxAlFalah Youth team will now go through the applications and get to
-      know the voices and ideas behind them.</p>
-      <p>If you're shortlisted, we'll be in touch with the next steps.</p>
-      <p>Until then, keep being curious, keep asking questions, and keep thinking a
-      little differently. You never know where one good idea can take you.</p>
-      <p>Hope to see you inside the red circle. &#128308;</p>
-      <p>Warm regards,<br />TEDxAlFalah Youth Team</p>
-    `,
+    html: wrapEmailHtml(bodyHtml, "en"),
   });
 }
 
@@ -166,28 +167,28 @@ async function sendAdminNotification(data: ApplicationData) {
       process.env.ADMIN_APPLICATIONS_EMAIL || "apply@tedxalfalahyouth.com",
       process.env.CONTACT_EMAIL || "marhaba@tedxalfalahyouth.com",
     ],
-    subject: `New Application: ${trackLabel} - ${escapeHtml(data.fullName)}`,
-    html: `
-      <p><strong>Track:</strong> ${escapeHtml(trackLabel)}</p>
-      <p><strong>Full name:</strong> ${escapeHtml(data.fullName)}</p>
-      <p><strong>Age:</strong> ${escapeHtml(data.age)}</p>
-      <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
-      <p><strong>Phone:</strong> ${escapeHtml(data.phone)}</p>
-      <p><strong>City:</strong> ${escapeHtml(data.city)}</p>
-      <p><strong>Talk idea title:</strong> ${escapeHtml(data.talkIdeaTitle)}</p>
-      <p><strong>Idea summary:</strong> ${escapeHtml(data.ideaSummary)}</p>
-      <p><strong>Why it matters:</strong> ${escapeHtml(data.whyItMatters)}</p>
-      <p><strong>Theme connection:</strong> ${escapeHtml(data.themeConnection)}</p>
-      <p><strong>How they heard about us:</strong> ${escapeHtml(data.howHeardAboutUs)}</p>
-      <p><strong>School name:</strong> ${escapeHtml(data.schoolName || "-")}</p>
-      <p><strong>Guardian name:</strong> ${escapeHtml(data.guardianName || "-")}</p>
-      <p><strong>Guardian contact:</strong> ${escapeHtml(data.guardianContact || "-")}</p>
-      <p><strong>Organization and role:</strong> ${escapeHtml(data.organizationAndRole || "-")}</p>
-      <p><strong>Area of work with youth:</strong> ${escapeHtml(data.areaOfWorkWithYouth || "-")}</p>
-      <p><strong>Parental consent:</strong> ${data.parentalConsent ? "Yes" : "No"}</p>
-      <p><strong>Terms accepted:</strong> Yes</p>
-      <p><strong>Submitted at:</strong> ${new Date().toLocaleString()}</p>
-    `,
+    subject: `New Application: ${trackLabel} - ${data.fullName}`,
+    html: wrapEmailHtml(`
+      <p style="margin:0 0 8px;"><strong>Track:</strong> ${escapeHtml(trackLabel)}</p>
+      <p style="margin:0 0 8px;"><strong>Full name:</strong> ${escapeHtml(data.fullName)}</p>
+      <p style="margin:0 0 8px;"><strong>Age:</strong> ${escapeHtml(data.age)}</p>
+      <p style="margin:0 0 8px;"><strong>Email:</strong> ${escapeHtml(data.email)}</p>
+      <p style="margin:0 0 8px;"><strong>Phone:</strong> ${escapeHtml(data.phone)}</p>
+      <p style="margin:0 0 8px;"><strong>City:</strong> ${escapeHtml(data.city)}</p>
+      <p style="margin:0 0 8px;"><strong>Talk idea title:</strong> ${escapeHtml(data.talkIdeaTitle)}</p>
+      <p style="margin:0 0 8px;"><strong>Idea summary:</strong> ${escapeHtml(data.ideaSummary)}</p>
+      <p style="margin:0 0 8px;"><strong>Why it matters:</strong> ${escapeHtml(data.whyItMatters)}</p>
+      <p style="margin:0 0 8px;"><strong>Theme connection:</strong> ${escapeHtml(data.themeConnection)}</p>
+      <p style="margin:0 0 8px;"><strong>How they heard about us:</strong> ${escapeHtml(data.howHeardAboutUs)}</p>
+      <p style="margin:0 0 8px;"><strong>School name:</strong> ${escapeHtml(data.schoolName || "-")}</p>
+      <p style="margin:0 0 8px;"><strong>Guardian name:</strong> ${escapeHtml(data.guardianName || "-")}</p>
+      <p style="margin:0 0 8px;"><strong>Guardian contact:</strong> ${escapeHtml(data.guardianContact || "-")}</p>
+      <p style="margin:0 0 8px;"><strong>Organization and role:</strong> ${escapeHtml(data.organizationAndRole || "-")}</p>
+      <p style="margin:0 0 8px;"><strong>Area of work with youth:</strong> ${escapeHtml(data.areaOfWorkWithYouth || "-")}</p>
+      <p style="margin:0 0 8px;"><strong>Parental consent:</strong> ${data.parentalConsent ? "Yes" : "No"}</p>
+      <p style="margin:0 0 8px;"><strong>Terms accepted:</strong> Yes</p>
+      <p style="margin:0 0 8px;"><strong>Submitted at:</strong> ${new Date().toISOString()}</p>
+    `, "en"),
   });
 }
 
