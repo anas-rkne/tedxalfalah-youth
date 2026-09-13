@@ -70,9 +70,15 @@ async function api<T>(url: string, token: string, options?: RequestInit): Promis
       ...(options?.headers ?? {}),
     },
   });
-  const data = await res.json();
+  const text = await res.text().catch(() => "");
+  let data: { error?: string };
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(`HTTP ${res.status}: server returned a non-JSON response`);
+  }
   if (!res.ok) {
-    throw new Error((data as { error?: string }).error || "Request failed");
+    throw new Error(data.error || `Request failed (HTTP ${res.status})`);
   }
   return data as T;
 }

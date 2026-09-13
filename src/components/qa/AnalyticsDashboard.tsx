@@ -47,8 +47,9 @@ export default function AnalyticsDashboard({ token, sessionId }: Props) {
         const res = await fetch(`/api/qa/admin/analytics${params}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error || "Failed");
+        const text = await res.text().catch(() => "");
+        const json = text ? JSON.parse(text) : {};
+        if (!res.ok) throw new Error(json.error || `Failed (HTTP ${res.status})`);
         if (!cancelled) setData(json);
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load analytics");
