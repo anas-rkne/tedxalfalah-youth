@@ -88,10 +88,21 @@ async function getUsersTab() {
   return tab;
 }
 
+interface UsersCacheEntry {
+  at: number;
+  users: UserRecord[];
+}
+
+let usersCache: UsersCacheEntry | null = null;
+const USERS_CACHE_TTL_MS = 30_000;
+
 async function getUsers(): Promise<UserRecord[]> {
+  if (usersCache && Date.now() - usersCache.at < USERS_CACHE_TTL_MS) {
+    return usersCache.users;
+  }
   const tab = await getUsersTab();
   const rows = await tab.getRows();
-  return rows.map((row) => ({
+  const users = rows.map((row) => ({
     username: String(row.get("username") ?? "").trim(),
     displayName: String(row.get("displayName") ?? "").trim(),
     passwordHash: String(row.get("passwordHash") ?? ""),
@@ -100,11 +111,18 @@ async function getUsers(): Promise<UserRecord[]> {
     createdAt: String(row.get("createdAt") ?? ""),
     lastLogin: String(row.get("lastLogin") ?? ""),
   })).filter((u) => u.username.length > 0);
+  usersCache = { at: Date.now(), users };
+  return users;
 }
 
 /* ── public API ──────────────────────────────────────────── */
 
 export { hashPassword, verifyPassword };
+
+/** يبطل الكاش عند أي تغيير في سجل المستخدمين (إضافة/تعديل/دخول). */
+export function invalidateUsersCache(): void {
+  usersCache = null;
+}
 
 export async function getUserByUsername(username: string): Promise<UserRecord | null> {
   const users = await getUsers();
@@ -156,6 +174,7 @@ export async function updateUserPassword(
   target.set("passwordHash", hash);
   target.set("tokenVersion", currentTv + 1);
   await target.save();
+  invalidateUsersCache();
   return true;
 }
 
@@ -167,6 +186,7 @@ export async function updateLastLogin(username: string): Promise<void> {
     target.set("lastLogin", new Date().toISOString());
     await target.save();
   }
+  invalidateUsersCache();
 }
 
 export async function addUser(
@@ -187,6 +207,7 @@ export async function addUser(
     createdAt: now,
     lastLogin: "",
   });
+  invalidateUsersCache();
   return {
     username,
     displayName,
