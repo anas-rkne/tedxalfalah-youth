@@ -429,11 +429,11 @@ export default function AdminDashboard() {
   }, [applications, search, trackFilter, statusFilter, timeFilter, maxTs]);
 
   const handleExport = async () => {
-    if (!filtered.length || exporting) return;
+    if (!applications.length || exporting) return;
     setExporting(true);
     try {
       const XLSX = await import("xlsx");
-      const rows = filtered.map((app) => {
+      const rows = applications.map((app) => {
         const row: Record<string, string> = {};
         row[t("fields.timestamp")] = app.timestamp;
         row[t("fields.track")] =
@@ -680,7 +680,7 @@ export default function AdminDashboard() {
             <Button
               size="sm"
               onClick={handleExport}
-              disabled={!filtered.length}
+              disabled={!applications.length}
               loading={exporting}
               loadingText={t("dashboard.exporting")}
             >

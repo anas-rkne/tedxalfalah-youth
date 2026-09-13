@@ -58,8 +58,8 @@
   },
   "home": {
     "meta": {
-      "title": "TEDxAlFalah Youth | Young Voices. Real Ideas.",
-      "description": "Young voices. Real ideas. The future starts earlier than we think. An independently organized TEDx event in Abu Dhabi, UAE."
+      "title": "TEDxAlFalah Youth | Tomorrow, Now.",
+      "description": "Tomorrow, Now. The future will not wait for us — it is built by the bold questions and ideas of young people today. An independently organized TEDx event in Abu Dhabi, UAE."
     },
     "hero": {
       "eventName": "TEDxAlFalah Youth",
@@ -90,8 +90,8 @@
       "ctaDescription": "Join us and discover how you can contribute to a future full of inspiring ideas."
     },
     "theme": {
-      "title": "Young voices. Real ideas. The future starts earlier than we think.",
-      "body": "In the UAE, youth are inventing, creating, performing, competing, and asking bold questions. TEDxYouth is a stage for their ideas and stories. Real experiences that inspire young people and remind adults how powerful youth voices can be.",
+      "title": "Tomorrow, Now.",
+      "body": "The future will not wait for us. It is already here — taking shape in the questions we ask, the ideas we explore, the risks we take, and the bold choices young people make every day. \u201cTomorrow, Now.\u201d is not about predicting what comes next. It is about claiming it — showing that building tomorrow begins with the thoughts, conversations, and actions of today. Throughout this event, we will explore what it means to be young in a rapidly changing world — and how young people can be the architects of what is coming next. The event brings together speakers and performers who don't just dream about the future, but actively shape it through their work, creativity, and courage. TEDxYouth honors the curiosity, resilience, and vision of young people, while TEDxAlFalah Youth takes this a step further: youth as co-creators of the future — inventing, performing, creating, competing, and asking the bold questions that define a generation. Throughout the day, we will explore the pillars of \u201cTomorrow, Now.\u201d: the right to question, the right to create, the right to contribute, and the right to act. Together, these four pillars form a roadmap for young people to move from being part of the conversation to shaping it. At the core of this idea is a simple truth: the future belongs to those who build it. And who better to build it than the young minds already shaping our present? So let's start today. Tomorrow, now.",
       "badgeLabel": "Our Theme",
       "statSpeakers": "Speakers",
       "statSeats": "Seats",
@@ -216,44 +216,44 @@
         "subtitle": "Everything that happens between your application and event day.",
         "stages": [
           {
-            "date": "18 August",
-            "title": "Applications open"
+            "date": "18 Aug",
+            "title": "Applications Open"
           },
           {
-            "date": "14 September",
-            "title": "Applications close"
+            "date": "14 Sep",
+            "title": "Applications Close"
           },
           {
-            "date": "19 September",
-            "title": "Screening of applications"
+            "date": "19 Sep",
+            "title": "Application Screening"
           },
           {
-            "date": "25 September",
-            "title": "Shortlisting announced"
+            "date": "30 Sep",
+            "title": "Shortlisting Announced"
           },
           {
-            "date": "28 Sept – 3 Oct",
+            "date": "9–18 Oct",
             "title": "Interviews & Auditions"
           },
           {
-            "date": "6 October",
-            "title": "Confirmation of progression"
+            "date": "23–25 Oct",
+            "title": "Confirmation of Progression"
           },
           {
-            "date": "10 October",
-            "title": "Final speaker selection announcement"
+            "date": "26 Oct",
+            "title": "Final Speaker Selection"
           },
           {
-            "date": "19 Oct – 20 Nov",
-            "title": "Coaching and talk development"
+            "date": "27 Oct–20 Nov",
+            "title": "Coaching & Talk Development"
           },
           {
-            "date": "17 & 18 December",
+            "date": "18 Dec",
             "title": "Rehearsals"
           },
           {
-            "date": "19 December",
-            "title": "Event day"
+            "date": "19 Dec",
+            "title": "Event Day"
           }
         ]
       }
@@ -472,8 +472,8 @@
         "description": "Apply to speak at TEDxAlFalah Youth as a young speaker (10-18) or an expert in child and youth development."
       },
       "theme": {
-        "title": "Young voices. Real ideas. The future starts earlier than we think.",
-        "body": "In the UAE, young people innovate, create, perform, compete, and ask bold questions. TEDxYouth is a platform for their ideas and stories — real experiences that inspire youth and remind adults of the power of young voices.",
+        "title": "Tomorrow, Now.",
+        "body": "The future will not wait for us. It is already here — taking shape in the questions we ask, the ideas we explore, the risks we take, and the bold choices young people make every day. \u201cTomorrow, Now.\u201d is not about predicting what comes next. It is about claiming it — showing that building tomorrow begins with the thoughts, conversations, and actions of today. Throughout this event, we will explore what it means to be young in a rapidly changing world — and how young people can be the architects of what is coming next. The event brings together speakers and performers who don't just dream about the future, but actively shape it through their work, creativity, and courage. TEDxYouth honors the curiosity, resilience, and vision of young people, while TEDxAlFalah Youth takes this a step further: youth as co-creators of the future — inventing, performing, creating, competing, and asking the bold questions that define a generation. Throughout the day, we will explore the pillars of \u201cTomorrow, Now.\u201d: the right to question, the right to create, the right to contribute, and the right to act. Together, these four pillars form a roadmap for young people to move from being part of the conversation to shaping it. At the core of this idea is a simple truth: the future belongs to those who build it. And who better to build it than the young minds already shaping our present? So let's start today. Tomorrow, now.",
         "subtitle": "TEDxYouth — A platform for their ideas and stories"
       },
       "whoCanApply": {
@@ -547,67 +547,61 @@
         "phases": [
           {
             "title": "Applications Open",
-            "date": "September 1, 2026",
+            "date": "18 Aug 2026",
             "description": "Applications open for young speakers and experts.",
             "whatToExpect": "Complete the form carefully and share your best idea."
           },
           {
             "title": "Applications Close",
-            "date": "September 14, 2026",
+            "date": "14 Sep 2026",
             "description": "Last day to submit applications.",
             "whatToExpect": "Make sure to submit before midnight."
           },
           {
             "title": "Application Screening",
-            "dateRange": "October 16–31, 2026",
-            "description": "The review community evaluates all applications.",
+            "date": "19 Sep 2026",
+            "description": "The review team evaluates all applications.",
             "whatToExpect": "We read every application carefully and assess based on originality, clarity, and readiness."
           },
           {
-            "title": "Shortlist Announcement",
-            "date": "November 5, 2026",
+            "title": "Shortlisting Announced",
+            "date": "30 Sep 2026",
             "description": "We announce the shortlisted candidates.",
             "whatToExpect": "You will receive an email within 48 hours."
           },
           {
-            "title": "First Interview",
-            "dateRange": "November 10–20, 2026",
-            "description": "One-on-one interviews with shortlisted candidates.",
+            "title": "Interviews & Auditions",
+            "dateRange": "9–18 Oct 2026",
+            "description": "Interviews and auditions with shortlisted candidates.",
             "whatToExpect": "We discuss your idea and how it connects to the theme."
           },
           {
-            "title": "Advancement Confirmation",
-            "date": "November 25, 2026",
-            "description": "Candidates advancing to the next stage are announced.",
+            "title": "Confirmation of Progression",
+            "dateRange": "23–25 Oct 2026",
+            "description": "Candidates advancing to the next stage are confirmed.",
             "whatToExpect": "Your coaching and talk preparation journey begins."
           },
           {
-            "title": "Second Interview",
-            "dateRange": "December 1–10, 2026",
-            "description": "Second interview for advanced candidates.",
-            "whatToExpect": "We discuss how your idea has evolved and identify areas to refine."
-          },
-          {
-            "title": "Final Selection Announcement",
-            "date": "December 20, 2026",
+            "title": "Final Speaker Selection",
+            "date": "26 Oct 2026",
             "description": "Official announcement of final speakers.",
             "whatToExpect": "Congratulations! Intensive coaching begins."
           },
           {
-            "title": "Coaching & Mentoring",
-            "dateRange": "January – February 2027",
+            "title": "Coaching & Talk Development",
+            "dateRange": "27 Oct–20 Nov 2026",
             "description": "Intensive training program to prepare your talk.",
             "whatToExpect": "Weekly sessions with professional TEDx coaches."
           },
           {
             "title": "Rehearsals",
-            "dateRange": "March 1–10, 2027",
+            "date": "18 Dec 2026",
             "description": "Final on-stage rehearsals before the event.",
             "whatToExpect": "Experience the real stage, lighting, and sound."
           },
           {
             "title": "Event Day",
-            "date": "March 15, 2027",
+            "date": "19 Dec 2026",
             "description": "The big day — take a deep breath and share your story.",
             "whatToExpect": "You're ready. The world is waiting to hear your voice."
           }
@@ -979,6 +973,151 @@
       "saving": "Saving...",
       "save": "Save",
       "success": "Password changed. You will be signed out in 2 seconds..."
+    }
+  },
+  "qa": {
+    "join": {
+      "title": "Join the conversation",
+      "subtitle": "Enter your name to participate. One registration per session.",
+      "namePlaceholder": "Your name",
+      "joinButton": "Join",
+      "joining": "Joining...",
+      "alreadyJoined": "Welcome back!",
+      "noSession": "There is no active session right now.",
+      "required": "Please enter your name."
+    },
+    "participate": {
+      "title": "Live Q&A",
+      "sessionTitle": "Session",
+      "notAccepting": "This session is not accepting new questions at the moment.",
+      "askTitle": "Ask a question",
+      "askPlaceholder": "Write your question here... (max 300 chars)",
+      "askButton": "Send",
+      "anonymous": "Ask anonymously",
+      "noTag": "No tag",
+      "tagTech": "Technology",
+      "tagIdeas": "Ideas",
+      "tagEnvironment": "Environment",
+      "tagEducation": "Education",
+      "tagOther": "Other",
+      "sending": "Sending...",
+      "sent": "Your question was received! It will appear after moderation.",
+      "sentError": "Could not submit your question.",
+      "duplicate": "A similar question already exists. Your question was not submitted.",
+      "maxLength": "Question is too long.",
+      "pollsLabel": "Live poll",
+      "pollClosed": "Poll closed",
+      "voteButton": "Vote",
+      "voted": "Thank you! Your vote is recorded.",
+      "results": "Results",
+      "totalVotes": "{count} votes",
+      "noPolls": "No active poll right now."
+    },
+    "screen": {
+      "waiting": "Get ready...",
+      "waitingSubtitle": "The next activity will appear here.",
+      "eventName": "TEDxAlFalah Youth",
+      "noQuestions": "No approved questions yet.",
+      "questionsLabel": "Audience questions",
+      "pollLabel": "Live poll result",
+      "pollVotes": "{count} votes",
+      "participants": "{count} participants",
+      "scanToJoin": "Scan to join"
+    },
+    "speaker": {
+      "noQuestions": "No unanswered questions left.",
+      "currentQuestion": "Question",
+      "markAnswered": "Mark as Answered"
+    },
+    "survey": {
+      "title": "How was your experience?",
+      "subtitle": "Your feedback helps us improve future events.",
+      "npsQuestion": "How likely are you to recommend TEDxAlFalah Youth to a friend? (0-10)",
+      "notLikely": "Not at all likely",
+      "veryLikely": "Extremely likely",
+      "ratingQuestion": "How would you rate the overall event?",
+      "commentOptional": "Any comments or suggestions? (optional)",
+      "commentPlaceholder": "Tell us what you think...",
+      "submit": "Submit Feedback",
+      "submitting": "Submitting...",
+      "fillRequired": "Please answer both rating questions.",
+      "submitError": "Could not submit your feedback. Please try again.",
+      "thanks": "Thank you!",
+      "thanksMessage": "Your feedback has been recorded. We appreciate your time!",
+      "close": "Close",
+      "adminTitle": "Survey Results",
+      "avgNps": "Average NPS",
+      "avgRating": "Average Rating",
+      "npsScore": "NPS Score",
+      "total": "Total Responses",
+      "promoters": "Promoters",
+      "passives": "Passives",
+      "detractors": "Detractors"
+    },
+    "adminLive": {
+      "title": "Live Q&A Admin",
+      "loginDescription": "Sign in to manage live Q&A sessions",
+      "loginUsername": "Username",
+      "loginUsernamePlaceholder": "admin",
+      "loginPassword": "Password",
+      "loginPasswordPlaceholder": "Enter your password",
+      "loginSubmit": "Sign in",
+      "loggingIn": "Signing in...",
+      "loadError": "Could not load session data.",
+      "exportCsv": "Export CSV",
+      "noSession": "No active session. Create or activate one.",
+      "createSession": "Create session",
+      "sessionTitlePlaceholder": "Session title",
+      "createButton": "Create",
+      "activateButton": "Activate",
+      "endButton": "End session",
+      "openQuestions": "Open questions",
+      "closeQuestions": "Close questions",
+      "questionStatus": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "approve": "Approve",
+      "reject": "Reject",
+      "feature": "Feature",
+      "unfeature": "Unfeature",
+      "markAnswered": "Answer",
+      "answered": "Answered",
+      "noQuestions": "No questions yet.",
+      "polls": "Polls",
+      "newPollPrompt": "Poll question",
+      "newPollOptionPlaceholder": "Option {n}",
+      "addOption": "Add option",
+      "startPoll": "Start",
+      "stopPoll": "Stop",
+      "showResults": "Show results",
+      "hideResults": "Hide results",
+      "deletePoll": "Delete",
+      "confirmDelete": "Delete this poll?",
+      "attendees": "Attendees",
+      "totalAttendees": "Total registered: {count}",
+      "deleteSession": "Delete session",
+      "noPollsYet": "No polls yet."
+    },
+    "analytics": {
+      "totalQuestions": "Total Questions",
+      "attendees": "Attendees",
+      "totalVotes": "Total Votes",
+      "tags": "Tags",
+      "statusBreakdown": "Question Status",
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "answered": "Answered",
+      "anonymous": "Anonymous",
+      "sentiment": "Sentiment Analysis",
+      "positive": "Positive",
+      "neutral": "Neutral",
+      "negative": "Negative",
+      "topTags": "Top Tags",
+      "timeline": "Questions by Hour",
+      "topQuestions": "Top Questions by Votes"
     }
   }
 }

@@ -37,6 +37,12 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# live q&a data (never commit runtime attendee/question state)
+/store/
+
+# scratch env file containing real secrets (never commit)
+/t
+
 # credentials (never commit real secrets)
 CREDENTIALS*
 !CREDENTIALS.template.md

@@ -37,7 +37,7 @@ export default async function Home({ params }: Props) {
     date: eventInfo?.date,
     venue: eventInfo?.venue,
     description:
-      "Young voices. Real ideas. The future starts earlier than we think. An independently organized TEDx event.",
+      "Tomorrow, Now. The future will not wait for us — it is built by the bold questions and ideas of young people today. An independently organized TEDx event.",
   });
 
   return (

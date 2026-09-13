@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: "home.meta" });
   const siteTitle = "TEDxAlFalah Youth | Tomorrow, Now.";
   const siteDesc =
-    "Young voices. Real ideas. The future starts earlier than we think. An independently organized TEDx event.";
+    "Tomorrow, Now. The future will not wait for us — it is built by the bold questions and ideas of young people today. An independently organized TEDx event.";
   return {
     metadataBase: new URL(baseUrl),
     title: {
