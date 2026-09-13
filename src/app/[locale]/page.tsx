@@ -37,7 +37,7 @@ export default async function Home({ params }: Props) {
     date: eventInfo?.date,
     venue: eventInfo?.venue,
     description:
-      "Tomorrow, Now. The future will not wait for us — it is built by the bold questions and ideas of young people today. An independently organized TEDx event.",
+      "Tomorrow is shaped by what we do today. An independently organized TEDx youth event in Abu Dhabi, UAE.",
   });
 
   return (

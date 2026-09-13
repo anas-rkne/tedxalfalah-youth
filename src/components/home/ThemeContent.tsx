@@ -143,25 +143,29 @@ export default function ThemeContent({
               dir={isRTL ? "rtl" : "ltr"}
             >
               <p className="text-lg md:text-xl text-center text-muted-foreground leading-[1.9] font-light">
-                {body.split(/(\s+)/).map((part, index) => {
-                  const isEnglish = /^[A-Za-z0-9]/.test(part);
-                  const isTEDx = /TEDx/i.test(part);
-                  if (isTEDx) {
-                    return (
-                      <span key={index} dir="ltr" className="inline-block text-foreground font-bold mx-1">
-                        {part}
-                      </span>
-                    );
-                  }
-                  if (isEnglish) {
-                    return (
-                      <span key={index} dir="ltr" className="inline-block mx-0.5">
-                        {part}
-                      </span>
-                    );
-                  }
-                  return <span key={index}>{part}</span>;
-                })}
+                {body.split("\n\n").map((paragraph, pIndex) => (
+                  <span className="block mb-4 last:mb-0" key={pIndex}>
+                    {paragraph.split(/(\s+)/).map((part, index) => {
+                      const isEnglish = /^[A-Za-z0-9]/.test(part);
+                      const isTEDx = /TEDx/i.test(part);
+                      if (isTEDx) {
+                        return (
+                          <span key={index} dir="ltr" className="inline-block text-foreground font-bold mx-1">
+                            {part}
+                          </span>
+                        );
+                      }
+                      if (isEnglish) {
+                        return (
+                          <span key={index} dir="ltr" className="inline-block mx-0.5">
+                            {part}
+                          </span>
+                        );
+                      }
+                      return <span key={index}>{part}</span>;
+                    })}
+                  </span>
+                ))}
               </p>
             </motion.div>
 

@@ -73,7 +73,7 @@ export function webSiteSchema() {
     "@type": "WebSite",
     name: "TEDxAlFalah Youth",
     url: BASE_URL,
-    description: "Tomorrow, Now. The future will not wait for us.",
+    description: "Tomorrow is shaped by what we do today.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
