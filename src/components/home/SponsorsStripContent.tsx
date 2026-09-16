@@ -294,9 +294,11 @@ export default function SponsorsStripContent({
       {/* ═══════ شبكة الشعارات (ثابتة — بلا تكرار) ═══════ */}
       <div className="container-padding relative pb-20 md:pb-28">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <div className="flex flex-wrap justify-center items-stretch gap-4 sm:gap-6 lg:gap-8">
             {sponsors.map((sponsor) => (
-              <SponsorLogoCard key={sponsor.id} sponsor={sponsor} />
+              <div key={sponsor.id} className="w-full max-w-[240px] sm:w-[calc(33.333%-1rem)] sm:max-w-none lg:w-[calc(25%-1.5rem)]">
+                <SponsorLogoCard sponsor={sponsor} />
+              </div>
             ))}
           </div>
         </div>
@@ -363,7 +365,7 @@ export default function SponsorsStripContent({
       <DarkCTASection
         heading={ctaHeading}
         description={ctaDescription}
-        primaryButton={{ href: "/#contact", label: ctaLabel }}
+        primaryButton={{ href: "/sponsors", label: ctaLabel }}
       />
     </section>
   );
