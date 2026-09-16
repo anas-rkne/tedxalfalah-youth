@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback, memo } from "react";
-import { motion, useReducedMotion, useAnimationFrame } from "framer-motion";
+import { useRef, useState, useEffect, memo } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Users, Ticket, Calendar } from "lucide-react";
 import { useRTL } from "@/hooks/useRTL";
 import SectionBadge from "@/components/ui/SectionBadge";
@@ -31,6 +31,98 @@ interface SponsorsStripContentProps {
   ctaDescription: string;
   ctaLabel: string;
 }
+
+/* ═══════════════════════════════════════════
+   SponsorLogoCard – بطاقة شعار موحّدة (مطابقة لصفحة الشركاء)
+   ═══════════════════════════════════════════ */
+const SponsorLogoCard = memo(function SponsorLogoCard({ sponsor }: { sponsor: Sponsor }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const inner = (
+    <div
+      className="relative w-full aspect-[3/2] rounded-3xl bg-white border border-zinc-200/80 overflow-hidden flex flex-col items-center justify-center
+        transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+        hover:border-tedx-red/25 hover:shadow-[0_20px_50px_-20px_rgba(230,43,30,0.25)] hover:-translate-y-1.5"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isHovered ? 1 : 0 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          background: "radial-gradient(circle at 50% 30%, rgba(230,43,30,0.06), transparent 65%)",
+        }}
+      />
+
+      <div
+        className="absolute inset-0 opacity-[0.015] pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle, #000 0.5px, transparent 0.5px)",
+          backgroundSize: "20px 20px",
+        }}
+      />
+
+      <div className="relative z-10 flex items-center justify-center w-full h-full px-6 py-7">
+        {sponsor.logoUrl ? (
+          <SafeImage
+            src={sponsor.logoUrl}
+            alt={sponsor.name}
+            fill
+            unoptimized
+            className="object-contain p-4 transition-all duration-500"
+            sizes="(max-width: 640px) 160px, 220px"
+          />
+        ) : (
+          <span className="text-lg font-bold text-zinc-400 uppercase tracking-[0.15em] text-center px-2">
+            {sponsor.name}
+          </span>
+        )}
+      </div>
+
+      <motion.div
+        className="absolute bottom-0 left-1/2 h-[2px] rounded-full"
+        style={{ background: "linear-gradient(90deg, transparent, #e62b1e, transparent)" }}
+        initial={{ width: 0, x: "-50%" }}
+        animate={{ width: isHovered ? 80 : 0, x: "-50%" }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      />
+    </div>
+  );
+
+  if (sponsor.websiteUrl) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <a
+          href={sponsor.websiteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={sponsor.name}
+          className="group block w-full h-full"
+        >
+          {inner}
+        </a>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {inner}
+    </motion.div>
+  );
+});
 
 /* ═══════════════════════════════════════════
    AnimatedStatItem – عداد متحرك (مستقل + memo)
@@ -119,81 +211,6 @@ const AnimatedStatItem = memo(function AnimatedStatItem({
 });
 
 /* ═══════════════════════════════════════════
-   SponsorMarquee – SafeImage + memo
-   ═══════════════════════════════════════════ */
-const SponsorMarquee = memo(function SponsorMarquee({ sponsors }: { sponsors: Sponsor[] }) {
-  const shouldReduceMotion = useReducedMotion();
-  const [isHovered, setIsHovered] = useState(false);
-  const baseVelocity = useRef(0.5);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const xPosition = useRef(0);
-
-  const tripleSponsors = [...sponsors, ...sponsors, ...sponsors];
-
-  const getSetWidth = useCallback(() => {
-    if (!containerRef.current) return 0;
-    const items = containerRef.current.querySelectorAll('.marquee-item');
-    if (items.length === 0) return 0;
-    return Array.from(items)
-      .slice(0, sponsors.length)
-      .reduce((acc, item) => acc + (item as HTMLElement).offsetWidth + 64, 0);
-  }, [sponsors.length]);
-
-  useAnimationFrame((_, delta) => {
-    if (shouldReduceMotion || isHovered || !containerRef.current) return;
-    const setWidth = getSetWidth();
-    if (setWidth === 0) return;
-    const moveBy = (baseVelocity.current * delta) / 16;
-    xPosition.current -= moveBy;
-    if (Math.abs(xPosition.current) >= setWidth) {
-      xPosition.current = 0;
-    }
-    containerRef.current.style.transform = `translateX(${xPosition.current}px)`;
-  });
-
-  if (sponsors.length === 0) return null;
-
-  return (
-    <div
-      className="relative w-full overflow-hidden border-y border-zinc-100 py-8 md:py-10"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-
-      <div
-        ref={containerRef}
-        className="flex items-center gap-16 md:gap-20 w-max"
-        style={{ willChange: 'transform' }}
-      >
-        {tripleSponsors.map((sponsor, index) => (
-          <div
-            key={`${sponsor.id}-${index}`}
-            className="marquee-item relative w-32 md:w-40 h-16 md:h-20 flex-shrink-0 flex items-center justify-center group/logo"
-          >
-            {sponsor.logoUrl ? (
-              <SafeImage
-                src={sponsor.logoUrl}
-                alt={sponsor.name}
-                fill
-                unoptimized
-                className="object-contain transition-all duration-300"
-                sizes="160px"
-              />
-            ) : (
-              <span className="text-lg font-bold text-muted-foreground">
-                {sponsor.name?.charAt(0) || ""}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-});
-
-/* ═══════════════════════════════════════════
    المكون الرئيسي
    ═══════════════════════════════════════════ */
 export default function SponsorsStripContent({
@@ -222,7 +239,6 @@ export default function SponsorsStripContent({
     <section className="section-padding relative bg-background overflow-hidden">
       {/* ═══════ HERO HEADER ═══════ */}
       <div className="relative pb-12 md:pb-16">
-        {/* خلفية متوهجة (مطابقة لجميع الأقسام) */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-tedx-red/5 blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-orange-500/5 blur-3xl" />
@@ -275,10 +291,14 @@ export default function SponsorsStripContent({
         </div>
       </div>
 
-      {/* ═══════ SPONSORS MARQUEE ═══════ */}
+      {/* ═══════ شبكة الشعارات (ثابتة — بلا تكرار) ═══════ */}
       <div className="container-padding relative pb-20 md:pb-28">
-        <div className="max-w-7xl mx-auto">
-          <SponsorMarquee sponsors={sponsors} />
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            {sponsors.map((sponsor) => (
+              <SponsorLogoCard key={sponsor.id} sponsor={sponsor} />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -344,10 +364,7 @@ export default function SponsorsStripContent({
         heading={ctaHeading}
         description={ctaDescription}
         primaryButton={{ href: "/#contact", label: ctaLabel }}
-  
       />
-
-
     </section>
   );
 }
