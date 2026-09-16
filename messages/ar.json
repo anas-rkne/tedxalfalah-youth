@@ -7,6 +7,7 @@
       "venue": "المكان",
       "activations": "الفعاليات",
       "schedule": "الجدول الزمني",
+      "sponsors": "شركاؤنا",
       "apply": "قدّم الآن",
       "tickets": "التذاكر",
       "faq": "الأسئلة الشائعة",
@@ -387,6 +388,42 @@
       "bio": {
         "view": "عرض السيرة",
         "close": "إغلاق"
+      }
+    },
+    "sponsors": {
+      "meta": {
+        "title": "شركاؤنا",
+        "description": "المؤسسات والشركاء الداعمون لـ TEDxAlFalah Youth."
+      },
+      "empty": "شركاؤنا قادمون قريباً.",
+      "hero": {
+        "badge": "شركاؤنا",
+        "titleLine1": "شركاؤنا في",
+        "titleHighlight": "النجاح",
+        "description": "نفتخر بالتعاون مع روّاد الصناعة الذين يشاركوننا رؤية المستقبل."
+      },
+      "cta": {
+        "badge": "انضم إلينا",
+        "heading": "هل تريد أن تكون",
+        "headingHighlight": "شريكاً",
+        "description": "انضم إلى قائمة شركائنا وكن جزءاً من حدث يُلهم الجيل القادم من المفكرين والمبدعين.",
+        "button": "تواصل معنا"
+      },
+      "form": {
+        "namePlaceholder": "الاسم الكامل",
+        "organizationPlaceholder": "الجهة والمسمى الوظيفي",
+        "emailPlaceholder": "البريد الإلكتروني",
+        "phonePlaceholder": "رقم الهاتف",
+        "messagePlaceholder": "رسالتك (10 أحرف على الأقل)",
+        "submit": "إرسال الطلب",
+        "errorGeneric": "حدث خطأ. الرجاء المحاولة مرة أخرى.",
+        "errors": {
+          "nameRequired": "الاسم مطلوب",
+          "organizationRequired": "الجهة مطلوبة",
+          "emailInvalid": "أدخل بريداً إلكترونياً صحيحاً",
+          "phoneRequired": "رقم الهاتف مطلوب",
+          "messageMinLength": "الرسالة يجب أن تكون 10 أحرف على الأقل"
+        }
       }
     },
     "venue": {

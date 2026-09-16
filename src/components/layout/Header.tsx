@@ -15,6 +15,7 @@ import {
   Home,
   Users2,
   Handshake,
+  Building2,
 } from "lucide-react";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import AnimatedSlidingButton from "@/components/ui/AnimatedSlidingButton";
@@ -43,6 +44,7 @@ export default function Header() {
 const ALL_LINKS = useMemo(() => [
   { label: t("home"), href: "/", icon: Home },
   { label: t("team"), href: "/team", icon: Users2 },
+  { label: t("sponsors"), href: "/sponsors", icon: Building2 },
   { label: t("apply"), href: "/apply", icon: Handshake },
 ], [t]);
   const isArabic = isRTL; // isRTL يكون true عندما تكون اللغة عربية

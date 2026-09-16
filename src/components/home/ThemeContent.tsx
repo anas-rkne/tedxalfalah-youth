@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import React, { memo } from "react";
 import {
   motion,
   useReducedMotion,
@@ -100,7 +100,7 @@ export default function ThemeContent({
         </div>
 
         {/* المحتوى الأوسط */}
-          <div className="flex-1 w-full max-w-4xl flex flex-col items-center text-center gap-8 md:gap-10" dir="auto">
+          <div className="flex-1 w-full max-w-4xl flex flex-col items-center text-center gap-4 md:gap-4" dir="auto">
             <motion.div
               initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -142,9 +142,9 @@ export default function ThemeContent({
               className="max-w-3xl"
               dir={isRTL ? "rtl" : "ltr"}
             >
-              <p className="text-lg md:text-xl text-center text-muted-foreground leading-[1.9] font-light">
+              <p className="text-base md:text-lg text-center text-muted-foreground font-light leading-[1.7] max-w-2xl mx-auto text-pretty">
                 {body.split("\n\n").map((paragraph, pIndex) => (
-                  <span className="block mb-4 last:mb-0" key={pIndex}>
+                  <React.Fragment key={pIndex}>
                     {paragraph.split(/(\s+)/).map((part, index) => {
                       const isEnglish = /^[A-Za-z0-9]/.test(part);
                       const isTEDx = /TEDx/i.test(part);
@@ -164,7 +164,8 @@ export default function ThemeContent({
                       }
                       return <span key={index}>{part}</span>;
                     })}
-                  </span>
+                    {pIndex < body.split("\n\n").length - 1 && <span> </span>}
+                  </React.Fragment>
                 ))}
               </p>
             </motion.div>

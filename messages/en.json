@@ -7,6 +7,7 @@
       "venue": "Venue",
       "activations": "Activations",
       "schedule": "Schedule",
+      "sponsors": "Partners",
       "apply": "Apply",
       "tickets": "Tickets",
       "faq": "FAQ",
@@ -387,6 +388,42 @@
       "bio": {
         "view": "View bio",
         "close": "Close"
+      }
+    },
+    "sponsors": {
+      "meta": {
+        "title": "Our Partners",
+        "description": "The organizations and partners supporting TEDxAlFalah Youth."
+      },
+      "empty": "Our partners are coming soon.",
+      "hero": {
+        "badge": "Our Partners",
+        "titleLine1": "Our Partners in",
+        "titleHighlight": "Success",
+        "description": "Proud to collaborate with industry leaders who share our vision of the future."
+      },
+      "cta": {
+        "badge": "Join Us",
+        "heading": "Want to become a",
+        "headingHighlight": "Partner",
+        "description": "Join our list of partners and be part of an event that inspires the next generation of thinkers and creators.",
+        "button": "Contact Us"
+      },
+      "form": {
+        "namePlaceholder": "Full Name",
+        "organizationPlaceholder": "Organization & Job Title",
+        "emailPlaceholder": "Email",
+        "phonePlaceholder": "Phone",
+        "messagePlaceholder": "Your message (at least 10 characters)",
+        "submit": "Send Request",
+        "errorGeneric": "Something went wrong. Please try again.",
+        "errors": {
+          "nameRequired": "Name is required",
+          "organizationRequired": "Organization is required",
+          "emailInvalid": "Enter a valid email address",
+          "phoneRequired": "Phone is required",
+          "messageMinLength": "Message must be at least 10 characters"
+        }
       }
     },
     "venue": {
