@@ -2,11 +2,21 @@ import { getTranslations } from "next-intl/server";
 import ApplyBannerContent from "./ApplyBannerContent";
 import { APPLICATION_DEADLINE } from "@/lib/constants";
 
-const APPLICATION_DEADLINE_LABEL = process.env.NEXT_PUBLIC_APPLICATION_DEADLINE || "September 14, 2026";
+const MONTHS_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS_AR = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+
+function formatDeadlineLabel(iso: string, locale: string): string {
+  const d = new Date(iso);
+  const day = d.getDate();
+  const year = d.getFullYear();
+  if (locale === "ar") return `${day} ${MONTHS_AR[d.getMonth()]} ${year}`;
+  return `${day} ${MONTHS_EN[d.getMonth()]} ${year}`;
+}
 
 export default async function ApplyBanner({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "home.applyBanner" });
   const isClosed = new Date() > new Date(APPLICATION_DEADLINE);
+  const deadlineLabel = formatDeadlineLabel(APPLICATION_DEADLINE, locale);
 
   return (
     <ApplyBannerContent
@@ -14,7 +24,7 @@ export default async function ApplyBanner({ locale }: { locale: string }) {
       closedCta={t("closedCta")}
       // ✅ نصوص الشارة والعنوان الرئيسي
       badgeLabel={t("badgeLabel")}
-      text={t("text", { date: APPLICATION_DEADLINE_LABEL })}
+      text={t("text", { date: deadlineLabel })}
       subtitle={t("subtitle")}
       cta={t("cta")} // سيتم استخدام هذا للنص الموجود في الزر
 
@@ -38,20 +48,16 @@ export default async function ApplyBanner({ locale }: { locale: string }) {
         t("reason5"),
       ]}
 
-       placeholderTitle={t("placeholderTitle")}
+      placeholderTitle={t("placeholderTitle")}
       placeholderSubtitle={t("placeholderSubtitle")}
 
-       stageBadgeLabel={t("stageBadgeLabel")}
+      stageBadgeLabel={t("stageBadgeLabel")}
       stageTitle={t("stageTitle")}
       stageDescription={t("stageDescription")}
 
       // ✅ نصوص قسم CTA النهائي
       ctaHeading={t("ctaHeading")}
       ctaDescription={t("ctaDescription")}
-
-
-
-
     />
   );
 }
