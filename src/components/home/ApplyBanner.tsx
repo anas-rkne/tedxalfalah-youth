@@ -6,11 +6,19 @@ const MONTHS_EN = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","
 const MONTHS_AR = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 
 function formatDeadlineLabel(iso: string, locale: string): string {
-  const d = new Date(iso);
-  const day = d.getDate();
-  const year = d.getFullYear();
-  if (locale === "ar") return `${day} ${MONTHS_AR[d.getMonth()]} ${year}`;
-  return `${day} ${MONTHS_EN[d.getMonth()]} ${year}`;
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!m) {
+    const d = new Date(iso);
+    const day = d.getUTCDate();
+    const year = d.getUTCFullYear();
+    if (locale === "ar") return `${day} ${MONTHS_AR[d.getUTCMonth()]} ${year}`;
+    return `${day} ${MONTHS_EN[d.getUTCMonth()]} ${year}`;
+  }
+  const year = Number(m[1]);
+  const month = Number(m[2]) - 1;
+  const day = Number(m[3]);
+  if (locale === "ar") return `${day} ${MONTHS_AR[month]} ${year}`;
+  return `${day} ${MONTHS_EN[month]} ${year}`;
 }
 
 export default async function ApplyBanner({ locale }: { locale: string }) {
