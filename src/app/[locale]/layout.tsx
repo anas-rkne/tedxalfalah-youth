@@ -15,6 +15,7 @@ import enMessages from "../../../messages/en.json";
 import arMessages from "../../../messages/ar.json";
 import PageTransition from "@/components/ui/PageTransition";
 import { NextIntlClientProvider } from "next-intl";
+import { headers } from "next/headers";
 import JsonLd from "@/components/JsonLd";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import { organizationSchema } from "@/lib/json-ld";
@@ -136,6 +137,10 @@ export default async function RootLayout({
 
   setRequestLocale(locale);
   const dir = locale === "ar" ? "rtl" : "ltr";
+  // شاشات العرض الملء (screen/speaker) تتحول إلى وضع العرض الكامل:
+  // تُزال الـ header/footer والقراءة والعناصر الحضرية.
+  const headerList = await headers();
+  const stageMode = headerList.get("x-stage-mode") === "1";
   // تحميل الرسائل مباشرة من locale القادم من params — يضمن أن Provider يحمل
   // رسائل اللغة الصحيحة في كل أوضاع العرض (ديناميكي/ثابت/هيدريشن) ولا يعتمد
   // على requestLocale الذي قد يكون undefined في تمريرات العرض الثابتة.
@@ -157,23 +162,28 @@ export default async function RootLayout({
       >
         {/* الترجمات تُمرَّر من السيرفر — SSR كامل بدون "Loading..." */}
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Analytics />
-          <ServiceWorkerRegister />
-          <BreadcrumbJsonLd />
-          <a
-            href="#main-content"
-            lang={locale}
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-red-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none"
-          >
-            {locale === "ar" ? "تخطى إلى المحتوى" : "Skip to content"}
-          </a>
-          <ReadingProgress />
-          <Header key={locale} />
-          <main id="main-content" className="flex-1 relative">
-            <PageTransition>{children}</PageTransition>
-          </main>
-<FooterContent />
-          <SonnerProvider />
+          {!stageMode && (
+            <>
+              <Analytics />
+              <ServiceWorkerRegister />
+              <BreadcrumbJsonLd />
+              <a
+                href="#main-content"
+                lang={locale}
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-red-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none"
+              >
+                {locale === "ar" ? "تخطى إلى المحتوى" : "Skip to content"}
+              </a>
+              <ReadingProgress />
+              <Header key={locale} />
+              <main id="main-content" className="flex-1 relative">
+                <PageTransition>{children}</PageTransition>
+              </main>
+              <FooterContent />
+              <SonnerProvider />
+            </>
+          )}
+          {stageMode && <main className="flex-1">{children}</main>}
         </NextIntlClientProvider>
       </body>
     </html>

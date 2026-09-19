@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
     titleAr: s.titleAr,
     active: s.active,
     acceptingQuestions: s.acceptingQuestions,
+    speakerEnabled: s.speakerEnabled ?? true,
     createdAt: s.createdAt,
     questions: s.questions.map((q) => ({
       id: q.id,
@@ -48,6 +49,9 @@ export async function GET(request: NextRequest) {
       featured: q.featured,
       createdAt: q.createdAt,
       approvedAt: q.approvedAt,
+      answered: q.answered,
+      showOnSpeaker: q.showOnSpeaker ?? true,
+      showOnLive: q.showOnLive ?? true,
     })),
     polls: s.polls.map((p) => ({
       id: p.id,

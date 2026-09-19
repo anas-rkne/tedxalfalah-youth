@@ -28,6 +28,8 @@ interface QaQuestion {
   status: "pending" | "approved" | "rejected";
   featured: boolean;
   answered?: boolean;
+  showOnSpeaker?: boolean;
+  showOnLive?: boolean;
   createdAt: string;
 }
 
@@ -49,6 +51,7 @@ interface QaSession {
   titleAr?: string;
   active: boolean;
   acceptingQuestions: boolean;
+  speakerEnabled?: boolean;
   createdAt: string;
   questions: QaQuestion[];
   polls: QaPoll[];
@@ -233,12 +236,23 @@ export default function QaAdminPanel() {
     });
   };
 
-  const moderate = async (action: "approve" | "reject" | "feature" | "answer", questionId: string, featured?: boolean) => {
+  const moderate = async (action: "approve" | "reject" | "feature" | "answer" | "setVisibility", questionId: string, extra: Record<string, unknown> = {}) => {
     if (!session || !selected || !token) return;
     await act(action, async () => {
       await api("/api/qa/admin/moderate", token, {
         method: "POST",
-        body: JSON.stringify({ action, sessionId: selected.id, questionId, featured }),
+        body: JSON.stringify({ action, sessionId: selected.id, questionId, ...extra }),
+      });
+      await load(token, true);
+    });
+  };
+
+  const setSpeakerEnabled = async (enabled: boolean) => {
+    if (!selected || !token) return;
+    await act("setSpeaker", async () => {
+      await api("/api/qa/admin/moderate", token, {
+        method: "POST",
+        body: JSON.stringify({ action: "setSpeaker", sessionId: selected.id, enabled }),
       });
       await load(token, true);
     });
@@ -491,11 +505,31 @@ export default function QaAdminPanel() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => moderate("feature", q.id, !q.featured)}
+                            onClick={() => moderate("feature", q.id, { featured: !q.featured })}
                             disabled={busy !== null}
                           >
                             <Star className="h-4 w-4 mr-1" />
                             {q.featured ? t("unfeature") : t("feature")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={q.showOnSpeaker === false ? "outline" : undefined}
+                            onClick={() => moderate("setVisibility", q.id, { showOnSpeaker: q.showOnSpeaker === false })}
+                            disabled={busy !== null}
+                            className={q.showOnSpeaker !== false ? "bg-teal-600 hover:bg-teal-700 text-white" : ""}
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            {q.showOnSpeaker === false ? t("speakerHidden") : t("speakerVisible")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={q.showOnLive === false ? "outline" : undefined}
+                            onClick={() => moderate("setVisibility", q.id, { showOnLive: q.showOnLive === false })}
+                            disabled={busy !== null}
+                            className={q.showOnLive !== false ? "bg-orange-600 hover:bg-orange-700 text-white" : ""}
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            {q.showOnLive === false ? t("liveHidden") : t("liveVisible")}
                           </Button>
                           {q.status === "approved" && (
                             <Button
@@ -534,6 +568,17 @@ export default function QaAdminPanel() {
                   {t("totalAttendees", { count: session.attendeeNames.length })}
                 </div>
                 <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={session.speakerEnabled === false ? "outline" : undefined}
+                    onClick={() => setSpeakerEnabled(session.speakerEnabled === false)}
+                    disabled={busy !== null}
+                    loading={busy === "setSpeaker"}
+                    loadingText="…"
+                    className={session.speakerEnabled !== false ? "bg-violet-600 hover:bg-violet-700 text-white" : ""}
+                  >
+                    {session.speakerEnabled === false ? t("speakerEnabledOn") : t("speakerEnabledOff")}
+                  </Button>
                   {!session.active && (
                     <Button size="sm" onClick={() => selected && setActive(selected.id)} loading={busy === "activate"} loadingText="…">
                       {t("activateButton")}

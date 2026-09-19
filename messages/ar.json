@@ -1064,7 +1064,9 @@
     "speaker": {
       "noQuestions": "لا توجد أسئلة لم تتم الإجابة عنها بعد.",
       "currentQuestion": "السؤال",
-      "markAnswered": "تعليم كمُجاب عنه"
+      "markAnswered": "تعليم كمُجاب عنه",
+      "disabledTitle": "شاشة المتحدث معطّلة",
+      "disabledSubtitle": "تم تعطيل شاشة المتحدث لهذه الجلسة من لوحة الإدارة."
     },
     "survey": {
       "title": "كيف كانت تجربتك؟",
@@ -1121,6 +1123,12 @@
       "unfeature": "إلغاء التمييز",
       "markAnswered": "تم الإجابة",
       "answered": "مُجاب عنه",
+      "speakerVisible": "يظهر للمتحدث",
+      "speakerHidden": "مخفي عن المتحدث",
+      "liveVisible": "يظهر على الشاشة",
+      "liveHidden": "مخفي من الشاشة",
+      "speakerEnabledOff": "تعطيل شاشة المتحدث",
+      "speakerEnabledOn": "تفعيل شاشة المتحدث",
       "noQuestions": "لا توجد أسئلة بعد.",
       "polls": "الاستفتاءات",
       "newPollPrompt": "سؤال الاستفتاء",

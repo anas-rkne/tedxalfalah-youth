@@ -100,6 +100,24 @@ curl -s -X POST http://localhost:3000/api/admin/login \
 | 14 | `GET /api/qa/session/current` | نتائج الاستفتاء ظاهرة |
 | 15 | `POST /api/qa/admin/moderate` `{action:"reject",...}` | السؤال يختفي من العام |
 
+### 3.8 التحكم المنفصل بالعرض (متحدث / شاشة) — جديد
+
+| # | الأمر | النتيجة |
+|---|---|---|
+| 1 | `POST /api/qa/admin/moderate` `{action:"setVisibility",sessionId,questionId,showOnSpeaker:false}` | `200` + `showOnSpeaker:false` |
+| 2 | `GET /api/qa/session/current?view=speaker` | السؤال **لا يظهر** في `questions` |
+| 3 | `GET /api/qa/session/current?view=live` (الافتراضي) | السؤال **يظهر** في `questions` (لم نتطرق لـ `showOnLive`) |
+| 4 | `POST /api/qa/admin/moderate` `{action:"setVisibility",sessionId,questionId,showOnLive:false}` | `200` + `showOnLive:false` |
+| 5 | `GET /api/qa/session/current?view=live` | السؤال لا يظهر |
+| 6 | `POST /api/qa/admin/moderate` `{action:"setVisibility",sessionId,questionId,showOnSpeaker:true,showOnLive:true}` | عودة الظهور في الشاشتين |
+| 7 | `POST /api/qa/admin/moderate` `{action:"setSpeaker",enabled:false}` (بلا `questionId`) | `200` + `speakerEnabled:false` |
+| 8 | `GET /api/qa/session/current?view=speaker` | `session.speakerEnabled:false` |
+| 9 | `GET /api/qa/session/current?view=live` | `session.speakerEnabled:false` (يؤثر على الحالة لا القائمة) |
+| 10 | `POST /api/qa/admin/moderate` `{action:"setSpeaker",enabled:true}` | إعادة التفعيل |
+| 11 | `GET /api/qa/session/current?view=bogus` | `400 Invalid view` |
+| 12 | `setVisibility` بلا `showOnSpeaker` ولا `showOnLive` | `400` (أحدهما مطلوب) |
+| 13 | `setSpeaker` بلا `enabled` | `400` |
+
 ### 3.3 قيود الصياغة (Validation — كلها توقّع `400`)
 
 | الحالة | النقطة |
@@ -158,8 +176,20 @@ curl -s -X POST http://localhost:3000/api/admin/login \
 ### 4.3 لوحة الإدارة `/en/admin/live`
 - تسجيل الدخول مشترك مع لوحة الطلبات (نفس `token`).
 - إنشاء/تفعيل/حذف جلسة، موافقة/رفض/تمييز سؤال، إنشاء/بدء/إيقاف/عرض نتائج/حذف استفتاء.
+- بجانب كل سؤال: زرّا **يظهر للمتحدث/يظهر على الشاشة** (وضعا الإخفاء ينسحب عابراً للون).
+- بجانب إحصائيات الحضور: زر **تعطيل/تفعيل شاشة المتحدث** (للكل الجلسة).
 - الاستطلاع الدوري (5 ثوانٍ) يحدّث القوائم لحظياً.
 - حساب `viewer` لا يستطيع إدارة (محظور `403`).
+
+### 4.4 شاشة المتحدث `/en/live/speaker` + وضع ملء الشاشة — جديد
+- تفتح في ملء الشاشة **بدون الهيدر/الفوتر** (اكتشاف `x-stage-mode`). اضغط F11 لإخفاء حواف المتصفح.
+- إذا عطّل المشرف الجلسة → تظهر «شاشة المتحدث معطّلة» وليس بها أسئلة.
+- يظهر السؤال المميّز/الأعلى تصويتاً، وزر «تمت الإجابة» يعمل (يتطلب توكن إداري في `sessionStorage`, بعد تسجيل دخول اللوحة).
+- أسئلة مخفية عن المتحدث (`showOnSpeaker:false`) لا تظهر إطلاقاً حتى لو كانت معتمدة.
+
+### 4.5 شاشة العرض `/en/live/screen` — وضع ملء الشاشة
+- أيضاً بدون هيدر/فوتر (نفس الآلية).
+- الأسئلة المخفية عن الشاشة (`showOnLive:false`) لا تظهر حتى لو معتمدة أو مميّزة.
 
 ---
 

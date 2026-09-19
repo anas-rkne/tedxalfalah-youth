@@ -26,7 +26,19 @@ export function normalizeData(data: Partial<QaData> | null | undefined): QaData 
       ...base.settings,
       ...(data.settings ?? {}),
     },
-    sessions: Array.isArray(data.sessions) ? data.sessions : [],
+    sessions: Array.isArray(data.sessions)
+      ? data.sessions.map((s) => ({
+          ...s,
+          speakerEnabled: s.speakerEnabled ?? true,
+          questions: Array.isArray(s.questions)
+            ? s.questions.map((q) => ({
+                ...q,
+                showOnSpeaker: q.showOnSpeaker ?? true,
+                showOnLive: q.showOnLive ?? true,
+              }))
+            : [],
+        }))
+      : [],
     meta: {
       ...base.meta,
       ...(data.meta ?? {}),

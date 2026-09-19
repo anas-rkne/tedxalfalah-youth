@@ -1,11 +1,13 @@
 /**
- * POST /api/qa/admin/moderate — إدارة الأسئلة (الموافقة/الرفض/التمييز/الإجابة).
+ * POST /api/qa/admin/moderate — إدارة الأسئلة (الموافقة/الرفض/التمييز/الإجابة/العرض).
  *
  * الإجراءات (action) داخل { sessionId }:
- *   approve   { questionId }            → اعتماد سؤال للعرض على الشاشة
- *   reject    { questionId }            → حجب سؤال
- *   feature   { questionId, featured }  → تمييز/إلغاء تمييز
- *   answer    { questionId }            → تعليم السؤال بـ "تم الإجابة"
+ *   approve      { questionId }                  → اعتماد سؤال للعرض على الشاشة
+ *   reject       { questionId }                  → حجب سؤال
+ *   feature      { questionId, featured }        → تمييز/إلغاء تمييز
+ *   answer       { questionId }                  → تعليم السؤال بـ "تم الإجابة"
+ *   setVisibility { questionId, showOnSpeaker?, showOnLive? } → تحكم منفصل بالعرض (المتحدث/الشاشة)
+ *   setSpeaker   { enabled }                     → تفعيل/تعطيل شاشة المتحدث للجلسة
  *
  * الحماية: requireAdmin (JWT) + rate limit للمشرف.
  */
@@ -21,17 +23,26 @@ export const dynamic = "force-dynamic";
 
 const schema = z
   .object({
-    action: z.enum(["approve", "reject", "feature", "answer"]),
+    action: z.enum(["approve", "reject", "feature", "answer", "setVisibility", "setSpeaker"]),
     sessionId: z.string().min(1).max(200),
     questionId: z.string().min(1).max(200).optional(),
     featured: z.boolean().optional(),
+    showOnSpeaker: z.boolean().optional(),
+    showOnLive: z.boolean().optional(),
+    enabled: z.boolean().optional(),
   })
   .superRefine((v, ctx) => {
-    if (v.action !== "feature" && !v.questionId) {
+    if (["approve", "reject", "feature", "answer", "setVisibility"].includes(v.action) && !v.questionId) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["questionId"], message: "questionId is required" });
     }
     if (v.action === "feature" && typeof v.featured !== "boolean") {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["featured"], message: "featured is required" });
+    }
+    if (v.action === "setVisibility" && typeof v.showOnSpeaker !== "boolean" && typeof v.showOnLive !== "boolean") {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["visibility"], message: "showOnSpeaker or showOnLive is required" });
+    }
+    if (v.action === "setSpeaker" && typeof v.enabled !== "boolean") {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["enabled"], message: "enabled is required" });
     }
   });
 
@@ -58,13 +69,18 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return qaError("Invalid payload", 400, parsed.error.flatten());
   }
-  const { action, sessionId, questionId, featured } = parsed.data;
+  const { action, sessionId, questionId, featured, showOnSpeaker, showOnLive, enabled } = parsed.data;
 
   let result;
   try {
     result = await mutateQaData((data) => {
       const session = data.sessions.find((s) => s.id === sessionId);
       if (!session) throw new Error("session-not-found");
+
+      if (action === "setSpeaker") {
+        session.speakerEnabled = Boolean(enabled);
+        return { id: session.id, speakerEnabled: session.speakerEnabled };
+      }
 
       const q = session.questions.find((x) => x.id === questionId);
       if (!q) throw new Error("question-not-found");
@@ -79,8 +95,18 @@ export async function POST(request: NextRequest) {
         q.featured = Boolean(featured);
       } else if (action === "answer") {
         q.answered = !q.answered;
+      } else if (action === "setVisibility") {
+        if (typeof showOnSpeaker === "boolean") q.showOnSpeaker = showOnSpeaker;
+        if (typeof showOnLive === "boolean") q.showOnLive = showOnLive;
       }
-      return { id: q.id, status: q.status, featured: q.featured, answered: q.answered };
+      return {
+        id: q.id,
+        status: q.status,
+        featured: q.featured,
+        answered: q.answered,
+        showOnSpeaker: q.showOnSpeaker,
+        showOnLive: q.showOnLive,
+      };
     });
   } catch (err) {
     const known = qaErrorFromKnown(err instanceof Error ? err.message : "");

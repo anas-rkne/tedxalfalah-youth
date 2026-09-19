@@ -1064,7 +1064,9 @@
     "speaker": {
       "noQuestions": "No unanswered questions left.",
       "currentQuestion": "Question",
-      "markAnswered": "Mark as Answered"
+      "markAnswered": "Mark as Answered",
+      "disabledTitle": "Speaker Screen Disabled",
+      "disabledSubtitle": "The speaker screen is turned off for this session from the admin panel."
     },
     "survey": {
       "title": "How was your experience?",
@@ -1121,6 +1123,12 @@
       "unfeature": "Unfeature",
       "markAnswered": "Answer",
       "answered": "Answered",
+      "speakerVisible": "Show to speaker",
+      "speakerHidden": "Hidden from speaker",
+      "liveVisible": "Show on screen",
+      "liveHidden": "Hidden from screen",
+      "speakerEnabledOff": "Disable speaker screen",
+      "speakerEnabledOn": "Enable speaker screen",
       "noQuestions": "No questions yet.",
       "polls": "Polls",
       "newPollPrompt": "Poll question",

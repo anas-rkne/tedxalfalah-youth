@@ -13,6 +13,10 @@ export interface QaQuestion {
   anonymous?: boolean;
   sentiment?: "positive" | "negative" | "neutral";
   tag?: string;
+  /** يُعرض هذا السؤال على شاشة المتحدث؟ (تحكم منفصل عن الشاشة الرئيسية) */
+  showOnSpeaker?: boolean;
+  /** يُعرض هذا السؤال على الشاشة الرئيسية (Live Screen)؟ */
+  showOnLive?: boolean;
 }
 
 export interface QaPoll {
@@ -33,6 +37,8 @@ export interface QaSession {
   titleAr?: string;
   active: boolean;
   acceptingQuestions: boolean;
+  /** هل تُفعَّل شاشة المتحدث لهذه الجلسة؟ (تحكم من الأدمن لكل جلسة) */
+  speakerEnabled?: boolean;
   createdAt: string;
   questions: QaQuestion[];
   polls: QaPoll[];

@@ -25,6 +25,13 @@ export async function GET(request: NextRequest) {
   const { allowed } = await checkRateLimit(request, "qa-current");
   if (!allowed) return qaError("Too many requests", 429);
 
+  const view = (request.nextUrl.searchParams.get("view") ?? "live") as
+    | "live"
+    | "speaker";
+  if (view !== "live" && view !== "speaker") {
+    return qaError("Invalid view", 400);
+  }
+
   const data = normalizeData(await readQaData());
   const session = getActiveSession(data);
 
@@ -38,8 +45,9 @@ export async function GET(request: NextRequest) {
 
   const approvedQuestions = session.questions
     .filter((q) => q.status === "approved")
+    .filter((q) => (view === "speaker" ? q.showOnSpeaker !== false : q.showOnLive !== false))
     .sort((a, b) => (a.featured === b.featured ? Number(b.votes) - Number(a.votes) : a.featured ? -1 : 1))
-    .map((q) => ({ id: q.id, author: q.author, text: q.text, votes: q.votes, featured: q.featured }));
+    .map((q) => ({ id: q.id, author: q.author, text: q.text, votes: q.votes, featured: q.featured, answered: q.answered }));
 
   const polls = session.polls.map((p) => ({
     id: p.id,
@@ -62,6 +70,7 @@ export async function GET(request: NextRequest) {
       title: session.title,
       titleAr: session.titleAr,
       acceptingQuestions: session.acceptingQuestions,
+      speakerEnabled: session.speakerEnabled ?? true,
       attendeeCount: session.attendeeNames.length,
     },
     questions: approvedQuestions,

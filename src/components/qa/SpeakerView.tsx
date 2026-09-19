@@ -19,6 +19,7 @@ interface SessionInfo {
   title: string;
   titleAr?: string;
   acceptingQuestions: boolean;
+  speakerEnabled?: boolean;
   attendeeCount: number;
 }
 
@@ -37,7 +38,7 @@ export default function SpeakerView() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch("/api/qa/session/current");
+      const res = await fetch("/api/qa/session/current?view=speaker");
       const d = await res.json();
       setData(d);
     } catch {
@@ -69,11 +70,17 @@ export default function SpeakerView() {
 
   const markAnswered = async () => {
     if (!current || !data.session || busy) return;
+    const token =
+      typeof window !== "undefined" ? window.sessionStorage.getItem("tedx-admin-token") : null;
+    if (!token) return;
     setBusy(true);
     try {
       await fetch("/api/qa/admin/moderate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ action: "answer", sessionId: data.session.id, questionId: current.id }),
       });
       await load();
@@ -127,6 +134,11 @@ export default function SpeakerView() {
           <div className="text-center">
             <h2 className="text-3xl font-bold">{t("screen.waiting")}</h2>
             <p className="text-zinc-400 text-lg mt-2">{t("screen.waitingSubtitle")}</p>
+          </div>
+        ) : data.session.speakerEnabled === false ? (
+          <div className="text-center">
+            <h2 className="text-3xl font-bold">{t("speaker.disabledTitle")}</h2>
+            <p className="text-zinc-400 text-lg mt-2">{t("speaker.disabledSubtitle")}</p>
           </div>
         ) : !current ? (
           <div className="text-center">
