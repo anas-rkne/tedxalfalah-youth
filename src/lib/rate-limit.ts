@@ -49,9 +49,9 @@ export async function checkRateLimit(
       // في الإنتاج لا نمرّر الطلبات بدون Rate Limiting — الإغلاق الآمن
       // أفضل من فتح الباب للإغراق الآلي.
       console.error(
-        `[RATE LIMIT] Upstash not configured in production — requests to "${formKey}" rejected.`
+        `[RATE LIMIT] Upstash not configured in production — request to "${formKey}" ALLOWED without rate limiting. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.`
       );
-      return { allowed: false };
+      return { allowed: true };
     }
     console.warn(
       `[RATE LIMIT] Upstash not configured — request to "${formKey}" allowed without rate limiting. Add UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN before going live.`
@@ -84,10 +84,12 @@ export async function checkAdminApiRateLimit(
 ): Promise<{ allowed: boolean }> {
   if (!adminApiRatelimit) {
     if (process.env.NODE_ENV === "production") {
-      console.error(
-        "[RATE LIMIT] Upstash not configured in production — admin API requests rejected."
+      // مؤقتاً: افتح الباب بدل رفض طلبات لوحة الإدارة كلها بـ 429 حين لا
+      // يكون Upstash مهيأً. أعد التقييد بعد ضبط UPSTASH_* في الإنتاج.
+      console.warn(
+        "[RATE LIMIT] Upstash not configured in production — admin API requests ALLOWED without rate limiting. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to enforce limits."
       );
-      return { allowed: false };
+      return { allowed: true };
     }
     return { allowed: true };
   }

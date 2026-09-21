@@ -43,10 +43,6 @@ export default function LiveScreen() {
     return () => clearInterval(iv);
   }, [questions.length]);
 
-  const eventName =
-    (data.settings && (data.settings.eventNameAr || data.settings.eventName)) ||
-    t("screen.eventName");
-
   const activePoll = data.polls?.find((p) => p.active);
   const endedPoll = data.polls?.find((p) => !p.active && p.showResults);
 
@@ -54,13 +50,12 @@ export default function LiveScreen() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-10 select-none">
-      {/* Header */}
-      <header className="absolute top-8 left-8 text-center w-full">
-        <h1 className="text-3xl font-bold tracking-tight uppercase">{eventName}</h1>
-        {data.session && (
-          <p className="text-zinc-400 text-lg mt-1">{data.session.titleAr || data.session.title}</p>
-        )}
-      </header>
+      {/* Header — عنوان الجلسة فقط (دون اسم الفعالية) */}
+      {data.session && (
+        <header className="absolute top-6 inset-x-0 text-center w-full px-4">
+          <p className="text-zinc-400 text-xl">{data.session.titleAr || data.session.title}</p>
+        </header>
+      )}
 
       {/* Main content */}
       <main className="w-full max-w-4xl flex-1 flex items-center justify-center">
