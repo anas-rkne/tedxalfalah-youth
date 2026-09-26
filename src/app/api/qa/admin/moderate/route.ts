@@ -5,9 +5,14 @@
  *   approve      { questionId }                  → اعتماد سؤال للعرض على الشاشة
  *   reject       { questionId }                  → حجب سؤال
  *   feature      { questionId, featured }        → تمييز/إلغاء تمييز
- *   answer       { questionId }                  → تعليم السؤال بـ "تم الإجابة"
+ *   answer       { questionId, answered }        → تعليم السؤال بـ"تم الإجابة" (أو التراجع)
  *   setVisibility { questionId, showOnSpeaker?, showOnLive? } → تحكم منفصل بالعرض (المتحدث/الشاشة)
  *   setSpeaker   { enabled }                     → تفعيل/تعطيل شاشة المتحدث للجلسة
+ *
+ * ⚠️ كل الإجراءات **idempotent**: تأخذ القيمة النهائية صراحةً بدل أن تقلب
+ * القيمة الحالية. `answer` كان يقلب `q.answered` فقط، فأي نقرتين سريعتين (نقر
+ * مزدوج، أو إعادة محاولة الشبكة) كانتا تنعكسان الحالة وترجع السؤال المكتمل إلى
+ * قائمة المتحدث — وهو عكس ما يريده المتحدث تماماً. الآن `answered` مطلوب.
  *
  * الحماية: requireAdmin (JWT) + rate limit للمشرف.
  */
@@ -18,6 +23,7 @@ import { checkAdminApiRateLimit } from "@/lib/rate-limit";
 import { validateOrigin } from "@/lib/cors";
 import { qaError, qaJson, qaErrorFromKnown } from "@/lib/qa/http";
 import { mutateQaData } from "@/lib/qa/storage";
+import { reconcileScreenSlide } from "@/lib/qa/service";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +33,7 @@ const schema = z
     sessionId: z.string().min(1).max(200),
     questionId: z.string().min(1).max(200).optional(),
     featured: z.boolean().optional(),
+    answered: z.boolean().optional(),
     showOnSpeaker: z.boolean().optional(),
     showOnLive: z.boolean().optional(),
     enabled: z.boolean().optional(),
@@ -37,6 +44,9 @@ const schema = z
     }
     if (v.action === "feature" && typeof v.featured !== "boolean") {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["featured"], message: "featured is required" });
+    }
+    if (v.action === "answer" && typeof v.answered !== "boolean") {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["answered"], message: "answered is required" });
     }
     if (v.action === "setVisibility" && typeof v.showOnSpeaker !== "boolean" && typeof v.showOnLive !== "boolean") {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["visibility"], message: "showOnSpeaker or showOnLive is required" });
@@ -69,7 +79,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return qaError("Invalid payload", 400, parsed.error.flatten());
   }
-  const { action, sessionId, questionId, featured, showOnSpeaker, showOnLive, enabled } = parsed.data;
+  const { action, sessionId, questionId, featured, answered, showOnSpeaker, showOnLive, enabled } = parsed.data;
 
   let result;
   try {
@@ -94,10 +104,17 @@ export async function POST(request: NextRequest) {
       } else if (action === "feature") {
         q.featured = Boolean(featured);
       } else if (action === "answer") {
-        q.answered = !q.answered;
+        // القيمة النهائية تُؤخذ من الطلب، لا من عكس القيمة الحالية.
+        q.answered = answered === true;
       } else if (action === "setVisibility") {
         if (typeof showOnSpeaker === "boolean") q.showOnSpeaker = showOnSpeaker;
         if (typeof showOnLive === "boolean") q.showOnLive = showOnLive;
+      }
+      // ⚠️ أي إجراء يجعل السؤال غير مؤهَّل (رفض، «تم الإجابة»، إخفاء من
+      // الشاشة) يُسقط الشريحة المثبَّتة فوراً. بلا هذا كانت اللوحة تكتب
+      // «المعروض الآن: السؤال X» بعد أن خبّأه المشرف، فيُظنّ أن الزر تعطّل.
+      if (action === "reject" || action === "answer" || action === "setVisibility") {
+        reconcileScreenSlide(session);
       }
       return {
         id: q.id,

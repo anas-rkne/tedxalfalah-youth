@@ -17,8 +17,7 @@ import { checkAdminApiRateLimit } from "@/lib/rate-limit";
 import { validateOrigin } from "@/lib/cors";
 import { qaError, qaJson, qaErrorFromKnown } from "@/lib/qa/http";
 import { mutateQaData, mutateBoth } from "@/lib/qa/storage";
-import { newId } from "@/lib/qa/service";
-import { escapeHtml } from "@/lib/sanitize";
+import { newId, recomputeMeta } from "@/lib/qa/service";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +29,7 @@ const schema = z
     prompt: z.string().trim().min(1).max(200).optional(),
     promptAr: z.string().trim().max(200).optional(),
     options: z.array(z.string().trim().min(1).max(120)).min(2).max(6).optional(),
-    optionsAr: z.array(z.string().trim().max(120)).optional(),
+    optionsAr: z.array(z.string().trim().min(1).max(120)).optional(),
     show: z.boolean().optional(),
   })
   .superRefine((v, ctx) => {
@@ -38,6 +37,19 @@ const schema = z
       if (!v.sessionId) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["sessionId"], message: "sessionId required" });
       if (!v.prompt) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["prompt"], message: "prompt required to create" });
       if (!v.options || v.options.length < 2) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["options"], message: "At least 2 options required" });
+      // ⚠️ كان `optionsAr` بلا `min(1)` ولا تحقق من الطول. فمصفوفة أقصر من
+      // `options` تمرّ، ثم يقرأ العرض `optionsAr?.[i]` فيحصل الخيار الثالث
+      // على `undefined` فيظهر فارغاً على الشاشة. والمصفوفة الأطول تُهمَل
+      // بصمت. الآن نقبلها فقط إن طابقت الطول تماماً.
+      if (v.optionsAr) {
+        if (v.optionsAr.length !== v.options?.length) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["optionsAr"],
+            message: "optionsAr must have exactly the same number of entries as options",
+          });
+        }
+      }
     } else {
       if (!v.sessionId) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["sessionId"], message: "sessionId required" });
       if (!v.pollId) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["pollId"], message: "pollId required" });
@@ -77,16 +89,16 @@ export async function POST(request: NextRequest) {
     if (!session) throw new Error("session-not-found");
 
     if (action === "create") {
-      const cleanedOptions = (options as string[]).map((o) => escapeHtml(o));
-      const cleanedOptionsAr = (optionsAr as string[] | undefined)?.map((o) => escapeHtml(o));
+      // النص يُخزَّن خاماً — React يهرّب عند العرض. التهريب هنا كان يُنتج
+      // ترميزاً مزدوجاً في اللوحة والشاشة.
       const now = new Date().toISOString();
       const poll = {
         id: newId("p"),
-        prompt: escapeHtml(prompt as string),
-        promptAr: promptAr ? escapeHtml(promptAr) : undefined,
-        options: cleanedOptions,
-        optionsAr: cleanedOptionsAr,
-        tallies: cleanedOptions.map(() => 0),
+        prompt: prompt as string,
+        promptAr: promptAr || undefined,
+        options: [...(options as string[])],
+        optionsAr: optionsAr ? [...optionsAr] : undefined,
+        tallies: (options as string[]).map(() => 0),
         active: false,
         showResults: false,
         createdAt: now,
@@ -114,14 +126,19 @@ export async function POST(request: NextRequest) {
     return { ok: true, id: pollId };
   });
 
-  // عند الحذف نحتاج أيضًا حذف الأصوات المرتبطة بالاستفتاء
+  // عند الحذف نحتاج أيضًا حذف الأصوات المرتبطة بالاستفتاء وإعادة حساب meta
+  // من المصدر — قبل الإصلاح كان `meta.totalVotes` يبقى على رقمه القديم فيظهر
+  // في لوحة التحليلات أكثر بكثير من الواقع بعد حذف أي استفتاء مصوّت عليه.
   const runWithVoteCleanup = async () => {
     if (action !== "delete") return run();
     return mutateBoth(({ data, votes }) => {
       const session = data.sessions.find((s) => s.id === sessionId);
       if (!session) throw new Error("session-not-found");
+      const existed = session.polls.some((p) => p.id === pollId);
+      if (!existed) throw new Error("poll-not-found");
       session.polls = session.polls.filter((p) => p.id !== pollId);
       votes.votes = votes.votes.filter((v) => v.pollId !== pollId);
+      data.meta = recomputeMeta(data, votes);
       return { deleted: true, id: pollId };
     });
   };

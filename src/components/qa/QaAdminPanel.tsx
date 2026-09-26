@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   AlertCircle,
   Check,
+  ChevronRight,
   Download,
   MessageSquare,
+  MonitorPlay,
   Plus,
   ShieldCheck,
   Star,
@@ -30,6 +32,18 @@ interface QaQuestion {
   answered?: boolean;
   showOnSpeaker?: boolean;
   showOnLive?: boolean;
+  createdAt: string;
+  /** `admin` = كتبه المشرف لا الجمهور — تُعرض له بشارة في اللوحة. */
+  source?: "audience" | "admin";
+  /** كل الإجابات بكل الحالات — المشرف هو الوحيد الذي يرى `pending`. */
+  answers?: QaAnswer[];
+}
+
+interface QaAnswer {
+  id: string;
+  author: string;
+  text: string;
+  status: "pending" | "approved" | "rejected";
   createdAt: string;
 }
 
@@ -56,7 +70,15 @@ interface QaSession {
   questions: QaQuestion[];
   polls: QaPoll[];
   attendeeNames: string[];
+  /** حالة الشاشة الكبيرة — تُقرأ من نفس الكتابة التي تخدم `/api/qa/session/current`. */
+  screen?: { mode: "manual" | "auto"; slide: ScreenSlide };
 }
+
+type ScreenSlide =
+  | { kind: "question"; questionId: string }
+  | { kind: "poll"; pollId: string }
+  | { kind: "wordCloud" }
+  | { kind: "hold" };
 
 interface AdminData {
   settings: { eventName: string; eventNameAr: string; active: boolean };
@@ -88,11 +110,14 @@ async function api<T>(url: string, token: string, options?: RequestInit): Promis
 
 export default function QaAdminPanel() {
   const t = useTranslations("qa.adminLive");
+  const locale = useLocale();
 
   const [token, setToken] = useState<string | null>(null);
   const [data, setData] = useState<AdminData | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // إظهار/إخفاء قسم الأسئلة المرفوضة (مطويّ افتراضياً حتى لا يزاحم المراجعة).
+  const [showRejectedSection, setShowRejectedSection] = useState(false);
 
   // create session form
   const [newTitle, setNewTitle] = useState("");
@@ -104,6 +129,8 @@ export default function QaAdminPanel() {
 
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<null | string>(null);
+  /** فشل تصدير CSV — يُعرض بدل أن يمر التنزيل بصمت. */
+  const [exportError, setExportError] = useState<null | string>(null);
 
   // login form
   const [loginUsername, setLoginUsername] = useState("");
@@ -269,6 +296,49 @@ export default function QaAdminPanel() {
     });
   };
 
+  /**
+   * كل أزرار الشاشة الكبيرة في مكان واحد — **ولا شيء منها على شاشة العرض**.
+   *
+   * ⚠️ قرار تصميمي: لا نضع «تالية/سحابة/مسح» اختصارات لوحة مفاتيح في
+   * `LiveScreen`. أي شخص يمرّ على غرفة التحكّم أو يتّصل بـHDMI (البلاي
+   * ليست projection بلوحة مفاتيح) يستطيع عندها تبديل ما يُعرض على الحضور
+   * أمام مئات الأشخاص. التحكم مكانه لوحة الإدارة المحمية فقط.
+   */
+  const screenAction = async (action: string, extra: Record<string, unknown> = {}) => {
+    if (!selected || !token) return;
+    await act(`screen:${action}`, async () => {
+      await api("/api/qa/admin/screen", token, {
+        method: "POST",
+        body: JSON.stringify({ action, sessionId: selected.id, ...extra }),
+      });
+      await load(token, true);
+    });
+  };
+
+  /** «سؤال على المسرح»: سؤال إدارة يُكتب هنا ويظهر فوراً بلا مراجعة. */
+  const [stageText, setStageText] = useState("");
+  const [stagePutOnScreen, setStagePutOnScreen] = useState(true);
+  const [creatingStage, setCreatingStage] = useState(false);
+
+  const createStageQuestion = async () => {
+    if (!selected || !token || !stageText.trim()) return;
+    setCreatingStage(true);
+    await act("screen:createQuestion", async () => {
+      await api("/api/qa/admin/screen", token, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "createQuestion",
+          sessionId: selected.id,
+          text: stageText.trim(),
+          putOnScreen: stagePutOnScreen,
+        }),
+      });
+      setStageText("");
+      await load(token, true);
+    });
+    setCreatingStage(false);
+  };
+
   const createPoll = async () => {
     if (!selected || !token) return;
     const options = pollOptions.map((o) => o.trim()).filter(Boolean);
@@ -294,9 +364,73 @@ export default function QaAdminPanel() {
   };
 
   const allQuestions = session?.questions ?? [];
+  /**
+   * كل الإجابات المعلّقة في الجلسة، كقائمة واحدة في أعلى اللوحة.
+   *
+   * ⚠️ لماذا لا نكتفي بإظهارها تحت كل سؤال؟ لأن المراجع هنا يعمل تحت
+   * ضغط الوقت أثناء حديثٍ حيّ، والمشرف يحتاج «صندوق وارد» واحداً يشتري
+   * منه الوقت: كم جواباً ينتظرني الآن؟ تحت كل سؤال يضيّع الوقت بالتمرير،
+   * ويخفي جواباً معلّقاً تحت سؤال لم يزره.
+   */
+  const pendingAnswers = allQuestions.flatMap((q) =>
+    (q.answers ?? [])
+      .filter((a) => a.status === "pending")
+      .map((a) => ({ answer: a, question: q }))
+  );
+  const answerAction = async (action: "approve" | "reject", questionId: string, answerId: string) => {
+    if (!selected || !token) return;
+    await act(`answer:${action}`, async () => {
+      await api("/api/qa/admin/answer", token, {
+        method: "POST",
+        body: JSON.stringify({ action, sessionId: selected.id, questionId, answerId }),
+      });
+      await load(token, true);
+    });
+  };
+
   const pending = allQuestions.filter((q) => q.status === "pending");
   const approved = allQuestions.filter((q) => q.status === "approved");
+  // ⚠️ كان `viewQuestions = [...pending, ...approved]` فقط. فالسؤال المرفوض يختفي
+  // من اللوحة نهائياً بعد الرفض: لا يمكن رؤيته ولا إعادة اعتماده ولا معرفة
+  // سبب الرفض. الآن نعرضه في قسم منفصل مع زر لإعادة الاعتماد.
+  const rejected = allQuestions.filter((q) => q.status === "rejected");
   const viewQuestions = [...pending, ...approved];
+  const showRejected = rejected.length > 0 || showRejectedSection;
+
+  // ── حالة الشاشة الكبيرة (كما يقرؤها الخادم، لا كما يظنّه المتصفح) ──────
+  const screen = session?.screen ?? { mode: "manual" as const, slide: { kind: "hold" } as ScreenSlide };
+  const screenMode = screen.mode;
+  /** نفس ترتيب الأهلية في `service.ts` — لا نُظهر زر «التالي» على مخزون فارغ. */
+  const screenQueue = approved.filter(
+    (q) => q.showOnLive !== false && !q.answered && q.status === "approved"
+  );
+  const screenQueueLength = screenQueue.length;
+
+  const isOnScreen = (kind: ScreenSlide["kind"], id?: string) => {
+    if (screen.slide.kind !== kind) return false;
+    if (kind === "question") return (screen.slide as { questionId: string }).questionId === id;
+    if (kind === "poll") return (screen.slide as { pollId: string }).pollId === id;
+    return true;
+  };
+
+  /**
+   * وصف الشريحة الحالية بنصّ بشري.
+   *
+   * ⚠️ مهم: إن كانت الشريحة مثبَّتة على سؤال صار غير مؤهَّل، نكتب
+   * «سؤال لم يعد متاحاً» بدل إظهار نصّه — الخادم سيعيد `hold` عند اللقطة
+   * التالية، واللقطة القديمة يجب ألا تخدع المشرف.
+   */
+  const currentSlideLabel = (() => {
+    const s = screen.slide;
+    if (s.kind === "hold") return t("screenLabelHold");
+    if (s.kind === "wordCloud") return t("screenLabelWordCloud");
+    if (s.kind === "poll") {
+      const p = session?.polls.find((x) => x.id === s.pollId);
+      return p ? `${t("screenLabelPoll")}: ${p.promptAr || p.prompt}` : t("screenLabelUnavailable");
+    }
+    const q = screenQueue.find((x) => x.id === s.questionId);
+    return q ? `${t("screenLabelQuestion")}: ${q.text}` : t("screenLabelUnavailable");
+  })();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -317,6 +451,7 @@ export default function QaAdminPanel() {
                   <input
                     type="text"
                     value={loginUsername}
+                    data-testid="qa-login-username"
                     onChange={(e) => setLoginUsername(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                     autoComplete="username"
@@ -329,6 +464,7 @@ export default function QaAdminPanel() {
                   <input
                     type="password"
                     value={loginPassword}
+                    data-testid="qa-login-password"
                     onChange={(e) => setLoginPassword(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                     autoComplete="current-password"
@@ -344,6 +480,7 @@ export default function QaAdminPanel() {
                 )}
                 <Button
                   className="w-full"
+                  data-testid="qa-login-submit"
                   onClick={handleLogin}
                   loading={loginLoading}
                   loadingText={t("loggingIn")}
@@ -370,39 +507,69 @@ export default function QaAdminPanel() {
           <div className="flex items-center gap-3">
             {data?.settings && (
               <a
-                href="/live/screen"
+                href={`/${locale}/live/screen`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-muted-foreground underline hover:text-foreground"
               >
-                Live Screen ↗
+                {t("liveScreenLink")} ↗
               </a>
             )}
             {data?.settings && (
               <a
-                href="/live/speaker"
+                href={`/${locale}/live/speaker`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-muted-foreground underline hover:text-foreground"
               >
-                Speaker View ↗
+                {t("speakerViewLink")} ↗
               </a>
             )}
-            <Button variant="outline" size="sm" onClick={() => token && load(token)} loading={loading} loadingText="…">
-              Refresh
+            <Button variant="outline" size="sm" onClick={() => token && load(token)} loading={loading} loadingText={t("refreshing")}>
+              {t("refresh")}
             </Button>
             {selected && (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
+                onClick={async () => {
                   if (!token || !selected) return;
-                  window.open(`/api/qa/admin/export?sessionId=${selected.id}&token=${encodeURIComponent(token)}`);
+                  // ⚠️ كان `window.open(...?token=...)`: الرمز في الـURL ⇒
+                  // سجل متصفح + سجل خادم + Referer + يمكن نسخه. الآن نرسله
+                  // في الترويسة ونحوّل الرد إلى ملف محلياً.
+                  try {
+                    const res = await fetch(
+                      `/api/qa/admin/export?sessionId=${encodeURIComponent(selected.id)}`,
+                      { headers: { Authorization: `Bearer ${token}` } }
+                    );
+                    if (!res.ok) {
+                      setExportError(res.status === 403 ? t("exportForbidden") : t("exportFailed"));
+                      return;
+                    }
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `qa-${selected.id}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    // الإبطال بعد نبضتين حتى يبدأ المتصفح التنزيل فعلاً.
+                    setTimeout(() => URL.revokeObjectURL(url), 2000);
+                    setExportError(null);
+                  } catch {
+                    setExportError(t("exportFailed"));
+                  }
                 }}
               >
                 <Download className="h-4 w-4 mr-1" />
                 {t("exportCsv")}
               </Button>
+            )}
+            {exportError && (
+              <p role="alert" className="text-red-600 text-sm" data-testid="qa-export-error">
+                {exportError}
+              </p>
             )}
           </div>
         </div>
@@ -438,12 +605,13 @@ export default function QaAdminPanel() {
             <div className="flex items-end gap-2">
               <input
                 value={newTitle}
+                data-testid="qa-session-title"
                 onChange={(e) => setNewTitle(e.target.value)}
                 placeholder="New session title"
                 maxLength={80}
                 className="w-64 rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm outline-none focus:border-red-500"
               />
-              <Button size="sm" onClick={createSession} loading={busy === "create"} loadingText="…">
+              <Button size="sm" data-testid="qa-session-create" onClick={createSession} loading={busy === "create"} loadingText="…">
                 <Plus className="h-4 w-4 mr-1" />
                 {t("createSession")}
               </Button>
@@ -482,6 +650,8 @@ export default function QaAdminPanel() {
                   {viewQuestions.map((q) => (
                     <li
                       key={q.id}
+                      data-testid="qa-question-row"
+                      data-question-id={q.id}
                       className={`rounded-2xl border p-4 ${
                         q.featured ? "border-amber-400 bg-amber-50/50" : q.answered ? "border-green-400 bg-green-50/50" : "border-border bg-background"
                       }`}
@@ -489,6 +659,14 @@ export default function QaAdminPanel() {
                       <p className="text-sm leading-relaxed">{q.text}</p>
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         <span className="text-xs text-muted-foreground">{q.author}</span>
+                        {q.source === "admin" && (
+                          <span
+                            className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700"
+                            data-testid="qa-source-admin"
+                          >
+                            {t("sourceAdmin")}
+                          </span>
+                        )}
                         {q.status === "pending" && (
                           <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
                             {t("questionStatus.pending")}
@@ -497,13 +675,14 @@ export default function QaAdminPanel() {
                         {q.featured && <Star className="h-4 w-4 text-amber-500" />}
                         <div className="ms-auto flex gap-2">
                           {q.status === "pending" && (
-                            <Button size="sm" onClick={() => moderate("approve", q.id)} disabled={busy !== null}>
+                            <Button size="sm" data-testid="qa-approve" onClick={() => moderate("approve", q.id)} disabled={busy !== null}>
                               <Check className="h-4 w-4 mr-1" />
                               {t("approve")}
                             </Button>
                           )}
                           <Button
                             size="sm"
+                            data-testid="qa-feature"
                             variant="outline"
                             onClick={() => moderate("feature", q.id, { featured: !q.featured })}
                             disabled={busy !== null}
@@ -513,6 +692,7 @@ export default function QaAdminPanel() {
                           </Button>
                           <Button
                             size="sm"
+                            data-testid="qa-toggle-speaker"
                             variant={q.showOnSpeaker === false ? "outline" : undefined}
                             onClick={() => moderate("setVisibility", q.id, { showOnSpeaker: q.showOnSpeaker === false })}
                             disabled={busy !== null}
@@ -523,6 +703,7 @@ export default function QaAdminPanel() {
                           </Button>
                           <Button
                             size="sm"
+                            data-testid="qa-toggle-live"
                             variant={q.showOnLive === false ? "outline" : undefined}
                             onClick={() => moderate("setVisibility", q.id, { showOnLive: q.showOnLive === false })}
                             disabled={busy !== null}
@@ -534,8 +715,9 @@ export default function QaAdminPanel() {
                           {q.status === "approved" && (
                             <Button
                               size="sm"
+                              data-testid="qa-answer"
                               variant={q.answered ? undefined : "outline"}
-                              onClick={() => moderate("answer", q.id)}
+                              onClick={() => moderate("answer", q.id, { answered: !q.answered })}
                               disabled={busy !== null}
                               className={q.answered ? "bg-green-600 hover:bg-green-700 text-white" : ""}
                             >
@@ -543,9 +725,16 @@ export default function QaAdminPanel() {
                               {q.answered ? t("answered") : t("markAnswered")}
                             </Button>
                           )}
-                          {q.status === "pending" && (
+                          {/*
+                            * الرفض متاح لأي حالة غير مرفوضة — لا للـ pending
+                            * فقط. كان الشرط `status === "pending"` يمنع سحب
+                            * سؤال اعتُمد بالخطأ من الجمهور؛ وواجهة `/moderate`
+                            * تقبل الرفض في أي حالة أصلاً.
+                            */}
+                          {q.status !== "rejected" && (
                             <Button
                               size="sm"
+                              data-testid="qa-reject"
                               variant="outline"
                               onClick={() => moderate("reject", q.id)}
                               disabled={busy !== null}
@@ -554,12 +743,252 @@ export default function QaAdminPanel() {
                               {t("reject")}
                             </Button>
                           )}
+                          {/*
+                            * «على الشاشة الآن» — مقصود أنه **لا يستدعي
+                            * `markAnswered` ولا يغيّر الحالة**؛ فالمخزون
+                            * والشريحة شيئان منفصلان (شاشة ≠ أرشيف). تكرار
+                            * الضغط idempotent على الخادم.
+                            */}
+                          {q.status === "approved" && (
+                            <Button
+                              size="sm"
+                              data-testid="qa-put-on-screen"
+                              variant={isOnScreen("question", q.id) ? undefined : "outline"}
+                              onClick={() => screenAction("setSlide", { slide: { kind: "question", questionId: q.id } })}
+                              disabled={busy !== null || q.showOnLive === false || q.answered}
+                              className={isOnScreen("question", q.id) ? "bg-red-600 hover:bg-red-700 text-white" : ""}
+                              title={q.showOnLive === false || q.answered ? t("putOnScreenBlocked") : undefined}
+                            >
+                              <MonitorPlay className="h-4 w-4 mr-1" />
+                              {isOnScreen("question", q.id) ? t("onScreenNow") : t("putOnScreen")}
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </li>
                   ))}
                 </ul>
               )}
+
+              {/* Rejected questions — ظاهر بعد الرفض مع إمكانية إعادة الاعتماد */}
+              {showRejected && (
+                <div className="mt-6 border-t border-border pt-4">
+                  <button
+                    type="button"
+                    data-testid="qa-rejected-toggle"
+                    onClick={() => setShowRejectedSection((v) => !v)}
+                    className="flex w-full items-center justify-between gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                  >
+                    <span>
+                      {t("rejectedQuestions", { count: rejected.length })}
+                    </span>
+                    <span aria-hidden="true">{showRejectedSection ? "▲" : "▼"}</span>
+                  </button>
+
+                  {showRejectedSection && (
+                    rejected.length === 0 ? (
+                      <p className="py-6 text-center text-sm text-muted-foreground">
+                        {t("noRejectedQuestions")}
+                      </p>
+                    ) : (
+                      <ul className="mt-3 space-y-2">
+                        {rejected.map((q) => (
+                          <li
+                            key={q.id}
+                            data-testid="qa-rejected-row"
+                            data-question-id={q.id}
+                            className="rounded-2xl border border-red-200 bg-red-50/40 p-3"
+                          >
+                            <p className="text-sm leading-relaxed text-muted-foreground line-through">
+                              {q.text}
+                            </p>
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                              <span className="text-xs text-muted-foreground">{q.author}</span>
+                              <span className="ms-auto flex gap-2">
+                                <Button
+                                  size="sm"
+                                  data-testid="qa-reapprove"
+                                  onClick={() => moderate("approve", q.id)}
+                                  disabled={busy !== null}
+                                >
+                                  <Check className="h-4 w-4 mr-1" />
+                                  {t("reapprove")}
+                                </Button>
+                              </span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                  )}
+                </div>
+              )}
+
+              {/* ── Inbox: الإجابات المفتوحة المنتظرة ────────────────── */}
+              {pendingAnswers.length > 0 && (
+                <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50/40 p-4" data-testid="qa-answer-inbox">
+                  <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4 text-amber-600" />
+                    {t("answerInbox", { count: pendingAnswers.length })}
+                  </h3>
+                  <ul className="space-y-3">
+                    {pendingAnswers.map(({ answer, question }) => (
+                      <li
+                        key={answer.id}
+                        data-testid="qa-pending-answer"
+                        data-answer-id={answer.id}
+                        className="rounded-xl border border-border bg-background p-3"
+                      >
+                        <p className="text-xs text-muted-foreground mb-1">
+                          {t("answerTo", { text: question.text.slice(0, 80) })}
+                        </p>
+                        <p className="text-sm leading-relaxed">{answer.text}</p>
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <span className="text-xs text-muted-foreground">{answer.author}</span>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              data-testid="qa-answer-approve"
+                              onClick={() => answerAction("approve", question.id, answer.id)}
+                              disabled={busy !== null}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              <Check className="h-4 w-4 mr-1" />
+                              {t("approveAnswer")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              data-testid="qa-answer-reject"
+                              variant="outline"
+                              onClick={() => answerAction("reject", question.id, answer.id)}
+                              disabled={busy !== null}
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              {t("rejectAnswer")}
+                            </Button>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* ── Screen control bar ─────────────────────────────────── */}
+              {/*
+                ⚠️ الترتيب مقصود: شريط التحكّم **فوق** قائمة الأسئلة. المشرف
+                يحتاج «ضع هذا على الشاشة» أمام عينه، لا في ذيل الصفحة تحت
+                عشرات الأسئلة.
+              */}
+              <div className="mt-6 rounded-2xl border border-border bg-background/60 p-4" data-testid="qa-screen-bar">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <MonitorPlay className="h-4 w-4 text-red-500" />
+                    <span className="text-sm font-semibold">{t("screenBar")}</span>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        screenMode === "auto" ? "bg-amber-500/15 text-amber-600" : "bg-zinc-500/15 text-muted-foreground"
+                      }`}
+                      data-testid="qa-screen-mode"
+                    >
+                      {screenMode === "auto" ? t("screenModeAuto") : t("screenModeManual")}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant={screenMode === "manual" ? undefined : "outline"}
+                      data-testid="qa-screen-manual"
+                      onClick={() => screenAction("setMode", { mode: "manual" })}
+                      disabled={busy !== null || screenMode === "manual"}
+                    >
+                      {t("screenModeManual")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={screenMode === "auto" ? undefined : "outline"}
+                      data-testid="qa-screen-auto"
+                      onClick={() => screenAction("setMode", { mode: "auto" })}
+                      disabled={busy !== null || screenMode === "auto"}
+                    >
+                      {t("screenModeAuto")}
+                    </Button>
+                  </div>
+                </div>
+
+                <p className="mt-3 text-xs text-muted-foreground" data-testid="qa-screen-current">
+                  <span className="font-medium">{t("screenNow")}: </span>
+                  {currentSlideLabel}
+                </p>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    data-testid="qa-screen-next"
+                    onClick={() => screenAction("next")}
+                    disabled={busy !== null || screenQueueLength === 0}
+                    title={screenQueueLength === 0 ? t("screenQueueEmpty") : undefined}
+                  >
+                    <ChevronRight className="h-4 w-4 mr-1" />
+                    {t("screenNext")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    data-testid="qa-screen-wordcloud"
+                    onClick={() => screenAction("setSlide", { slide: { kind: "wordCloud" } })}
+                    disabled={busy !== null || isOnScreen("wordCloud")}
+                  >
+                    {t("screenWordCloud")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    data-testid="qa-screen-hold"
+                    onClick={() => screenAction("clear")}
+                    disabled={busy !== null || isOnScreen("hold")}
+                  >
+                    {t("screenHold")}
+                  </Button>
+                </div>
+              </div>
+
+              {/* «سؤال على المسرح» — يكتبه المشرف ويظهر مباشرة */}
+              <div className="mt-4 rounded-2xl border border-border bg-background/60 p-4" data-testid="qa-stage-box">
+                <h3 className="text-sm font-semibold mb-1">{t("stageTitle")}</h3>
+                <p className="text-xs text-muted-foreground mb-3">{t("stageHint")}</p>
+                <textarea
+                  value={stageText}
+                  onChange={(e) => setStageText(e.target.value)}
+                  maxLength={300}
+                  rows={2}
+                  placeholder={t("stagePlaceholder")}
+                  data-testid="qa-stage-input"
+                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm mb-2 outline-none focus:ring-2 focus:ring-red-500 resize-y"
+                />
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <input
+                      type="checkbox"
+                      checked={stagePutOnScreen}
+                      onChange={(e) => setStagePutOnScreen(e.target.checked)}
+                      data-testid="qa-stage-putonscreen"
+                    />
+                    {t("stagePutOnScreen")}
+                  </label>
+                  <Button
+                    size="sm"
+                    data-testid="qa-stage-submit"
+                    onClick={createStageQuestion}
+                    loading={creatingStage}
+                    loadingText="…"
+                    disabled={busy !== null || stageText.trim().length < 2}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    {t("stageSubmit")}
+                  </Button>
+                </div>
+              </div>
 
               {/* Session controls */}
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
@@ -580,7 +1009,7 @@ export default function QaAdminPanel() {
                     {session.speakerEnabled === false ? t("speakerEnabledOn") : t("speakerEnabledOff")}
                   </Button>
                   {!session.active && (
-                    <Button size="sm" onClick={() => selected && setActive(selected.id)} loading={busy === "activate"} loadingText="…">
+                    <Button size="sm" data-testid="qa-session-activate" onClick={() => session && setActive(session.id)} loading={busy === "activate"} loadingText="…">
                       {t("activateButton")}
                     </Button>
                   )}
@@ -607,6 +1036,7 @@ export default function QaAdminPanel() {
               >
                 <input
                   value={pollPrompt}
+                  data-testid="qa-poll-prompt"
                   onChange={(e) => setPollPrompt(e.target.value)}
                   placeholder={t("newPollPrompt")}
                   maxLength={200}
@@ -622,6 +1052,8 @@ export default function QaAdminPanel() {
                 {pollOptions.map((opt, i) => (
                   <input
                     key={i}
+                    data-testid="qa-poll-option-input"
+                    data-option-index={i}
                     value={opt}
                     onChange={(e) =>
                       setPollOptions((prev) => prev.map((o, j) => (j === i ? e.target.value : o)))
@@ -641,7 +1073,7 @@ export default function QaAdminPanel() {
                   >
                     {t("addOption")}
                   </Button>
-                  <Button type="submit" size="sm" loading={creatingPoll} loadingText="…">
+                  <Button type="submit" size="sm" data-testid="qa-poll-create" loading={creatingPoll} loadingText="…">
                     {t("startPoll")}
                   </Button>
                 </div>
@@ -652,14 +1084,14 @@ export default function QaAdminPanel() {
               ) : (
                 <ul className="space-y-3">
                   {session.polls.map((p) => (
-                    <li key={p.id} className="rounded-2xl border border-border bg-background p-4">
+                    <li key={p.id} data-testid="qa-admin-poll" data-poll-id={p.id} className="rounded-2xl border border-border bg-background p-4">
                       <p className="text-sm font-semibold">{p.promptAr || p.prompt}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {p.options.map((o, i) => `${i + 1}. ${o} (${p.tallies[i] ?? 0})`).join("  ·  ")}
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
                         {!p.active ? (
-                          <Button size="sm" onClick={() => updatePoll(session.id, "start", p.id)} disabled={busy !== null}>
+                          <Button size="sm" data-testid="qa-poll-start" onClick={() => updatePoll(session.id, "start", p.id)} disabled={busy !== null}>
                             {t("startPoll")}
                           </Button>
                         ) : (
@@ -669,6 +1101,7 @@ export default function QaAdminPanel() {
                         )}
                         <Button
                           size="sm"
+                          data-testid="qa-poll-results"
                           variant="outline"
                           onClick={() => updatePoll(session.id, "showResults", p.id, { show: !p.showResults })}
                           disabled={busy !== null}
@@ -682,6 +1115,17 @@ export default function QaAdminPanel() {
                           disabled={busy !== null}
                         >
                           <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          data-testid="qa-poll-put-on-screen"
+                          variant={isOnScreen("poll", p.id) ? undefined : "outline"}
+                          className={isOnScreen("poll", p.id) ? "bg-red-600 hover:bg-red-700 text-white" : ""}
+                          onClick={() => screenAction("setSlide", { slide: { kind: "poll", pollId: p.id } })}
+                          disabled={busy !== null}
+                        >
+                          <MonitorPlay className="h-4 w-4 mr-1" />
+                          {isOnScreen("poll", p.id) ? t("onScreenNow") : t("putOnScreen")}
                         </Button>
                       </div>
                     </li>

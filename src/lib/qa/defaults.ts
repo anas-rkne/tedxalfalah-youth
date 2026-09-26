@@ -18,5 +18,5 @@ export function emptyQaData(): QaData {
 }
 
 export function emptyVoteStore(): QaVoteStore {
-  return { votes: [] };
+  return { votes: [], questionVotes: [] };
 }

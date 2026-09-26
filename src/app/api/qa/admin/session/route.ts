@@ -16,7 +16,7 @@ import { checkAdminApiRateLimit } from "@/lib/rate-limit";
 import { validateOrigin } from "@/lib/cors";
 import { qaError, qaJson, qaErrorFromKnown } from "@/lib/qa/http";
 import { mutateQaData, mutateBoth } from "@/lib/qa/storage";
-import { newId } from "@/lib/qa/service";
+import { newId, recomputeMeta } from "@/lib/qa/service";
 import type { QaSession } from "@/lib/qa/types";
 
 export const dynamic = "force-dynamic";
@@ -66,18 +66,19 @@ export async function POST(request: NextRequest) {
 
   let result;
   try {
-    // عند الحذف نزيل أيضًا أصوات الاستفتاءات المرتبطة بالجلسة في نفس القفل.
+    // عند الحذف نزيل أصوات الاستفتاءات **وأصوات الأسئلة** المرتبطة بالجلسة في
+    // نفس القفل. قبل الإصلاح كانت أصوات الأسئلة لا وجود لها أصلاً، و`meta`
+    // كان يُحسب بشكل مختلف عن بقية المسارات فينحرف بعد أي حذف.
     if (action === "delete") {
       result = await mutateBoth(({ data, votes }) => {
         const existed = data.sessions.some((s) => s.id === sessionId);
         if (!existed) throw new Error("session-not-found");
         data.sessions = data.sessions.filter((s) => s.id !== sessionId);
         votes.votes = votes.votes.filter((v) => v.sessionId !== sessionId);
-        data.meta = {
-          totalAttendees: data.sessions.reduce((sum, s) => sum + s.attendeeNames.length, 0),
-          totalQuestions: data.sessions.reduce((sum, s) => sum + s.questions.length, 0),
-          totalVotes: votes.votes.length,
-        };
+        votes.questionVotes = (votes.questionVotes ?? []).filter(
+          (v) => v.sessionId !== sessionId
+        );
+        data.meta = recomputeMeta(data, votes);
         return { deleted: true, id: sessionId };
       });
     } else {
@@ -92,6 +93,7 @@ export async function POST(request: NextRequest) {
             createdAt: new Date().toISOString(),
             questions: [],
             polls: [],
+            attendees: [],
             attendeeNames: [],
           };
           data.sessions.push(session);

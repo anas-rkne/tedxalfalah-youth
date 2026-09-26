@@ -10,7 +10,7 @@
  * - JWT قصير العمر (30 دقيقة)
  */
 import { NextResponse } from "next/server";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit, refundRateLimit } from "@/lib/rate-limit";
 import { isAdminConfigured } from "@/lib/admin-auth";
 import { signJwt } from "@/lib/jwt";
 import {
@@ -57,9 +57,26 @@ export async function POST(request: Request) {
   }
 
   // Auto-seed admin from ADMIN_PASSWORD if Users tab is empty
-  await seedAdminIfNeeded();
+  //
+  // ⚠️ قراءة Users تعتمد Google Sheets. على أول طلب (بلا كاش) أي عطل في
+  // الشبكة أو quota كان يرمي استثناءً غير ملتقط ← 500 بلا معنى، ويوهم
+  // المشرف بأن كلمة مروره خاطئة بينما المشكلة في الخدمة. نميّزها بـ 503
+  // مع مهلة إعادة محاولة، تماماً كما يفعل `requireAdmin` في المسارات المحمية.
+  let result: Awaited<ReturnType<typeof verifyUserPassword>>;
+  try {
+    await seedAdminIfNeeded();
+    result = await verifyUserPassword(username, password);
+  } catch (err) {
+    console.error("[admin/login] تعذّر الوصول لمصدر الهوية", err);
+    // المحاولة لم تختبر كلمة مرور، فلا يجوز أن تستهلك رصيد محاولات
+    // الدخول: وإلا صنع عطلٌ في Sheets قفلاً لـ 10 دقائق للمشرف.
+    await refundRateLimit(request, "admin-login");
+    return NextResponse.json(
+      { error: "Identity service unavailable. Please try again shortly." },
+      { status: 503, headers: { "Retry-After": "10" } }
+    );
+  }
 
-  const result = await verifyUserPassword(username, password);
   if (!result) {
     return NextResponse.json({ error: "Incorrect username or password" }, { status: 401 });
   }

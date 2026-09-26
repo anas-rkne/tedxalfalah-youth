@@ -12,7 +12,15 @@
     "postbuild": "node -e \"require('fs').cpSync('public', '.next/standalone/public', { recursive: true }); require('fs').cpSync('.next/static', '.next/standalone/.next/static', { recursive: true })\"",
     "start": "next start",
     "lint": "eslint",
-    "test:qa": "node scripts/qa-smoke.mjs"
+    "typecheck": "tsc --noEmit",
+    "test:qa": "node scripts/qa-smoke.mjs",
+    "test:qa:server": "powershell -ExecutionPolicy Bypass -File scripts/qa-test-server.ps1 -Port 3110",
+    "test:qa:unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/qa-unit.mjs",
+    "test:qa:api": "node scripts/qa-suite.mjs --base=http://localhost:3110",
+    "test:qa:cluster": "node scripts/qa-cluster-test.mjs --base=http://localhost:3110",
+    "test:qa:e2e": "playwright test --config=playwright.qa.config.ts",
+    "test:i18n": "node scripts/i18n-keys.mjs",
+    "verify:qa": "npm run test:i18n && npm run test:qa:unit && npm run typecheck && npm run test:qa:api && npm run test:qa:cluster && npm run test:qa:e2e"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

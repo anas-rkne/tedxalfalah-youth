@@ -7,7 +7,7 @@
  * الحماية: requireAdmin (JWT) + rate limit للمشرف.
  */
 import { NextRequest } from "next/server";
-import { requireAdmin, verifySession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { checkAdminApiRateLimit } from "@/lib/rate-limit";
 import { validateOrigin } from "@/lib/cors";
 import { qaError } from "@/lib/qa/http";
@@ -16,33 +16,45 @@ import { normalizeData } from "@/lib/qa/service";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * يهرّب خلية CSV.
+ *
+ * ⚠️ حاجتان كانتا ناقصتين:
+ * 1) البادئات التي يفسّرها Excel/Sheets كصيغة: خلية تبدأ بـ = + - @ (أو
+ *    محارف تحكّم) تُنفَّذ عند فتح الملف. سؤال حاضر يبدأ بـ "=" كان يصبح
+ *    صيغة قابلة للتنفيذ على جهاز المشرف.
+ * 2) تلك البادئة يجب أن تُهرَّب *داخل* اقتباس، وإلا كسرت الحقل كله.
+ */
 function escapeCsv(value: string): string {
-  if (value.includes(",") || value.includes('"') || value.includes("\n")) {
-    return `"${value.replace(/"/g, '""')}"`;
+  const needsQuote = /[",\n\r]/.test(value);
+  // \t و\r في بداية الخلية تكسر التحليل أيضاً.
+  const guarded = /^[\s]*[=+\-@]/.test(value) || /^[\t\r]/.test(value) ? `'${value}` : value;
+  if (needsQuote) {
+    return `"${guarded.replace(/"/g, '""')}"`;
   }
-  return value;
+  return guarded;
 }
 
 /**
- * يدعم token كـ query param لـ window.open (أقل أماناً لكن مقبول
- * لهذا الـ endpoint الداخلي لأن JWT قصير العمر).
+ * المصادقة: `Authorization: Bearer` فقط.
+ *
+ * ⚠️ كان هناك مسار احتياطي `?token=` لخدمة `window.open` (لأن التنزيل المباشر
+ * لا يدعم ترويسات). كلّف ذلك تسرّباً: الرمز في الـURL يبقى في سجل المتصفح
+ * وسجل الخادم والـReferer، ويظهر لأي شخص يطّلع على الرابط. الحل: لا يخرج
+ * الرمز عن الترويسة — الواجهة تجلب المسار بـ`fetch` (كـblob) ثم تُنشئ رابطاً
+ * مؤقتاً محلياً.
+ *
+ * ونتيجةً لذلك لا يمكن تجاوز فحص الدور: مسار المصادقة واحد.
  */
 async function authenticate(request: NextRequest) {
   const auth = await requireAdmin(request);
-  if (auth.ok) return auth;
-
-  const tokenParam = request.nextUrl.searchParams.get("token");
-  if (!tokenParam) return auth;
-
-  const fakeRequest = new Request(request.url, {
-    headers: { Authorization: `Bearer ${tokenParam}` },
-  });
-  const session = await verifySession(fakeRequest);
-  if (!session) return auth;
-  if (session.role !== "admin") {
+  if (!auth.ok) return auth;
+  // `requireAdmin` يتحقق من صلاحية الجلسة لا من الدور، ومستخدم "viewer"
+  // يمرّ منه — والتصدير كامل (أسماء + مرفوضات) فالفحص هنا إلزامي.
+  if (auth.session.role !== "admin") {
     return { ok: false as const, response: qaError("Admin role required", 403) };
   }
-  return { ok: true as const, session };
+  return { ok: true as const, session: auth.session };
 }
 
 export async function GET(request: NextRequest) {

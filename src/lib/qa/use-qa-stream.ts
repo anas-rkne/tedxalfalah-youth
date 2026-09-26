@@ -1,119 +1,96 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { PublicSnapshot } from "./public-view";
 
-interface StreamData {
-  active: boolean;
-  settings?: { eventName?: string; eventNameAr?: string };
-  session: {
-    id: string;
-    title: string;
-    titleAr?: string;
-    acceptingQuestions: boolean;
-    attendeeCount: number;
-  } | null;
-  questions?: Array<{
-    id: string;
-    author: string;
-    text: string;
-    votes: number;
-    featured: boolean;
-    answered?: boolean;
-  }>;
-  polls?: Array<{
-    id: string;
-    prompt: string;
-    promptAr?: string;
-    options: string[];
-    optionsAr?: string[];
-    active: boolean;
-    showResults: boolean;
-    tallies: number[] | null;
-    totalVotes: number | null;
-  }>;
-  meta?: {
-    totalAttendees: number;
-    totalQuestions: number;
-    totalVotes: number;
-  };
+type StreamData = PublicSnapshot;
+
+interface UseQaStreamOptions {
+  /** أي شاشة تطلب البيانات — تخصّص مجموعة الأسئلة المعروضة. */
+  view?: "live" | "speaker";
+  pollInterval?: number;
 }
 
 /**
- * hook يقرأ من /api/qa/stream (SSE) ويعيد البيانات المحدثة فوراً.
- * ي fallback إلى polling إذا فشل الاتصال.
+ * hook يقرأ من /api/qa/stream (SSE) ويعيد البيانات المحدثة فوراً،
+ * مع fallback إلى polling عند تعذّر الاتصال.
+ *
+ * ملاحظة: SSE و polling يقرآن نفس نوع البيانات `PublicSnapshot` المعرَّف في
+ * `public-view.ts`، فلا يحدث تعارض في الشكل بين المسارين.
  */
-export function useQaStream(pollInterval = 5000) {
+export function useQaStream({ view = "live", pollInterval = 5000 }: UseQaStreamOptions = {}) {
   const [data, setData] = useState<StreamData | null>(null);
   const [connected, setConnected] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const query = `?view=${encodeURIComponent(view)}`;
 
   const loadPoll = useCallback(async () => {
     try {
-      const res = await fetch("/api/qa/session/current");
-      const d = await res.json();
-      setData(d);
+      const res = await fetch(`/api/qa/session/current${query}`, { cache: "no-store" });
+      if (!res.ok) return;
+      setData((await res.json()) as StreamData);
     } catch {
       /* تجاهل مؤقت */
     }
-  }, []);
+  }, [query]);
 
   useEffect(() => {
     let cancelled = false;
+    let retry: ReturnType<typeof setTimeout> | undefined;
 
     const connect = () => {
       if (cancelled) return;
 
-      try {
-        const es = new EventSource("/api/qa/stream");
-        eventSourceRef.current = es;
+      // متصفحات قديمة جداً لا تدعم EventSource إطلاقاً — نتخطّى إلى polling
+      // بدل أن يرمي التأثير استثناءً غير معالَج.
+      if (typeof EventSource === "undefined") return;
 
-        es.onopen = () => {
-          if (!cancelled) setConnected(true);
-        };
+      const es = new EventSource(`/api/qa/stream${query}`);
+      eventSourceRef.current = es;
 
-        es.onmessage = (event) => {
-          if (cancelled) return;
-          try {
-            const parsed = JSON.parse(event.data) as StreamData;
-            setData(parsed);
-          } catch {
-            /* تجاهل بيانات غير صالحة */
-          }
-        };
+      es.onopen = () => {
+        if (!cancelled) setConnected(true);
+      };
 
-        es.onerror = () => {
-          if (!cancelled) {
-            setConnected(false);
-            es.close();
-            eventSourceRef.current = null;
-            // إعادة محاولة بعد 3 ثوانٍ
-            setTimeout(connect, 3000);
-          }
-        };
-      } catch {
-        // SSE غير مدعوم — fallback إلى polling
-        if (!cancelled) {
-          setConnected(false);
-          loadPoll();
+      es.onmessage = (event) => {
+        if (cancelled) return;
+        try {
+          setData(JSON.parse(event.data) as StreamData);
+        } catch {
+          /* تجاهل بيانات غير صالحة */
         }
-      }
+      };
+
+      es.onerror = () => {
+        if (cancelled) return;
+        setConnected(false);
+        es.close();
+        eventSourceRef.current = null;
+        // إعادة المحاولة بعد 3 ثوانٍ.(setConnected(false) يفعّل polling فوراً
+        // عبر التأثير أدناه، فلا تبقى الشاشة بلا بيانات أثناء الانتظار).
+        retry = setTimeout(connect, 3000);
+      };
     };
 
     connect();
 
     return () => {
       cancelled = true;
+      if (retry) clearTimeout(retry);
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
       }
     };
-  }, [loadPoll]);
+  }, [query]);
 
-  // fallback: polling إذا لم يتصل SSE خلال 5 ثوانٍ
+  // Fallback: polling ما دمنا غير متصلين بـSSE.
+  // لا نستدعي `loadPoll()` مباشرةً هنا: استدعاؤها في جسم التأثير يفعّل
+  // setState متزامناً ويسبّب re-render متتالياً (يرفضه eslint). أول إطار من SSE
+  // يصل فوراً، و`onerror` يعيد تشغيل هذا التأثير فتبدأ الدورة التالية.
   useEffect(() => {
     if (connected) return;
-    const iv = setInterval(loadPoll, pollInterval);
+    const iv = setInterval(() => void loadPoll(), pollInterval);
     return () => clearInterval(iv);
   }, [connected, loadPoll, pollInterval]);
 

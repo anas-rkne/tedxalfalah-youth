@@ -96,13 +96,23 @@ interface UsersCacheEntry {
 let usersCache: UsersCacheEntry | null = null;
 const USERS_CACHE_TTL_MS = 30_000;
 
-async function getUsers(): Promise<UserRecord[]> {
-  if (usersCache && Date.now() - usersCache.at < USERS_CACHE_TTL_MS) {
-    return usersCache.users;
-  }
-  const tab = await getUsersTab();
-  const rows = await tab.getRows();
-  const users = rows.map((row) => ({
+/**
+ * ⚠️ سقف مدة استخدام نسخة قديمة عند فشل Google Sheets.
+ *
+ * هدفه التوازن: نريد أن **نكمل الخدمة** أثناء انقطاع الشبكة أو نفاد حصة
+ * الـAPI (وهو ما كان يرمي 500 على كل دخول durante الحفل)، لكننا لا نريد أن
+ * نُبقي حساباً **مُلغى أو مُنزَعاً** فعّالاً للأبد. لذلك بعد هذه المدة
+ * نُفشل الطلب صراحةً بدل المتابعة على بيانات منسية.
+ */
+const USERS_STALE_MAX_MS = 15 * 60_000;
+
+/** سجل خطأ واحد فقط حتى لا نغرق سجل الخادم بآلاف الرسائل أثناء انقطاع. */
+let loggedStaleFallback = false;
+
+function mapUserRow(row: {
+  get: (key: string) => unknown;
+}): UserRecord {
+  return {
     username: String(row.get("username") ?? "").trim(),
     displayName: String(row.get("displayName") ?? "").trim(),
     passwordHash: String(row.get("passwordHash") ?? ""),
@@ -110,10 +120,62 @@ async function getUsers(): Promise<UserRecord[]> {
     tokenVersion: Number(row.get("tokenVersion") || 0),
     createdAt: String(row.get("createdAt") ?? ""),
     lastLogin: String(row.get("lastLogin") ?? ""),
-  })).filter((u) => u.username.length > 0);
-  usersCache = { at: Date.now(), users };
-  return users;
+  };
 }
+
+/** قراءة حديثة من Google Sheet (بلا كاش). */
+async function fetchUsers(): Promise<UserRecord[]> {
+  const tab = await getUsersTab();
+  const rows = await tab.getRows();
+  return rows.map(mapUserRow).filter((u) => u.username.length > 0);
+}
+
+/**
+ * التحديث الجاري: نشارك وعداً واحداً بين كل الطلبات المتزامنة.
+ *
+ * ⚠️ بدون هذا، دخول 10 مشرفين في اللحظة نفسها = 10 قراءات من الشيت في
+ * اللحظة نفسها، وهي ما كان يستهلك حصة "Read requests per minute" (60/دقيقة)
+ * ويُسقط تسجيل الدخول بـ429.participantEntry واحد يكفي الجميع.
+ */
+let inflightUsers: Promise<UserRecord[]> | null = null;
+
+async function getUsers(): Promise<UserRecord[]> {
+  if (usersCache && Date.now() - usersCache.at < USERS_CACHE_TTL_MS) {
+    return usersCache.users;
+  }
+  if (inflightUsers) return inflightUsers;
+
+  inflightUsers = (async () => {
+    try {
+      const users = await fetchUsers();
+      usersCache = { at: Date.now(), users };
+      loggedStaleFallback = false;
+      return users;
+    } catch (error) {
+      // ⛔ فشل القراءة ≠ "لا يوجد مستخدمون". سابقاً كان `hasUsers` يبتلع
+      // الخطأ ويعيد `false`، فيتعلّم `seedAdminIfNeeded` أن الجدول فارغ
+      // ويضيف صف `admin` جديداً بكلمة مرور متغيّر البيئة — أي إعادة ضبط
+      // غير مقصودة لحساب المدير وازدواج باسم `admin` أثناء انقطاع بسيط.
+      // الآن نميّز: خطأ sheets = لا نزرع، ونتعامل مع النسخة القديمة إن وُجدت.
+      if (usersCache && Date.now() - usersCache.at < USERS_STALE_MAX_MS) {
+        if (!loggedStaleFallback) {
+          loggedStaleFallback = true;
+          console.error(
+            "[auth] Google Sheets unavailable; serving the cached user list " +
+              "(stale-while-error). Seed and user changes are paused meanwhile."
+          );
+        }
+        return usersCache.users;
+      }
+      throw error;
+    } finally {
+      inflightUsers = null;
+    }
+  })();
+
+  return inflightUsers;
+}
+
 
 /* ── public API ──────────────────────────────────────────── */
 
@@ -129,16 +191,26 @@ export async function getUserByUsername(username: string): Promise<UserRecord | 
   return users.find((u) => u.username === username) || null;
 }
 
+/**
+ * هل يوجد مستخدمون مسجّلون؟ — **ترمي خطأً عند تعذّر القراءة**.
+ *
+ * ⚠️ لا نُبتلع الخطأ هنا عمداً: الدالة السابقة كانت تُعيد `false` عند أي
+ * فشل، وكان `seedAdminIfNeeded` يقرأها "الجدول فارغ" فيزرع صف `admin`
+ * جديداً فوق حساب حقيقي. الآن التمييز واضح: `false` تعني "فُحص وقُرئ ووجد
+ * فارغاً" فقط، وأي خطأ يمرّر إلى المستدعي.
+ */
 export async function hasUsers(): Promise<boolean> {
-  try {
-    const users = await getUsers();
-    return users.length > 0;
-  } catch {
-    return false;
-  }
+  const users = await getUsers();
+  return users.length > 0;
 }
 
-/** Auto-seed admin user from ADMIN_PASSWORD env var when Users tab is empty. */
+/**
+ * زرع حساب المدير الأول مرة واحدة عند confirm أن الجدول **فارغ فعلاً**.
+ *
+ * ⚠️ لا تزرع عند فشل القراءة: خطأ Sheets أو نفاد الحصة لا يعني فراغاً.
+ * في الحالة الفاشلة نتخطّى الزراعة ونترك الـthrow يصل إلى المستدعي فيفشل
+ * الدخول برسالة صادقة، بدل إنشاء حساب مفاجئ أو قفل المديرين خارج الحفل.
+ */
 export async function seedAdminIfNeeded(): Promise<void> {
   const existing = await hasUsers();
   if (existing) return;
@@ -178,15 +250,35 @@ export async function updateUserPassword(
   return true;
 }
 
+/**
+ * تسجيل وقت آخر دخول — **أفضل- effort، لا يجوز أن يُسقط تسجيل الدخول**.
+ *
+ * ⚠️ كان `await updateLastLogin(...)` داخل مسار الدخول: فشل الكتابة في Google
+ * Sheets (نفاد حصة الـAPI مثلاً) كان يرمي استثناءً بعد التحقق من كلمة المرور
+ * مباشرة، فيردّ المتصفح 500 ولا يستطيع المشرف دخول اللوحة أثناء الحفل.
+ *
+ * كما كان يُبطل الكاش بالكامل، فكان كل دخول يجبر الطلب الإداري التالي على
+ * قراءة الشيت من جديد. الآن نحدّث السجل داخل الكاش (حقل تدقيق لا أثر له على
+ * المصادقة) ونُبطل الكاش فقط إن فشلت القراءة.
+ */
 export async function updateLastLogin(username: string): Promise<void> {
-  const tab = await getUsersTab();
-  const rows = await tab.getRows();
-  const target = rows.find((r) => String(r.get("username") ?? "").trim() === username);
-  if (target) {
-    target.set("lastLogin", new Date().toISOString());
-    await target.save();
+  const now = new Date().toISOString();
+  const cached = usersCache?.users.find((u) => u.username === username);
+  if (cached) cached.lastLogin = now;
+
+  try {
+    const tab = await getUsersTab();
+    const rows = await tab.getRows();
+    const target = rows.find((r) => String(r.get("username") ?? "").trim() === username);
+    if (target) {
+      target.set("lastLogin", now);
+      await target.save();
+    }
+  } catch (error) {
+    // بيانات تدقيق فقط: نُبطل الكاش كي تُصحّح القراءة التالية، ولا نُفشل الدخول.
+    invalidateUsersCache();
+    console.error("[auth] updateLastLogin failed (login still succeeded):", error);
   }
-  invalidateUsersCache();
 }
 
 export async function addUser(

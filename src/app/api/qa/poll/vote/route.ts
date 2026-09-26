@@ -2,7 +2,8 @@
  * POST /api/qa/poll/vote — تسجيل تصويت على استفتاء اختياري.
  *
  * يقبل { attendeeId, pollId, optionIndex }.
- * يمنع التصويت المزدوج من نفس الحضور بمعرّف حضور فريد.
+ * يمنع التصويت المزدوج من نفس الحاضر بمعرّف حضور فريد.
+ * ويشترط أن يكون `attendeeId` مسجَّلاً في سجل حضور الجلسة (انظر الاستدعاء).
  *
  * الحماية: عام + Rate limit + Turnstile + التحقق من الأصل.
  * ملاحظة: يستخدم mutateBoth لتحديث الملف الرئيسي وملف الأصوات في قفل واحد (ذرّي).
@@ -14,7 +15,7 @@ import { verifyTurnstile } from "@/lib/turnstile";
 import { validateOrigin } from "@/lib/cors";
 import { qaError, qaJson, qaErrorFromKnown } from "@/lib/qa/http";
 import { mutateBoth } from "@/lib/qa/storage";
-import { getActiveSession } from "@/lib/qa/service";
+import { getActiveSession, findAttendee, recomputeMeta } from "@/lib/qa/service";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +55,9 @@ export async function POST(request: NextRequest) {
       const session = getActiveSession(data);
       if (!session) throw new Error("no-active-session");
 
+      // 🔒 معرّف الحضور يجب أن يكون مسجَّلاً في هذه الجلسة. بدون هذا التحقق
+      // يكفي تخمين/اختلاق `attendeeId`Vote قسراً، ومنع التكرار يصبح بلا معنى.
+      if (!findAttendee(session, attendeeId)) throw new Error("attendee-not-registered");
       const poll = session.polls.find((p) => p.id === pollId);
       if (!poll) throw new Error("poll-not-found");
       if (!poll.active) throw new Error("poll-closed");
@@ -68,13 +72,9 @@ export async function POST(request: NextRequest) {
       poll.tallies[optionIndex] = (poll.tallies[optionIndex] ?? 0) + 1;
       votes.votes.push({ sessionId: session.id, pollId, voterId: attendeeId, optionIndex });
 
-      data.meta = {
-        ...data.meta,
-        totalVotes: data.sessions.reduce(
-          (sum, s) => sum + s.polls.reduce((a, p) => a + p.tallies.reduce((x, y) => x + y, 0), 0),
-          0
-        ),
-      };
+      // إعادة حساب من المصدر بدل الجمع التدريجي: يبقى `meta` صحيحاً حتى بعد
+      // عمليات الحذف لاحقةً.
+      data.meta = recomputeMeta(data, votes);
 
       return {
         ok: true,

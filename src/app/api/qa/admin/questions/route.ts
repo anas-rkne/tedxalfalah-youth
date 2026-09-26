@@ -12,7 +12,7 @@ import { checkAdminApiRateLimit } from "@/lib/rate-limit";
 import { validateOrigin } from "@/lib/cors";
 import { qaError, qaJson } from "@/lib/qa/http";
 import { readQaData } from "@/lib/qa/storage";
-import { normalizeData } from "@/lib/qa/service";
+import { normalizeData, normalizeScreen } from "@/lib/qa/service";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +52,18 @@ export async function GET(request: NextRequest) {
       answered: q.answered,
       showOnSpeaker: q.showOnSpeaker ?? true,
       showOnLive: q.showOnLive ?? true,
+      // شارة المصدر: بدونها لا يعرف المشرف أي سؤال كتبه بنفسه وأيها من
+      // الجمهور — والقرار «هل هذا سؤال حقيقي من القاعة؟» يتعذّر.
+      source: q.source ?? "audience",
+      // كل الحالات عمداً: المشرف هو المراجع الوحيد للإجابات، وبدون ذلك
+      // كان الحاضر يضغط «اكتب جواباً» ولا يجد له أحداً.
+      answers: (q.answers ?? []).map((a) => ({
+        id: a.id,
+        author: a.author,
+        text: a.text,
+        status: a.status,
+        createdAt: a.createdAt,
+      })),
     })),
     polls: s.polls.map((p) => ({
       id: p.id,
@@ -65,6 +77,9 @@ export async function GET(request: NextRequest) {
       createdAt: p.createdAt,
     })),
     attendeeNames: s.attendeeNames,
+    // `normalizeScreen` حتى لو كان الملف قديماً بلا `screen`: اللوحة تعرض
+    // «يدوي/بانتظار» بدل undefined، فلا ينهار العرض عند أول فتح.
+    screen: normalizeScreen(s),
   }));
 
   return qaJson({

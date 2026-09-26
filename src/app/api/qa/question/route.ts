@@ -1,10 +1,19 @@
 /**
  * POST /api/qa/question — إرسال سؤال مفتوح من الحاضر.
  *
- * يقبل { attendeeId, name, text }. يُضاف السؤال بحالة "pending"
- * بانتظار موافقة المشرف قبل عرضه على الشاشة.
+ * يقبل { attendeeId, text, anonymous?, tag? }.
  *
- * الحماية: عام + Rate limit + Turnstile + التحقق من الأصل + تعقيم النص.
+ * 🔒 اسم صاحب السؤال **لا يُؤخذ من الطلب**. كان الحقل `name` يُقرأ من جسم
+ * الطلب مباشرة، فأي زائر كان يستطيع التظاهر بأنه شخص آخر بمجرد إرسال اسم
+ * مختلف. الآن يتحقق الخادم من `attendeeId` مقابل سجل الحضور ويشتقّ الاسم من
+ * هناك، ويُتجاهل أي `name` يرسله العميل.
+ *
+ * يُضاف السؤال بحالة "pending" بانتظار موافقة المشرف قبل عرضه على الشاشة.
+ *
+ * النصوص تُخزَّن **خاماً** (بلا تهريب HTML) — التهريب يحدث عند العرض في React.
+ * التهريب وقت التخزين كان يُنتج ترميزاً مزدوجاً (`&amp;lt;`) في اللوحة والتصدير.
+ *
+ * الحماية: عام + Rate limit + Turnstile + التحقق من الأصل.
  */
 import { NextRequest } from "next/server";
 import { z } from "zod";
@@ -14,8 +23,7 @@ import { verifyTurnstile } from "@/lib/turnstile";
 import { validateOrigin } from "@/lib/cors";
 import { qaError, qaJson, qaErrorFromKnown } from "@/lib/qa/http";
 import { mutateQaData } from "@/lib/qa/storage";
-import { getActiveSession, newId } from "@/lib/qa/service";
-import { escapeHtml } from "@/lib/sanitize";
+import { findAttendee, getActiveSession, newId } from "@/lib/qa/service";
 import type { QaQuestion } from "@/lib/qa/types";
 
 export const dynamic = "force-dynamic";
@@ -55,7 +63,8 @@ function analyzeSentiment(text: string): "positive" | "negative" | "neutral" {
 
 const schema = z.object({
   attendeeId: z.string().min(1).max(200),
-  name: z.string().trim().min(1).max(60).optional(),
+  // مُقبول للتوافق مع العميل القديم، لكن **مُتجاهَل** عمداً (انظر رأس الملف).
+  name: z.string().trim().max(60).optional(),
   text: z.string().trim().min(2).max(300),
   anonymous: z.boolean().optional(),
   tag: z.string().trim().max(40).optional(),
@@ -83,10 +92,9 @@ export async function POST(request: NextRequest) {
   const isHuman = await verifyTurnstile(parsed.data.turnstileToken);
   if (!isHuman) return qaError("Verification failed. Please try again.", 403);
 
-  const safeText = escapeHtml(parsed.data.text);
+  const safeText = parsed.data.text;
   const isAnonymous = parsed.data.anonymous === true;
-  const safeAuthor = isAnonymous ? "Anonymous" : escapeHtml(parsed.data.name?.trim() || "Anonymous");
-  const tag = parsed.data.tag ? escapeHtml(parsed.data.tag) : undefined;
+  const tag = parsed.data.tag;
 
   // تحليل المشاعر
   const sentiment = analyzeSentiment(safeText);
@@ -98,6 +106,12 @@ export async function POST(request: NextRequest) {
       const session = getActiveSession(data);
       if (!session) throw new Error("no-active-session");
       if (!session.acceptingQuestions) throw new Error("not-accepting");
+
+      // 🔒 الهوية من الخادم لا من العميل: لا بد من سجل حضور صالح في هذه الجلسة.
+      const attendee = findAttendee(session, parsed.data.attendeeId);
+      if (!attendee) throw new Error("attendee-not-registered");
+
+      const author = isAnonymous ? "Anonymous" : attendee.name;
 
       // كشف المكرر: مقارنة النص الجديد مع الأسئلة المعتمدة والقيد الانتظار
       const activeQuestions = session.questions.filter(
@@ -114,7 +128,7 @@ export async function POST(request: NextRequest) {
 
       const q: QaQuestion = {
         id: newId("q"),
-        author: safeAuthor,
+        author,
         text: safeText,
         votes: 0,
         status: "pending",

@@ -73,6 +73,7 @@ export default function PostEventSurvey({ sessionId, attendeeId, onClose }: Prop
           {Array.from({ length: 11 }, (_, i) => (
             <button
               key={i}
+              data-testid={`qa-survey-nps-${i}`}
               onClick={() => setNps(i)}
               className={`w-9 h-9 rounded-lg text-sm font-bold transition ${
                 nps === i
@@ -101,6 +102,7 @@ export default function PostEventSurvey({ sessionId, attendeeId, onClose }: Prop
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
+              data-testid={`qa-survey-rating-${star}`}
               onClick={() => setRating(star)}
               onMouseEnter={() => setHoveredStar(star)}
               onMouseLeave={() => setHoveredStar(0)}
@@ -122,6 +124,7 @@ export default function PostEventSurvey({ sessionId, attendeeId, onClose }: Prop
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2">{t("survey.commentOptional")}</label>
         <textarea
+          data-testid="qa-survey-comment"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           maxLength={500}
@@ -134,7 +137,7 @@ export default function PostEventSurvey({ sessionId, attendeeId, onClose }: Prop
 
       {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
 
-      <Button className="w-full" loading={sending} loadingText={t("survey.submitting")} onClick={handleSubmit}>
+      <Button className="w-full" data-testid="qa-survey-submit" loading={sending} loadingText={t("survey.submitting")} onClick={handleSubmit}>
         <Send className="h-4 w-4 mr-2" />
         {t("survey.submit")}
       </Button>
