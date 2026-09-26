@@ -225,16 +225,16 @@
             "title": "Applications Close"
           },
           {
-            "date": "27 Sep",
+            "date": "28 Sep",
             "title": "Application Screening"
           },
           {
-            "date": "30 Sep",
-            "title": "Shortlisting Announced"
+            "date": "5 Oct",
+            "title": "Shortlisting Announced (18 speakers)"
           },
           {
-            "date": "9–18 Oct",
-            "title": "Interviews & Auditions"
+            "date": "10–11 Oct",
+            "title": "Interviews & Auditions (2 days)"
           },
           {
             "date": "23–25 Oct",
@@ -242,15 +242,23 @@
           },
           {
             "date": "26 Oct",
-            "title": "Final Speaker Selection"
+            "title": "Final Selection (9 youth + 4 experts)"
           },
           {
-            "date": "27 Oct–20 Nov",
-            "title": "Coaching & Talk Development"
+            "date": "30 Oct",
+            "title": "Coaching Workshop (Mandatory)"
+          },
+          {
+            "date": "2–20 Nov",
+            "title": "Coaching & Talk Development (1:1)"
+          },
+          {
+            "date": "27 Nov",
+            "title": "Presentations Deadline"
           },
           {
             "date": "18 Dec",
-            "title": "Rehearsals"
+            "title": "Rehearsals on Site"
           },
           {
             "date": "19 Dec",
@@ -596,20 +604,20 @@
           },
           {
             "title": "Application Screening",
-            "date": "27 Sep 2026",
+            "date": "28 Sep 2026",
             "description": "The review team evaluates all applications.",
             "whatToExpect": "We read every application carefully and assess based on originality, clarity, and readiness."
           },
           {
             "title": "Shortlisting Announced",
-            "date": "30 Sep 2026",
-            "description": "We announce the shortlisted candidates.",
+            "date": "5 Oct 2026",
+            "description": "We announce the 18 potential speakers who made the shortlist.",
             "whatToExpect": "You will receive an email within 48 hours."
           },
           {
             "title": "Interviews & Auditions",
-            "dateRange": "9–18 Oct 2026",
-            "description": "Interviews and auditions with shortlisted candidates.",
+            "dateRange": "10–11 Oct 2026",
+            "description": "Two days of interviews and auditions with shortlisted candidates.",
             "whatToExpect": "We discuss your idea and how it connects to the theme."
           },
           {
@@ -621,17 +629,29 @@
           {
             "title": "Final Speaker Selection",
             "date": "26 Oct 2026",
-            "description": "Official announcement of final speakers.",
+            "description": "Official announcement of 9 young speakers and 4 expert speakers.",
             "whatToExpect": "Congratulations! Intensive coaching begins."
           },
           {
-            "title": "Coaching & Talk Development",
-            "dateRange": "27 Oct–20 Nov 2026",
-            "description": "Intensive training program to prepare your talk.",
-            "whatToExpect": "Weekly sessions with professional TEDx coaches."
+            "title": "Coaching Workshop",
+            "date": "30 Oct 2026",
+            "description": "A mandatory coaching workshop for all selected speakers.",
+            "whatToExpect": "Attendance is required — we cover the basics of speaking on stage."
           },
           {
-            "title": "Rehearsals",
+            "title": "Coaching & Talk Development",
+            "dateRange": "2–20 Nov 2026",
+            "description": "A one-to-one coaching program to prepare your talk.",
+            "whatToExpect": "One-to-one sessions with professional TEDx coaches."
+          },
+          {
+            "title": "Presentations Deadline",
+            "date": "27 Nov 2026",
+            "description": "Final deadline for speakers to submit their presentations.",
+            "whatToExpect": "Send your final deck before the end of the day."
+          },
+          {
+            "title": "Rehearsals on Site",
             "date": "18 Dec 2026",
             "description": "Final on-stage rehearsals before the event.",
             "whatToExpect": "Experience the real stage, lighting, and sound."
