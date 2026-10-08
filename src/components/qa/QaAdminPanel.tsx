@@ -871,34 +871,34 @@ export default function QaAdminPanel() {
                           </span>
                         )}
                         {q.featured && <Star className="h-4 w-4 text-amber-500" />}
-                        <div className="ms-auto flex gap-2">
-                          {q.status === "pending" && (
-                            <Button size="sm" data-testid="qa-approve" onClick={() => moderate("approve", q.id)} disabled={busy !== null}>
-                              <Check className="h-4 w-4 mr-1" />
-                              {t("approve")}
+                          <div className="ms-auto flex flex-wrap gap-2 justify-end w-full sm:w-auto">
+                            {q.status === "pending" && (
+                              <Button size="sm" data-testid="qa-approve" onClick={() => moderate("approve", q.id)} disabled={busy !== null}>
+                                <Check className="h-4 w-4 mr-1" />
+                                {t("approve")}
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              data-testid="qa-feature"
+                              variant="outline"
+                              onClick={() => moderate("feature", q.id, { featured: !q.featured })}
+                              disabled={busy !== null}
+                            >
+                              <Star className="h-4 w-4 mr-1" />
+                              {q.featured ? t("unfeature") : t("feature")}
                             </Button>
-                          )}
-                          <Button
-                            size="sm"
-                            data-testid="qa-feature"
-                            variant="outline"
-                            onClick={() => moderate("feature", q.id, { featured: !q.featured })}
-                            disabled={busy !== null}
-                          >
-                            <Star className="h-4 w-4 mr-1" />
-                            {q.featured ? t("unfeature") : t("feature")}
-                          </Button>
-                          <Button
-                            size="sm"
-                            data-testid="qa-toggle-speaker"
-                            variant={q.showOnSpeaker === false ? "outline" : undefined}
-                            onClick={() => moderate("setVisibility", q.id, { showOnSpeaker: q.showOnSpeaker === false })}
-                            disabled={busy !== null}
-                            className={q.showOnSpeaker !== false ? "bg-teal-600 hover:bg-teal-700 text-white" : ""}
-                          >
-                            <Check className="h-4 w-4 mr-1" />
-                            {q.showOnSpeaker === false ? t("speakerHidden") : t("speakerVisible")}
-                          </Button>
+                            <Button
+                              size="sm"
+                              data-testid="qa-toggle-speaker"
+                              variant={q.showOnSpeaker === false ? "outline" : undefined}
+                              onClick={() => moderate("setVisibility", q.id, { showOnSpeaker: q.showOnSpeaker === false })}
+                              disabled={busy !== null}
+                              className={q.showOnSpeaker !== false ? "bg-teal-600 hover:bg-teal-700 text-white" : ""}
+                            >
+                              <Check className="h-4 w-4 mr-1" />
+                              {q.showOnSpeaker === false ? t("speakerHidden") : t("speakerVisible")}
+                            </Button>
                           {/*
                             * ⚠️Facing منفصلان، وزرّان لا زر.
                             *
@@ -1038,7 +1038,7 @@ export default function QaAdminPanel() {
                             </p>
                             <div className="mt-2 flex flex-wrap items-center gap-2">
                               <span className="text-xs text-muted-foreground">{q.author}</span>
-                              <span className="ms-auto flex gap-2">
+                              <span className="ms-auto flex flex-wrap gap-2 justify-end">
                                 <Button
                                   size="sm"
                                   data-testid="qa-reapprove"
@@ -1079,7 +1079,7 @@ export default function QaAdminPanel() {
                         <p className="text-sm leading-relaxed">{answer.text}</p>
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <span className="text-xs text-muted-foreground">{answer.author}</span>
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2 justify-end">
                             <Button
                               size="sm"
                               data-testid="qa-answer-approve"
@@ -1230,7 +1230,7 @@ export default function QaAdminPanel() {
                   <Users className="h-4 w-4" />
                   {t("totalAttendees", { count: session.attendeeNames.length })}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 justify-end">
                   <Button
                     size="sm"
                     variant={session.speakerEnabled === false ? "outline" : undefined}
@@ -1297,7 +1297,7 @@ export default function QaAdminPanel() {
                     className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm outline-none focus:border-red-500"
                   />
                 ))}
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 justify-end">
                   <Button
                     type="button"
                     size="sm"

@@ -27,7 +27,7 @@
     "test:qa:projector": "playwright test --config=playwright.qa5.config.ts",
     "test:qa:controls": "playwright test --config=playwright.qa6.config.ts",
     "test:qa:security": "playwright test --config=playwright.qa7.config.ts",
-    "test:qa:load": "node scripts/qa-test-server.mjs --dev -- node scripts/qa-load.mjs",
+    "test:qa:load": "node scripts/qa-test-server.mjs -- node scripts/qa-load.mjs",
     "test:qa:coverage": "node scripts/qa-control-inventory.mjs --strict",
     "test:i18n": "node scripts/i18n-keys.mjs",
     "verify:qa": "npm run test:i18n && npm run test:qa:unit && npm run typecheck && npm run test:qa:api && npm run test:qa:cluster && npm run test:qa:e2e"
