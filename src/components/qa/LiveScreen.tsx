@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { MessageSquare, TrendingUp, Users } from "lucide-react";
+import { BarChart3, MessageSquare, TrendingUp, Users } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useQaStream } from "@/lib/qa/use-qa-stream";
 import type { PublicPoll, PublicQuestion, PublicSnapshot } from "@/lib/qa/public-view";
-import WordCloud, { calculateWordFrequency } from "@/components/qa/WordCloud";
+import WordCloud from "@/components/qa/WordCloud";
+import { calculateWordFrequency } from "@/lib/qa/service";
 
 /** الحالة قبل وصول أول إطار — مطابقة تماماً لشكل اللقطة الحقيقية. */
 const EMPTY_SNAPSHOT: PublicSnapshot = {
@@ -28,9 +29,25 @@ export default function LiveScreen() {
   const screen = data.screen ?? EMPTY_SNAPSHOT.screen;
   const slide = screen.slide;
 
-  // `visible` هو تطبيق showOnLive: كان الخادم يحسبه والواجهة تتجاهله، فزر
-  // "مخفي من الشاشة" في لوحة الإدارة بلا أي أثر فعلياً.
-  const questions = data.questions.filter((q) => !q.answered && q.visible);
+  // ⚠️ `visible` هنا يعكس **ظهور المشروعور** (`showOnProjector`) — لا
+  // `showToAudience`. و`view: "live"` أعلاه هو ما يجعل الخادم يحسبه هكذا.
+  //
+  // سبب وجود الحقل أصلاً: الخادم كان يحسبه والواجهة تتجاهله، فزر «مخفي من
+  // الشاشة» في لوحة الإدارة بلا أي أثر فعلياً. الآن اللاحقة `!q.answered`
+  // تصفي المؤرشف أيضاً: المجاب عنه ليس للعرض على المسرح.
+  //
+  // من هنا تأتي حدود شريحة السحابة: `questions` = أسئلة المشروعور حصراً،
+  // فسؤالٌ مخفيٌّ عن الجمهور ويظهر على المسرح يظهر في السحابة — وهذا هو
+  // المقصود: السحابة تعكس ما يُعرض على القاعة.
+  //
+  // ⚠️ `useMemo` على `data.questions` (المصدر) لا على ناتج `filter`. ناتج
+  // `filter` مصفوفة جديدة كل تصيير، فmemoization فوقها يستحق بلا فائدة
+  // وReact Compiler يتخطى المكوّن تحذيراً. المصدر ثابت المرجع ما دام إطار
+  // البثّ واحداً (`EMPTY_SNAPSHOT.questions` ثابت أيضاً).
+  const questions = useMemo(
+    () => (data.questions ?? []).filter((q) => !q.answered && q.visible),
+    [data.questions]
+  );
 
   /**
    * ⚠️ التدوير التلقائي يعمل **فقط** في وضع `auto` **و** فقط بلا شريحة مثبَّتة.
@@ -68,27 +85,54 @@ export default function LiveScreen() {
   const wantsResults = displayPoll?.showResults ?? false;
   const rotateQuestion = rotating ? questions[qIdx % questions.length] : undefined;
 
+  /**
+   * ⚠️ السحابة لا تُخترع من لا شيء.
+   *
+   * الحساب يمرّ على `questions` (المشروعور) لا `data.questions` (الواجهة)،
+   * فسؤال مخفي عن الشاشة الكبرى لا يدخل السحابة المعروضة عليها.
+   *
+   * وإن لم تنتج الأسئلة المؤهَّلة أي كلمة بعد التنقية، نعرض بطاقة
+   * الانتظار بدل تسمية «سحابة الكلمات» فوق مساحة سوداء أمام ألف ضيف.
+   */
+  const cloudWords = useMemo(
+    () => calculateWordFrequency(questions.map((q) => q.text)),
+    [questions]
+  );
+
+  /**
+   * `count` صار عدد الأسئلة لا مرات التكرار، فالتسمية تصفه بدقة.
+   * ترجع دالةً لا نصاً جاهزاً لأن `count` عدد.
+   */
+  const cloudCountLabel = useCallback(
+    (count: number) => t("screen.wordCloudCount", { count }),
+    [t]
+  );
+
   const body = !data.active || !data.session ? (
-    <div className="text-center">
+    <div className="text-center" data-testid="qa-screen-waiting">
       <h2 className="text-4xl font-bold">{t("screen.waiting")}</h2>
       <p className="text-zinc-400 text-xl mt-3">{t("screen.waitingSubtitle")}</p>
     </div>
   ) : pinnedQuestion ? (
     <QuestionCard q={pinnedQuestion} label={t("screen.questionsLabel")} testId="qa-screen-question" />
-  ) : displayPoll && wantsResults ? (
-    <PollResults
-      poll={displayPoll}
-      label={t("screen.pollLabel")}
-      votesLabel={t("screen.pollVotes", { count: displayPoll.totalVotes ?? 0 })}
-    />
-  ) : slide.kind === "wordCloud" ? (
+  ) : displayPoll ? (
+    wantsResults ? (
+      <PollResults
+        poll={displayPoll}
+        label={t("screen.pollLabel")}
+        votesLabel={t("screen.pollVotes", { count: displayPoll.totalVotes ?? 0 })}
+      />
+    ) : (
+      <PollCard poll={displayPoll} label={t("screen.pollLabel")} />
+    )
+  ) : slide.kind === "wordCloud" && cloudWords.length > 0 ? (
     <div className="w-full max-w-4xl" data-testid="qa-screen-wordcloud">
       <div className="inline-flex items-center gap-2 text-red-400 uppercase tracking-widest text-sm mb-6">
         <MessageSquare className="h-4 w-4" />
         {t("screen.wordCloudLabel")}
       </div>
       <div className="h-[45vh]">
-        <WordCloud words={calculateWordFrequency(questions.map((q) => q.text))} maxWords={20} />
+        <WordCloud words={cloudWords} maxWords={20} countLabel={cloudCountLabel} />
       </div>
     </div>
   ) : rotateQuestion ? (
@@ -119,10 +163,17 @@ export default function LiveScreen() {
         )}
       </footer>
 
-      {/* Word Cloud — bottom left */}
+      {/* السحابة المصغّرة — أعلى ١٥ كلمة من نفس الحساب المُخزَّن.
+          ⚠️ كان `calculateWordFrequency(...)` يُستدعى داخل JSX: حساب
+          جديد من نفس الإدخال في كل لقطة بثّ (كل ٣ ثوانٍ)، ومكرّرٌ مع
+          `cloudWords` فوقه بسقف ٥٠. `slice(0, 15)` يعطي النتيجة نفسها
+          لأن الترتيب يقع قبل الاقتطاع. */}
       {questions.length >= 3 && (
-        <div className="absolute bottom-4 left-4 w-64 h-40 overflow-hidden opacity-60 hover:opacity-100 transition-opacity">
-          <WordCloud words={calculateWordFrequency(questions.map((q) => q.text))} maxWords={15} />
+        <div
+          className="absolute bottom-4 left-4 w-64 h-40 overflow-hidden opacity-60 hover:opacity-100 transition-opacity"
+          data-testid="qa-screen-cloud-mini"
+        >
+          <WordCloud words={cloudWords.slice(0, 15)} countLabel={cloudCountLabel} />
         </div>
       )}
 
@@ -186,11 +237,39 @@ function HoldCard() {
   );
 }
 
+/**
+ * استطلاع **قبل** النتائج: نصّ السؤال وخياراته بلا نسب.
+ *
+ * ⚠️ كان هذا الفرع غائباً: زرّ المشرف «على الشاشة» لصفّ نشط بلا نتائج
+ * لم يكن يمرّ إلى `PollResults` (شرطها `wantsResults`)، فسقط إلى
+ * `rotateQuestion` أو `HoldCard` — أي **زرّ يبدو بلا أثر** على المسرح.
+ * الخيارات بلا نسب عمداً: النسب قبل إغلاق التصويت تكشف ما صوّت له
+ * الحضور، وهو ما يخفيه المشرف حتى يعلنه بنفسه.
+ */
+function PollCard({ poll, label }: { poll: PublicPoll; label: string }) {
+  return (
+    <div className="w-full max-w-3xl text-center" data-testid="qa-screen-poll">
+      <div className="inline-flex items-center gap-2 text-red-400 uppercase tracking-widest text-sm mb-6">
+        <BarChart3 className="h-4 w-4" />
+        {label}
+      </div>
+      <h2 className="text-4xl md:text-5xl font-bold mb-10">{poll.promptAr || poll.prompt}</h2>
+      <div className="space-y-4">
+        {poll.options.map((o, i) => (
+          <p key={i} className="text-2xl text-zinc-200">
+            {poll.optionsAr?.[i] ?? o}
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PollResults({ poll, label, votesLabel }: { poll: PublicPoll; label: string; votesLabel: string }) {
   const total = poll.totalVotes ?? poll.tallies?.reduce((a, b) => a + b, 0) ?? 0;
   const options = poll.options.map((o, i) => ({ text: poll.optionsAr?.[i] ?? o }));
   return (
-    <div className="w-full max-w-3xl">
+    <div className="w-full max-w-3xl" data-testid="qa-screen-poll-results">
       <div className="inline-flex items-center gap-2 text-red-400 uppercase tracking-widest text-sm mb-6">
         <TrendingUp className="h-4 w-4" />
         {label}

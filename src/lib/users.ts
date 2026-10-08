@@ -58,9 +58,105 @@ async function verifyPassword(password: string, stored: string): Promise<boolean
   });
 }
 
-/* ── sheet access ────────────────────────────────────────── */
+/* ── local test mode ──────────────────────────────────────── */
 
+/**
+ * وضع الاختبار المحلي: مستخدمون في الذاكرة، بلا Google Sheets إطلاقاً.
+ *
+ * 🎯 لماذا: مصادقة الأدمن كانت مرتبطة بمصدر خارجي. `isAdminConfigured()` يفحص
+ * `ADMIN_PASSWORD` فقط، بينما `getUsersTab()` يرمي بلا `GOOGLE_SHEET_ID` — أي
+ * أن **كل** طلب إداري على أي جهاز بلا Sheets = 503. بدون هذا الوضع يستحيل تشغيل
+ * أي اختبار متصفح أو API محلياً، فيبقى النظام غير مُختبَر حتى يصل العميل إليه.
+ *
+ * ⚠️ مقصود أن يمرّ الوضع المحلي بـ**نفس** دوال التجزئة والتحقق المستعملة في
+ * الإنتاج (`hashPassword`/`verifyPassword`)، فتبقى الطبقة التي نختبرها هي
+ * الطبقة الحقيقية. الاختزال الوحيد هو مصدر الهوية.
+ *
+ * ⛔ حاجز أمان: الوضع يشتقّ حساب المدير من متغيّر البيئة ولا يقارنه بمتجر
+ * حقيقي، فتفعيله بالخطأ على الإنتاج يعني باباً مفتوحاً بلا كلمة مرور فعّالة.
+ * لذلك يُرفض في الإنتاج ما لم يُؤكَّد صراحةً بـ`QA_ALLOW_LOCAL_AUTH=true`.
+ */
+export function isLocalAuthMode(): boolean {
+  const mode = (process.env.QA_AUTH_MODE || "").trim().toLowerCase();
+  if (mode !== "local") return false;
+  if (mode === "local" && process.env.NODE_ENV === "production") {
+    const confirmed = (process.env.QA_ALLOW_LOCAL_AUTH || "").trim().toLowerCase();
+    if (confirmed !== "true") {
+      console.warn(
+        "[auth] QA_AUTH_MODE=local is REFUSED in production without " +
+          "QA_ALLOW_LOCAL_AUTH=true. Using the real identity backend."
+      );
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * مستخدمو الذاكرة. يُزرع مرّة واحدة عند أول طلب، بصيغة `UserRecord` كاملة.
+ *
+ * `QA_LOCAL_VIEWER_PASSWORD` يضيف مستخدماً بدور `viewer` — وهو شرط لاختبار
+ * مصفوفة الصلاحيات (admin / viewer / بلا توكن)، إذ لا يمكن إنتاج دور `viewer`
+ * مع Google Sheets بلا كتابة حقيقية إلى جدول الإنتاج.
+ */
+let localUsersPromise: Promise<UserRecord[]> | null = null;
+
+async function seedLocalUsers(): Promise<UserRecord[]> {
+  const now = new Date().toISOString();
+  const users: UserRecord[] = [];
+
+  const adminPw = process.env.ADMIN_PASSWORD;
+  if (adminPw) {
+    users.push({
+      username: "admin",
+      displayName: "Admin (local)",
+      passwordHash: await hashPassword(adminPw),
+      role: "admin",
+      tokenVersion: 0,
+      createdAt: now,
+      lastLogin: "",
+    });
+  }
+
+  const viewerPw = process.env.QA_LOCAL_VIEWER_PASSWORD;
+  if (viewerPw) {
+    users.push({
+      username: "viewer",
+      displayName: "Viewer (local)",
+      passwordHash: await hashPassword(viewerPw),
+      role: "viewer",
+      tokenVersion: 0,
+      createdAt: now,
+      lastLogin: "",
+    });
+  }
+
+  if (users.length === 0) {
+    console.warn(
+      "[auth] QA_AUTH_MODE=local but neither ADMIN_PASSWORD nor " +
+        "QA_LOCAL_VIEWER_PASSWORD is set — no local users exist, every login will 401."
+    );
+  }
+  return users;
+}
+
+function getLocalUsers(): Promise<UserRecord[]> {
+  if (!localUsersPromise) {
+    localUsersPromise = seedLocalUsers().catch((error) => {
+      localUsersPromise = null;
+      throw error;
+    });
+  }
+  return localUsersPromise;
+}
+
+/** ⚠️ باب أمان: لا يجوز أن يصل الوضع المحلي إلى الشبكة الخارجية. */
 async function getUsersTab() {
+  if (isLocalAuthMode()) {
+    throw new Error(
+      "QA_AUTH_MODE=local: getUsersTab() must not be reached in local mode."
+    );
+  }
   const { GoogleSpreadsheet } = await import("google-spreadsheet");
   const { JWT } = await import("google-auth-library");
   const { sanitizePrivateKey } = await import("@/lib/sanitize");
@@ -140,6 +236,7 @@ async function fetchUsers(): Promise<UserRecord[]> {
 let inflightUsers: Promise<UserRecord[]> | null = null;
 
 async function getUsers(): Promise<UserRecord[]> {
+  if (isLocalAuthMode()) return getLocalUsers();
   if (usersCache && Date.now() - usersCache.at < USERS_CACHE_TTL_MS) {
     return usersCache.users;
   }
@@ -236,6 +333,14 @@ export async function updateUserPassword(
   username: string,
   newPassword: string
 ): Promise<boolean> {
+  if (isLocalAuthMode()) {
+    const target = (await getLocalUsers()).find((u) => u.username === username);
+    if (!target) return false;
+    target.passwordHash = await hashPassword(newPassword);
+    target.tokenVersion += 1;
+    return true;
+  }
+
   const tab = await getUsersTab();
   const rows = await tab.getRows();
   const target = rows.find((r) => String(r.get("username") ?? "").trim() === username);
@@ -266,6 +371,12 @@ export async function updateLastLogin(username: string): Promise<void> {
   const cached = usersCache?.users.find((u) => u.username === username);
   if (cached) cached.lastLogin = now;
 
+  if (isLocalAuthMode()) {
+    const target = (await getLocalUsers()).find((u) => u.username === username);
+    if (target) target.lastLogin = now;
+    return;
+  }
+
   try {
     const tab = await getUsersTab();
     const rows = await tab.getRows();
@@ -287,9 +398,33 @@ export async function addUser(
   displayName: string,
   role: "admin" | "viewer" = "admin"
 ): Promise<UserRecord> {
-  const tab = await getUsersTab();
   const hash = await hashPassword(password);
   const now = new Date().toISOString();
+
+  if (isLocalAuthMode()) {
+    const users = await getLocalUsers();
+    const existing = users.find((u) => u.username === username);
+    if (existing) {
+      existing.passwordHash = hash;
+      existing.displayName = displayName;
+      existing.role = role;
+      existing.tokenVersion += 1;
+      return { ...existing };
+    }
+    const record: UserRecord = {
+      username,
+      displayName,
+      passwordHash: hash,
+      role,
+      tokenVersion: 0,
+      createdAt: now,
+      lastLogin: "",
+    };
+    users.push(record);
+    return { ...record };
+  }
+
+  const tab = await getUsersTab();
   await tab.addRow({
     username,
     displayName,

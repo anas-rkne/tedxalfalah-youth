@@ -1,6 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 import PostEventSurvey from "@/components/qa/PostEventSurvey";
 
 const STORAGE = "tedx-qa-attendee";
@@ -59,6 +61,8 @@ function readSessionId(): string | null {
 }
 
 export default function SurveyPage() {
+  const router = useRouter();
+  const locale = useLocale();
   const attendee = useSyncExternalStore(NOOP_SUBSCRIBE, readAttendee, () => null);
   const sessionId = useSyncExternalStore(NOOP_SUBSCRIBE, readSessionId, () => null);
 
@@ -72,7 +76,17 @@ export default function SurveyPage() {
 
   return (
     <div className="min-h-screen bg-background py-10 px-4">
-      <PostEventSurvey sessionId={sessionId} attendeeId={attendee.id} />
+      <PostEventSurvey
+        sessionId={sessionId}
+        attendeeId={attendee.id}
+        /**
+         * ⚠️ `onClose` لم يكن يُمرَّر إطلاقاً، و`PostEventSurvey` يشترطه
+         * ليرسم زرّ الإغلاق. فبعد الإرسال كان الحاضر **محتجزاً** في
+         * شاشة الشكر بلا أي مخرج داخل الواجهة (زرّ المتصفّح وحده).
+         * الرجوع إلى صفحة المشاركة هو السلوك المقصود.
+         */
+        onClose={() => router.push(`/${locale}/live`)}
+      />
     </div>
   );
 }

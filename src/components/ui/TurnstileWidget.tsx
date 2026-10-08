@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 declare global {
   interface Window {
@@ -118,6 +118,51 @@ export default function TurnstileWidget({
     onStalledRef.current = onStalled;
   });
 
+  /**
+   * ⛔ مؤقّت التعذّر، والاحتفاظ به ضروري لإلغائه عند النجاح.
+   *
+   * كان المؤقّت يُطلق `onStalled(true)` بعد 8 ثوانٍ **بلا شرط**: الإلغاء
+   * كان يحدث فقط عند التفكيك أو تغيّر `resetKey`، لا عند وصول رمز. فحتى
+   * حاضر تحقّق بنجاح — ورمزه صحيح ويظهر له فوراً — كان بعد ثوانٍ يظهر
+   * تنبيه «تعذّر تحميل التحقق. يمكنك المحاولة رغم ذلك». تنبيه كاذب يعلّم
+   * المستخدم أن حمايةً نجحت قد فشلت، ويجعل E2E عاجزاً عن التمييز بين
+   * «الرمز وصل» و«الرمز لم يصل» لأن `qa-verify-stalled` يظهر في الحالتين.
+   *
+   * والأثر الأخطر أنه يوهم بأن الحماية معطلة: الزر يُعاد تفعيله عند
+   * التعذّر عمداً (ليبقى الحاضر غير مقيد إلى الأبد) فيصبح مُفعَّلاً بلا
+   * رمز، فيُرفض الطلب في الإنتاج بـ403 غامض.
+   */
+  const stallTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /**
+   * ⛔ هل سبق أن وصل رمز في هذا الجيل؟ — لا يكفي إلغاء المؤقّت وحده.
+   *
+   * ترتيب التأثيرين هو مصدر الفخ: تأثير `render` (المعلَن أولاً) ينفّذ
+   * `callback` استدعاءً متزامناً فيُلغي المؤقّت — وهو غير مُسلَّح بعد لأن
+   * تأثير التعذّر **لم يُنفَّذ بعد**. ثم ينفّذ تأثير التعذّر فيُسليح
+   * المؤقّت بعد أن وصل الرمز، فيُطلق التنبيه الكاذب بعد 8 ثوانٍ رغم
+   * التحقّق. فلا بدّ من علم صريح لا من محاولة إلغاء في الترتيب الخطأ.
+   *
+   * وموضع إعادة الضبط الصحيح هو تأثير `resetKey` لا تأثير التعذّر: الأخير
+   * ينفَّذ أثناء التركيب أيضاً، فيمحو العَلَم ويُمليح المؤقّت.
+   */
+  const verifiedRef = useRef(false);
+
+  const clearStall = useCallback(() => {
+    if (stallTimerRef.current !== null) {
+      clearTimeout(stallTimerRef.current);
+      stallTimerRef.current = null;
+    }
+  }, []);
+
+  /** يعيد تسليح مهلة التعذّر — عند جيل رمز جديد بعد انتهاء الأول. */
+  const armStall = useCallback(() => {
+    if (stallTimerRef.current !== null || verifiedRef.current) return;
+    stallTimerRef.current = setTimeout(() => {
+      stallTimerRef.current = null;
+      onStalledRef.current?.(true);
+    }, STALL_MS);
+  }, []);
+
   useEffect(() => {
     if (!SITE_KEY) return;
 
@@ -126,15 +171,29 @@ export default function TurnstileWidget({
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: SITE_KEY as string,
         callback: (token: string) => {
+          // ⛔ النجاح يلغي مهلة التعذّر ويمنع تسليحها: لا تنبيه كاذب.
+          verifiedRef.current = true;
+          clearStall();
           onStalledRef.current?.(false);
           onVerifyRef.current(token);
         },
-        "expired-callback": () => onVerifyRef.current(""),
-        "error-callback": () => onVerifyRef.current(""),
+        "expired-callback": () => {
+          // ⛔ الرمز منتهٍ: جيل جديد، فنُعيد التسليح عمداً. بلا ذلك يبقى
+          // الزر معطّلاً إلى ما لا نهاية، وهو ما يعمل هذا المكوّن على منعه.
+          verifiedRef.current = false;
+          armStall();
+          onVerifyRef.current("");
+        },
+        "error-callback": () => {
+          verifiedRef.current = false;
+          armStall();
+          onVerifyRef.current("");
+        },
       });
     });
 
     return () => {
+      clearStall();
       if (widgetIdRef.current && window.turnstile) {
         try {
           window.turnstile.remove(widgetIdRef.current);
@@ -144,7 +203,7 @@ export default function TurnstileWidget({
         widgetIdRef.current = undefined;
       }
     };
-  }, []);
+  }, [armStall, clearStall]);
 
   // Invalidate the consumed token and wait for a fresh one.
   useEffect(() => {
@@ -154,6 +213,7 @@ export default function TurnstileWidget({
     // في التنفيذات) شاهد المحو فيمحو الرمز الجديد الذي وصل للتو،
     // فيبقى النموذج بلا رمز إلى ما لا نهاية. بهذا الترتيب يصمد في الحالتين:
     // استدعاء متزامن (وصل الرمز فيبقى) أو غير متزامن (نمحو القديم أولاً).
+    verifiedRef.current = false;
     onVerifyRef.current("");
     if (!widgetIdRef.current || !window.turnstile) return;
     try {
@@ -164,11 +224,20 @@ export default function TurnstileWidget({
   }, [resetKey]);
 
   /** هل تعذّر الوصول إلى التحدّي؟ يُعاد الضبط مع كل `resetKey`. */
+  /**
+   * ⛔ يُعاد الضبط مع كل `resetKey` — لا عند التركيب.
+   *
+   * كان `verifiedRef.current = false` داخل تأثير التعذّر، وهو ينفَّذ **أثناء
+   * التركيب أيضاً**: فيمحو العَلَم الذي وضعه `callback` قبل لحظات، ثم
+   * يُسليح مؤقّت التعذّر بعده. النتيجة رمزٌ وصل فعلاً (المستدعي يرى
+   * `callback` مرتين) ومع ذلك تنبيه كاذب بعد 8 ثوانٍ. موضع إعادة الضبط
+   * الصحيح هو تأثير `resetKey` — أي عند جيل رمز جديد فعلاً.
+   */
   useEffect(() => {
     if (!SITE_KEY || !onStalledRef.current) return;
-    const timer = setTimeout(() => onStalledRef.current?.(true), STALL_MS);
-    return () => clearTimeout(timer);
-  }, [resetKey]);
+    armStall();
+    return clearStall;
+  }, [resetKey, armStall, clearStall]);
 
   if (!SITE_KEY) return null;
 

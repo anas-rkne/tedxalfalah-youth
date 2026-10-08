@@ -103,19 +103,65 @@ export async function POST(request: NextRequest) {
         const target = data.sessions.find((s) => s.id === sessionId);
         if (!target) throw new Error("session-not-found");
 
+        /**
+         * ⛔ F1 (قرار المشرف: «تمسح فور بدء جلسة جديدة»).
+         *
+* نتائج استطلاع منتهٍ كانت تبقى `showResults: true` إلى الأبد، فكان
+         * المشروعور يعرضها بلا نهاية — وإن توتّرت لقطة قديمة (شبكة بطيئة،
+         * تبويب خامل، نسخة محفوظة) بقيت نتائج الجلسة السابقة على الشاشة
+         * الكبرى أمام الحضور الجدد، بلا وسيلة ليعرفوا أنها لجلسة انتهت.
+         *
+         * الإغلاق هنا لا يمسّ **البيانات**: `tallies` تبقى كما هي، فإعادة
+         * فتح النتائج (`showResults`) متاحة متى أراد المشرف — والمراجعة
+         * اللاحقة (تحليلات) لا تتأثر. المسح للعرض فقط.
+         */
+        const clearStaleResults = (keepSessionId: string) => {
+          for (const s of data.sessions) {
+            if (s.id === keepSessionId) continue;
+            for (const p of s.polls) {
+              if (!p.active && p.showResults) p.showResults = false;
+            }
+          }
+        };
+
         if (action === "activate") {
           data.sessions.forEach((s) => (s.active = false));
           target.active = true;
           target.acceptingQuestions = true;
+          clearStaleResults(target.id);
           return target;
         }
 
         if (action === "toggle") {
           if (typeof acceptingQuestions === "boolean") {
+            // فتح/إغلاق استقبال الأسئلة فقط — لا يمسّ `active` إطلاقاً.
             target.acceptingQuestions = acceptingQuestions;
+          } else if (target.active) {
+            // «إنهاء»: إطفاء الجلسة النشطة نفسها.
+            target.active = false;
+            target.acceptingQuestions = false;
           } else {
-            target.active = !target.active;
-            if (!target.active) target.acceptingQuestions = false;
+            // ⚠️ تشغيل جلسة لم تكن نشطة: **يجب** إطفاء أي جلسة أخرى نشطة.
+            //
+            // هذا كان الثغرة الوحيدة للوصول إلى جلستين نشطتين: `activate`
+            // كانت تُطفئ البقية، لكن `toggle` المجرّدة كانت تقلب `active`
+            // وحدها. وبما أن `GET /session/current` يقرأ
+            // `sessions.find(s => s.active)` — أي **الأولى** في ترتيب الملف لا
+            // ما ضُغط عليه — كانت الأسئلة من جلسة وشاشة العرض من أخرى، بلا
+            // خطأ ولا رسالة. أسوأ Forms of السلوك الصامت أمام الحضور.
+            //
+            // التوحيد مع `activate` مقصود: التبديل بين جلستين عملية عادية
+            // يستطيع المشرف إتمامها بضغطة واحدة، فرفضها بـ409 كان سيُضيف
+            // خطوة بلا فائدة. الحارس الحقيقي (تعارض غير متوقّع) موجود في
+            // `enforceSingleActiveSession` على مستوى البيانات.
+            data.sessions.forEach((s) => (s.active = false));
+            target.active = true;
+            target.acceptingQuestions = true;
+            // ⛔ F1 نفسه هنا: التحويل بضغطة واحدة (وهو المسار الأكثر
+            // استعمالاً في اللحظة الحاسمة) كان يُبقي نتائج الجلسة السابقة
+            // `showResults: true` — أي أن «التنقل إلى جلسة جديدة» كان
+            // بالضبط المسار الذي لا يمسح. التوحيد لا خيار فيه.
+            clearStaleResults(target.id);
           }
           return target;
         }

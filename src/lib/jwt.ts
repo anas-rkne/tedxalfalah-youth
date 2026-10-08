@@ -2,9 +2,29 @@
  * JWT signing and verification using jose.
  *
  * The secret is derived from ADMIN_PASSWORD via scrypt (or JWT_SECRET env var
- * if provided). Tokens carry { sub, role, tv } with 30-minute expiry.
+ * if provided). Tokens carry { sub, role, tv }.
+ *
+ * ⚠️ مدة التوكن طويلة عمداً: لوحة الأسئلة الحية يجب أن تصمد طوال الفعالية دون
+ * إعادة دخول. كانت القيمة السابقة `30m` صلبة بلا أي تجديد — أي أن اللوحة
+ * تتعطّل في منتصف العرض، ومعها لا يعود نموذج الدخول (لا يوجد مسار يمسح
+ * `sessionStorage` ولا يعيد `setToken(null)`)، فتبقى كل الأزرار معطوبة حتى
+ * إعادة تسجيل الدخول اليدوية. المدّة الآن تُقرأ من `ADMIN_TOKEN_TTL`.
  */
 import { SignJWT, jwtVerify, type JWTPayload } from "jose";
+
+/** 12 ساعة تغطي فعالية مسائية كاملة مع فترات الكسر والاستراحة. */
+const DEFAULT_TTL = "12h";
+
+/**
+ * مدّة التوكن: `ADMIN_TOKEN_TTL` إمّا رقم (ثوانٍ) أو نصّ يقبله `jose`
+ * (`"12h"` / `"2d"` / `"90m"`). القيمة الافتراضية 12 ساعة.
+ */
+function resolveTtl(): string | number {
+  const raw = (process.env.ADMIN_TOKEN_TTL || "").trim();
+  if (!raw) return DEFAULT_TTL;
+  if (/^\d+$/.test(raw)) return Number(raw);
+  return raw;
+}
 
 export interface SessionPayload extends JWTPayload {
   sub: string;
@@ -51,7 +71,7 @@ export async function signJwt(payload: {
   return new SignJWT({ sub: payload.sub, role: payload.role, tv: payload.tv })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("30m")
+    .setExpirationTime(resolveTtl())
     .sign(secret);
 }
 

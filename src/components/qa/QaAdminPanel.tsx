@@ -6,7 +6,9 @@ import {
   AlertCircle,
   Check,
   ChevronRight,
+  Clock,
   Download,
+  LogOut,
   MessageSquare,
   MonitorPlay,
   Plus,
@@ -31,6 +33,17 @@ interface QaQuestion {
   featured: boolean;
   answered?: boolean;
   showOnSpeaker?: boolean;
+  /**
+   * ⚠️ الفصل بين الوجهين. `undefined` = ظاهر (الافتراضي) — لا تعامل
+   * `undefined` كـ`false` فالسؤال المُرحَّل بلا حقل يبقى ظاهراً.
+   */
+  showToAudience?: boolean;
+  showOnProjector?: boolean;
+  /**
+   * حقل مهجور للترحيل فقط. **لا تُرسله** بعد Phase 3: زر واحد كان يمرّره
+   * فيضبط الوجهين معاً فيُسقط شريحة المسرح عند أي إخفاء عن الجمهور.
+   * يُقرأ هنا فقط توافقاً مع سؤال قديم لم تُرحَّل بياناته بعد.
+   */
   showOnLive?: boolean;
   createdAt: string;
   /** `admin` = كتبه المشرف لا الجمهور — تُعرض له بشارة في اللوحة. */
@@ -86,6 +99,87 @@ interface AdminData {
   sessions: QaSession[];
 }
 
+/**
+ * ⛔ الجلسة التي تُفتح عند دخول المشرف (أو بعد أي `reload`).
+ *
+ * 🎯 الفجوة: كان الافتراض `sessions[0]` أي **أقدم** جلسة في الملف. فالمشرف
+ * الذي أنهى فعالية من عشر جلسات يفتح اللوحة فيقرأ جلسة اليوم الأول: صفر
+ * أسئلة، صفر ردود استبيان، صفر إجابات — فيُغلقها مظنناً «لم يحضر أحد».
+ * وكان D6 ينجح معزولاً (جلسة واحدة ⇒ `sessions[0]` هي الصحيحة) ويفشل في
+ * التسلسل الكامل: الاختبار كشف أن الافتيار كان عشوائياً لا مقصوداً.
+ *
+ * الترتيب: **الجلسة النشطة** أولاً (هي ما يُشرف عليه الآن)، ثم الأحدث
+ *-createdAt بعد انتهاء الفعالية (حيث تصل ردود ما بعد الحدث)، وأخيراً
+ * `null` إن لم توجد جلسات. الترتيب بـ`createdAt` لا بالترتيب في المصفوفة،
+ * لأن الترتيب المحفوظ غير مضمون.
+ */
+function pickDefaultSessionId(sessions: QaSession[]): string | null {
+  if (sessions.length === 0) return null;
+  const active = sessions.find((s) => s.active);
+  if (active) return active.id;
+  const newest = [...sessions].sort((a, b) =>
+    String(b.createdAt ?? "").localeCompare(String(a.createdAt ?? ""))
+  )[0];
+  return newest?.id ?? null;
+}
+
+/**
+ * 401/403 من الخادم = التوكن منتهٍ أو غير صالح أو `tokenVersion` تغيّر بعد
+ * تغيير كلمة المرور.
+ *
+ * ⚠️ لماذا هذا الصنف موجود؟ `api()` كان يرمي `Error("Unauthorized")` عادياً،
+ * فكانت `load()` تكتب النص في `error` وتبتلعه، و`setToken` لا يُستدعى أبداً
+ * بـ`null` — فلا يعود نموذج الدخول، ويبقى الاستطلاع كل 5 ثوانٍ يرسل التوكن
+ * الميت نفسه، فتصبح اللوحة معطوبة طوال الفعالية حتى إعادة دخول يدوية.
+ * الآن يُميَّز هذا الخطأ ويُفكّ الجلسة فوراً.
+ */
+class AuthError extends Error {
+  readonly status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "AuthError";
+    this.status = status;
+  }
+}
+
+function isAuthError(e: unknown): e is AuthError {
+  return e instanceof AuthError;
+}
+
+/**
+ * 409 من `/admin/screen` = المشرف طلب عرض عنصر غير مؤهَّل (سؤال مرفوض، مجاب،
+ * أو مخفي عن المشروعور). الخادم أسقط الشريحة إلى «بانتظار المشرف» **وأعاد**
+ * الطلب بـ409 عمداً — لا نريد صمتاً يُوهم بأن العرض نجح.
+ *
+ * الرسالة الإنجليزية، فنُترجمها لأسفل. بدون هذا كان الحاضر يرى
+ * «Question not found» فيتحيّر: السؤال أمامه في القائمة.
+ */
+class ScreenConflictError extends Error {
+  readonly status: 409;
+  constructor() {
+    super("screen-conflict");
+    this.name = "ScreenConflictError";
+    this.status = 409;
+  }
+}
+
+function isScreenConflict(e: unknown): e is ScreenConflictError {
+  return e instanceof ScreenConflictError;
+}
+
+/** وقت انتهاء التوكن، لعرضه للمشرف قبل حدوثه لا بعده. */
+function tokenExpiry(token: string): Date | null {
+  const part = token.split(".")[1];
+  if (!part) return null;
+  try {
+    const b64 = part.replace(/-/g, "+").replace(/_/g, "/");
+    const exp = (JSON.parse(atob(b64)) as { exp?: number }).exp;
+    return typeof exp === "number" ? new Date(exp * 1000) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function api<T>(url: string, token: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...options,
@@ -101,6 +195,16 @@ async function api<T>(url: string, token: string, options?: RequestInit): Promis
     data = text ? JSON.parse(text) : {};
   } catch {
     throw new Error(`HTTP ${res.status}: server returned a non-JSON response`);
+  }
+  // ⚠️ الفحص قبل `!res.ok` عمداً: 401 يعني "التوكن نفد" وهو مسار مختلف تماماً
+  // عن أي خطأ آخر — يستدعي تفكيك الجلسة لا مجرد شريط تنبيه.
+  if (res.status === 401 || res.status === 403) {
+    throw new AuthError(res.status, data.error || `HTTP ${res.status}`);
+  }
+  // 409 من مسار الشاشة = عنصر غير مؤهَّل، لا خطأ عابر: يُعرض كرسالة إرشادية
+  // لا كنص إنجليزي على شريط أحمر.
+  if (res.status === 409) {
+    throw new ScreenConflictError();
   }
   if (!res.ok) {
     throw new Error(data.error || `Request failed (HTTP ${res.status})`);
@@ -141,6 +245,35 @@ export default function QaAdminPanel() {
   const selected = data?.sessions.find((s) => s.id === selectedId) ?? null;
   const activeSession = data?.sessions.find((s) => s.active) ?? null;
 
+  /**
+   * تفكيك جلسة انتهت صلاحيتها: مسح `sessionStorage` **و** `setToken(null)`.
+   *
+   * ⚠️ `setToken(null)` هو ما كان ناقصاً كلياً. بدونه يبقى `!token` في
+   * `render` خطأً، فلا يعود نموذج الدخول، وتبقى واجهة الأدمن معطوبة أمام
+   * المشرف. الرسالة تُكتب في `loginError` لأنها الوحيدة التي تُعرض داخل
+   * نموذج الدخول — شريط `error` موجود داخل `{token && …}` فلا يُرى بعد
+   * التفكيك.
+   */
+  const clearSession = useCallback((reason: string | null) => {
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(USER_KEY);
+    setToken(null);
+    setData(null);
+    setSelectedId(null);
+    setLoginError(reason);
+  }, []);
+
+  /**
+   * مُثبَّت المرجع عمداً: `AnalyticsDashboard` يضع `onUnauthorized` في
+   * تبعيات `useEffect`، فتمرير arrow function جديد كل render يجعله يعيد
+   * طلب `/analytics` مع كل `setData` في اللوحة — أي كل 5 ثوانٍ من الاستطلاع
+   * إضافة إلى النداء الأصلي.
+   */
+  const handleUnauthorized = useCallback(
+    () => clearSession(t("sessionExpired")),
+    [clearSession, t]
+  );
+
   const load = useCallback(
     async (authToken: string, silent = false) => {
       if (!silent) setLoading(true);
@@ -148,14 +281,18 @@ export default function QaAdminPanel() {
       try {
         const d = await api<AdminData>("/api/qa/admin/questions", authToken);
         setData(d);
-        setSelectedId((cur) => cur ?? (d.sessions[0]?.id ?? null));
+        setSelectedId((cur) => cur ?? pickDefaultSessionId(d.sessions));
       } catch (e) {
-        setError(e instanceof Error ? e.message : "load error");
+        if (isAuthError(e)) {
+          clearSession(t("sessionExpired"));
+          return;
+        }
+        setError(e instanceof Error ? e.message : t("loadFailed"));
       } finally {
         setLoading(false);
       }
     },
-    []
+    [clearSession, t]
   );
 
   useEffect(() => {
@@ -168,6 +305,8 @@ export default function QaAdminPanel() {
       load(stored);
     })();
     const iv = setInterval(() => {
+      // ⚠️ بعد `clearSession` يصبح `getItem` فارغاً فيقف الاستطلاع بنفسه؛
+      // قبل الإصلاح كان يُعيد إرسال التوكن الميت كل 5 ثوانٍ بلا نهاية.
       const tok = sessionStorage.getItem(TOKEN_KEY);
       if (tok) load(tok, true);
     }, 5000);
@@ -182,6 +321,14 @@ export default function QaAdminPanel() {
     setError(null);
     return fn()
       .catch((e) => {
+        if (isAuthError(e)) {
+          clearSession(t("sessionExpired"));
+          return undefined;
+        }
+        if (isScreenConflict(e)) {
+          setError(t("screenConflict"));
+          return undefined;
+        }
         setError(e instanceof Error ? e.message : "error");
         return undefined;
       })
@@ -200,7 +347,7 @@ export default function QaAdminPanel() {
       });
       const data = await res.json();
       if (!res.ok || !data.token) {
-        setLoginError(data.error || "Login failed");
+        setLoginError(data.error || t("loginFailed"));
         return;
       }
       sessionStorage.setItem(TOKEN_KEY, data.token);
@@ -208,13 +355,25 @@ export default function QaAdminPanel() {
       setToken(data.token);
       load(data.token);
     } catch {
-      setLoginError("Network error");
+      setLoginError(t("networkError"));
     } finally {
       setLoginLoading(false);
     }
   };
 
   const session = selected ?? activeSession;
+
+  /**
+   * وقت انتهاء التوكن — يُقرأ من حمولة `exp` محلياً بلا نداء الخادم.
+   * الغرض أن يرى المشرف العدّ التنازلي قبل حدوث الانقطاع لا بعده.
+   */
+  const expiresAt = token ? tokenExpiry(token) : null;
+  const expiryLabel = expiresAt
+    ? expiresAt.toLocaleTimeString(locale === "ar" ? "ar-EG" : "en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
 
   const createSession = async () => {
     const title = newTitle.trim();
@@ -400,9 +559,18 @@ export default function QaAdminPanel() {
   // ── حالة الشاشة الكبيرة (كما يقرؤها الخادم، لا كما يظنّه المتصفح) ──────
   const screen = session?.screen ?? { mode: "manual" as const, slide: { kind: "hold" } as ScreenSlide };
   const screenMode = screen.mode;
-  /** نفس ترتيب الأهلية في `service.ts` — لا نُظهر زر «التالي» على مخزون فارغ. */
+  /**
+   * ⚠️ الانعكاس الحرفي لـ`screenEligibleQuestions` في `service.ts` (وليس
+   * لـ`public-view`): يجب أن يطابق الخادم **حرفياً** وإلا اختلف عدّاد
+   * «الشريحة التالية» في اللوحة عن الشريحة على جهاز العرض — وهو نفس
+   * سبب حساب `next` في الخادم لا في المتصفح.
+   *
+   * الفارق الجوهري: `showOnProjector` (المشروعور وحده) لا `showOnLive` ولا
+   * `showToAudience`. السؤال المخفي عن الجمهور **يبقى** في الطابور:
+   * إن أسقطناه منه، صار عدّاد اللوحة يقول ١ بينما الشاشة تعرضه.
+   */
   const screenQueue = approved.filter(
-    (q) => q.showOnLive !== false && !q.answered && q.status === "approved"
+    (q) => q.showOnProjector !== false && !q.answered && q.status === "approved"
   );
   const screenQueueLength = screenQueue.length;
 
@@ -525,13 +693,34 @@ export default function QaAdminPanel() {
                 {t("speakerViewLink")} ↗
               </a>
             )}
-            <Button variant="outline" size="sm" onClick={() => token && load(token)} loading={loading} loadingText={t("refreshing")}>
+            {expiresAt && (
+              <span
+                className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex"
+                data-testid="qa-session-expiry"
+              >
+                <Clock className="h-3.5 w-3.5" />
+                {t("sessionExpiresAt", { time: expiryLabel })}
+              </span>
+            )}
+            {/* ⚠️ بدون هذا الزر كان المشرف بلا أي مخرج نظيف: لا مسح للتوكن،
+                ولا `setToken(null)`، والإغلاق كان يخلّف جلسة ميتة. */}
+            <Button
+              variant="outline"
+              size="sm"
+              data-testid="qa-sign-out"
+              onClick={() => clearSession(null)}
+            >
+              <LogOut className="h-4 w-4 mr-1" />
+              {t("signOut")}
+            </Button>
+            <Button variant="outline" size="sm" data-testid="qa-refresh" onClick={() => token && load(token)} loading={loading} loadingText={t("refreshing")}>
               {t("refresh")}
             </Button>
             {selected && (
               <Button
                 variant="outline"
                 size="sm"
+                data-testid="qa-export-csv"
                 onClick={async () => {
                   if (!token || !selected) return;
                   // ⚠️ كان `window.open(...?token=...)`: الرمز في الـURL ⇒
@@ -543,6 +732,13 @@ export default function QaAdminPanel() {
                       { headers: { Authorization: `Bearer ${token}` } }
                     );
                     if (!res.ok) {
+                      // ⚠️ هذا المسار لا يمر عبر `api()`، فهو المسار
+                      // الوحيد الذي كان سيتجاهل 401. أما 403 فتبقى "صلاحية
+                      // غير كافية" كما هي، و401 فتعني جلسة منتهية.
+                      if (res.status === 401) {
+                        clearSession(t("sessionExpired"));
+                        return;
+                      }
                       setExportError(res.status === 403 ? t("exportForbidden") : t("exportFailed"));
                       return;
                     }
@@ -607,7 +803,7 @@ export default function QaAdminPanel() {
                 value={newTitle}
                 data-testid="qa-session-title"
                 onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="New session title"
+                placeholder={t("sessionTitlePlaceholder")}
                 maxLength={80}
                 className="w-64 rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm outline-none focus:border-red-500"
               />
@@ -635,6 +831,8 @@ export default function QaAdminPanel() {
                 <Button
                   size="sm"
                   variant="outline"
+                  data-testid="qa-session-accepting"
+                  aria-pressed={session.acceptingQuestions}
                   onClick={() => selected && setQuestions(!session.acceptingQuestions)}
                   loading={busy === "toggle"}
                   loadingText="…"
@@ -701,16 +899,45 @@ export default function QaAdminPanel() {
                             <Check className="h-4 w-4 mr-1" />
                             {q.showOnSpeaker === false ? t("speakerHidden") : t("speakerVisible")}
                           </Button>
+                          {/*
+                            * ⚠️Facing منفصلان، وزرّان لا زر.
+                            *
+                            * `showToAudience`: هل يراه الحاضر على هاتفه ضمن
+                            * «أسئلتي المعروضة»؟ إخفاءه هنا **لا** يمنع عنه
+                            * التصويت ولا الإجابة إن كان معرّفه معروفاً، ولا يمسّ
+                            * الشاشة.
+                            *
+                            * `showOnProjector`: هل يخرج على الشاشة الكبرى وشاشة
+                            * المتحدث؟ إخفاءه هنا يُسقط الشريحة المثبَّتة فوراً،
+                            * ويمنع زر «على الشاشة» أدناه.
+                            *
+                            * زر واحد كان يفعل الاثنين معاً: فإخفاء سؤال عن
+                            * سيارات الحضور كان يجرّ معه شريحة المتحدث من
+                            * المسرح بلا رجعة، ولا طريقة لإرجاعه من هنا.
+                            */}
                           <Button
                             size="sm"
-                            data-testid="qa-toggle-live"
-                            variant={q.showOnLive === false ? "outline" : undefined}
-                            onClick={() => moderate("setVisibility", q.id, { showOnLive: q.showOnLive === false })}
+                            data-testid="qa-toggle-audience"
+                            variant={q.showToAudience === false ? "outline" : undefined}
+                            onClick={() => moderate("setVisibility", q.id, { showToAudience: q.showToAudience === false })}
                             disabled={busy !== null}
-                            className={q.showOnLive !== false ? "bg-orange-600 hover:bg-orange-700 text-white" : ""}
+                            className={q.showToAudience !== false ? "bg-sky-600 hover:bg-sky-700 text-white" : ""}
+                            title={t("audienceFacingHint")}
                           >
-                            <Check className="h-4 w-4 mr-1" />
-                            {q.showOnLive === false ? t("liveHidden") : t("liveVisible")}
+                            <Users className="h-4 w-4 mr-1" />
+                            {q.showToAudience === false ? t("audienceHidden") : t("audienceVisible")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            data-testid="qa-toggle-projector"
+                            variant={q.showOnProjector === false ? "outline" : undefined}
+                            onClick={() => moderate("setVisibility", q.id, { showOnProjector: q.showOnProjector === false })}
+                            disabled={busy !== null}
+                            className={q.showOnProjector !== false ? "bg-orange-600 hover:bg-orange-700 text-white" : ""}
+                            title={t("projectorFacingHint")}
+                          >
+                            <MonitorPlay className="h-4 w-4 mr-1" />
+                            {q.showOnProjector === false ? t("projectorHidden") : t("projectorVisible")}
                           </Button>
                           {q.status === "approved" && (
                             <Button
@@ -749,15 +976,22 @@ export default function QaAdminPanel() {
                             * والشريحة شيئان منفصلان (شاشة ≠ أرشيف). تكرار
                             * الضغط idempotent على الخادم.
                             */}
+                          {/*
+                           * «على الشاشة الآن» — التعطيل يقرأ **المشروعور** لا
+                           * الجمهور: سؤال مخفي عن الحضور يبقى قابلاً للعرض على
+                           * المسرح، وهذا مقصود — قد يُعرض على المتحدث والشاشة
+                           * الكبرى دون أن يظهر ضمن قائمة الحضور.
+                           * (كان يقرأ `showOnLive` أي الوجهين معاً.)
+                           */}
                           {q.status === "approved" && (
                             <Button
                               size="sm"
                               data-testid="qa-put-on-screen"
                               variant={isOnScreen("question", q.id) ? undefined : "outline"}
                               onClick={() => screenAction("setSlide", { slide: { kind: "question", questionId: q.id } })}
-                              disabled={busy !== null || q.showOnLive === false || q.answered}
+                              disabled={busy !== null || q.showOnProjector === false || q.answered}
                               className={isOnScreen("question", q.id) ? "bg-red-600 hover:bg-red-700 text-white" : ""}
-                              title={q.showOnLive === false || q.answered ? t("putOnScreenBlocked") : undefined}
+                              title={q.showOnProjector === false || q.answered ? t("putOnScreenBlocked") : undefined}
                             >
                               <MonitorPlay className="h-4 w-4 mr-1" />
                               {isOnScreen("question", q.id) ? t("onScreenNow") : t("putOnScreen")}
@@ -1014,7 +1248,7 @@ export default function QaAdminPanel() {
                     </Button>
                   )}
                   {selected && (
-                    <Button size="sm" variant="outline" onClick={() => delSession(selected.id)} disabled={busy !== null}>
+                    <Button size="sm" variant="outline" data-testid="qa-session-delete" onClick={() => delSession(selected.id)} disabled={busy !== null}>
                       <Trash2 className="h-4 w-4 mr-1" />
                       {t("deleteSession")}
                     </Button>
@@ -1045,7 +1279,7 @@ export default function QaAdminPanel() {
                 <input
                   value={pollPromptAr}
                   onChange={(e) => setPollPromptAr(e.target.value)}
-                  placeholder="Prompt (عربي)"
+                  placeholder={t("pollPromptPlaceholder")}
                   maxLength={200}
                   className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm outline-none focus:border-red-500"
                 />
@@ -1095,7 +1329,7 @@ export default function QaAdminPanel() {
                             {t("startPoll")}
                           </Button>
                         ) : (
-                          <Button size="sm" variant="outline" onClick={() => updatePoll(session.id, "stop", p.id)} disabled={busy !== null}>
+                          <Button size="sm" variant="outline" data-testid="qa-poll-stop" onClick={() => updatePoll(session.id, "stop", p.id)} disabled={busy !== null}>
                             {t("stopPoll")}
                           </Button>
                         )}
@@ -1140,7 +1374,11 @@ export default function QaAdminPanel() {
         {/* Analytics Dashboard */}
         {token && (
           <div className="mt-8 border-t border-border pt-6">
-            <AnalyticsDashboard token={token} sessionId={selected?.id} />
+            <AnalyticsDashboard
+              token={token}
+              sessionId={selected?.id}
+              onUnauthorized={handleUnauthorized}
+            />
           </div>
         )}
       </main>

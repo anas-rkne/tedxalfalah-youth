@@ -129,6 +129,10 @@ export async function POST(request: NextRequest) {
       const q: QaQuestion = {
         id: newId("q"),
         author,
+        // ⛔ من **الخادم** بعد التحقق من السجل أعلاه، لا من `parsed.data`
+        // مباشرةً:قراءة `attendeeId` من الطلب كان يجعل النسبة قابلة للتزوير
+        // بلا أي فائدة.
+        attendeeId: parsed.data.attendeeId,
         text: safeText,
         votes: 0,
         status: "pending",

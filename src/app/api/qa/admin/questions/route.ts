@@ -51,6 +51,25 @@ export async function GET(request: NextRequest) {
       approvedAt: q.approvedAt,
       answered: q.answered,
       showOnSpeaker: q.showOnSpeaker ?? true,
+      /**
+       * ⛔ الحقلان كانا غائبين عن هذه الحمولة، ولهذا كان زرّا
+       * «إظهار/إخفاء» في اللوحة معطوبين صامتاً.
+       *
+       * المعالج يبني القيمة المرسلة من الحالة المحلية:
+       * `showToAudience: q.showToAudience === false`. وبما أن الحقل لم يكن
+       * يصل، كانت `undefined === false` ⇒ `false` دائماً: فالنقر يُرسل
+       * `false` في كل مرة. النتيجة في القاعة أن المشرف يخفي سؤالاً عن
+       * الحضور، ثم ينقر ثانية ليعيده — **ولا يحدث شيء**، بل يبقى الزر
+       * ملوّناً كأنه مُتاح بينما هو مخفي فعلاً. أي أن الواجهة تكذب على
+       * المشرف، وأداته الوحيدة للتدارك هي إعادة تحميل الصفحة… وهي لا
+       * تُصلح شيئاً لأن الحقل لا يصل بعدReload.
+       *
+       * `?? true` مطابق لدلالات `isAudienceVisible`/`isProjectorVisible`
+       * تماماً: غياب الحقل يعني «ظاهر». فلو أرسلنا `undefined` لبقيت
+       * المقارنة `=== false` معطوبة، ولهذا التطبيع ضروري لا تجميلي.
+       */
+      showToAudience: q.showToAudience ?? true,
+      showOnProjector: q.showOnProjector ?? true,
       showOnLive: q.showOnLive ?? true,
       // شارة المصدر: بدونها لا يعرف المشرف أي سؤال كتبه بنفسه وأيها من
       // الجمهور — والقرار «هل هذا سؤال حقيقي من القاعة؟» يتعذّر.

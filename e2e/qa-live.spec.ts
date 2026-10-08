@@ -441,20 +441,20 @@ test("زر «مخفي من الشاشة» يزيل السؤال من شاشة ا
       await expect(page.getByText(question)).toHaveCount(1, { timeout: 30_000 });
     });
 
-    await test.step("الإخفاء من الشاشة يزيله من /live/screen", async () => {
+    await test.step("إخفاء السؤال من المشروعور يزيله من /live/screen", async () => {
       await page.goto("/en/admin/live");
       await selectSession(page, title);
       await page
         .locator('[data-testid="qa-question-row"]', { hasText: question })
-        .getByTestId("qa-toggle-live")
+        .getByTestId("qa-toggle-projector")
         .click();
 
       await page.goto("/en/live/screen");
       await expect(page.getByText(question)).toHaveCount(0, { timeout: 30_000 });
     });
 
-    await test.step("الاختفاء لا يمسّ الجمهور ولا فائماً ولا شاشة المتحدث", async () => {
-      // Hidden-from-screen is a projector concern only: the audience must still
+    await test.step("إخفاء المشروعور لا يمسّ الجمهور ولا فائماً ولا شاشة المتحدث", async () => {
+      // Hidden-from-projector is a screen concern only: the audience must still
       // see and vote on it, and the speaker screen is unaffected.
       await page.goto("/en/live");
       const item = page.locator('[data-testid="qa-question"]', { hasText: question });
@@ -466,13 +466,58 @@ test("زر «مخفي من الشاشة» يزيل السؤال من شاشة ا
       await expect(page.getByText(question)).toHaveCount(1, { timeout: 30_000 });
     });
 
-    await test.step("إعادة الإظهار تُرجع السؤال للشاشة", async () => {
+    await test.step("إخفاء الجمهور يزيله من هاتف الحاضر ولا يمسّ الشاشة", async () => {
+      // ⚠️ الاتجاه المعاكس: الإخفاء عن الجمهور يجب ألا يمسّ الشاشة الكبرى.
+      // قبل الفصل كان زر واحد يمرّر `showOnLive` فيضبط الوجهين، فكان أي إخفاء
+      // عن الحضور يجرّ معه شريحة المتحدث.
       await page.goto("/en/admin/live");
       await selectSession(page, title);
-      await rowOf(page, question).getByTestId("qa-toggle-live").click();
-      // المؤشر ما زال على السؤال، لكن إخفاءه أسقط الشريحة إلى hold في
-      // الخادم — فإعادة الإظهار وحدها لا تعيده؛ التثبيت يُعاد.
-      await expect(page.getByTestId("qa-screen-current")).not.toContainText(question.slice(0, 24));
+// ⚠️ نعيد إظهاره من المشروعور أولاً: الخطوة السابقة أخفته، فأسقط
+      // `reconcileScreenSlide` الشريحة إلى `hold` (سلوك صحيح وموثّق)، وصار
+      // زر التثبيت معطّلاً. فلو开始的نا بـ«إخفاء الجمهور» مباشرة، لاختبر هذا
+      // السطر «الشريحة المُسقطة أصلاً» لا استقلالfaces الجمهور عن الشاشة.
+      await rowOf(page, question).getByTestId("qa-toggle-projector").click();
+      await pinOnScreen(page, question);
+      await rowOf(page, question).getByTestId("qa-toggle-audience").click();
+      await expect(page.getByTestId("qa-screen-current")).toContainText(question.slice(0, 24));
+
+      await page.goto("/en/live/screen");
+      await expect(page.getByText(question)).toHaveCount(1, { timeout: 30_000 });
+
+      await page.goto("/en/live");
+      await expect(
+        page.locator('[data-testid="qa-question"]', { hasText: question })
+      ).toHaveCount(0, { timeout: 30_000 });
+    });
+
+    await test.step("إعادة إظهار الجمهور تُرجعه له؛ إعادة المشروعور وحدها لا تُعيد الشريحة", async () => {
+      // ⚠️ الخطوة تبدأ من «مُثبَّت على الشاشة وقابل للعرض» لأن الخطوة السابقة
+      // تركت الشريحة مثبَّtes. سابقاً كانت ترث «مخفياً عن المشروعور» من خطوة
+      // أرقن، فكانتidy handc этогоtiloby تتغيّر بتغيّر العَزل.
+      await page.goto("/en/admin/live");
+      await selectSession(page, title);
+      const shown = () =>
+        expect(page.getByTestId("qa-screen-current")).toContainText(question.slice(0, 24));
+      const hidden = () =>
+        expect(page.getByTestId("qa-screen-current")).not.toContainText(question.slice(0, 24));
+
+      // نقطة البداية: مثبَّtes وقابل للعرض.
+      await shown();
+
+      // 1) الإخفاء من المشروعور يُسقط الشريحة إلى hold في الخادم.
+      await rowOf(page, question).getByTestId("qa-toggle-projector").click();
+      await hidden();
+
+      // 2) إعادة إظهار الجمهور وحدها لا تُعيد الشريحة.
+      await rowOf(page, question).getByTestId("qa-toggle-audience").click();
+      await hidden();
+
+      // 3) إعادة إظهار المشروعور وحدها لا تُعيد الشريحة أيضاً — القرار
+      //    يحتاج تثبيتاً صريحاً، فلا يُفترض أن يInterpolate بهدوء.
+      await rowOf(page, question).getByTestId("qa-toggle-projector").click();
+      await hidden();
+
+      // 4) التثبيت الصريح وحده هو ما يعيدها.
       await pinOnScreen(page, question);
 
       await page.goto("/en/live/screen");

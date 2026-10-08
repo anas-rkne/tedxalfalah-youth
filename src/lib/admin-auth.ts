@@ -6,6 +6,7 @@
  */
 import { verifyJwt, type SessionPayload } from "@/lib/jwt";
 import { getUserByUsername, seedAdminIfNeeded } from "@/lib/users";
+import { isForcedIdentityFailure } from "@/lib/test-mode";
 
 export interface SessionInfo {
   username: string;
@@ -43,6 +44,14 @@ export async function verifySession(request: Request): Promise<SessionInfo | nul
   }
 
   await seedAdminIfNeeded();
+
+  // ⚠️ بعد `extractBearerToken` عمداً: «لا رمز» يبقى 401 (خطأ عميل)،
+  // والانهيار المُحقن في هذا الموضع هو ما يحوّل الحالة إلى 503 (خدمة
+  //   معطّلة) — وهي الحالة التي يعيد `refundRateLimit` رصيدَ حدّ
+  //   `admin-login` فلا يُقفل المشرف بسبب عطلٍ لم يسببه.
+  if (isForcedIdentityFailure(request)) {
+    throw new Error("forced identity backend failure (QA_FORCE_IDENTITY_FAILURE)");
+  }
 
   const user = await getUserByUsername(payload.sub);
   if (!user) return null;

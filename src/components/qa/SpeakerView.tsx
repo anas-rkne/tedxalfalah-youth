@@ -102,7 +102,12 @@ export default function SpeakerView() {
     if (!current || !data.session || busy) return;
     const token =
       typeof window !== "undefined" ? window.sessionStorage.getItem("tedx-admin-token") : null;
-    if (!token) return;
+    // ⚠️ كان `if (!token) return;` صامتاً تماماً: مع انتهاء صلاحية الجلسة يضغط
+    // المتحدث الزر على المسرح ولا يحدث شيء ولا يرى أي تفسير. الآن يظهر تنبيه.
+    if (!token) {
+      setActionError(t("speaker.sessionExpired"));
+      return;
+    }
     setBusy(true);
     setActionError(null);
     try {
@@ -123,9 +128,14 @@ export default function SpeakerView() {
       });
       // ⚠️ لم يكن هناك فحص لـ res.ok: أي رفض (401 منتهية، 429 حدّ المعدّل،
       // 403 دور) كان يُعامَل كنجاح — السؤال ينتقل للتالي ويتوهم المتحدث
-      // banqu believes the question is answered while it never was.
+      // أنه أُجيب، بينما هو لم يُجب. الآن يُفحص، و401/403 تعني أن جلسة
+      // المشرف منتهية وأن عليه العودة لجهاز الأدمن لتسجيل الدخول.
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
+        if (res.status === 401 || res.status === 403) {
+          setActionError(t("speaker.sessionExpired"));
+          return;
+        }
         setActionError(body.error || `HTTP ${res.status}`);
         return;
       }
@@ -208,7 +218,7 @@ export default function SpeakerView() {
             <p className="text-zinc-400 text-xl">{t("speaker.noQuestions")}</p>
           </div>
         ) : (
-          <div className="w-full max-w-3xl text-center">
+          <div className="w-full max-w-3xl text-center" data-testid="qa-speaker-question">
             {/* السؤال الحالي */}
             <div className="mb-6">
               <span className="text-zinc-500 text-sm uppercase tracking-widest">

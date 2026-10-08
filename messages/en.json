@@ -7,6 +7,7 @@
       "venue": "Venue",
       "activations": "Activations",
       "schedule": "Schedule",
+      "timeline": "Timeline",
       "sponsors": "Partners",
       "apply": "Apply",
       "tickets": "Tickets",
@@ -217,52 +218,36 @@
         "subtitle": "Everything that happens between your application and event day.",
         "stages": [
           {
-            "date": "18 Aug",
-            "title": "Applications Open"
-          },
-          {
             "date": "24 Sep",
-            "title": "Applications Close"
+            "title": "Speaker Applications Closed"
           },
           {
-            "date": "28 Sep",
-            "title": "Application Screening"
+            "date": "29 Sep",
+            "title": "Application Review Underway"
           },
           {
-            "date": "5 Oct",
-            "title": "Shortlisting Announced (18 speakers)"
+            "date": "17 Oct",
+            "title": "Interviews & Auditions"
           },
           {
-            "date": "10–11 Oct",
-            "title": "Interviews & Auditions (2 days)"
-          },
-          {
-            "date": "23–25 Oct",
-            "title": "Confirmation of Progression"
-          },
-          {
-            "date": "26 Oct",
-            "title": "Final Selection (9 youth + 4 experts)"
+            "date": "24 Oct",
+            "title": "Final Speaker Selection"
           },
           {
             "date": "30 Oct",
-            "title": "Coaching Workshop (Mandatory)"
+            "title": "Speaker Coaching Begins"
           },
           {
-            "date": "2–20 Nov",
-            "title": "Coaching & Talk Development (1:1)"
-          },
-          {
-            "date": "27 Nov",
-            "title": "Presentations Deadline"
+            "date": "November",
+            "title": "Speaker Development & Preparation"
           },
           {
             "date": "18 Dec",
-            "title": "Rehearsals on Site"
+            "title": "Rehearsal"
           },
           {
             "date": "19 Dec",
-            "title": "Event Day"
+            "title": "TEDxAl Falah Youth — Event Day"
           }
         ]
       }
@@ -434,6 +419,22 @@
         }
       }
     },
+    "timeline": {
+      "meta": {
+        "title": "Timeline",
+        "description": "The public timeline of TEDxAl Falah Youth — from speaker applications closed to event day on 19 December."
+      },
+      "hero": {
+        "badge": "Public Timeline",
+        "titleLine1": "THE PUBLIC",
+        "titleHighlight": "TIMELINE",
+        "description": "Every milestone between the close of speaker applications and event day, in one place."
+      },
+      "section": {
+        "title": "Key Dates",
+        "subtitle": "Everything that happens between the close of applications and event day."
+      }
+    },
     "venue": {
       "hero": {
         "badgeLabel": "TEDxVenue 2026",
@@ -518,7 +519,7 @@
       },
       "theme": {
         "title": "Tomorrow, Now.",
-"body": "Tomorrow, Now. explores the ideas already changing how we live, learn, connect and imagine what is possible. It brings together young voices, experts and members of the community to examine not only what the future might look like, but the role each of us can play in shaping it. The future belongs to those willing to question, create, contribute and act today — because tomorrow is shaped by what we do today.",
+        "body": "Tomorrow, Now. explores the ideas already changing how we live, learn, connect and imagine what is possible. It brings together young voices, experts and members of the community to examine not only what the future might look like, but the role each of us can play in shaping it. The future belongs to those willing to question, create, contribute and act today — because tomorrow is shaped by what we do today.",
         "subtitle": "TEDxYouth — A platform for their ideas and stories"
       },
       "whoCanApply": {
@@ -591,73 +592,49 @@
         "expectLabel": "What we expect from you:",
         "phases": [
           {
-            "title": "Applications Open",
-            "date": "18 Aug 2026",
-            "description": "Applications open for young speakers and experts.",
-            "whatToExpect": "Complete the form carefully and share your best idea."
-          },
-          {
-            "title": "Applications Close",
+            "title": "Speaker Applications Closed",
             "date": "24 Sep 2026",
-            "description": "Last day to submit applications.",
-            "whatToExpect": "Make sure to submit before midnight."
+            "description": "The window for speaker applications is now closed.",
+            "whatToExpect": "Thank you to everyone who applied — the review begins now."
           },
           {
-            "title": "Application Screening",
-            "date": "28 Sep 2026",
-            "description": "The review team evaluates all applications.",
+            "title": "Application Review Underway",
+            "date": "29 Sep 2026",
+            "description": "The review team is evaluating every application.",
             "whatToExpect": "We read every application carefully and assess based on originality, clarity, and readiness."
           },
           {
-            "title": "Shortlisting Announced",
-            "date": "5 Oct 2026",
-            "description": "We announce the 18 potential speakers who made the shortlist.",
-            "whatToExpect": "You will receive an email within 48 hours."
-          },
-          {
             "title": "Interviews & Auditions",
-            "dateRange": "10–11 Oct 2026",
-            "description": "Two days of interviews and auditions with shortlisted candidates.",
+            "date": "17 Oct 2026",
+            "description": "Interviews and auditions with the shortlisted candidates.",
             "whatToExpect": "We discuss your idea and how it connects to the theme."
           },
           {
-            "title": "Confirmation of Progression",
-            "dateRange": "23–25 Oct 2026",
-            "description": "Candidates advancing to the next stage are confirmed.",
-            "whatToExpect": "Your coaching and talk preparation journey begins."
-          },
-          {
             "title": "Final Speaker Selection",
-            "date": "26 Oct 2026",
-            "description": "Official announcement of 9 young speakers and 4 expert speakers.",
-            "whatToExpect": "Congratulations! Intensive coaching begins."
+            "date": "24 Oct 2026",
+            "description": "The final lineup of speakers is confirmed and announced.",
+            "whatToExpect": "Congratulations to the selected speakers — the real work starts now."
           },
           {
-            "title": "Coaching Workshop",
+            "title": "Speaker Coaching Begins",
             "date": "30 Oct 2026",
-            "description": "A mandatory coaching workshop for all selected speakers.",
+            "description": "Coaching starts for all selected speakers.",
             "whatToExpect": "Attendance is required — we cover the basics of speaking on stage."
           },
           {
-            "title": "Coaching & Talk Development",
-            "dateRange": "2–20 Nov 2026",
-            "description": "A one-to-one coaching program to prepare your talk.",
+            "title": "Speaker Development & Preparation",
+            "dateRange": "November 2026",
+            "description": "Speakers develop and prepare their talks.",
             "whatToExpect": "One-to-one sessions with professional TEDx coaches."
           },
           {
-            "title": "Presentations Deadline",
-            "date": "27 Nov 2026",
-            "description": "Final deadline for speakers to submit their presentations.",
-            "whatToExpect": "Send your final deck before the end of the day."
-          },
-          {
-            "title": "Rehearsals on Site",
+            "title": "Rehearsal",
             "date": "18 Dec 2026",
             "description": "Final on-stage rehearsals before the event.",
             "whatToExpect": "Experience the real stage, lighting, and sound."
           },
           {
-            "title": "Event Day",
+            "title": "TEDxAl Falah Youth — Event Day",
             "date": "19 Dec 2026",
             "description": "The big day — take a deep breath and share your story.",
             "whatToExpect": "You're ready. The world is waiting to hear your voice."
@@ -1033,6 +1010,10 @@
     }
   },
   "qa": {
+    "refresh": "Refresh",
+    "loadFailed": "Failed to load sessions",
+    "loginFailed": "Sign-in failed",
+    "networkError": "Network error — check your connection",
     "join": {
       "title": "Join the conversation",
       "subtitle": "Enter your name to participate. One registration per session.",
@@ -1087,8 +1068,20 @@
       "answerSent": "Answer received. It reaches the speaker after moderation.",
       "answerError": "Could not send the answer.",
       "myAnswerPending": "Your answer — awaiting moderator review",
+      "myAnswerSent": "Your answer — sent",
+      "myQuestionsTitle": "My questions",
+      "myQuestionPending": "Under review",
+      "myQuestionApproved": "Shown on screen",
+      "myQuestionRejected": "Not selected",
+      "myAnswerPending": "Answer under review",
+      "myAnswerRejected": "Answer not selected",
+      "myQuestionsTitle": "My questions",
+      "myQuestionPending": "Under review",
+      "myQuestionApproved": "Shown on screen",
+      "myQuestionRejected": "Not selected",
       "answerModerationNote": "Your answer reaches the speaker only after review, and is never shown on the big screen.",
-      "approvedAnswersCount": "{count} approved answers"
+      "approvedAnswersCount": "{count} approved answers",
+      "surveyLink": "Share feedback about this session"
     },
     "screen": {
       "waiting": "Get ready...",
@@ -1101,7 +1094,8 @@
       "participants": "{count} participants",
       "scanToJoin": "Scan to join",
       "hold": "Waiting for the moderator",
-      "wordCloudLabel": "Word cloud"
+      "wordCloudLabel": "Word cloud",
+      "wordCloudCount": "{count} questions"
     },
     "speaker": {
       "noQuestions": "No unanswered questions left.",
@@ -1114,7 +1108,11 @@
       "votesCount": "{count} votes",
       "participants": "{count} participants",
       "unanswered": "{count} unanswered questions",
-      "answersLabel": "{count} approved answers"
+      "answersLabel": "{count} approved answers",
+      "previous": "Previous",
+      "next": "Next",
+      "markFailed": "Could not update. Check your admin session and retry.",
+      "sessionExpired": "Admin session expired. Please sign in from the admin panel."
     },
     "survey": {
       "title": "How was your experience?",
@@ -1139,7 +1137,13 @@
       "total": "Total Responses",
       "promoters": "Promoters",
       "passives": "Passives",
-      "detractors": "Detractors"
+      "detractors": "Detractors",
+      "inbox": "Survey Responses",
+      "empty": "No responses yet.",
+      "noComment": "(no comment)",
+      "loadFailed": "Could not load survey responses.",
+      "retry": "Retry",
+      "rating": "Rating"
     },
     "adminLive": {
       "title": "Live Q&A Admin",
@@ -1149,6 +1153,8 @@
       "loginPassword": "Password",
       "loginPasswordPlaceholder": "Enter your password",
       "loginSubmit": "Sign in",
+      "sessionTitlePlaceholder": "Session title",
+      "pollPromptPlaceholder": "Question (Arabic or English)",
       "loggingIn": "Signing in...",
       "loadError": "Could not load session data.",
       "exportCsv": "Export CSV",
@@ -1156,7 +1162,6 @@
       "exportForbidden": "Only administrators can export.",
       "noSession": "No active session. Create or activate one.",
       "createSession": "Create session",
-      "sessionTitlePlaceholder": "Session title",
       "createButton": "Create",
       "activateButton": "Activate",
       "endButton": "End session",
@@ -1172,17 +1177,19 @@
       "feature": "Feature",
       "unfeature": "Unfeature",
       "markAnswered": "Answer",
-      "markFailed": "Could not mark the question as answered",
-      "previous": "Previous question",
-      "next": "Next question",
       "answered": "Answered",
       "speakerVisible": "Show to speaker",
       "speakerHidden": "Hidden from speaker",
-      "liveVisible": "Show on screen",
-      "liveHidden": "Hidden from screen",
+      "audienceVisible": "Show to audience",
+      "audienceHidden": "Hidden from audience",
+      "audienceFacingHint": "Whether attendees see this question in the list on their own phones. Hiding it does not remove votes already cast, and does not touch the big screen.",
+      "projectorVisible": "Show on screen",
+      "projectorHidden": "Hidden from screen",
+      "projectorFacingHint": "Whether this question goes to the big screen and the speaker's view. Hiding it immediately clears it from the screen if it was showing.",
       "putOnScreen": "Put on screen",
       "onScreenNow": "On screen now",
       "putOnScreenBlocked": "Cannot display: hidden from screen or already answered",
+      "screenConflict": "That question is not eligible for the big screen (rejected, already answered, or hidden from screen), so the screen was cleared to “waiting for moderator”.",
       "sourceAdmin": "From organizers",
       "screenBar": "Big screen control",
       "screenModeManual": "Manual",
@@ -1229,9 +1236,16 @@
       "refreshing": "…",
       "reapprove": "Re-approve",
       "rejectedQuestions": "Rejected questions ({count})",
-      "noRejectedQuestions": "No rejected questions"
+      "noRejectedQuestions": "No rejected questions",
+      "sessionExpired": "Session expired. Please sign in again.",
+      "signOut": "Sign out",
+      "sessionExpiresAt": "Session expires at {time}"
     },
     "analytics": {
+      "loading": "Loading...",
+      "noData": "No data yet",
+      "loadFailed": "Failed to load analytics",
+      "retry": "Retry",
       "totalQuestions": "Total Questions",
       "attendees": "Attendees",
       "totalVotes": "Total Votes",

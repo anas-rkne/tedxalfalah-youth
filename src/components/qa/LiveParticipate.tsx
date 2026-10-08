@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { MessageSquare, Send, ThumbsUp, Vote } from "lucide-react";
 import Button from "@/components/ui/Button";
 import TurnstileWidget, { TURNSTILE_ENABLED } from "@/components/ui/TurnstileWidget";
@@ -98,6 +98,7 @@ function qrParamFromUrl(): string | null {
 
 export default function LiveParticipate() {
   const t = useTranslations("qa");
+  const locale = useLocale();
   const attendeeRef = useRef<{ id: string; name: string; reclaimSecret?: string } | null>(null);
   const [attendee, setAttendee] = useState<{ id: string; name: string; reclaimSecret?: string } | null>(null);
 
@@ -114,7 +115,13 @@ export default function LiveParticipate() {
   const [question, setQuestion] = useState("");
   const [sendingQ, setSendingQ] = useState(false);
   const [qToken, setQToken] = useState("");
-  const [qMsg, setQMsg] = useState<null | { type: "ok" | "err"; text: string }>(null);
+  const [qMsg, setQMsg] = useState<null | {
+  type: "ok" | "err";
+  // ⛔ `ok` وحده لا يكفي: «أُرسل» و«شبيه موجود» كلتاهما نجاحٌ
+  // أخضر، ومَن ينتظر «سُجّل سؤالي» يقرأ الثانية believing أنها الأولى.
+  kind: "sent" | "duplicate" | "error";
+  text: string;
+}>(null);
   const [qReset, setQReset] = useState(0);
   const [anonymous, setAnonymous] = useState(false);
   const [tag, setTag] = useState("");
@@ -149,6 +156,27 @@ export default function LiveParticipate() {
   const [answerStalled, setAnswerStalled] = useState(false);
   /** إجاباتي المعلّقة: معرّف الجواب ← نصّه (لعرضه بعد التحديث). */
   const [myAnswers, setMyAnswers] = useState<Record<string, string>>({});
+  /**
+   * مصير أسئلتي: من الخادم، لا من `sessionStorage`.
+   *
+   * 🎯 قبله كان الاعتماد على التخزين المحلي وحده، فكان الرفض بلا أي أثر:
+   * بطاقة «أُرسل» تُمسح عند النشر، والمرفوض يبقى «أُرسل» إلى الأبد. الآن
+   * `myQuestions` هي **مصدر الحقيقة الوحيد** — تأتي من الخادم في اللقطة
+   * نفسها، فتنجو من إعادة التحميل ومن جهاز آخر.
+   */
+  const [myQuestions, setMyQuestions] = useState<
+    Array<{ id: string; status: "pending" | "approved" | "rejected"; text: string }>
+  >([]);
+  /**
+   * حالة «إجابتي المعلّقة» لكل سؤال: `questionId ← pending/approved/rejected`.
+   *
+   * 🎯 مفتاحه `questionId` لا `answerId` لأن البطاقة تُعرض **داخل** السؤال،
+   * و`myAnswers` (النصّ) مُفهرسة بـ`questionId` أيضاً. فبمطابقة الإجابة
+   * بمعرّفها وحده ظهر النصّ بلا حالة — وهو ما كان يحدث.
+   */
+  const [myAnswersStatus, setMyAnswersStatus] = useState<
+    Record<string, "pending" | "approved" | "rejected">
+  >({});
   /** فشل مؤقت في جلب اللقطة (شبكة/429) — لا يعني انتهاء الجلسة. */
   const [connectionIssue, setConnectionIssue] = useState(false);
   /**
@@ -175,19 +203,89 @@ export default function LiveParticipate() {
   const [qStalled, setQStalled] = useState(false);
   const [pollStalled, setPollStalled] = useState(false);
 
-  const loadCurrent = useCallback(async () => {
+  /**
+   * ⚠️ `view=audience` **إلزامي** هنا لا تحسين.
+   *
+   * بلا المعامل كان الخادم ينهار على `view` الافتراضي `"live"` — وهو لوح
+   * **المشروعور**: الأسئلة المؤهَّلة للعرض على الشاشة الكبرى. فكان هاتف
+   * الحاضر يعرض طابور المسرح: سؤالٌ على الشاشة الآن، وسؤالٌ سيُعرض بعد
+   * دقيقة، يختلطان في قائمة واحدة على هاتف الحاضر. والأسوأ أن خيار
+   * «مخفي عن الجمهور» — وهو ماهَمه بالضبط لهذه الواجهة — لم يكن له أي أثر:
+   * لم يكن يقود إلى هذه اللقطة أصلاً.
+   *
+   * `view=audience` يفصل الوجهين: القائمة المعروضة هنا هي ما يخصّ الحاضر،
+   * لا ما يُعرض على المسرح.
+   */
+const loadCurrent = useCallback(async () => {
     try {
+      // ⛔ `attendeeId` جزءً من الرابط: اللقطة نفسها هي قناة «ماذا جرى لأسئلتي
+      // وإجاباتي» (`myQuestions` / `myAnswers`) — معتمدة أم مرفوضة أم قيد
+      // المراجعة. بدونه لا توجد أي إشارة، وتبقى البطاقة على «أُرسل» (F5).
+      // وإرساله بلا شرط — حتى قبل الانضمام — لا يضرّ: معرّف غير مسجَّل
+      // يُرجِع `[]`، وبدون المعامل أصلاً لا يُبنى الحقل.
+      // ⛔ ومن `attendeeRef` لا من `attendee`: المرجع يُضبط **متزامناً**
+      // قبل `loadCurrent()` في مساري الاستعادة والانضمام، فيخرج المعرّف مع
+      // أوّل لقطة. أما `attendee` فحالة تُقرأ بعد `await Promise.resolve()`
+      // فيمكن أن تكون `null` حين يُبنى الرابط.
+      const who = attendeeRef.current?.id
+        ? `&attendeeId=${encodeURIComponent(attendeeRef.current.id)}`
+        : "";
       const data = await api<{
         active: boolean;
         session: SessionInfo | null;
         polls: PollView[];
         questions?: QuestionView[];
-      }>("/api/qa/session/current");
+        myQuestions?: Array<{ id: string; status: "pending" | "approved" | "rejected"; text: string }>;
+        myAnswers?: Array<{
+          id: string;
+          questionId: string;
+          status: "pending" | "approved" | "rejected";
+          text: string;
+        }>;
+      }>(`/api/qa/session/current?view=audience${who}`);
       setConnectionIssue(false);
       setActive(data.active);
       setSession(data.session);
-      setPolls(data.polls ?? []);
-      setQuestions(data.questions ?? []);
+setPolls(data.polls ?? []);
+      const fresh = data.questions ?? [];
+      setQuestions(fresh);
+      /**
+       * ⛔ مصدر الحقيقة لمصير أسئلتي صار `myQuestions` من الخادم — لا مطابقة
+       * نصٍّ مع الإجابات المنشورة، ولا خريطة `myAnswers` المحلية. سببان:
+       *   ١) يحمل `rejected`: الرفض **لا يولّد أي إشارة عامة** إطلاقاً، فكان
+       *      الحاضر ينتظر إلى ما لا نهاية.
+       *   ٢) ليس حالة محلية: بعد التحديث (أو من جهاز آخر بنفس استرجاع QR)
+       *      تُبنى البطاقة من الخادم لا من `sessionStorage`.
+       *
+       * مطابقة النصّ بالإجابة المنشورة باقية كـ**بديل** للأسئلة التي أُنشئت
+       * قبل وجود `QaQuestion.attendeeId` (بيانات قديمة بلا مالك، فلا تظهر
+       * في `myQuestions` أبداً).
+       */
+      setMyQuestions(data.myQuestions ?? []);
+      /**
+       * ⛔ حالة «إجابتي المعلّقة» صارت من الخادم أيضاً (لا من نصّها المطابق
+       * ضمن المنشور). فالأخيرة لا تعرف الرفض أصلاً — وهو ما كان يُبقي
+       * البطاقة على «أُرسل» بعد الرفض.
+       */
+      setMyAnswersStatus(
+        Object.fromEntries((data.myAnswers ?? []).map((a) => [a.questionId, a.status]))
+      );
+      setMyAnswers((prev) => {
+        const keys = Object.keys(prev);
+        if (keys.length === 0) return prev;
+        const next = { ...prev };
+        let changed = false;
+        for (const q of fresh) {
+          const mine = prev[q.id];
+          if (!mine) continue;
+          const published = (q.answers ?? []).some((a) => a.text === mine);
+          if (published) {
+            delete next[q.id];
+            changed = true;
+          }
+        }
+        return changed ? next : prev;
+      });
       setHasSnapshot(true);
     } catch {
       // ⚠️ الفشل المؤقت (شبكة، 429، إعادة تشغيل الخادم) لا يعني انتهاء
@@ -198,6 +296,11 @@ export default function LiveParticipate() {
     } finally {
       setInitialLoading(false);
     }
+    // ⛔ التبعيات تُبقي `loadCurrent` **ثابتة الهوية**: جعلها تعتمد على
+    // `attendee?.id` كان ينشئ نسخة جديدة منها عند كل استعادة حضور، فيُعاد
+    // تشغيل تأثير التركيب (سطر `setInterval`) ⇒ طلب ثانٍ سريع يسبق الأول
+    // المعلَّق على شبكة بطيئة، فيسقط نافذة «جارٍ الاتصال» قبل أن يراها
+    // الحاضر. والمعرّف يمرّ عبر `attendeeRef` فلا حاجة لإعادة الجلب.
   }, []);
 
   /**
@@ -334,7 +437,7 @@ export default function LiveParticipate() {
     const text = question.trim();
     if (!text || !attendee) return;
     if (TURNSTILE_ENABLED && !qToken && !qStalled) {
-      setQMsg({ type: "err", text: t("participate.verifyFirst") });
+      setQMsg({ type: "err", kind: "error", text: t("participate.verifyFirst") });
       return;
     }
     setSendingQ(true);
@@ -349,15 +452,15 @@ export default function LiveParticipate() {
       // `else` فقط: كان السؤال الثاني لنفس الحاضر يفشل بـ403 لأن الرمز
       // المستهلَك بقي دون تجديد.
       if (res.duplicate) {
-        setQMsg({ type: "ok", text: t("participate.duplicate") });
+        setQMsg({ type: "ok", kind: "duplicate", text: t("participate.duplicate") });
       } else {
         setQuestion("");
-        setQMsg({ type: "ok", text: t("participate.sent") });
+        setQMsg({ type: "ok", kind: "sent", text: t("participate.sent") });
       }
       setQToken("");
       setQReset((n) => n + 1);
     } catch (e) {
-      setQMsg({ type: "err", text: e instanceof Error ? e.message : t("participate.sentError") });
+      setQMsg({ type: "err", kind: "error", text: e instanceof Error ? e.message : t("participate.sentError") });
       setQToken("");
       setQReset((n) => n + 1);
     } finally {
@@ -474,6 +577,25 @@ export default function LiveParticipate() {
       <h1 className="text-2xl font-bold text-center mb-2">{t("participate.title")}</h1>
       {session && <p className="text-center text-muted-foreground text-sm mb-6">{t("participate.sessionTitle")}: {session.titleAr || session.title}</p>}
 
+      {/**
+       * ⚠️ صفحة `/live/survey` كانت **غير موصولة من أي مكان** في الواجهة:
+       * لا رابط في صفحة الحاضر، ولا في المسرح، ولا في لوحة المشرف. فكان
+       * الوصول إليها ممكناً بمجرد معرفة الرابط — أي أنها في الاستعمال ميّتة،
+       * وبيانات التقييم التي صُمّم الاستبيان من أجلها لا تُجمع.
+       * رابط واحد يكفي: بعد الانضمام، تحت عنوان الجلسة.
+       */}
+      {attendee && session && (
+        <p className="text-center mb-6">
+          <a
+            href={`/${locale}/live/survey?session=${encodeURIComponent(session.id)}`}
+            data-testid="qa-survey-link"
+            className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          >
+            {t("participate.surveyLink")}
+          </a>
+        </p>
+      )}
+
       {/* فشل جلب مؤقت — لا يُنهي الجلسة ولا يمسح هوية الحاضر. */}
       {connectionIssue && (
         <p
@@ -583,7 +705,19 @@ export default function LiveParticipate() {
                   </select>
                 </div>
                 <TurnstileWidget onVerify={setQToken} resetKey={qReset} onStalled={setQStalled} />
-                {qMsg && <p className={`text-sm mt-2 ${qMsg.type === "ok" ? "text-green-600" : "text-red-600"}`}>{qMsg.text}</p>}
+                {/* ⚠️ بلا `role` ولا معرّف: رسالة نجاح/فشل الإرسال لم تكن قابلة
+              للقراءة آلياً ولا لقارئ الشاشة، ولا لاختبار يفهم «أُرسل». */}
+          {qMsg && (
+            <p
+              role="status"
+              data-testid="qa-ask-msg"
+              data-msg-type={qMsg.type}
+              data-msg-kind={qMsg.kind}
+              className={`text-sm mt-2 ${qMsg.type === "ok" ? "text-green-600" : "text-red-600"}`}
+            >
+              {qMsg.text}
+            </p>
+          )}
                 <Button className="w-full mt-3" data-testid="qa-ask-submit" loading={sendingQ} loadingText={t("participate.sending")} onClick={submitQuestion} disabled={!question.trim() || (TURNSTILE_ENABLED && !qToken && !qStalled)}>
                   <Send className="h-4 w-4 mr-2" />
                   {t("participate.askButton")}
@@ -593,6 +727,50 @@ export default function LiveParticipate() {
               <p className="text-muted-foreground text-sm">{t("participate.notAccepting")}</p>
             )}
           </div>
+
+          {/*
+            🎯 إغلاق F5: «مصير أسئلتي».
+            كان الرفض **بلا أي أثر** — لا `PublicAnswer` يحمل حالة، ولا نقطة
+            نهاية تعرض حالة سؤال صاحبه، فبقيت البطاقة تقول «أُرسل» إلى ما
+            لا نهاية: أطول انتظار بلا معلومة في أي واجهة submitting.
+            الآن المصدر الخادمي (`myQuestions`)، بثلاث حالات صريحة:
+              - pending  ⇒ «قيد المراجعة»
+              - approved ⇒ «معروضة على الشاشة» (ويختفي السؤال من هنا لأن
+                نسخته منشورة أصلاً في القائمة العامة أدناه)
+              - rejected ⇒ «لم تُعتمد» — نصّ صريح بدل الانتظار الصامت
+            */}
+          {myQuestions.length > 0 && (
+            <section
+              className="rounded-3xl border border-border bg-card p-4 shadow-sm"
+              data-testid="qa-my-questions"
+            >
+              <h2 className="font-semibold text-sm mb-2">{t("participate.myQuestionsTitle")}</h2>
+              <ul className="space-y-2">
+                {myQuestions.map((mq) => (
+                  <li
+                    key={mq.id}
+                    data-testid="qa-my-question"
+                    data-status={mq.status}
+                    className="rounded-xl border border-border p-2 text-sm flex items-center gap-3"
+                  >
+                    <span className="flex-1 truncate">{mq.text}</span>
+                    <span
+                      data-testid={`qa-my-question-status-${mq.status}`}
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        mq.status === "approved"
+                          ? "bg-green-100 text-green-700"
+                          : mq.status === "rejected"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {t(`participate.myQuestion${mq.status === "approved" ? "Approved" : mq.status === "rejected" ? "Rejected" : "Pending"}`)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* Audience questions — vote / un-vote */}
           {questions.length > 0 && (
@@ -621,8 +799,11 @@ export default function LiveParticipate() {
                       <p className="text-sm leading-relaxed">{q.text}</p>
                       <div className="mt-3 flex items-center gap-3">
                         <span className="text-xs text-muted-foreground">{q.author}</span>
-                        {q.featured && (
-                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+{q.featured && (
+                          <span
+                            data-testid="qa-featured-badge"
+                            className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700"
+                          >
                             ★ {t("featured")}
                           </span>
                         )}
@@ -653,11 +834,30 @@ export default function LiveParticipate() {
                       <div className="mt-3 border-t border-border pt-3">
                         {myPendingAnswer && (
                           <div
-                            className="rounded-xl bg-amber-50 border border-amber-200 p-3 mb-2"
+                            className={`rounded-xl border p-3 mb-2 ${
+                              myAnswersStatus[q.id] === "rejected"
+                                ? "bg-red-50 border-red-200"
+                                : "bg-amber-50 border-amber-200"
+                            }`}
                             data-testid="qa-my-pending-answer"
+                            data-status={myAnswersStatus[q.id] ?? "unknown"}
                           >
-                            <p className="text-xs font-medium text-amber-700 mb-1">
-                              {t("participate.myAnswerPending")}
+                            <p
+                              className={`text-xs font-medium mb-1 ${
+                                myAnswersStatus[q.id] === "rejected"
+                                  ? "text-red-700"
+                                  : "text-amber-700"
+                              }`}
+                            >
+                              {/* ⛔ ثلاث حالات صريحة الآن: قبل الإصلاح كان
+                                  «أُرسل» هو الوحيد الممكن، فلا يميّز
+                                  الانتظارَ عن الرفض. و«قيد المراجعة» صادقة
+                                  الآن لأن الخادم يقول الحالة فعلاً. */}
+                              {myAnswersStatus[q.id] === "rejected"
+                                ? t("participate.myAnswerRejected")
+                                : myAnswersStatus[q.id] === "pending"
+                                  ? t("participate.myAnswerPending")
+                                  : t("participate.myAnswerSent")}
                             </p>
                             <p className="text-sm">{myPendingAnswer}</p>
                           </div>

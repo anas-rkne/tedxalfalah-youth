@@ -31,6 +31,15 @@ export async function GET(request: NextRequest) {
     return qaError("Invalid view", 400);
   }
 
-  const snapshot = buildPublicSnapshot(await readQaData(), rawView);
+  /**
+   * ⛔ اختياري ويُقصّ على صاحبه: بلَغه يسأل الخادم «ما مصير أسئلتي أنا؟»
+   * فيردّ `myQuestions` لهذا الحاضر وحده. **بلا هذا الحقل لا يُبنى الحقل
+   * أصلاً**، فشاشة العرض والمتحدث لا تحملان أي معلومة عن الأسئلة المعلّقة.
+   * ومن يمرّر `attendeeId` غير مسجَّل يحصل على `[]` — لا 403 ولا 404،
+   * فلا يُستخدم هذا لاختبار وجود سجلّ حضور.
+   */
+  const attendeeId = request.nextUrl.searchParams.get("attendeeId") || undefined;
+
+  const snapshot = buildPublicSnapshot(await readQaData(), rawView, attendeeId);
   return qaJson(snapshot);
 }

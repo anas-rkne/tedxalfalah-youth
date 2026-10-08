@@ -209,6 +209,15 @@ const MARK = {
   rejected: `هل سيغيّر الذكاء الاصطناعي سوق العمل خلال عقد؟ #${run}c`,
   hiddenLive: `ما الكتاب الذي تنصح به من يبحث عن الإلهام؟ #${run}d`,
   hiddenSpeaker: `كيف تصف شعورك وأنت واقف على هذه المنصة؟ #${run}e`,
+  /**
+   * ⚠️ سؤال مخفي عن **الجمهور** وحده — لا عن المشروعور.
+   *
+   * هذا هو الاختبار الحاسم لفصل الوجهين: `hiddenLive` يختفي عن `view=live`
+   * ومن `view=audience` معاً (لأنه مخفي عن المشروعور)، أما هذا فيختفي عن
+   * `view=audience` ويبقى في `view=live`. لو انقلب الاتجاهان لأخفى الخادم
+   * الحضورَ بدل الشاشة، أو أخفى الشاشة مع إبقائه للحضور.
+   */
+  hiddenAudience: `ما السرّ الذي لم تجب به علناً في المنصة؟ #${run}f`,
   attendee: `${run}-ATTENDEE-SECRET`,
   // حاضر ثانٍ لا يطرح أي سؤال إطلاقاً — يُستخدم للتحقق من عدم تسرّب
   // «قائمة أسماء الحاضرين». لا يمكن استخدام `attendee` لهذا الفحص لأن اسمه
@@ -334,6 +343,7 @@ for (const [key, text] of [
   ["rejected", MARK.rejected],
   ["hiddenLive", MARK.hiddenLive],
   ["hiddenSpeaker", MARK.hiddenSpeaker],
+  ["hiddenAudience", MARK.hiddenAudience],
 ]) {
   // نرسل اسماً مزيّفاً مع كل سؤال للتحقق من أن الخادم يتجاهله
   const res = await api("POST", "/api/qa/question", {
@@ -353,11 +363,17 @@ assert(
   `أُرسل ${submitted.length}${duplicateDetected ? " (رُصد تكرار)" : ""}`
 );
 
-  // نعتمد واحداً ونرفض واحداً
-  if (questionIds.approved) {
+  // نعتمد واحداً ونرفض واحداً.
+  //
+  // ⚠️ نُعتمد أيضاً `hiddenLive` و`hiddenSpeaker` و`hiddenAudience`. قبل هذا
+  // البند كانت الثلاثة **معلّقة**، فكانت تأكيداتُ «لا تظهر» أدناه تُمرّ حتى لو
+  // كسر فلتر الرؤية كلياً: سؤال معلّق لا يظهر أصلاً في أي واجهة. الاختبار كان
+  // يمرّ بلا أن يختبر شيئاً — أخطر شكل للفشل الصامت.
+  for (const key of ["approved", "hiddenLive", "hiddenSpeaker", "hiddenAudience"]) {
+    if (!questionIds[key]) continue;
     await api("POST", "/api/qa/admin/moderate", {
       token,
-      body: { action: "approve", sessionId, questionId: questionIds.approved },
+      body: { action: "approve", sessionId, questionId: questionIds[key] },
     });
   }
   if (questionIds.rejected) {
@@ -366,11 +382,14 @@ assert(
       body: { action: "reject", sessionId, questionId: questionIds.rejected },
     });
   }
-  // نخفي سؤالين: واحد عن الشاشة الرئيسية وآخر عن شاشة المتحدث
+  // نخفي ثلاثة أسئلة على ثلاثة أهداف مختلفة:
+  //   hiddenLive     → عن **المشروعور** (يختفي عن `view=live` و`view=audience`)
+  //   hiddenSpeaker  → عن **المتحدث**   (يختفي عن `view=speaker` فقط)
+  //   hiddenAudience → عن **الجمهور**   (يختفي عن `view=audience` ويبقى في `view=live`)
   if (questionIds.hiddenLive) {
     await api("POST", "/api/qa/admin/moderate", {
       token,
-      body: { action: "setVisibility", sessionId, questionId: questionIds.hiddenLive, showOnLive: false },
+      body: { action: "setVisibility", sessionId, questionId: questionIds.hiddenLive, showOnProjector: false },
     });
   }
   if (questionIds.hiddenSpeaker) {
@@ -379,17 +398,50 @@ assert(
       body: { action: "setVisibility", sessionId, questionId: questionIds.hiddenSpeaker, showOnSpeaker: false },
     });
   }
+  if (questionIds.hiddenAudience) {
+    await api("POST", "/api/qa/admin/moderate", {
+      token,
+      body: { action: "setVisibility", sessionId, questionId: questionIds.hiddenAudience, showToAudience: false },
+    });
+  }
 
   const live = await api("GET", "/api/qa/session/current?view=live");
   const speaker = await api("GET", "/api/qa/session/current?view=speaker");
+  // ⚠️ `view=audience` هو الواجهة التي يقرأ منها هاتف الحاضر. قبل الفصل
+  // لم تكن موجودة، فكان يقرأ `view=live` — أي لوح **الشاشة** — ويرى ما
+  // تُعرضه على المسرح لا ما يخصّه.
+  const audience = await api("GET", "/api/qa/session/current?view=audience");
   const liveText = JSON.stringify(live.json ?? {});
   const speakerText = JSON.stringify(speaker.json ?? {});
+  const audienceText = JSON.stringify(audience.json ?? {});
 
   assert(liveText.includes(MARK.approved), "السؤال المعتمد ظاهر للجمهور");
   assert(!liveText.includes(MARK.pending), "السؤال المعلّق لا يظهر للجمهور");
   assert(!liveText.includes(MARK.rejected), "السؤال المرفوض لا يظهر للجمهور");
-  assert(!liveText.includes(MARK.hiddenLive), "showOnLive=false يُخفي من شاشة العرض");
+  assert(!liveText.includes(MARK.hiddenLive), "showOnProjector=false يُخفي من شاشة العرض");
   assert(!speakerText.includes(MARK.hiddenSpeaker), "showOnSpeaker=false يُخفي من شاشة المتحدث");
+
+  // ── فصل الجمهور عن المشروعور: الاتجاهان ──────────────────────────
+  assert(
+    audienceText.includes(MARK.approved),
+    "السؤال المعتمد ظاهر في واجهة الجمهور"
+  );
+  assert(
+    !audienceText.includes(MARK.hiddenAudience),
+    "showToAudience=false يُخفي من هاتف الحاضر"
+  );
+  assert(
+    liveText.includes(MARK.hiddenAudience),
+    "السؤال المخفي عن الجمهور **يبقى** على المشروعور (سحب الفصل_screen نزيه)"
+  );
+  assert(
+    !audienceText.includes(MARK.hiddenLive),
+    "المخفي عن المشروعور يختفي عن الجمهور أيضاً (المشروعور أوسع)"
+  );
+  assert(
+    liveText.includes(MARK.hiddenSpeaker),
+    "showOnSpeaker لا يمسّ المشروعور (مخفي عن المتحدث فقط)"
+  );
   assert(!liveText.includes(MARK.silentAttendee), "قائمة أسماء الحاضرين لا تتسرّب");
   assert(!speakerText.includes(MARK.silentAttendee), "قائمة الأسماء لا تتسرّب في شاشة المتحدث");
   assert(!liveText.includes(MARK.spoofed), "الاسم المزيّف المرسل من العميل لا يُستخدم");
@@ -403,14 +455,40 @@ assert(
 
   const sseLive = await readFirstFrame("/api/qa/stream?view=live");
   const sseSpeaker = await readFirstFrame("/api/qa/stream?view=speaker");
+  // ⚠️ بثّ الجمهور هو الأهم: `buildPublicSnapshot` تبني `screen` مقابل
+  // قائمة **المشروعور** لا مقابل واجهة الطلب. فسؤال مخفي عن الجمهور يبقى
+  // في قائمة البثّ ويُعرض على الشاشة. لو حُلَّت `screen` مقابل قائمة الجمهور
+  // لاختفت الشاشة الكبرى كلما أخفى المشرف سؤالاً عن الحضور.
+  const sseAudience = await readFirstFrame("/api/qa/stream?view=audience");
   const sseLiveText = JSON.stringify(sseLive.frame ?? {});
   const sseSpeakerText = JSON.stringify(sseSpeaker.frame ?? {});
+  const sseAudienceText = JSON.stringify(sseAudience.frame ?? {});
 
   assert(sseLiveText.includes(MARK.approved), "البث يعرض السؤال المعتمد (العلامة الحاسمة)");
   assert(!sseLiveText.includes(MARK.pending), "البث لا يسرّب السؤال المعلّق");
   assert(!sseLiveText.includes(MARK.rejected), "البث لا يسرّب السؤال المرفوض");
-  assert(!sseLiveText.includes(MARK.hiddenLive), "البث يحترم showOnLive=false");
+  assert(!sseLiveText.includes(MARK.hiddenLive), "بث المشروعور يحترم showOnProjector=false");
   assert(!sseSpeakerText.includes(MARK.hiddenSpeaker), "البث يحترم showOnSpeaker=false");
+  assert(
+    !sseAudienceText.includes(MARK.hiddenAudience),
+    "بث الجمهور يحترم showToAudience=false"
+  );
+  assert(
+    sseLiveText.includes(MARK.hiddenAudience),
+    "بثّ المشروكور **يضم** السؤال المخفي عن الجمهور (لو اختفى لفصّلنا الوجهين معكوسين)"
+  );
+  assert(
+    !sseAudienceText.includes(MARK.hiddenLive),
+    "بثّ الجمهور لا يحمل ما استُبعد من المشروكور"
+  );
+  assert(
+    sseLiveText.includes(MARK.hiddenSpeaker),
+    "بثّ المشروكور لا يحترم showOnSpeaker (وجه ثالث مستقل)"
+  );
+  assert(
+    sseAudienceText.includes(MARK.approved),
+    "بث الجمهور يحمل الأسئلة المعتمدة"
+  );
   assert(!sseLiveText.includes(MARK.silentAttendee), "البث لا يسرّب أسماء الحاضرين");
   assert(!sseLiveText.includes(MARK.spoofed), "البث لا يستخدم الاسم المزيّف");
   assert(!sseLiveText.includes('"sessions"'), "البث لا يسرّب مصفوفة sessions");
@@ -907,12 +985,12 @@ async function testExportSecurity() {
   }
 }
 
-/* ---------- المرحلة 13: showOnLive/showOnSpeaker ---------- */
+/* ---------- المرحلة 13: الوجوه الثلاثة للظهور ---------- */
 
 async function testVisibilityFlags() {
-  section("12) التحكم بالظهور: showOnLive/showOnSpeaker يصلان للواجهة");
+  section("12) التحكم بالظهور: الجمهور/المشروعور/المتحدث يصلون للواجهة");
 
-  const ids = [questionIds.hiddenLive, questionIds.hiddenSpeaker].filter(Boolean);
+  const ids = [questionIds.hiddenLive, questionIds.hiddenSpeaker, questionIds.hiddenAudience].filter(Boolean);
   if (!ids.length) {
     assert(false, "أسئلة الظهور متاحة", "لا يوجد");
     return;
@@ -923,10 +1001,9 @@ async function testVisibilityFlags() {
     return (snap.json?.questions ?? []).find((x) => x.id === questionId)?.visible;
   };
 
-  const check = async (questionId, field) => {
-    const view = field === "showOnLive" ? "live" : "speaker";
+  const check = async (questionId, field, view) => {
     // ⚠️ اللقطة العامة تضمّ المعتمد فقط، فالسؤال يجب اعتماده أولاً — وإلا
-    // اختفاؤه عن المصفوفة سيُقرأ خطأً ك نجاح لعلم الظهور.
+    // اختفاؤه عن المصفوفة سيُقرأ خطأً كنجاح لعلم الظهور.
     const approved = await api("POST", "/api/qa/admin/moderate", {
       token,
       body: { action: "approve", sessionId, questionId },
@@ -948,8 +1025,11 @@ async function testVisibilityFlags() {
     assert((await visibleOf(questionId, view)) === false, `visible=false يصل للقطة ${view}`, "visible ليس false");
   };
 
-  if (questionIds.hiddenLive) await check(questionIds.hiddenLive, "showOnLive");
-  if (questionIds.hiddenSpeaker) await check(questionIds.hiddenSpeaker, "showOnSpeaker");
+  // ⚠️ `view=speaker` يعتمد `isSpeakerVisible` وحده، فلا يحتاج حقلاً خاصاً.
+  // أمّا الجمهور والمشروعور فحقلان منفصلان بواجهة مختلفة لكلٍّ منهما.
+  if (questionIds.hiddenLive) await check(questionIds.hiddenLive, "showOnProjector", "live");
+  if (questionIds.hiddenAudience) await check(questionIds.hiddenAudience, "showToAudience", "audience");
+  if (questionIds.hiddenSpeaker) await check(questionIds.hiddenSpeaker, "showOnSpeaker", "speaker");
 }
 
 /* ---------- المرحلة 12: idempotency of "answer" ---------- */
@@ -1186,8 +1266,20 @@ async function testScreenControl() {
   assert(stagedRow?.status === "approved", "سؤال الإدارة معتمد فوراً (لا مراجعة لنفسه)", stagedRow?.status);
   assert(stagedRow?.source === "admin", "مصدره admin", stagedRow?.source);
   assert(
-    stagedRow?.showOnLive === true && stagedRow?.showOnSpeaker === true,
-    "سؤال الإدارة يظهر افتراضياً على الشاشتين"
+    stagedRow?.showToAudience === true &&
+      stagedRow?.showOnProjector === true &&
+      stagedRow?.showOnSpeaker === true,
+    "سؤال الإدارة يظهر افتراضياً على الوجهين الثلاثة",
+    JSON.stringify({
+      a: stagedRow?.showToAudience,
+      p: stagedRow?.showOnProjector,
+      s: stagedRow?.showOnSpeaker,
+    })
+  );
+  assert(
+    stagedRow?.showOnLive === undefined,
+    "الخادم لم يكتب الحقل البطل على سؤال الإدارة",
+    String(stagedRow?.showOnLive)
   );
   let cur = await screenOf();
   assert(cur?.slide?.kind === "question" && cur?.slide?.questionId === stagedId, "putOnScreen يثبّت السؤال", JSON.stringify(cur?.slide));
@@ -1284,12 +1376,50 @@ async function testScreenControl() {
     body: { action: "setSlide", sessionId, slide: { kind: "question", questionId: stagedId } },
   });
   assert((await screenOf())?.slide?.questionId === stagedId, "ثبّتنا السؤال من جديد");
+
+  // 1) إخفاء **الجمهور** وحده: الشريحة الكبرى تبقى — هذا هو جوهر الفصل.
   await api("POST", "/api/qa/admin/moderate", {
     token,
-    body: { action: "setVisibility", sessionId, questionId: stagedId, showOnLive: false },
+    body: { action: "setVisibility", sessionId, questionId: stagedId, showToAudience: false },
   });
   cur = await screenOf();
-  assert(cur?.slide?.kind === "hold", "إخفاء السؤال المثبَّت يُسقط الشريحة إلى hold", JSON.stringify(cur?.slide));
+  assert(
+    cur?.slide?.questionId === stagedId,
+    "إخفاء الجمهور وحده **لا** يُسقط شريحة الشاشة الكبرى",
+    JSON.stringify(cur?.slide)
+  );
+
+  // 2) إخفاء **المشروعور**: الشريحة تسقط فوراً.
+  await api("POST", "/api/qa/admin/moderate", {
+    token,
+    body: { action: "setVisibility", sessionId, questionId: stagedId, showOnProjector: false },
+  });
+  cur = await screenOf();
+  assert(cur?.slide?.kind === "hold", "إخفاء المشروعور يُسقط الشريحة المثبَّتة إلى hold", JSON.stringify(cur?.slide));
+
+  // 3) إعادة الإظهار **لا** تعيد الشريحة: المؤشر يحتاج setSlide صريحاً.
+  await api("POST", "/api/qa/admin/moderate", {
+    token,
+    body: { action: "setVisibility", sessionId, questionId: stagedId, showOnProjector: true },
+  });
+  cur = await screenOf();
+  assert(
+    cur?.slide?.kind === "hold",
+    "إعادة إظهار السؤال لا تعيده للشاشة تلقائياً",
+    JSON.stringify(cur?.slide)
+  );
+
+  // 4) طلب عرض سؤال مخفي عن المشروعور ⇒ 409 + hold، لا صمت.
+  const denied = await api("POST", "/api/qa/admin/screen", {
+    token,
+    body: { action: "setSlide", sessionId, slide: { kind: "question", questionId: stagedId } },
+  });
+  assert(denied.status === 409, "عرض سؤال مخفي عن المشروعور يرفضه الخادم بـ409", `status=${denied.status}`);
+  assert(
+    !String(denied.json?.error ?? "").toLowerCase().includes("not found"),
+    "رسالة 409 تشرح السبب ولا تقول «غير موجود»",
+    denied.json?.error
+  );
 
   // نُعيد الجلسة إلى حالة محايدة للاختبارات التالية.
   await api("POST", "/api/qa/admin/screen", { token, body: { action: "clear", sessionId } });

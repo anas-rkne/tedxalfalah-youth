@@ -136,6 +136,31 @@ export async function getActivations(): Promise<Activation[]> {
   }));
 }
 
+/**
+ * شركاء مُثبّتون في الشيفرة: شعارهم ملف ثابت داخل `public/`، فيظهرون
+ * دائماً — حتى لو كان Sanity غير مُهيّأ أو فشل جلبه — ولا يتكرّرون إن
+ * وُجدوا في القاعدة تحت الاسم نفسه.
+ */
+const STATIC_SPONSORS: Sponsor[] = [
+  {
+    id: "red-events",
+    name: "RED Events",
+    logoUrl: "/images/RED-Events-logo.png",
+    tier: "Community",
+    isPublished: true,
+  },
+];
+
+function withStaticSponsors(fromCms: Sponsor[]): Sponsor[] {
+  const known = new Set(
+    fromCms.map((s) => `${s.id.trim().toLowerCase()}|${s.name.trim().toLowerCase()}`)
+  );
+  const extras = STATIC_SPONSORS.filter(
+    (s) => !known.has(`${s.id.trim().toLowerCase()}|${s.name.trim().toLowerCase()}`)
+  );
+  return [...fromCms, ...extras];
+}
+
 export async function getSponsors(): Promise<Sponsor[]> {
   type Raw = {
     id: string;
@@ -156,15 +181,18 @@ export async function getSponsors(): Promise<Sponsor[]> {
       isPublished
     }`
   );
-  if (!raw) return [];
 
-  return raw.map((s) => ({
-    id: s.id,
-    name: s.name,
-    logoUrl: s.logo ? urlFor(s.logo)?.width(200).quality(80).url() ?? null : null,
-    tier: s.tier,
-    websiteUrl: s.websiteUrl ?? undefined,
-  }));
+  const fromCms = !raw
+    ? []
+    : raw.map((s) => ({
+        id: s.id,
+        name: s.name,
+        logoUrl: s.logo ? urlFor(s.logo)?.width(200).quality(80).url() ?? null : null,
+        tier: s.tier,
+        websiteUrl: s.websiteUrl ?? undefined,
+      }));
+
+  return withStaticSponsors(fromCms);
 }
 
 export async function getSessions(): Promise<Session[]> {

@@ -15,13 +15,47 @@
  * sentiment, attendeeNames) يتسرّب إلى العامة.
  */
 import type { QaData, QaPoll, QaQuestion, QaScreenSlide, QaSession, QaSettings } from "./types";
-import { attendeeCountOf, getActiveSession, normalizeData, normalizeScreen } from "./service";
+import {
+  attendeeCountOf,
+  findAttendee,
+  getActiveSession,
+  isAudienceVisible,
+  isProjectorVisible,
+  isSpeakerVisible,
+  normalizeData,
+  normalizeScreen,
+} from "./service";
 
-/** أي شاشة تطلب اللقطة. */
-export type QaView = "live" | "speaker";
+/**
+ * أي شاشة تطلب اللقطة.
+ *
+ * ⚠️ `audience` جهاز الحاضر (هاتفه). كان الحضور والعرض يقرآن الحقل نفسه
+ * (`showOnLive`) — وهو ما جعل المشروعور يحكم على الهواتف: زر واحد يقرّر
+ * شيئاً لا يقرّره. الآن لكل وجه حقله:
+ *
+ *   - `speaker`   → `showOnSpeaker`   (شاشة المتحدث)
+ *   - `live`      → `showOnProjector` (المشروعور)
+ *   - `audience`  → `showToAudience`  (أجهزة الحضور)
+ */
+export type QaView = "live" | "speaker" | "audience";
 
 export function isQaView(value: unknown): value is QaView {
-  return value === "live" || value === "speaker";
+  return value === "live" || value === "speaker" || value === "audience";
+}
+
+/**
+ * هل السؤال يظهر على هذه الشاشة؟
+ *
+ * ⚠️ يقود دائماً إلى قراءات `service` (مع مراعاة الحقل القديم) بدل مقارنة
+ * حقل مباشرة. لو قُرئ `q.showOnProjector !== false` هنا لأخفى الترحيلُ
+ * غيرُ المُرحَّل كل سؤال قديم، بينما لو قُرئ `!== false` وحده لَأظهر
+ * أولُ غيرِ المُرحَّل سؤالاً مخفياً. القيم الثلاث في مكان واحد تمنع هذا
+ * التناقض نهائياً.
+ */
+function visibleFor(q: QaQuestion, view: QaView): boolean {
+  if (view === "speaker") return isSpeakerVisible(q);
+  if (view === "audience") return isAudienceVisible(q);
+  return isProjectorVisible(q);
 }
 
 export interface PublicAnswer {
@@ -38,7 +72,10 @@ export interface PublicQuestion {
   votes: number;
   featured: boolean;
   answered: boolean;
-  /** هل السؤال معروض على هذه الشاشة تحديداً (بعد تطبيق showOnLive/showOnSpeaker). */
+  /**
+   * هل السؤال معروض على هذه الشاشة تحديداً (بعد تطبيق حقل وجهها: أحد
+   * `showOnSpeaker` / `showOnProjector` / `showToAudience`).
+   */
   visible: boolean;
   /**
    * الإجابات **المعتمدة فقط** لهذا السؤال.
@@ -73,6 +110,47 @@ export interface PublicSessionInfo {
   attendeeCount: number;
 }
 
+/**
+ * سؤال **صاحبه** فقط: `{ id, status, text }`.
+ *
+ * 🎯 هذا ما كان ناقصاً ليعرف الحاضر مصير سؤاله (فجوة F5): رُفض أو اعتُمد
+ * أو بقي معلّقاً — والحاضر كان يراه «أُرسل» إلى الأبد، وهو أطول انتظار
+ * بلا معلومة في أي واجهة submitting.
+ *
+ * ⛔ النطاق مقصور على `attendeeId` المطلوب **ومتحقَّق منه**: الحقل موجود
+ * داخل اللقطة العامة، فلو أُعيد كل ما يحمل `attendeeId` لقرأ أي زائر
+ * الأسئلة المعلّقة والمرفوضة للجميع — وهو التسريب الذي يمنع هذا الملف
+ * أصلاً. الحقل اختياري في اللقطة: بلا `attendeeId` ⇒ لا `myQuestions` إطلاقاً،
+ * فيبقى مشروعور العرض وشاشة المتحدث بلا أثر.
+ */
+export interface MyQuestion {
+  id: string;
+  status: "pending" | "approved" | "rejected";
+  text: string;
+}
+
+/**
+ * إجابة **صاحبها** فقط — نظير `MyQuestion` للإجابات.
+ *
+ * 🎯 `QaAnswer.attendeeId` كان موجوداً منذ الأصل (بخلاف السؤال الذي كان
+ * ينقصه `attendeeId`)، فكان ينقص فقط الطريق: قراءة الحالة. فرفض الإجابة
+ * كان يرفعها عن الجمهور بصمت — يبقى نصّها «أُرسل» عند كاتبها إلى الأبد.
+ *
+ * ⛔ نفس قواعد النطاق: صاحبة المعرّف فقط، و`[]` إن كان المعرّف مجهولاً.
+ */
+export interface MyAnswer {
+  id: string;
+  /**
+   * معرّف السؤال الحاضِر — لا معرّف الإجابة وحده.
+   *
+   * 🎯 `LiveParticipate` يربط «إجابتي المعلّقة» بـ`questionId` (لأن البطاقة
+   * تُعرض داخل السؤال نفسه)، فبلا هذا الحقل لا يطابق حالة الإجابة بسؤالها.
+   */
+  questionId: string;
+  status: "pending" | "approved" | "rejected";
+  text: string;
+}
+
 export interface PublicScreen {
   mode: "manual" | "auto";
   /**
@@ -94,6 +172,15 @@ export interface PublicSnapshot {
   questions: PublicQuestion[];
   polls: PublicPoll[];
   screen: PublicScreen;
+  /**
+   * أسئلة الحاضر نفسه، إن طُلب `attendeeId` وصاحبُه مسجَّل في الجلسة.
+   *
+   * ⛔ غائب تماماً (لا مصفوفة فارغة) بلا معرّف: يجب ألّا يبنوا
+   * «لم تُقبل أسئلتك» من غياب حقل، بل من `myQuestions === undefined`.
+   */
+  myQuestions?: MyQuestion[];
+  /** نظيرها للإجابات — انظر `MyAnswer`. */
+  myAnswers?: MyAnswer[];
 }
 
 /**
@@ -138,7 +225,7 @@ function toPublicQuestion(q: QaQuestion, view: QaView): PublicQuestion {
     votes: q.votes,
     featured: q.featured,
     answered: q.answered === true,
-    visible: view === "speaker" ? q.showOnSpeaker !== false : q.showOnLive !== false,
+    visible: visibleFor(q, view),
     // الترتيب: الأقدم أولاً — يهمّ من قال ذلك أولاً لا من كتب أكثر،
     // و`localeCompare` على ISO-8601 ترتيب ثابت لا يتغيّر مع كل لقطة.
     answers: (q.answers ?? [])
@@ -156,7 +243,19 @@ function sortForDisplay(a: PublicQuestion, b: PublicQuestion): number {
 }
 
 function toPublicPoll(p: QaPoll): PublicPoll {
-  const resultsOpen = p.showResults === true || p.active === false;
+  /**
+   * ⛔ `showResults` وحده هو مصدر الحقيقة: **هل طُلب عرض النتائج؟**
+   *
+   * الفجوة (F1): كان الشرط `showResults || !active`، فأي استطلاع مُنشأ
+   * حديثاً — `active: false, showResults: false` — خرج كأنّه **منتهٍ
+   * بأصفار**: أرقام مئوية على الشاشة الكبرى قبل أن يُسأل السؤال أصلاً.
+   * والأسوأ: الإخفاء المقصود (`showResults: false` على استطلاع جرى) كان
+   * يُغلق بنفس الجملة، فلا أثر له.
+   *
+   * أما إيقاف التصويت (`stop`) فقد يكتب `showResults: true` أصلاً،
+   * فيظهر ما يجب دون `||` إطلاقاً. والاستطلاع النشط محجوب دائماً.
+   */
+  const resultsOpen = p.showResults === true && p.active !== true;
   return {
     id: p.id,
     prompt: p.prompt,
@@ -183,10 +282,44 @@ function toPublicSessionInfo(s: QaSession): PublicSessionInfo {
 }
 
 /**
+ * أسئلة الحاضر المطلوب — مصفوفة فارغة إن لم يُعثر عليه.
+ *
+ * 🎯 الفراغ مقصود: `attendeeId` مُختلق أو من جلسة أخرى ⇒ `[]` لا 404،
+ * فلا يميّز المهاجم بين الحالتين. والحالة `undefined` (لا حقل) تُبقي
+ * المشروعور والمتحدث بلا المعلومة أصلاً.
+ */
+function toMyQuestions(session: QaSession, attendeeId: string | undefined): MyQuestion[] {
+  if (!attendeeId) return [];
+  if (!findAttendee(session, attendeeId)) return [];
+  return session.questions
+    .filter((q) => q.attendeeId === attendeeId)
+    .map((q) => ({ id: q.id, status: q.status, text: q.text }));
+}
+
+/** إجابات الحاضر نفسه بحالاتها — انظر `MyAnswer`. */
+function toMyAnswers(session: QaSession, attendeeId: string | undefined): MyAnswer[] {
+  if (!attendeeId) return [];
+  if (!findAttendee(session, attendeeId)) return [];
+  return session.questions
+    .flatMap((q) => (q.answers ?? []).map((answer) => ({ answer, questionId: q.id })))
+    .filter(({ answer }) => answer.attendeeId === attendeeId)
+    .map(({ answer, questionId }) => ({
+      id: answer.id,
+      questionId,
+      status: answer.status,
+      text: answer.text,
+    }));
+}
+
+/**
  * يبني اللقطة العامة من بيانات خام (غير مطبَّعة) — يتولّى `normalizeData` داخلياً
  * حتى لا يخطئ أي مستهلك ويستخدم بيانات قديمة بلا الحقول الجديدة.
  */
-export function buildPublicSnapshot(raw: Partial<QaData> | null | undefined, view: QaView): PublicSnapshot {
+export function buildPublicSnapshot(
+  raw: Partial<QaData> | null | undefined,
+  view: QaView,
+  attendeeId?: string
+): PublicSnapshot {
   const data = normalizeData(raw);
   const session = getActiveSession(data);
 
@@ -200,14 +333,47 @@ export function buildPublicSnapshot(raw: Partial<QaData> | null | undefined, vie
       // بلا جلسة نشطة: لا شيء يُعرض. `manual` صراحةً حتى لا يبدأ العميل
       // تدويراً على قائمة فارغة ويومض بين «بانتظار» و«لا نتائج».
       screen: { mode: "manual", slide: { kind: "hold" } },
+      // ⛔ لا `myQuestions` هنا: لا جلسة ⇒ لا صاحب أسئلة، وإرجاع `[]`
+      // سيقرأ العميل «أسئلتي غير مقبولة» بدل «لا جلسة أصلاً».
     };
   }
 
-  const questions = session.questions
-    .filter((q) => q.status === "approved")
-    .map((q) => toPublicQuestion(q, view))
-    .sort(sortForDisplay);
   const polls = session.polls.map(toPublicPoll);
+  const approved = session.questions.filter((q) => q.status === "approved");
+
+  /**
+   * قائمة المشروعور تُبنى دائماً بـ`"live"`، أي حقل `showOnProjector`.
+   *
+   * ⚠️ ليست تفصيلاً: `screen` يصف **الشاشة الكبيرة** مهما كان الطالب. لو
+   * حُلّت مع لقطة `audience` التي رُشِّح أسئلتها بـ`showToAudience`، لأمكن
+   * أن يرد على هاتف الحاضر «الشاشة على hold» بينما هي تعرض سؤالاً أمام
+   * المئات — تناقض في اللقطة نفسها.
+   */
+  const projectorQuestions = approved.map((q) => toPublicQuestion(q, "live")).sort(sortForDisplay);
+
+  /**
+   * وجه الجمهور: يُحذف المخفي **من المصفوفة**، لا يُرسَل بـ`visible: false`.
+   *
+   * ⚠️ قرار متّفق عليه: السؤال المخفي عن الحضور لا يظهر على أجهزتهم ولا
+   * يظهر في طابور «المعروض الآن». إبقاؤه في المصفوفة مع `visible: false`
+   * يجعل كل عميل مضطراً لتطبيق الفلتر بنفسه، وأي عميل جديد ينساه يعرض
+   * سؤالاً قُرّر إخفاؤه. الحذف في الخادم يجعل القاعدة غير قابلة للتجاوز.
+   *
+   * ⚠️ ولهذا تُبنى من `approved` لا من `projectorQuestions`: تصفية
+   * `projectorQuestions` بـ`visible` كانت ستفلتر على **ظهور المشروعور** لا
+   * الجمهور — فسؤال ظاهر على الشاشة ومخفي عن الحضور يبقى في هاتفه.
+   *
+   * ملاحظة: الإخفاء يخرج السؤال من **العرض** فقط. التصويت عليه يبقى ممكناً
+   * إن كان معرّفه معروفاً — وهو سلوك مقصود (المشرف يعدّ الترتيب، لا
+   * يلغي الأسئلة).
+   */
+  const questions =
+    view === "audience"
+      ? approved
+          .filter((q) => isAudienceVisible(q))
+          .map((q) => toPublicQuestion(q, "audience"))
+          .sort(sortForDisplay)
+      : approved.map((q) => toPublicQuestion(q, view)).sort(sortForDisplay);
 
   return {
     active: true,
@@ -215,6 +381,14 @@ export function buildPublicSnapshot(raw: Partial<QaData> | null | undefined, vie
     session: toPublicSessionInfo(session),
     questions,
     polls,
-    screen: resolveScreen(session, questions, polls),
+    screen: resolveScreen(session, projectorQuestions, polls),
+    // ⛔ الحقل يُضاف بـ`attendeeId` فقط — الشرط الوحيد الذي لا يُمرَّر فيه
+    // أي معرّف هو الشرط الوحيد الذي لا يحمل أسئلة أحد.
+    ...(attendeeId
+      ? {
+          myQuestions: toMyQuestions(session, attendeeId),
+          myAnswers: toMyAnswers(session, attendeeId),
+        }
+      : {}),
   };
 }

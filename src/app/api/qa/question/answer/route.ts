@@ -29,6 +29,7 @@ import {
   MAX_ANSWER_LENGTH,
   findAttendee,
   getActiveSession,
+  isAudienceVisible,
   upsertAnswer,
 } from "@/lib/qa/service";
 
@@ -75,15 +76,22 @@ export async function POST(request: NextRequest) {
       if (!attendee) throw new Error("attendee-not-registered");
 
       const question = session.questions.find((q) => q.id === questionId);
-      // ⚠️ القابلة للإجابة = **المعتمدة وحدها**، بنفس رسالة «غير موجود»:
+      // ⚠️ القابلة للإجابة = **المعتمدة والظاهرة للجمهور** وحدهما، بنفس
+      // رسالة «غير موجود» لكل الحالات:
       //  - المعلّق لم يره أحد بعد، وقد يُرفض غداً — فجمع إجاباته يعني عملاً
       //    مراجعة يُرمى إن رُفض السؤال.
       //  - المرفوض لا يجب أن يولّد أي أثر جديد.
-      //  - ولا نميّز بينهما حتى لا نكشف حالة سؤال بعينه لغير المصرّح له.
+      //  - ولا نميّز بينها حتى لا نكشف حالة سؤال بعينه لغير المصرّح له.
+      //
+      // ⚠️ شرط `showToAudience` لا `showOnLive` ولا `showOnSpeaker`. الإجابة
+      // تُقرأ على **شاشة الحاضر** وتصل للمتحدث؛ فلو استُخدم شرط المشروعور
+      // لأمكن ملء صندوق إجابات بسؤال اختفى من هاتف الحاضر — أثر غير مرئي
+      // يُصب على المشرف. والعكس: سؤال معروض على المسرح ومخفي عن الجمهور
+      // لا يُقبل عليه تصويت ولا إجابة من الحضور (قرار مقصود).
       if (
         !question ||
         question.status !== "approved" ||
-        question.showOnSpeaker === false
+        !isAudienceVisible(question)
       ) {
         throw new Error("question-not-answerable");
       }

@@ -48,12 +48,15 @@ export default function PostEventSurvey({ sessionId, attendeeId, onClose }: Prop
 
   if (submitted) {
     return (
-      <div className="rounded-3xl border border-border bg-card p-8 text-center shadow-sm">
+      <div
+        className="rounded-3xl border border-border bg-card p-8 text-center shadow-sm"
+        data-testid="qa-survey-thanks"
+      >
         <CheckCircle className="h-16 w-16 mx-auto text-green-500 mb-4" />
         <h2 className="text-2xl font-bold mb-2">{t("survey.thanks")}</h2>
         <p className="text-muted-foreground">{t("survey.thanksMessage")}</p>
         {onClose && (
-          <Button className="mt-6" variant="outline" onClick={onClose}>
+          <Button className="mt-6" variant="outline" data-testid="qa-survey-close" onClick={onClose}>
             {t("survey.close")}
           </Button>
         )}
@@ -62,7 +65,7 @@ export default function PostEventSurvey({ sessionId, attendeeId, onClose }: Prop
   }
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-6 shadow-sm max-w-lg mx-auto">
+    <div className="rounded-3xl border border-border bg-card p-6 shadow-sm max-w-lg mx-auto" data-testid="qa-survey-form">
       <h2 className="text-2xl font-bold text-center mb-1">{t("survey.title")}</h2>
       <p className="text-center text-muted-foreground text-sm mb-6">{t("survey.subtitle")}</p>
 
@@ -135,7 +138,11 @@ export default function PostEventSurvey({ sessionId, attendeeId, onClose }: Prop
         <div className="text-right text-xs text-muted-foreground">{comment.length}/500</div>
       </div>
 
-      {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
+      {error && (
+        <p role="alert" data-testid="qa-survey-error" className="text-red-600 text-sm mb-3">
+          {error}
+        </p>
+      )}
 
       <Button className="w-full" data-testid="qa-survey-submit" loading={sending} loadingText={t("survey.submitting")} onClick={handleSubmit}>
         <Send className="h-4 w-4 mr-2" />

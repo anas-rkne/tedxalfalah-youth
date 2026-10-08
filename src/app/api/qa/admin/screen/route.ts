@@ -120,7 +120,8 @@ export async function POST(request: NextRequest) {
           approvedAt: now,
           featured: false,
           showOnSpeaker: true,
-          showOnLive: true,
+          showToAudience: true,
+          showOnProjector: true,
           source: "admin",
           answers: [],
         };
@@ -145,10 +146,17 @@ export async function POST(request: NextRequest) {
         screen.slide = slide as QaScreenSlide;
       }
 
-      // ⚠️ حارس الأهلية: شريحة تشير إلى سؤال لم يعد مؤهَّلاً (مخفي، مرفوض،
-      // أو «تم الإجابة») تُسقَط إلى `hold` بدل أن تتعلّق بمعرّف ميت.
-      // إن رفض زر «على الشاشة» سؤالاً غير مؤهَّل، فصمتُنا يعني أن الشاشة تعرض
-      // شيئاً غير ما طلبه المشرف — أسوأ من رسالة خطأ صريحة. لذا: 409 + hold.
+      // ⚠️ حارس الأهلية: شريحة تشير إلى سؤال لم يعد مؤهَّلاً (مخفي عن
+      // المشروعور، مرفوض، أو «تم الإجابة») تُسقَط إلى `hold`.
+      //
+      // **السبب: `showOnProjector` لا `showToAudience`.** شريحة الشاشة
+      // الكبيرة تُحلّ مقابل قائمة المشروعور في `buildPublicSnapshot`، فإخفاء
+      // سؤال عن Audience وحده لا يمنع عرضه — وهذا مقصود (الحاضر قد يرى
+      // إجابته على شاشته بينما المتحدث يعرضه على المسرح).
+      //
+      // أمّا طلب المشرف صريحاً لعرض سؤال غير مؤهَّل (مخفي/مرفوض/مجاب)،
+      // فصمتُنا يعني أن الشاشة تعرض شيئاً غير ما طُلب — أسوأ من خطأ صريح.
+      // لذا: 409 + الشريحة تسقط إلى `hold` حتى لا تتعلّق بمعرّف ميت.
       if (screen.slide.kind === "question") {
         const eligible = screenEligibleQuestions(session).some(
           (q) => q.id === (screen.slide as { questionId: string }).questionId

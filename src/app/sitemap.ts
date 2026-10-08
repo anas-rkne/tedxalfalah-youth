@@ -5,6 +5,7 @@ const BASE_URL = process.env.BASE_URL || "https://www.tedxalfalahyouth.com";
 
 const ROUTES = [
   "",
+  "/timeline",
   "/team",
   "/apply",
   "/thank-you",

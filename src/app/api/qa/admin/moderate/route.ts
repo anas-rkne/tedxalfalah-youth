@@ -6,8 +6,20 @@
  *   reject       { questionId }                  → حجب سؤال
  *   feature      { questionId, featured }        → تمييز/إلغاء تمييز
  *   answer       { questionId, answered }        → تعليم السؤال بـ"تم الإجابة" (أو التراجع)
- *   setVisibility { questionId, showOnSpeaker?, showOnLive? } → تحكم منفصل بالعرض (المتحدث/الشاشة)
+ *   setVisibility { questionId, showOnSpeaker?, showToAudience?, showOnProjector? }
+ *                               → تحكم منفصل بالعرض (المتحدث/الجمهور/المشروعور)
  *   setSpeaker   { enabled }                     → تفعيل/تعطيل شاشة المتحدث للجلسة
+ *
+ * ⚠️ الفصل بين الجمهور والمشروعور:
+ *   `showToAudience` = يظهر في هاتف الحاضر ضمن «أسئلتي المعروضة».
+ *   `showOnProjector` = يظهر على الشاشة الكبرى وشاشة المتحدث.
+ *   الحقل القديم `showOnLive` ما زال مقبولاً للطلب، ويعني «اضبط الوجهين معاً»
+ *   (مسار الإقلاع للّوحات القديمة). لا يُكتب بعد اليوم.
+ *
+ * ⚠️ إخفاء سؤال عن الجمهور **لا** يُسقط شريحته من الشاشة الكبرى: فقط إخفاؤه
+ *   عن المشروعور (أو رفضه أو تعليمه «تم الإجابة») يفعل. قبل الفصل كان أي
+ *   تغيير رؤية يمسح الشريحة، فإخفاء سؤال مؤقتاً عن الحضور كان يمحو شريحة
+ *   المتحدث من الشاشة بلا رجعة.
  *
  * ⚠️ كل الإجراءات **idempotent**: تأخذ القيمة النهائية صراحةً بدل أن تقلب
  * القيمة الحالية. `answer` كان يقلب `q.answered` فقط، فأي نقرتين سريعتين (نقر
@@ -23,7 +35,12 @@ import { checkAdminApiRateLimit } from "@/lib/rate-limit";
 import { validateOrigin } from "@/lib/cors";
 import { qaError, qaJson, qaErrorFromKnown } from "@/lib/qa/http";
 import { mutateQaData } from "@/lib/qa/storage";
-import { reconcileScreenSlide } from "@/lib/qa/service";
+import {
+  applyVisibilityChange,
+  isAudienceVisible,
+  isProjectorVisible,
+  reconcileScreenSlide,
+} from "@/lib/qa/service";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +52,10 @@ const schema = z
     featured: z.boolean().optional(),
     answered: z.boolean().optional(),
     showOnSpeaker: z.boolean().optional(),
+    showToAudience: z.boolean().optional(),
+    showOnProjector: z.boolean().optional(),
+    // ⚠️ مقبول للتوافق مع اللوحة القديمة (Phase 3 تحوّلها للحقلين) — يعامل
+    // كـ«اضبط الوجهين معاً». يبقى `q.showOnLive` للتقرير القديم فقط.
     showOnLive: z.boolean().optional(),
     enabled: z.boolean().optional(),
   })
@@ -48,8 +69,18 @@ const schema = z
     if (v.action === "answer" && typeof v.answered !== "boolean") {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["answered"], message: "answered is required" });
     }
-    if (v.action === "setVisibility" && typeof v.showOnSpeaker !== "boolean" && typeof v.showOnLive !== "boolean") {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["visibility"], message: "showOnSpeaker or showOnLive is required" });
+    if (
+      v.action === "setVisibility" &&
+      typeof v.showOnSpeaker !== "boolean" &&
+      typeof v.showToAudience !== "boolean" &&
+      typeof v.showOnProjector !== "boolean" &&
+      typeof v.showOnLive !== "boolean"
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["visibility"],
+        message: "showOnSpeaker / showToAudience / showOnProjector is required",
+      });
     }
     if (v.action === "setSpeaker" && typeof v.enabled !== "boolean") {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["enabled"], message: "enabled is required" });
@@ -79,7 +110,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return qaError("Invalid payload", 400, parsed.error.flatten());
   }
-  const { action, sessionId, questionId, featured, answered, showOnSpeaker, showOnLive, enabled } = parsed.data;
+  const { action, sessionId, questionId, featured, answered, showOnSpeaker, showToAudience, showOnProjector, showOnLive, enabled } = parsed.data;
 
   let result;
   try {
@@ -96,24 +127,39 @@ export async function POST(request: NextRequest) {
       if (!q) throw new Error("question-not-found");
 
       const now = new Date().toISOString();
+      // سؤال أُسقط للتو من المشروعور ⇒ يجب أن تُسقط الشريحة المثبَّتة.
+      //
+      // ⚠️ لا يكفي مقارنة `action === "setVisibility"`، لأن إخفاء سؤال عن
+      // **الجمهور فقط** لا يمسّ الشريحة بحال. كان المسار يُسقط الشريحة على
+      // أي تغيير رؤية، فكل «إخفاء مؤقت عن سيارات الناس» كان يمسح شريحة
+      // المتحدث من الشاشة الكبرى — إجراء لا رجعة فيه بمغض الطرف.
+      let droppedFromProjector = false;
+
       if (action === "approve") {
         q.status = "approved";
         q.approvedAt = now;
       } else if (action === "reject") {
         q.status = "rejected";
+        droppedFromProjector = true;
       } else if (action === "feature") {
         q.featured = Boolean(featured);
       } else if (action === "answer") {
         // القيمة النهائية تُؤخذ من الطلب، لا من عكس القيمة الحالية.
         q.answered = answered === true;
+        droppedFromProjector = q.answered;
       } else if (action === "setVisibility") {
-        if (typeof showOnSpeaker === "boolean") q.showOnSpeaker = showOnSpeaker;
-        if (typeof showOnLive === "boolean") q.showOnLive = showOnLive;
+        ({ droppedFromProjector } = applyVisibilityChange(q, {
+          speaker: showOnSpeaker,
+          audience: showToAudience,
+          projector: showOnProjector,
+          legacyLive: showOnLive,
+        }));
       }
-      // ⚠️ أي إجراء يجعل السؤال غير مؤهَّل (رفض، «تم الإجابة»، إخفاء من
-      // الشاشة) يُسقط الشريحة المثبَّتة فوراً. بلا هذا كانت اللوحة تكتب
+
+      // ⚠️ أي إجراء يجعل السؤال غير مؤهَّل (رفض، «تم الإجابة»، إخفاؤه من
+      // **المشروعور**) يُسقط الشريحة المثبَّتة فوراً. بلا هذا كانت اللوحة تكتب
       // «المعروض الآن: السؤال X» بعد أن خبّأه المشرف، فيُظنّ أن الزر تعطّل.
-      if (action === "reject" || action === "answer" || action === "setVisibility") {
+      if (droppedFromProjector) {
         reconcileScreenSlide(session);
       }
       return {
@@ -122,7 +168,8 @@ export async function POST(request: NextRequest) {
         featured: q.featured,
         answered: q.answered,
         showOnSpeaker: q.showOnSpeaker,
-        showOnLive: q.showOnLive,
+        showToAudience: isAudienceVisible(q),
+        showOnProjector: isProjectorVisible(q),
       };
     });
   } catch (err) {

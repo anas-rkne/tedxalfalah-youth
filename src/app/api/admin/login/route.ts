@@ -11,6 +11,8 @@
  */
 import { NextResponse } from "next/server";
 import { checkRateLimit, refundRateLimit } from "@/lib/rate-limit";
+import { validateOrigin } from "@/lib/cors";
+import { isForcedIdentityFailure } from "@/lib/test-mode";
 import { isAdminConfigured } from "@/lib/admin-auth";
 import { signJwt } from "@/lib/jwt";
 import {
@@ -22,6 +24,19 @@ import {
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  /**
+   * ⛔ فحص `Origin` قبل أي شيء آخر — وهذا كان الفارق الوحيد عن ٢٠ مساراً آخر.
+   *
+   * 🎯 الاستغلال لا يحتاج قراءة الرد، فالنقطة ليست سرقة الجلسة بل **استهلاك
+   * رصيد المحاولات**: المتصفح يُرسل `fetch` عبر أصل غريب بأنواع محتوى
+   * بسيطة (`text/plain`) بلا preflight — فيُنفَّذ الطلب فعلاً من **عنوان
+   * المشرف**، فيحسبه الخادم خمس محاولات فاشلة ويقفل `admin-login` عشر
+   * دقائق. صفحة واحدة في تبويب مفتوح تُخرِج المشرف من لوحته بلا كلمة
+   * مرور، والتوكن لا يُسرق أصلاً لأن الرد غير قابل للقراءة.
+   */
+  const originError = validateOrigin(request);
+  if (originError) return originError;
+
   if (!isAdminConfigured()) {
     return NextResponse.json(
       { error: "Admin dashboard is not configured on this server" },
@@ -64,6 +79,17 @@ export async function POST(request: Request) {
   // مع مهلة إعادة محاولة، تماماً كما يفعل `requireAdmin` في المسارات المحمية.
   let result: Awaited<ReturnType<typeof verifyUserPassword>>;
   try {
+    /**
+     * 🧪 محاكاة عطل مصدر الهوية — داخل `try` عمداً.
+     *
+      * ⛔ لماذا داخل `try`: الغرض اختبار فرع `catch` الحقيقي: الاستثناء
+      *   + `refundRateLimit` + 503 مع `Retry-After`. لو رُمي خارجه لاختبرنا
+      *   مساراً وهمياً لا يمرّ في الإنتاج — فكان الاختبار يمرّ على كود لا
+     * يُنفَّذ أبداً في الإنتاج، وهو أسوأ من غياب الاختبار.
+     */
+    if (isForcedIdentityFailure(request)) {
+      throw new Error("forced identity backend failure (security lab)");
+    }
     await seedAdminIfNeeded();
     result = await verifyUserPassword(username, password);
   } catch (err) {
