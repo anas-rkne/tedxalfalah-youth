@@ -207,8 +207,30 @@ async function handleBulkUpdate(
         failed.push(item.rowNumber);
         continue;
       }
+      const prevSent = String(row.get("decisionEmailSentAt") ?? "").trim();
+
       if (item.status !== undefined) row.set("status", item.status);
       if (item.notes !== undefined) row.set("notes", item.notes);
+
+      // Automatically send decision email when status changes to accepted/rejected
+      let sentAt: string | null = null;
+      if (item.status !== undefined && !prevSent) {
+        const newStatus = item.status;
+        if (newStatus === "accepted" || newStatus === "rejected") {
+          const email = String(row.get("email") ?? "").trim();
+          const fullName = String(row.get("fullName") ?? "").trim() || "Applicant";
+          if (isMailerConfigured() && email) {
+            try {
+              await sendDecisionEmail({ to: email, fullName, decision: newStatus });
+              sentAt = new Date().toISOString();
+              row.set("decisionEmailSentAt", sentAt);
+            } catch (mailErr) {
+              console.error("[ADMIN] Auto-send decision email failed:", mailErr);
+            }
+          }
+        }
+      }
+
       await row.save();
       updated++;
     }
